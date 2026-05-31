@@ -114,6 +114,10 @@ body::after{
 .hdr-fact{font-size:10.5px;color:#bdb7cc;font-family:'Lora',serif;font-style:italic;line-height:1.45;margin-top:9px;max-width:220px;text-shadow:0 1px 4px rgba(0,0,0,.85)}
 .agenda-h{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber2);font-family:'Lora',serif;margin:16px 2px 9px;opacity:.85;border-bottom:1px solid var(--border);padding-bottom:6px}
 .day-note{background:rgba(212,144,10,.09);border:1px solid var(--aborder);border-left:4px solid var(--amber2);border-radius:10px;padding:11px 14px;margin:8px 0 14px;font-size:13px;color:var(--amber2);font-family:'Lora',serif;font-style:italic;line-height:1.5}
+.plan-head{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:9px;margin:4px 0 0}
+.plan-frac{margin-left:auto;font-family:'Lora',serif;font-size:14px;font-weight:700}
+.plan-bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin:7px 0 14px}
+.plan-fill{height:100%;border-radius:3px;transition:width .4s}
 
 /* Progress bars */
 .progress-wrap{position:relative;z-index:1;padding:12px 18px 0}
@@ -532,10 +536,6 @@ body::after{
       </div>
       <div class="hdr-center">
         <div class="header-eyebrow" id="app-eyebrow"></div>
-        <div style="display:flex;align-items:center;gap:8px;justify-content:center">
-          <div class="header-title" id="app-title"></div>
-          <span style="font-size:23px;line-height:1;-webkit-text-fill-color:initial;background:none">📅</span>
-        </div>
       </div>
       <div class="hdr-right">
         <div class="hdr-weather" id="hdrWeather"></div>
@@ -597,8 +597,8 @@ const CONFIG = {
   eyebrow: "everything in its place",
   emoji:   "📅",
 };
-document.getElementById("app-title").textContent   = CONFIG.title;
-document.getElementById("app-eyebrow").textContent = CONFIG.eyebrow;
+const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
+{ const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=EYEBROWS[(typeof dayOfYear==="function"?dayOfYear():0)%EYEBROWS.length]; }
 // ═══════════════════════════════════════════════════════════════
 
 const ROOMS = {
@@ -1299,6 +1299,41 @@ function agendaHtml(items){
   });
   return out;
 }
+function todaysPlan(){
+  const order=["kitchen","living","office","bedroom","bathroom","backyard","garage"];
+  const lv={easy:0,moderate:1,hard:2};
+  for(const roomId of order){
+    const all=Object.entries(TASKS).filter(([id,t])=>t.room===roomId);
+    if(!all.length) continue;
+    const done=all.filter(([id])=>checked[id]).length, total=all.length;
+    if(done>=total) continue;
+    const remaining=all.filter(([id])=>!checked[id]).map(([id,t])=>({id,t}));
+    remaining.sort((a,b)=>(lv[a.t.level]??1)-(lv[b.t.level]??1));
+    const easyMod=remaining.filter(x=>x.t.level!=="hard");
+    const pick=(easyMod.length?easyMod:remaining).slice(0,4).map(x=>x.id);
+    const r=ROOMS[roomId];
+    return {ids:pick, roomId, roomName:r.name, color:r.color, roomDone:done, roomTotal:total, roomPct:Math.round(done/total*100)};
+  }
+  return {ids:[], roomId:"kitchen", roomName:"", color:"#10B981", roomDone:0, roomTotal:0, roomPct:100};
+}
+function planCard(id){
+  const t=TASKS[id]; if(!t) return "";
+  const r=ROOMS[t.room]||ROOMS.kitchen;
+  const isDone=!!checked[id];
+  const open=!!expanded[id];
+  let c='<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid '+r.color+';border-radius:var(--rad);padding:13px 16px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.3)">';
+  c+='<div style="display:flex;align-items:flex-start;gap:13px">';
+  c+='<div style="font-size:22px;flex-shrink:0">'+r.emoji+'</div>';
+  c+='<div style="flex:1;min-width:0">';
+  c+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap"><div style="font-family:\'Playfair Display\',serif;font-size:15px;color:'+(isDone?'var(--text3)':'var(--text)')+';'+(isDone?'text-decoration:line-through':'')+'">'+t.label+'</div>'+levelBadge(t.level)+'</div>';
+  if(t.note) c+='<div style="font-size:11.5px;color:var(--text2);font-style:italic;margin-top:7px;padding:8px 11px;border-radius:6px;background:rgba(0,0,0,.2);border:1px solid var(--border);line-height:1.55">'+t.note+'</div>';
+  if(t.steps&&open){ c+='<div style="margin-top:8px">'+t.steps.map((sp,i)=>'<div style="display:flex;gap:9px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:'+r.color+';font-size:11px;font-weight:700;flex-shrink:0">'+(i+1)+'.</span><span style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5">'+sp+'</span></div>').join('')+'</div>'; }
+  if(t.steps) c+='<div onclick="event.stopPropagation();toggleExpand(\''+id+'\')" style="font-size:10px;margin-top:8px;color:'+r.color+';cursor:pointer;font-family:\'Lora\',serif;font-weight:600">'+(open?'▲ Hide steps':'▼ Show steps')+'</div>';
+  c+='</div>';
+  c+='<div onclick="toggle(\''+id+'\')" style="width:28px;height:28px;border-radius:50%;border:2px solid '+(isDone?'#10B981':r.color)+';background:'+(isDone?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0;cursor:pointer;transition:all .25s cubic-bezier(.34,1.56,.64,1)">'+(isDone?'✓':'')+'</div>';
+  c+='</div></div>';
+  return c;
+}
 function renderToday() {
   const el=document.getElementById("view-today"),sched=todaySched(),today=todayKey();
   const items=[];
@@ -1464,51 +1499,17 @@ function renderToday() {
     });
   }
 
-  // ── SCHEDULE STATE HANDLING ───────────────────────────────────────────────────
-  if(sched&&sched.off){
-    const overdue=getOverdueTasks();
-    if(overdue.length) pushTaskCards(overdue,"carried");
-    doSort();
-    let html=topHtml;
-    html+=`<div class="off-card"><span class="off-icon">🎱</span><div class="off-title">Night off</div><div class="off-sub">${sched.offNote}</div></div>`;
-    html+=agendaHtml(items);
-    if(overdue.length) html+=`<div class="carried-header">↩ carried over — no pressure tonight</div>`;
-    el.innerHTML=html; return;
-  }
-  if(!sched){
-    const overdue=getOverdueTasks(),next=nextSched();
-    if(overdue.length) pushTaskCards(overdue,"carried");
-    doSort();
-    let html=topHtml;
-    if(!overdue.length) html+=`<div class="off-card"><span class="off-icon">☀️</span><div class="off-title">Nothing on the list today</div><div class="off-sub">${next?"Next up: "+next.date:"You're all done!"}</div></div>`;
-    else html+=`<div class="today-headline" style="margin-bottom:16px">Carrying these forward 📋</div>`;
-    html+=agendaHtml(items);
-    el.innerHTML=html; return;
-  }
-
-  const overdue=getOverdueTasks();
-  const taskIds=effectiveTasksForDate(today).filter(id=>id!=="find_desk"&&TASKS[id]?.room!=="garden");
-  const allIds=[...overdue,...taskIds];
-  const remaining=allIds.filter(id=>!checked[id]).length;
-
-  if(allIds.every(id=>checked[id])&&allIds.length>0){
-    const next=nextSched();
-    doSort();
-    let html=topHtml;
-    html+=agendaHtml(items);
-    html+=`<div class="done-card"><span class="done-icon">✅</span><div class="done-title">Today's done!</div><div class="done-sub">You're ahead of the game — rest easy.</div></div>`;
-    if(next) html+=`<div class="peek"><div class="peek-label">Up next · ${next.date}</div>${next.tasks.filter(id=>id!=="find_desk").map(id=>{const t=TASKS[id];if(!t)return"";const r=ROOMS[t.room]||ROOMS.kitchen;return`<div class="peek-line"><div class="peek-dot" style="background:${r.color}"></div>${t.label}</div>`;}).join("")}</div>`;
-    el.innerHTML=html; return;
-  }
-
-  if(overdue.length) pushTaskCards(overdue,"carried");
-  if(taskIds.length) pushTaskCards(taskIds,"");
-
-  doSort();
-  const d=new Date(sched.date+"T12:00:00");
+  // ── TODAY'S HOUSE PLAN (dynamic, room-by-room toward 100%) ────────────────────
+  const plan=todaysPlan();
   let html=topHtml;
-  html+=`<div class="today-date">${d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</div>`;
-  if(sched.note) html+=`<div class="day-note">${sched.note}</div>`;
+  if(plan.ids.length){
+    html+=`<div class="plan-head" style="border-left:4px solid ${plan.color}"><span style="font-size:18px">${ROOMS[plan.roomId].emoji}</span> Today's Plan · ${plan.roomName}<span class="plan-frac" style="color:${plan.color}">${plan.roomDone}/${plan.roomTotal}</span></div>`;
+    html+=`<div class="plan-bar"><div class="plan-fill" style="width:${plan.roomPct}%;background:${plan.color}"></div></div>`;
+    plan.ids.forEach(id=>{ html+=planCard(id); });
+  } else {
+    html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — maintenance mode. Enjoy it.</div></div>`;
+  }
+  html+=`<div class="agenda-h" style="margin-top:20px">Daily Routine</div>`;
   html+=agendaHtml(items);
   el.innerHTML=html;
 }
@@ -2437,23 +2438,23 @@ const PEST_PLAN=[
  {e:"🌼",t:"Stay ahead of it",b:"Check leaf undersides weekly, clear away dead leaves, and companion-plant marigolds, basil and dill to repel pests and attract beneficial bugs. Catching trouble early beats any spray."}
 ];
 const APP_FACTS=[
-  "Your Husky cherry tomato is a determinate variety — it sets most of its fruit in one big flush, then winds down.",
-  "Blue Dream shrimp are a selectively bred line of Neocaridina — that electric blue is the whole reason they exist.",
-  "Nerite snails clean your tank but can't breed in freshwater, so they'll never overrun it.",
-  "The Sovol SV06 Plus uses a direct-drive extruder, which is what makes it good with flexible filament.",
-  "PLA prints best around 200–210°C on the SV06; PETG wants it hotter, about 230–240°C.",
-  "Denver sits at 5,280 feet — the thin, dry air is why your plants drink faster here than at sea level.",
-  "Strawberries are the only fruit that wear their seeds on the outside — roughly 200 per berry.",
-  "Mint, basil, and rosemary are all cousins in the same family, Lamiaceae.",
-  "Jalapeños get hotter the longer they ripen — a red jalapeño is just a fully mature green one.",
-  "Deadheading spent blooms tricks a plant into making more flowers instead of going to seed.",
-  "Zoey burns more mental energy on a snuffle mat than on a long walk — sniffing is genuinely tiring for dogs.",
-  "Vacuum out of a room toward the door and you never tread over the fresh tracks you just made.",
-  "A 10-minute walk after eating can blunt a blood-sugar spike by up to 30%.",
-  "Rosemary can live 20+ years and actually prefers to be slightly neglected.",
-  "Tomatoes keep ripening off the vine — but never refrigerate them; cold flattens the flavor.",
-  "Pinching a basil stem just above a leaf pair makes it split into two — more cuts, more basil.",
-  "The bi-weekly vacuum is the whole maintenance game: 15 minutes protects weeks of work."
+  "A clear kitchen counter is the single biggest visual win in a home — it's the first thing the eye lands on.",
+  "The two-minute rule: if a tidy-up takes under two minutes, just do it now instead of listing it.",
+  "Declutter by category, not by room — pulling every mug out at once shows how many you really own.",
+  "Microfiber grabs dust with static, so it often cleans better dry than a spray does wet.",
+  "Clean top-to-bottom: dust and drips land on surfaces you haven't done yet, never the ones you just finished.",
+  "The one-in, one-out rule keeps clutter flat — every new thing means one old thing leaves.",
+  "A three-dollar drawer divider turns a junk drawer into something you'll actually use.",
+  "Velcro cable ties beat zip ties — you can re-route the cords later without scissors.",
+  "A label maker is the cheapest upgrade to a garage; you find tools in seconds, not minutes.",
+  "Power-washing a patio is quietly the most satisfying chore there is — instant before-and-after.",
+  "The Sovol SV06 Plus can run ~150mm/s, but clean parts usually like a calmer 50–60mm/s.",
+  "Wipe a 3D printer's PEI bed with isopropyl alcohol — clean steel grips the first layer far better.",
+  "Dogs explore the world by smell first, so a slow sniffy walk tires Zoey out more than a fast one.",
+  "A tired dog is a good dog — most 'bad behavior' is just unspent energy with nowhere to go.",
+  "Denver gets about 300 sunny days a year, which is great for line-drying laundry.",
+  "Making the bed takes two minutes and reliably makes the whole room read as 'clean.'",
+  "Shrimp tanks stay clearest with gentle flow and lots of plants — both quietly do filtration work."
 ];
 function renderHeaderFact(){
   const el=document.getElementById("hdrFact"); if(!el) return;
