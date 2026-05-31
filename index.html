@@ -118,6 +118,7 @@ body::after{
 .plan-frac{margin-left:auto;font-family:'Lora',serif;font-size:14px;font-weight:700}
 .plan-bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin:7px 0 14px}
 .plan-fill{height:100%;border-radius:3px;transition:width .4s}
+.tl-room{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;margin-bottom:5px;letter-spacing:.02em}
 
 /* Progress bars */
 .progress-wrap{position:relative;z-index:1;padding:12px 18px 0}
@@ -1527,76 +1528,64 @@ function allTimelineDates() {
 }
 
 function renderTimeline() {
-  const el=document.getElementById("view-timeline"),today=todayKey();
-  // Back button injected after render via afterRender
-  el.dataset.backBtn="1";
-  let html="",lastWeek="";
-  const allDates=allTimelineDates();
-
-  allDates.forEach(dateStr=>{
-    const d=new Date(dateStr+"T12:00:00");
-    const ws=new Date(d); ws.setDate(d.getDate()-d.getDay());
-    const wk=ws.toISOString().split("T")[0];
-    if(wk!==lastWeek){ html+=`<div class="week-label">Week of ${ws.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</div>`; lastWeek=wk; }
-
-    const sched=SCHEDULE.find(s=>s.date===dateStr)||{date:dateStr,tasks:[],off:false};
-    const waterDue=plantsDueOn(dateStr);
-    const isToday=dateStr===today, isPast=dateStr<today;
-    const taskIds=effectiveTasksForDate(dateStr).filter(id=>id!=="find_desk");
-    const gardenTaskIds=taskIds.filter(id=>TASKS[id]?.room==="garden");
-    const houseTaskIds=taskIds.filter(id=>TASKS[id]?.room!=="garden");
-    const doneTasks=houseTaskIds.filter(id=>checked[id]);
-    const rolledTasks=isPast?houseTaskIds.filter(id=>!checked[id]&&(!pushed[id]||pushed[id]<=today)):[];
-    const allTasksDone=houseTaskIds.length>0&&rolledTasks.length===0&&doneTasks.length===houseTaskIds.length;
-    const allWaterDone=waterDue.every(p=>watered[p.id]===dateStr||(isPast));
-    const allDone=allTasksDone&&!waterDue.length&&!gardenTaskIds.length;
-
-    if(sched.off){
-      html+=`<div class="day-row off-row">
-        <div class="day-col"><div class="day-name">${d.toLocaleDateString("en-US",{weekday:"short"})}</div><div class="day-num">${d.getDate()}</div></div>
-        <div class="day-tasks-col"><div class="tl-off">${sched.offNote}</div></div>
-      </div>`;
-      return;
-    }
-
-    if(!houseTaskIds.length && !gardenTaskIds.length && !waterDue.length) return;
-
-    let cls="day-row"+(isToday?" today-row":allDone&&isPast?" done-row":"");
-    html+=`<div class="${cls}">
-      <div class="day-col"><div class="day-name">${d.toLocaleDateString("en-US",{weekday:"short"})}</div><div class="day-num">${d.getDate()}</div></div>
-      <div class="day-tasks-col">`;
-
-    // House tasks
-    if(houseTaskIds.length){
-      doneTasks.forEach(id=>{ const t=TASKS[id];if(!t)return; const r=ROOMS[t.room]||ROOMS.kitchen; html+=`<div class="tl-task tl-done"><div class="tl-dot" style="background:${r.color}"></div>${r.emoji} ${t.label}</div>`; });
-      rolledTasks.forEach(id=>{ const t=TASKS[id];if(!t)return; html+=`<div class="tl-task" style="color:rgba(200,134,10,.35)"><div class="tl-dot" style="background:rgba(200,134,10,.35)"></div>↩ ${t.label}</div>`; });
-      if(!isPast) houseTaskIds.forEach(id=>{ const t=TASKS[id];if(!t)return; const r=ROOMS[t.room]||ROOMS.kitchen; const done=!!checked[id]; html+=`<div class="tl-task${done?" tl-done":""}"${done?"":` style="color:${r.color}"`}><div class="tl-dot" style="background:${r.color}"></div>${r.emoji} ${t.label}</div>`; });
-    }
-
-    // Garden: watering — collapsed to one summary line (was dominating the page)
-    if(waterDue.length){
-      const remaining=isToday?waterDue.filter(p=>watered[p.id]!==today).length:waterDue.length;
-      const allDoneW=isToday&&remaining===0;
-      html+=`<div class="tl-task${allDoneW?" tl-done":""}"><div class="tl-dot" style="background:#2DB870"></div><span style="color:${allDoneW?"inherit":"#4ADE80"}">💧 ${allDoneW?"All plants watered":"Water "+waterDue.length+" plant"+(waterDue.length>1?"s":"")}</span></div>`;
-    }
-
-    // Garden: scheduled tasks (trim, harvest, fertilize etc.)
-    if(gardenTaskIds.length){
-      gardenTaskIds.forEach(id=>{ const t=TASKS[id];if(!t)return; const done=!!checked[id]; html+=`<div class="tl-task${done?" tl-done":""}"><div class="tl-dot" style="background:#2DB870"></div>🌿 ${t.label}</div>`; });
-    }
-
-    if(sched.note) html+=`<div class="tl-note">${sched.note}</div>`;
-    html+=`</div>`;
-    if(isToday) html+=`<div class="day-badge today-badge">Today</div>`;
-    else if(allDone&&taskIds.length) html+=`<div class="day-badge done-badge">✓</div>`;
-    else if(isPast&&rolledTasks.length) html+=`<div class="day-badge" style="background:rgba(200,134,10,.08);color:rgba(200,134,10,.4);border:1px solid rgba(200,134,10,.15)">↩</div>`;
-    html+=`</div>`;
+  const el=document.getElementById("view-timeline"), today=todayKey();
+  const order=["kitchen","living","office","bedroom","bathroom","backyard","garage"];
+  const lv={easy:0,moderate:1,hard:2};
+  const rooms=order.map(roomId=>{
+    const all=Object.entries(TASKS).filter(([id,t])=>t.room===roomId);
+    const rem=all.filter(([id])=>!checked[id]).map(([id,t])=>({id,level:t.level}));
+    rem.sort((a,b)=>(lv[a.level]??1)-(lv[b.level]??1));
+    return {roomId, rem, total:all.length, done:all.filter(([id])=>checked[id]).length};
   });
+  let totalH=0, doneH=0; rooms.forEach(r=>{ totalH+=r.total; doneH+=r.done; });
+  const pctH=totalH?Math.round(doneH/totalH*100):0;
+  // Simulate the daily planner forward: each day = up to 4 from the current room, easy/moderate first
+  const days=[];
+  rooms.forEach(rm=>{
+    let rem=[...rm.rem], any=false;
+    while(rem.length){
+      const easyMod=rem.filter(x=>x.level!=="hard");
+      const pool=easyMod.length?easyMod:rem;
+      const pick=pool.slice(0,4); const ids=new Set(pick.map(x=>x.id));
+      days.push({roomId:rm.roomId, ids:pick.map(x=>x.id), finishesRoom:false});
+      rem=rem.filter(x=>!ids.has(x.id)); any=true;
+    }
+    if(any) days[days.length-1].finishesRoom=true;
+  });
+
+  let html="";
+  if(!days.length){
+    html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — nothing left to schedule. Maintenance mode from here.</div></div>`;
+  } else {
+    const finish=new Date(today+"T12:00:00"); finish.setDate(finish.getDate()+days.length-1);
+    html+=`<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:var(--rad);padding:13px 16px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:'Lora',serif;font-size:12px;color:var(--text2)">Whole-house progress</span><span style="font-family:'Playfair Display',serif;font-weight:700;color:#F5B830">${doneH}/${totalH} · ${pctH}%</span></div>
+      <div class="plan-bar"><div class="plan-fill" style="width:${pctH}%;background:linear-gradient(90deg,#F5B830,#818CF8)"></div></div>
+      <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:8px">${days.length} day${days.length>1?"s":""} of work left · finish by ${finish.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} 🏆</div>
+    </div>`;
+    let lastWeek="";
+    days.forEach((dy,idx)=>{
+      const d=new Date(today+"T12:00:00"); d.setDate(d.getDate()+idx);
+      const ws=new Date(d); ws.setDate(d.getDate()-d.getDay());
+      const wk=ws.toISOString().split("T")[0];
+      if(wk!==lastWeek){ html+=`<div class="week-label">Week of ${ws.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</div>`; lastWeek=wk; }
+      const r=ROOMS[dy.roomId], isToday=idx===0;
+      html+=`<div class="day-row${isToday?" today-row":""}">
+        <div class="day-col"><div class="day-name">${d.toLocaleDateString("en-US",{weekday:"short"})}</div><div class="day-num">${d.getDate()}</div></div>
+        <div class="day-tasks-col">
+          <div class="tl-room" style="color:${r.color}">${r.emoji} ${r.name}</div>`;
+      dy.ids.forEach(id=>{ const t=TASKS[id]; if(!t) return; html+=`<div class="tl-task" style="color:${r.color}"><div class="tl-dot" style="background:${r.color}"></div>${t.label}</div>`; });
+      if(dy.finishesRoom) html+=`<div class="tl-note">🎉 ${r.name} done${r.reward?" — "+r.reward:""}.</div>`;
+      html+=`</div>`;
+      if(isToday) html+=`<div class="day-badge today-badge">Today</div>`;
+      html+=`</div>`;
+    });
+  }
   el.innerHTML=`<div onclick="switchTab('today')" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;padding:6px 14px;border-radius:20px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);color:#818CF8;cursor:pointer;font-size:12px;font-family:'Lora',serif;letter-spacing:.04em">← Back to Today</div>
   <div style="text-align:center;margin-bottom:16px">
-    <div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:5px">☀️ Summer Game Plan</div>
+    <div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:5px">☀️ Your Game Plan</div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#F5B830,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Timeline</div>
-    <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">Steady momentum · one day at a time · finish line July 10 🏆</div>
+    <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">Room by room, easy wins first — all the way to a 100% home 🏆</div>
   </div>`+html;
 }
 
