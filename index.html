@@ -51,7 +51,7 @@ body::after{
   background:linear-gradient(180deg,#100D1B 0%,#09080E 100%);
   border-bottom:1px solid rgba(255,255,255,.04);
   padding:0 0 0;
-  position:sticky;top:0;z-index:10;
+  position:relative;z-index:1;
   box-shadow:0 8px 40px rgba(0,0,0,.7);
   overflow:hidden;
 }
@@ -508,6 +508,25 @@ body::after{
 .header-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden}
 .header-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,5,10,.56) 0%,rgba(6,5,10,.76) 48%,rgba(6,5,10,.96) 100%)}
 .tl-note{font-size:11px;color:#9a93ad;font-style:italic;font-family:'Lora',serif;margin-top:6px;line-height:1.45;border-top:1px dashed rgba(255,255,255,.06);padding-top:6px}
+
+/* ── Sticky nav: big header scrolls away, the tab bar pins to the top ── */
+.navbar{position:sticky;top:0;z-index:100;background:rgba(9,8,14,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.07);box-shadow:0 6px 20px rgba(0,0,0,.45)}
+
+/* ── MOBILE header fix (phones ≤560px): eyebrow on its own top line; greeting+clock+fact and weather share the row below ── */
+@media (max-width:560px){
+  .header-inner{padding:13px 14px 0}
+  .header-row{flex-wrap:wrap;gap:8px}
+  .hdr-center{order:-1;flex:1 1 100%;width:100%;align-items:center;padding-top:0}
+  .header-eyebrow{margin:0 0 9px;font-size:8px;letter-spacing:.2em;line-height:1.5}
+  .hdr-left{flex:1 1 58%;min-width:150px}
+  .hdr-right{flex:0 0 auto}
+  .hdr-clock{font-size:30px}
+  .hdr-fact{max-width:200px;font-size:10px;margin-top:7px}
+  .hdr-weather{padding:8px 11px}
+  .hdr-trackers{gap:10px;margin-top:8px}
+  .navbar .util-row{padding:5px 12px 0}
+  .navbar{box-shadow:0 4px 14px rgba(0,0,0,.4)}
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -561,6 +580,9 @@ body::after{
     </div>
   </div>
 
+  </div><!-- /header -->
+
+  <div class="navbar">
   <div class="util-row">
     <button class="util-pill" id="pill-forecast" onclick="switchTab('forecast')">🌤️ Forecast</button>
     <button class="util-pill" id="pill-rooms" onclick="switchTab('rooms')">🏠 Rooms</button>
@@ -599,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "May 31, 2026 · 4:07 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "May 31, 2026 · 4:19 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
