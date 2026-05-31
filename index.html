@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "May 31, 2026 · 5:17 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "May 31, 2026 · 5:39 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1900,6 +1900,34 @@ function renderShopping() {
       + sh('Rules') + '<ul><li>❌ No food while ammonia is elevated</li><li>✅ Remove uneaten food within 2–3h</li><li>✅ Underfeed rather than overfeed</li></ul>');
     html += panel('🔁 Ongoing Maintenance (once stable)','<ul><li>Weekly ~20% water change + test NH3 / NO2 / NO3 / pH</li><li>Remove uneaten food within 2–3h</li><li>Replenish almond leaves every 2–3 weeks</li><li>Monthly: scrape nerite eggs off the glass</li></ul>');
     html += panel('🥚 Calcium Project','Rinse eggshells → air dry → crush → drop 1–2 chunks near the feeding dish; shrimp &amp; snails graze directly. Replenish weekly. Free, and essential for shrimp molting.');
+    const bbuy=(id,label)=>{const d=!!shopping[id];return '<div onclick="toggleShop(\''+id+'\')" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid rgba(139,92,246,.18);cursor:pointer;font-size:12.5px;'+(d?'opacity:.5;text-decoration:line-through':'')+'"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid '+(d?'#b794f6':'rgba(139,92,246,.4)')+';background:'+(d?'rgba(139,92,246,.15)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#b794f6;font-weight:900;font-size:11px">'+(d?'✓':'')+'</div><div style="flex:1;color:var(--text)">'+label+'</div></div>';};
+    const bugP=(title,sub,items,note)=>'<div style="background:#0a1628;border:1px solid rgba(139,92,246,.25);border-radius:12px;padding:4px 15px 11px;margin-bottom:10px"><div style="font-family:\'Playfair Display\',serif;font-size:14px;font-weight:700;color:#b794f6;padding:11px 0 1px">'+title+'</div>'+(sub?'<div style="font-size:11px;color:#8b9bb5;font-style:italic;font-family:\'Lora\',serif;margin-bottom:2px">'+sub+'</div>':'')+items.map(it=>bbuy(it[0],it[1])).join('')+(note?'<div style="font-size:11px;color:#9bb3c9;font-style:italic;font-family:\'Lora\',serif;line-height:1.5;margin-top:8px">'+note+'</div>':'')+'</div>';
+    html += '<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(74,212,144,.05));border:1px solid rgba(139,92,246,.3);border-radius:12px;padding:13px 15px;margin-bottom:10px">'
+      + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🐛 Bug Starter Kit · TEMPORARY</div>'
+      + '<div style="font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:5px">Petco run — quick temporary starter</div>'
+      + '<div style="font-size:11.5px;color:#c9b8e8;font-style:italic;font-family:\'Lora\',serif;line-height:1.5">⚠️ TEMPORARY only — just enough to house the spider and katydids now; the full enclosures and bioactive ecosystem come LATER. Rule: predators never share with prey, so 2 enclosures + 1 deli-cup culture.</div></div>';
+    html += bugP('🕷️ Jumping Spider Condo','Solo · predators never share with prey · lives mostly dry',
+      [['bug-spider-terr','🏠 Small tall terrarium — Exo Terra Nano Tall (8×8×12 in), keep it small'],
+       ['bug-spider-bark','🌿 Twig / cork bark — anchor for webbing up top'],
+       ['bug-spider-food','🪰 Food: flightless fruit flies + found throwaway pests not worth keeping']],
+      'Fed on flightless fruit flies, found bad bugs not worth keeping, and eventually the auto fly feeder below.');
+    html += bugP('🦗 Herbivore Display','Katydids + cleanup crew · room for size-matched roommates',
+      [['bug-katy-terr','🏠 Taller screen-top terrarium — Nano / Mini Tall (roomier than the spider)'],
+       ['bug-katy-substrate','🟫 Coco coir substrate — Exo Terra Coco Husk'],
+       ['bug-katy-climb','🌿 Twigs / branches + cork bark — climbing and molting'],
+       ['bug-katy-isopods','🐛 Isopod culture — Petco cups (cleanup crew)'],
+       ['bug-katy-food','🌿 Food: fresh basil / leaves daily + optional apple slice']],
+      'All herbivores in one display. Can add a size-matched roommate later (e.g. a stick insect) — match sizes so nothing nibbles a smaller bug mid-molt. Moving the katydids here lets the basil recover.');
+    html += bugP('🐞 Aphid + Ladybug Culture','Disposable deli cup · aphid farm + ladybug nursery in one',
+      [['bug-cul-cup','🥡 Disposable deli cup / clear container'],
+       ['bug-cul-aphid','🌱 Aphid-covered plant cutting — the aphid food source'],
+       ['bug-cul-ladybug','🐞 Ladybug larvae — grow and release onto the plants']],
+      'The same cheap cup grows ladybugs to release on the garden (they eat aphids) AND feeds the spider.');
+    html += bugP('🛒 Shared — buy once','Covers both enclosures',
+      [['bug-shared-mister','💦 Spray mister'],
+       ['bug-shared-coir','🟫 One bag coco coir — covers both enclosures'],
+       ['bug-shared-ff','🪰 Flightless fruit fly culture — spider food']],
+      '💡 Tips: keep the spider enclosure noticeably smaller than the herbivore display. Grab springtails if available (usually easier to find online later).');
     html += '<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(0,229,204,.05));border:1px solid rgba(139,92,246,.35);border-radius:12px;padding:13px 15px;margin-bottom:10px">'
       + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🧪 Side Project · concept / to-build</div>'
       + '<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">🪰➡️🕷️ Auto Fly Feeder — Jumping Spider Enclosure</div>'
@@ -1982,36 +2010,6 @@ function renderGrocery() {
     { id:'groc-greenonion', label:'🌿 Green onion' },
   ];
   const doneCount = grocItems.filter(i => shopping[i.id]).length;
-  const bugCard = (bd,tc,title,sub,items,note) =>
-    '<div style="background:#0a1628;border:1px solid '+bd+';border-radius:14px;padding:4px 16px 12px;margin-bottom:14px">'
-    + '<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:'+tc+';padding:11px 0 1px">'+title+'</div>'
-    + (sub?'<div style="font-size:11px;color:#8b9bb5;font-style:italic;font-family:\'Lora\',serif;margin-bottom:2px">'+sub+'</div>':'')
-    + items.map(it=>checkItem(it[0],it[1])).join('')
-    + (note?'<div style="font-size:11px;color:#9bb3c9;font-style:italic;font-family:\'Lora\',serif;line-height:1.5;margin-top:8px">'+note+'</div>':'')
-    + '</div>';
-  const bugSection =
-    '<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(74,212,144,.05));border:1px solid rgba(139,92,246,.3);border-radius:14px;padding:14px 16px;margin-bottom:16px">'
-    + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🐛 Bug Starter Kit · TEMPORARY</div>'
-    + '<div style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px">Petco run — quick starter</div>'
-    + '<div style="font-size:11.5px;color:#c9b8e8;font-style:italic;font-family:\'Lora\',serif;line-height:1.5">⚠️ This is a QUICK TEMPORARY setup — just enough to house the jumping spider and 2 katydids right now. The full enclosures and bioactive ecosystem come LATER.</div>'
-    + '</div>'
-    + bugCard('rgba(139,92,246,.25)','#b794f6','🕷️ Jumping Spider Condo','Solo · small and tall · lives mostly dry',
-        [['bug-spider-terr','🏠 Small tall terrarium — Exo Terra Nano Tall (8×8×12 in), keep it small'],
-         ['bug-spider-bark','🌿 Twig / cork bark — anchor for webbing up top'],
-         ['bug-spider-food','🪰 Food: flightless fruit flies (small spider) OR small / pinhead crickets (big adult)']],
-        'Lives mostly dry — no damp substrate needed.')
-    + bugCard('rgba(74,212,144,.25)','#4AD490','🦗 Katydid Resort','2 katydids + cleanup crew · roomier than the spider',
-        [['bug-katy-terr','🏠 Taller screen-top terrarium — Nano / Mini Tall, roomier than the spider'],
-         ['bug-katy-substrate','🟫 Coco coir substrate — Exo Terra Coco Husk'],
-         ['bug-katy-climb','🌿 Twigs / branches + cork bark — climbing and molting'],
-         ['bug-katy-isopods','🐛 Isopod culture — Petco cups (cleanup crew)'],
-         ['bug-katy-food','🌿 Food: fresh basil / leaves daily + optional apple slice']],
-        '')
-    + bugCard('rgba(0,229,204,.25)','#00e5cc','🛒 Shared — buy once','Covers both enclosures',
-        [['bug-shared-mister','💦 Spray mister'],
-         ['bug-shared-coir','🟫 One bag coco coir — covers both enclosures'],
-         ['bug-shared-crickets','🦗 Cup of small crickets — backup food']],
-        '💡 Tips: keep the spider enclosure noticeably smaller than the katydid one. Grab springtails if available (usually easier to find online later).');
 
   el.innerHTML =
     '<div style="text-align:center;margin-bottom:20px;padding-top:4px">'
@@ -2026,8 +2024,7 @@ function renderGrocery() {
 
     + '<div style="background:#0a1628;border:1px solid rgba(45,184,112,.2);border-radius:14px;padding:2px 16px;margin-bottom:16px">'
     + grocItems.map(i => checkItem(i.id, i.label)).join('')
-    + '</div>'
-    + bugSection;
+    + '</div>';
 }
 
 function renderPrint() {
