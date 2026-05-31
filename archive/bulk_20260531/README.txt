@@ -26,5 +26,7 @@ Archived alternates (NOT displayed): tomato_heirloom_fruit.jpg, basil_closeup.jp
 RESOLVED: strawberry_pot_{1,2}.jpg (was strawberry_pit_AMBIGUOUS_{1,2}) = the multi-plant
   STRAWBERRY POT (terracotta multi-pocket pot). Now its own app entry 'strawberry_pot' with a
   dedicated terracotta-accent dual-photo card. Display copies: images/strawberry_pot_{1,2}.jpg.
-STILL AMBIGUOUS / skipped (need user input):
-  tomato_flowering_UNASSIGNED.jpg (flowering, no fruit - heirloom vs cherry unclear).
+RESOLVED: cherry_tomato_husky_flowering.jpg (was tomato_flowering_UNASSIGNED) = the Husky
+  (Husky Cherry Red, a cherry-type) tomato. Maps to the existing 'cherry_tomato' entry
+  (named 'Husky Cherry Tomato'); archived as an alternate. Display stays cherry_tomato_clusters.jpg.
+No remaining ambiguous photos.
