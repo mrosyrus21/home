@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Home and Garden 🏠</title><!-- TITLE TAG — matches CONFIG.title above -->
+<title>Schedule 📅</title><!-- TITLE TAG — matches CONFIG.title above -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -497,7 +497,7 @@ body::after{
 </head>
 <body>
 
-<div id="fb-loading" style="position:fixed;inset:0;background:#06050A;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px"><div style="font-size:36px">🏠</div><div style="font-size:13px;color:#6A6480;font-family:'Lora',serif;letter-spacing:.1em">Syncing your schedule…</div></div>
+<div id="fb-loading" style="position:fixed;inset:0;background:#06050A;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px"><div style="font-size:36px">📅</div><div style="font-size:13px;color:#6A6480;font-family:'Lora',serif;letter-spacing:.1em">Syncing your schedule…</div></div>
 <div class="header">
   <div class="header-bg" id="headerBg"></div>
   <div class="header-aurora"></div>
@@ -516,7 +516,7 @@ body::after{
         <div class="header-eyebrow" id="app-eyebrow"></div>
         <div style="display:flex;align-items:center;gap:9px;flex-wrap:nowrap">
           <div class="header-title" id="app-title"></div>
-          <span style="font-size:24px;line-height:1;-webkit-text-fill-color:initial;background:none">🏠</span>
+          <span style="font-size:24px;line-height:1;-webkit-text-fill-color:initial;background:none">📅</span>
         </div>
         <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
           <div class="garden-tracker" id="waterTracker">💧 –/–</div>
@@ -574,9 +574,9 @@ body::after{
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
 // ═══════════════════════════════════════════════════════════════
 const CONFIG = {
-  title:   "Home and Garden",
-  eyebrow: "home sweet home",
-  emoji:   "🏠",
+  title:   "Schedule",
+  eyebrow: "everything in its place",
+  emoji:   "📅",
 };
 document.getElementById("app-title").textContent   = CONFIG.title;
 document.getElementById("app-eyebrow").textContent = CONFIG.eyebrow;
@@ -854,17 +854,17 @@ const WATER_INFO = {
 };
 
 const HARVEST_INFO = {
-  basil1:{fact:"The more you cut basil, the bushier it grows.",how:"Snip just above a leaf pair once it's 6+ inches; never take more than a third at once.",date:"2026-05-30"},
-  basil2:{fact:"Pinch flower buds the moment you see them, or the leaves turn bitter.",how:"Harvest from the top to keep it compact and productive.",date:"2026-05-30"},
-  mint:{fact:"Unpicked mint gets woody — harvest it aggressively.",how:"Pinch sprigs above a leaf node; cut back by half if it gets leggy.",date:"2026-05-30"},
-  rosemary:{fact:"Rosemary's oils and flavor peak in the morning.",how:"Snip 2–3 inch sprigs of soft green growth; never cut into the woody stems.",date:"2026-05-30"},
-  parsley:{fact:"Parsley regrows from the center all season long.",how:"Cut the outer stems at the base; leave the young inner growth.",date:"2026-06-05"},
-  dill:{fact:"Both the feathery fronds and the seeds are usable.",how:"Snip outer fronds near the base; cut flower heads to keep the leaves coming.",date:"2026-06-10"},
-  strawberry:{fact:"Strawberries don't ripen any further once they're picked.",how:"Pick fully red with the green cap on, every 1–2 days.",date:"2026-06-20"},
-  jalapeno:{fact:"Green jalapeños are milder; left to redden they turn sweeter and hotter.",how:"Cut (don't pull) at 3–4 inches, firm and dark green.",date:"2026-07-10"},
-  cherry_tomato:{fact:"Sweetest left on the vine until fully colored.",how:"Pick as they blush and check daily — they split if left too long.",date:"2026-07-15"},
-  tomato:{fact:"Pick at the 'breaker' stage and ripen on the counter to beat splitting.",how:"Twist gently once deep-colored and slightly soft.",date:"2026-07-20"},
-  raspberry:{fact:"A ripe raspberry slips off its core with a gentle tug.",how:"Pick every couple days once deep red and they release easily.",date:"2027-06-15"}
+  basil1:{fact:"The more you cut basil, the bushier it grows.",how:"Once stems are 6+ inches, snip the stem tip just above a leaf pair — that node splits into two new branches. Always harvest from the top, never take more than a third at once, and pinch off any flower buds. Morning picking gives the best flavor.",date:"2026-05-30"},
+  basil2:{fact:"Pinch flower buds the moment you see them, or the leaves turn bitter.",how:"Cut 4–6 inch stem tips just above a leaf pair to force bushier growth, then strip the leaves off the stem. Keep all flower buds pinched. Use right away or stand the stems in water — basil bruises and blackens fast in the fridge.",date:"2026-05-30"},
+  mint:{fact:"Unpicked mint gets woody — harvest it aggressively.",how:"Snip stems just above a leaf node and the plant rebranches there. Take the top third regularly, and cut the whole plant back by half if it gets leggy. Rinse and use fresh, or hang small bundles to dry.",date:"2026-05-30"},
+  rosemary:{fact:"Rosemary's oils and flavor peak in the morning.",how:"In the morning, cut 2–4 inch sprigs of soft green new growth — never cut into the woody brown stems, they won't regrow. Take no more than a third of the plant. Strip the leaves backward off the stem to use.",date:"2026-05-30"},
+  parsley:{fact:"Parsley regrows from the center all season long.",how:"Harvest the outermost full-size stems right at the base, working inward, and leave the small inner growth to keep it producing. Take up to half at a time. Cut with scissors rather than tearing.",date:"2026-06-05"},
+  dill:{fact:"Both the feathery fronds and the seeds are usable.",how:"Snip the outer feathery fronds near the base as needed, ideally in the morning. To delay bolting, cut off flower heads early — or let one head flower and dry on the plant if you want dill seed.",date:"2026-06-10"},
+  strawberry:{fact:"Strawberries don't ripen any further once they're picked.",how:"Pick only when fully, evenly red — they won't ripen off the plant. Pinch or snip the stem just above the berry and leave the green cap on to avoid bruising. Check every 1–2 days and harvest in the cool morning.",date:"2026-06-20"},
+  jalapeno:{fact:"Green jalapeños are milder; left to redden they turn sweeter and hotter.",how:"Snip (don't yank) the stem with scissors when peppers are 3–4 inches, firm, and dark glossy green, leaving a short stub of stem on the pepper. For hotter, sweeter peppers let some turn red on the plant. Frequent picking pushes more fruit.",date:"2026-07-10"},
+  cherry_tomato:{fact:"Sweetest left on the vine until fully colored.",how:"Pick when fully colored and slightly soft — a ripe one releases with a gentle twist. Check daily once they start to blush, because over-ripe cherries split. If most of a truss is ripe, harvest the whole cluster.",date:"2026-07-15"},
+  tomato:{fact:"Pick at the 'breaker' stage and ripen on the counter to beat splitting.",how:"Best picked at the 'breaker' stage (first blush of color) and ripened on the counter to beat cracking and critters — or wait for deep color with a slight give. Twist gently or snip the stem. Never refrigerate; cold kills the flavor.",date:"2026-07-20"},
+  raspberry:{fact:"A ripe raspberry slips off its core with a gentle tug.",how:"A ripe berry slips off its white core with the lightest tug — if it resists, leave it another day. Pick into a shallow container so they don't crush, every 2–3 days, ideally in the cool morning. Eat or freeze the same day.",date:"2027-06-15"}
 };
 
 
@@ -1486,17 +1486,14 @@ function renderTimeline() {
     if(houseTaskIds.length){
       doneTasks.forEach(id=>{ const t=TASKS[id];if(!t)return; const r=ROOMS[t.room]||ROOMS.kitchen; html+=`<div class="tl-task tl-done"><div class="tl-dot" style="background:${r.color}"></div>${r.emoji} ${t.label}</div>`; });
       rolledTasks.forEach(id=>{ const t=TASKS[id];if(!t)return; html+=`<div class="tl-task" style="color:rgba(200,134,10,.35)"><div class="tl-dot" style="background:rgba(200,134,10,.35)"></div>↩ ${t.label}</div>`; });
-      if(!isPast) houseTaskIds.forEach(id=>{ const t=TASKS[id];if(!t)return; const r=ROOMS[t.room]||ROOMS.kitchen; const done=!!checked[id]; html+=`<div class="tl-task${done?" tl-done":""}"><div class="tl-dot" style="background:${r.color}"></div>${r.emoji} ${t.label}</div>`; });
+      if(!isPast) houseTaskIds.forEach(id=>{ const t=TASKS[id];if(!t)return; const r=ROOMS[t.room]||ROOMS.kitchen; const done=!!checked[id]; html+=`<div class="tl-task${done?" tl-done":""}"${done?"":` style="color:${r.color}"`}><div class="tl-dot" style="background:${r.color}"></div>${r.emoji} ${t.label}</div>`; });
     }
 
-    // Garden: watering — individual plant names
+    // Garden: watering — collapsed to one summary line (was dominating the page)
     if(waterDue.length){
-      const allWatered=isToday&&waterDue.every(p=>watered[p.id]===today);
-      waterDue.forEach(p=>{
-        const watered_=watered[p.id]===dateStr;
-        const done=watered_||(isPast&&watered[p.id]&&watered[p.id]<=dateStr);
-        html+=`<div class="tl-task${done?" tl-done":""}"><div class="tl-dot" style="background:#2DB870"></div><span style="color:${done?"inherit":"#4AD490"}">💧 ${p.emoji} ${p.name}</span></div>`;
-      });
+      const remaining=isToday?waterDue.filter(p=>watered[p.id]!==today).length:waterDue.length;
+      const allDoneW=isToday&&remaining===0;
+      html+=`<div class="tl-task${allDoneW?" tl-done":""}"><div class="tl-dot" style="background:#2DB870"></div><span style="color:${allDoneW?"inherit":"#4ADE80"}">💧 ${allDoneW?"All plants watered":"Water "+waterDue.length+" plant"+(waterDue.length>1?"s":"")}</span></div>`;
     }
 
     // Garden: scheduled tasks (trim, harvest, fertilize etc.)
@@ -1514,8 +1511,8 @@ function renderTimeline() {
   el.innerHTML=`<div onclick="switchTab('today')" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;padding:6px 14px;border-radius:20px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);color:#818CF8;cursor:pointer;font-size:12px;font-family:'Lora',serif;letter-spacing:.04em">← Back to Today</div>
   <div style="text-align:center;margin-bottom:16px">
     <div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:5px">☀️ Summer Game Plan</div>
-    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#F5B830,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">The Road to a Vacuumed House</div>
-    <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">One room a week · easy wins first · finish line July 10 🏆</div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#F5B830,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Timeline</div>
+    <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">Steady momentum · one day at a time · finish line July 10 🏆</div>
   </div>`+html;
 }
 
@@ -1628,7 +1625,7 @@ function renderGarden() {
     html += `<div id="wxbox"></div>`;
     if (dueSet.size) html += `<div onclick="waterAllDue()" style="background:rgba(45,184,112,.1);border:1px solid rgba(45,184,112,.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="font-size:18px">💧</div><div style="font-size:13px;font-weight:600;color:#4AD490">Mark all as watered today</div></div>`;
     else if (total) html += `<div style="background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">✅</div><div style="font-size:13px;color:#4AD490;font-style:italic">All watered today — nice work</div></div>`;
-    const urg = p => { if(watered[p.id]===today) return -1; if(waterPushed[p.id]&&waterPushed[p.id]>today) return -0.5; const dd=daysSinceWatered(p.id); if(dd===null) return 999; return dd/p.days; };
+    const urg = p => { if(watered[p.id]===today) return -1000; if(waterPushed[p.id]&&waterPushed[p.id]>today) return -500; const dd=daysSinceWatered(p.id); if(dd===null) return 1e9; return dd-(p.days||7); };
     [...PLANTS].sort((x,y)=>urg(y)-urg(x)).forEach(p=>{
       const days=daysSinceWatered(p.id), doneT=watered[p.id]===today, needs=dueSet.has(p.id), st=waterStatus(p), wi=WATER_INFO[p.id]||{};
       let bTxt,bCol,bl,bc;
@@ -2167,6 +2164,7 @@ function showApp() {
   if (el) el.remove();
   autoCarryOverdue();
   renderAll();
+  setTabBg(currentTab);
 }
 
 // Fallback: show app after 6 seconds even if Firebase is slow
@@ -2225,18 +2223,27 @@ const HEADER_IMGS = [
 
 const TAB_BG = {
   today:"https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280",
-  garden:"https://commons.wikimedia.org/wiki/Special:FilePath/Lush_green_foliage_over_tropical_forest_and_karst_hills_in_Surat_Thani%2C_Thailand.jpg?width=1280",
-  shopping:"https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_underwater_landscape_of_a_coral_reef.jpg?width=1280",
-  grocery:"https://commons.wikimedia.org/wiki/Special:FilePath/DFC_2210_A_small_street-side_market_stall_selling_fresh_fruit_and_vegetables_along_a_busy_urban_road_with_scooters_parked_at_the_curb_and_buildings_lining_the_street.jpg?width=1280",
+  garden:"https://commons.wikimedia.org/wiki/Special:FilePath/GREAT_DIXTER_GARDEN_The_colourful_and_welcoming_potted_plant_display_in_front_of_the_house.JPG?width=1280",
+  shopping:"https://commons.wikimedia.org/wiki/Special:FilePath/Planted_Tank_03_-_Flickr_-_The_Wandering_Angel.jpg?width=1280",
+  grocery:"https://commons.wikimedia.org/wiki/Special:FilePath/Grocery_Store_Aisle%2C_vermont.jpg?width=1280",
   print:"https://commons.wikimedia.org/wiki/Special:FilePath/3D_printer_at_35c3_01.jpg?width=1280",
-  wellness:"https://commons.wikimedia.org/wiki/Special:FilePath/DFC_5241-_Colorful_skewers_of_steamed_and_grilled_dim_sum_-_bright_yellow_siu_mai%2C_green_vegetable_dumplings%2C_seaweed-wrapped_bites_and_savory_meat_balls_-_ready_to_enjoy_at_a_bustling_Thai_street_food_stall.jpg?width=1280",
+  wellness:"https://commons.wikimedia.org/wiki/Special:FilePath/Running_At_Sunrise_Malta_Color_Street_Photography_%28167052449%29.jpeg?width=1280",
   rooms:"https://commons.wikimedia.org/wiki/Special:FilePath/IKEA_store%2C_Interior_design%2C_Living_room%2C_Rostov-on-Don%2C_Russia.jpg?width=1280",
   timeline:"https://commons.wikimedia.org/wiki/Special:FilePath/Aurora_Borealis_%28Northern_Light%29_over_Svolv%C3%A6r%2C_Lofoten%2C_Norway2.jpg?width=1280",
 }
+const TODAY_BG = {
+  morning:"https://commons.wikimedia.org/wiki/Special:FilePath/Conical_shadow_of_Mount_Nam_Xay_over_green_trees_at_golden_hour%2C_South-West_view_from_the_top%2C_Vang_Vieng%2C_Laos.jpg?width=1280",
+  midday:"https://commons.wikimedia.org/wiki/Special:FilePath/Looking_south_on_a_sunny_day_at_Stocker_Fields.jpg?width=1280",
+  evening:"https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280",
+  night:"https://commons.wikimedia.org/wiki/Special:FilePath/ALMA_and_a_Starry_Night.jpg?width=1280"
+};
+function todaySeg(){ const h=new Date().getHours(); return h<11?"morning":h<17?"midday":h<20?"evening":"night"; }
 function setTabBg(t){
-  const u=TAB_BG[t]||TAB_BG.today;
-  if(document.body.dataset.tabbg===t) return;
-  document.body.dataset.tabbg=t;
+  let u, key;
+  if(t==="today"){ const seg=todaySeg(); u=TODAY_BG[seg]; key="today-"+seg; }
+  else { u=TAB_BG[t]||TODAY_BG.evening; key=t; }
+  if(document.body.dataset.tabbg===key) return;
+  document.body.dataset.tabbg=key;
   document.body.style.backgroundImage="linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url('"+u+"')";
 }
 function updateHeaderBg(){
