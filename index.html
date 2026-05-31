@@ -1322,11 +1322,12 @@ function planCard(id){
   const r=ROOMS[t.room]||ROOMS.kitchen;
   const isDone=!!checked[id];
   const open=!!expanded[id];
+  const tm=getTaskTime(id);
   let c='<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid '+r.color+';border-radius:var(--rad);padding:13px 16px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.3)">';
   c+='<div style="display:flex;align-items:flex-start;gap:13px">';
   c+='<div style="font-size:22px;flex-shrink:0">'+r.emoji+'</div>';
   c+='<div style="flex:1;min-width:0">';
-  c+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap"><div style="font-family:\'Playfair Display\',serif;font-size:15px;color:'+(isDone?'var(--text3)':'var(--text)')+';'+(isDone?'text-decoration:line-through':'')+'">'+t.label+'</div>'+levelBadge(t.level)+'</div>';
+  c+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap"><div style="font-family:\'Playfair Display\',serif;font-size:15px;color:'+(isDone?'var(--text3)':'var(--text)')+';'+(isDone?'text-decoration:line-through':'')+'">'+t.label+'</div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+levelBadge(t.level)+timePill(tm.timeLabel,tm.dur)+'</div></div>';
   if(t.note) c+='<div style="font-size:11.5px;color:var(--text2);font-style:italic;margin-top:7px;padding:8px 11px;border-radius:6px;background:rgba(0,0,0,.2);border:1px solid var(--border);line-height:1.55">'+t.note+'</div>';
   if(t.steps&&open){ c+='<div style="margin-top:8px">'+t.steps.map((sp,i)=>'<div style="display:flex;gap:9px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:'+r.color+';font-size:11px;font-weight:700;flex-shrink:0">'+(i+1)+'.</span><span style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5">'+sp+'</span></div>').join('')+'</div>'; }
   if(t.steps) c+='<div onclick="event.stopPropagation();toggleExpand(\''+id+'\')" style="font-size:10px;margin-top:8px;color:'+r.color+';cursor:pointer;font-family:\'Lora\',serif;font-weight:600">'+(open?'▲ Hide steps':'▼ Show steps')+'</div>';
@@ -1500,17 +1501,16 @@ function renderToday() {
     });
   }
 
-  // ── TODAY'S HOUSE PLAN (dynamic, room-by-room toward 100%) ────────────────────
+  // ── UNIFIED TIMELINE: house plan tasks woven into the day by time-of-day ───────
   const plan=todaysPlan();
   let html=topHtml;
-  if(plan.ids.length){
-    html+=`<div class="plan-head" style="border-left:4px solid ${plan.color}"><span style="font-size:18px">${ROOMS[plan.roomId].emoji}</span> Today's Plan · ${plan.roomName}<span class="plan-frac" style="color:${plan.color}">${plan.roomDone}/${plan.roomTotal}</span></div>`;
-    html+=`<div class="plan-bar"><div class="plan-fill" style="width:${plan.roomPct}%;background:${plan.color}"></div></div>`;
-    plan.ids.forEach(id=>{ html+=planCard(id); });
-  } else {
+  if(!plan.ids.length){
     html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — maintenance mode. Enjoy it.</div></div>`;
+  } else {
+    html+=`<div class="plan-head" style="border-left:4px solid ${plan.color}"><span style="font-size:18px">${ROOMS[plan.roomId].emoji}</span> ${plan.roomName} — organize to 100%<span class="plan-frac" style="color:${plan.color}">${plan.roomDone}/${plan.roomTotal}</span></div>`;
+    html+=`<div class="plan-bar"><div class="plan-fill" style="width:${plan.roomPct}%;background:${plan.color}"></div></div>`;
+    plan.ids.forEach(id=>{ const tm=getTaskTime(id); items.push({order:tm.order, done:!!checked[id], html:planCard(id)}); });
   }
-  html+=`<div class="agenda-h" style="margin-top:20px">Daily Routine</div>`;
   html+=agendaHtml(items);
   el.innerHTML=html;
 }
