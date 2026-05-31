@@ -102,6 +102,7 @@ body::after{
 .header-daily-pct{font-size:10px;color:var(--teal);font-family:'Lora',serif;letter-spacing:.05em;text-shadow:0 0 10px rgba(34,211,238,.4);text-align:center}
 .garden-tracker{font-size:11px;font-family:'Lora',serif;letter-spacing:.04em;color:var(--teal);text-shadow:0 0 8px rgba(34,211,238,.5);white-space:nowrap}
 .garden-tracker.trim{color:#c084fc;text-shadow:0 0 8px rgba(192,132,252,.4)}
+.garden-tracker.harvest{color:#4ADE80;text-shadow:0 0 8px rgba(74,222,128,.45)}
 
 /* Progress bars */
 .progress-wrap{position:relative;z-index:1;padding:12px 18px 0}
@@ -520,7 +521,8 @@ body::after{
         </div>
         <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
           <div class="garden-tracker" id="waterTracker">💧 –/–</div>
-          <div class="garden-tracker trim" id="trimTracker">✂️ –/–</div>
+          <div class="garden-tracker harvest" id="harvestTracker">✂️ –/–</div>
+          <div class="garden-tracker trim" id="trimTracker">❤️ –/–</div>
         </div>
       </div>
       <div class="header-right">
@@ -1111,7 +1113,11 @@ function updateHeader() {
   const wt=document.getElementById("waterTracker"); if(wt) wt.textContent = wIds.size ? ("💧 "+wDoneToday.length+"/"+wIds.size) : "💧 ✓ none due";
   const tDoneToday=PLANTS.filter(p=>p.trimDays&&trimmed[p.id]===today);
   const tIds=new Set([...plantsTrimDueOn(today).map(p=>p.id), ...tDoneToday.map(p=>p.id)]);
-  const tt=document.getElementById("trimTracker"); if(tt) tt.textContent = tIds.size ? ("✂️ "+tDoneToday.length+"/"+tIds.size) : "✂️ ✓ none due";
+  const tt=document.getElementById("trimTracker"); if(tt) tt.textContent = tIds.size ? ("❤️ "+tDoneToday.length+"/"+tIds.size) : "❤️ ✓ none due";
+  const hTodayD=new Date(today+"T12:00:00");
+  const hReady=PLANTS.filter(p=>HARVEST_INFO[p.id]&&new Date(HARVEST_INFO[p.id].date+"T12:00:00")<=hTodayD).length;
+  const hTotal=PLANTS.filter(p=>HARVEST_INFO[p.id]).length;
+  const ht=document.getElementById("harvestTracker"); if(ht) ht.textContent = hReady ? ("✂️ "+hReady+"/"+hTotal+" ready") : ("✂️ "+hReady+"/"+hTotal);
 }
 
 function weedHTML() {
