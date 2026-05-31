@@ -75,11 +75,14 @@ body::after{
   background:radial-gradient(ellipse,rgba(34,211,238,.1) 0%,transparent 70%);
 }
 .header-inner{padding:16px 18px 0;position:relative;z-index:1}
-.header-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.header-left{flex:1;min-width:0}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.hdr-left{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:1px}
+.hdr-center{flex:0 1 auto;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:1px}
+.hdr-right{flex:1 1 0;min-width:0;display:flex;justify-content:flex-end}
+.hdr-trackers{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:10px}
 .header-eyebrow{font-size:8px;letter-spacing:.32em;color:rgba(240,180,60,.85);text-transform:uppercase;font-family:'Lora',serif;font-style:italic;margin-bottom:5px;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 .header-title{
-  font-family:'Playfair Display',serif;font-size:28px;font-weight:700;letter-spacing:-.02em;
+  font-family:'Playfair Display',serif;font-size:24px;font-weight:700;letter-spacing:-.02em;
   background:linear-gradient(130deg,#F5B830 0%,#F0C050 45%,#E07828 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   filter:drop-shadow(0 0 20px rgba(212,144,10,.3));
@@ -103,7 +106,11 @@ body::after{
 .garden-tracker{font-size:11px;font-family:'Lora',serif;letter-spacing:.04em;color:var(--teal);text-shadow:0 0 8px rgba(34,211,238,.5);white-space:nowrap}
 .garden-tracker.trim{color:#c084fc;text-shadow:0 0 8px rgba(192,132,252,.4)}
 .garden-tracker.harvest{color:#4ADE80;text-shadow:0 0 8px rgba(74,222,128,.45)}
-.hdr-weather{font-size:12px;font-family:'Lora',serif;color:var(--text2);margin-top:6px;white-space:nowrap;letter-spacing:.03em}
+.hdr-weather{font-family:'Lora',serif;text-align:right;line-height:1.48}
+.wx-now{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#F3F1FA;text-shadow:0 0 14px rgba(34,211,238,.3);line-height:1.1}
+.wx-now .wx-ic{font-size:17px;margin-right:3px}
+.wx-row{font-size:11.5px;color:#d3cde0;letter-spacing:.02em;text-shadow:0 1px 4px rgba(0,0,0,.85);white-space:nowrap}
+.wx-tom{font-size:11px;color:#8fb6da;margin-top:3px;text-shadow:0 1px 4px rgba(0,0,0,.85);white-space:nowrap}
 
 /* Progress bars */
 .progress-wrap{position:relative;z-index:1;padding:12px 18px 0}
@@ -514,24 +521,26 @@ body::after{
   </svg>
   <div class="header-inner">
     <div class="header-row">
-      <div class="header-left">
-        <div class="header-eyebrow" id="app-eyebrow"></div>
-        <div style="display:flex;align-items:center;gap:9px;flex-wrap:nowrap">
-          <div class="header-title" id="app-title"></div>
-          <span style="font-size:24px;line-height:1;-webkit-text-fill-color:initial;background:none">📅</span>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
-          <div class="garden-tracker" id="waterTracker">💧 –/–</div>
-          <div class="garden-tracker harvest" id="harvestTracker">✂️ –/–</div>
-          <div class="garden-tracker trim" id="trimTracker">❤️ –/–</div>
-        </div>
-      </div>
-      <div class="header-right">
+      <div class="hdr-left">
         <div class="hdr-greeting" id="hdr-greeting">Hello</div>
         <div class="hdr-clock" id="hdr-clock">--:--</div>
         <div class="hdr-date" id="hdr-date"></div>
+      </div>
+      <div class="hdr-center">
+        <div class="header-eyebrow" id="app-eyebrow"></div>
+        <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+          <div class="header-title" id="app-title"></div>
+          <span style="font-size:23px;line-height:1;-webkit-text-fill-color:initial;background:none">📅</span>
+        </div>
+      </div>
+      <div class="hdr-right">
         <div class="hdr-weather" id="hdrWeather"></div>
       </div>
+    </div>
+    <div class="hdr-trackers">
+      <div class="garden-tracker" id="waterTracker">💧 –/–</div>
+      <div class="garden-tracker harvest" id="harvestTracker">✂️ –/–</div>
+      <div class="garden-tracker trim" id="trimTracker">❤️ –/–</div>
     </div>
   </div>
   <div class="progress-wrap">
@@ -2314,13 +2323,14 @@ function updateHeaderBg(){
 let WXF={ready:false};
 function wxIcon(wc){return wc>=95?"⛈️":wc>=71?"❄️":wc>=51?"🌧️":wc>=45?"🌫️":wc>=3?"☁️":wc>=1?"🌤️":"☀️";}
 function loadWeather(){
-  fetch("https://api.open-meteo.com/v1/forecast?latitude=39.78&longitude=-104.75&current=temperature_2m,weather_code,wind_speed_10m&daily=precipitation_probability_max,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FDenver&forecast_days=2")
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=39.78&longitude=-104.75&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=precipitation_probability_max,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FDenver&forecast_days=2")
     .then(r=>r.json()).then(d=>{
       WXF={ ready:true,
         temp:Math.round(d.current.temperature_2m), code:d.current.weather_code, wind:Math.round(d.current.wind_speed_10m),
         hi:Math.round(d.daily.temperature_2m_max[0]), lo:Math.round(d.daily.temperature_2m_min[0]),
         pop:d.daily.precipitation_probability_max[0], windMax:Math.round(d.daily.wind_speed_10m_max[0]),
-        popTom:d.daily.precipitation_probability_max[1], hiTom:Math.round(d.daily.temperature_2m_max[1]) };
+        popTom:d.daily.precipitation_probability_max[1], hiTom:Math.round(d.daily.temperature_2m_max[1]), loTom:Math.round(d.daily.temperature_2m_min[1]),
+        humidity:Math.round(d.current.relative_humidity_2m) };
       WXF.rainToday=WXF.pop>=60; WXF.rainTom=WXF.popTom>=60; WXF.hot=WXF.hi>=88; WXF.windy=WXF.windMax>=25; WXF.frost=WXF.lo<=35;
       renderHeaderWeather();
       if(typeof currentTab!=="undefined" && currentTab==="garden" && document.getElementById("view-garden")) renderGarden();
@@ -2328,8 +2338,12 @@ function loadWeather(){
 }
 function renderHeaderWeather(){
   const el=document.getElementById("hdrWeather"); if(!el||!WXF.ready) return;
-  el.innerHTML='<span style="font-size:15px;vertical-align:-2px">'+wxIcon(WXF.code)+'</span> <b style="color:var(--text);font-weight:700">'+WXF.temp+'°</b>'
-    +'<span style="color:var(--text3)"> · H'+WXF.hi+'° · '+WXF.pop+'%☔'+(WXF.windy?' · 💨'+WXF.windMax:'')+'</span>';
+  el.innerHTML=
+    '<div class="wx-now"><span class="wx-ic">'+wxIcon(WXF.code)+'</span>'+WXF.temp+'°</div>'
+    +'<div class="wx-row">High '+WXF.hi+'° · Low '+WXF.lo+'°</div>'
+    +'<div class="wx-row">Rain '+WXF.pop+'% · Wind '+WXF.wind+' mph</div>'
+    +'<div class="wx-row">Humidity '+WXF.humidity+'%</div>'
+    +'<div class="wx-tom">Tomorrow '+WXF.hiTom+'°/'+WXF.loTom+'° · '+WXF.popTom+'% rain</div>';
 }
 function wxAdvBox(m,c){ return m?'<div style="margin-top:8px;background:rgba(126,184,240,.07);border-left:3px solid '+c+';border-radius:6px;padding:7px 10px;font-size:12px;color:'+c+';font-family:\'Lora\',serif;line-height:1.45">'+m+'</div>':''; }
 function wxWaterNote(p){
