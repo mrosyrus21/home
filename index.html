@@ -111,6 +111,9 @@ body::after{
 .wx-now .wx-ic{font-size:17px;margin-right:3px}
 .wx-row{font-size:11.5px;color:#d3cde0;letter-spacing:.02em;text-shadow:0 1px 4px rgba(0,0,0,.85);white-space:nowrap}
 .wx-tom{font-size:11px;color:#8fb6da;margin-top:3px;text-shadow:0 1px 4px rgba(0,0,0,.85);white-space:nowrap}
+.hdr-fact{font-size:10.5px;color:#bdb7cc;font-family:'Lora',serif;font-style:italic;line-height:1.45;margin-top:9px;max-width:220px;text-shadow:0 1px 4px rgba(0,0,0,.85)}
+.agenda-h{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber2);font-family:'Lora',serif;margin:16px 2px 9px;opacity:.85;border-bottom:1px solid var(--border);padding-bottom:6px}
+.day-note{background:rgba(212,144,10,.09);border:1px solid var(--aborder);border-left:4px solid var(--amber2);border-radius:10px;padding:11px 14px;margin:8px 0 14px;font-size:13px;color:var(--amber2);font-family:'Lora',serif;font-style:italic;line-height:1.5}
 
 /* Progress bars */
 .progress-wrap{position:relative;z-index:1;padding:12px 18px 0}
@@ -525,6 +528,7 @@ body::after{
         <div class="hdr-greeting" id="hdr-greeting">Hello</div>
         <div class="hdr-clock" id="hdr-clock">--:--</div>
         <div class="hdr-date" id="hdr-date"></div>
+        <div class="hdr-fact" id="hdrFact"></div>
       </div>
       <div class="hdr-center">
         <div class="header-eyebrow" id="app-eyebrow"></div>
@@ -1283,6 +1287,18 @@ function strip(emoji,label,done,color,onclick,tl,dur,sub,pushFn){
   </div>`;
 }
 
+function agendaHtml(items){
+  items.sort((a,b)=>(a.order||999)-(b.order||999));
+  const buckets=[["Morning",0,700],["Midday",700,840],["Afternoon",840,1060],["Evening",1060,1240],["Night",1240,1e9]];
+  let out="", cur=null;
+  items.forEach(it=>{
+    const b=buckets.find(x=>(it.order||999)>=x[1]&&(it.order||999)<x[2]);
+    const name=b?b[0]:"Anytime";
+    if(name!==cur){ cur=name; out+=`<div class="agenda-h">${name}</div>`; }
+    out+=it.html;
+  });
+  return out;
+}
 function renderToday() {
   const el=document.getElementById("view-today"),sched=todaySched(),today=todayKey();
   const items=[];
@@ -1455,7 +1471,7 @@ function renderToday() {
     doSort();
     let html=topHtml;
     html+=`<div class="off-card"><span class="off-icon">🎱</span><div class="off-title">Night off</div><div class="off-sub">${sched.offNote}</div></div>`;
-    items.forEach(i=>html+=i.html);
+    html+=agendaHtml(items);
     if(overdue.length) html+=`<div class="carried-header">↩ carried over — no pressure tonight</div>`;
     el.innerHTML=html; return;
   }
@@ -1466,7 +1482,7 @@ function renderToday() {
     let html=topHtml;
     if(!overdue.length) html+=`<div class="off-card"><span class="off-icon">☀️</span><div class="off-title">Nothing on the list today</div><div class="off-sub">${next?"Next up: "+next.date:"You're all done!"}</div></div>`;
     else html+=`<div class="today-headline" style="margin-bottom:16px">Carrying these forward 📋</div>`;
-    items.forEach(i=>html+=i.html);
+    html+=agendaHtml(items);
     el.innerHTML=html; return;
   }
 
@@ -1479,7 +1495,7 @@ function renderToday() {
     const next=nextSched();
     doSort();
     let html=topHtml;
-    items.forEach(i=>html+=i.html);
+    html+=agendaHtml(items);
     html+=`<div class="done-card"><span class="done-icon">✅</span><div class="done-title">Today's done!</div><div class="done-sub">You're ahead of the game — rest easy.</div></div>`;
     if(next) html+=`<div class="peek"><div class="peek-label">Up next · ${next.date}</div>${next.tasks.filter(id=>id!=="find_desk").map(id=>{const t=TASKS[id];if(!t)return"";const r=ROOMS[t.room]||ROOMS.kitchen;return`<div class="peek-line"><div class="peek-dot" style="background:${r.color}"></div>${t.label}</div>`;}).join("")}</div>`;
     el.innerHTML=html; return;
@@ -1492,8 +1508,8 @@ function renderToday() {
   const d=new Date(sched.date+"T12:00:00");
   let html=topHtml;
   html+=`<div class="today-date">${d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</div>`;
-  if(sched.note) html+=`<div style="font-size:12px;color:var(--text2);font-style:italic;margin:6px 0 16px">${sched.note}</div>`;
-  items.forEach(i=>html+=i.html);
+  if(sched.note) html+=`<div class="day-note">${sched.note}</div>`;
+  html+=agendaHtml(items);
   el.innerHTML=html;
 }
 
@@ -2290,7 +2306,7 @@ ST.on('value', () => {}, err => {
   showApp();
 });
 
-const HEADER_IMG = "https://commons.wikimedia.org/wiki/Special:FilePath/Milky_Way_Over_Rocky_Mountain_National_Park_(26367177284).jpg?width=1600";
+const HEADER_NIGHT = "https://commons.wikimedia.org/wiki/Special:FilePath/Milky_Way_Over_Rocky_Mountain_National_Park_(26367177284).jpg?width=1600";
 
 const TAB_BG = {
   today:"https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280",
@@ -2320,7 +2336,8 @@ function setTabBg(t){
 function updateHeaderBg(){
   const el=document.getElementById("headerBg");
   if(!el) return;
-  const url=HEADER_IMG;
+  const seg=(typeof todaySeg==="function")?todaySeg():"night";
+  const url=(seg==="night")?HEADER_NIGHT:(TODAY_BG[seg]||HEADER_NIGHT);
   if(el.dataset.cur!==url){ el.style.backgroundImage="url('"+url+"')"; el.dataset.cur=url; }
 }
 let WXF={ready:false};
@@ -2419,8 +2436,33 @@ const PEST_PLAN=[
  {e:"🕷️",t:"Spider mites",b:"Denver's hot, dry air is perfect for them — watch for fine webbing and speckled leaves. Spray the leaf undersides hard with water and mist to raise humidity; use neem for heavy outbreaks."},
  {e:"🌼",t:"Stay ahead of it",b:"Check leaf undersides weekly, clear away dead leaves, and companion-plant marigolds, basil and dill to repel pests and attract beneficial bugs. Catching trouble early beats any spray."}
 ];
+const APP_FACTS=[
+  "Your Husky cherry tomato is a determinate variety — it sets most of its fruit in one big flush, then winds down.",
+  "Blue Dream shrimp are a selectively bred line of Neocaridina — that electric blue is the whole reason they exist.",
+  "Nerite snails clean your tank but can't breed in freshwater, so they'll never overrun it.",
+  "The Sovol SV06 Plus uses a direct-drive extruder, which is what makes it good with flexible filament.",
+  "PLA prints best around 200–210°C on the SV06; PETG wants it hotter, about 230–240°C.",
+  "Denver sits at 5,280 feet — the thin, dry air is why your plants drink faster here than at sea level.",
+  "Strawberries are the only fruit that wear their seeds on the outside — roughly 200 per berry.",
+  "Mint, basil, and rosemary are all cousins in the same family, Lamiaceae.",
+  "Jalapeños get hotter the longer they ripen — a red jalapeño is just a fully mature green one.",
+  "Deadheading spent blooms tricks a plant into making more flowers instead of going to seed.",
+  "Zoey burns more mental energy on a snuffle mat than on a long walk — sniffing is genuinely tiring for dogs.",
+  "Vacuum out of a room toward the door and you never tread over the fresh tracks you just made.",
+  "A 10-minute walk after eating can blunt a blood-sugar spike by up to 30%.",
+  "Rosemary can live 20+ years and actually prefers to be slightly neglected.",
+  "Tomatoes keep ripening off the vine — but never refrigerate them; cold flattens the flavor.",
+  "Pinching a basil stem just above a leaf pair makes it split into two — more cuts, more basil.",
+  "The bi-weekly vacuum is the whole maintenance game: 15 minutes protects weeks of work."
+];
+function renderHeaderFact(){
+  const el=document.getElementById("hdrFact"); if(!el) return;
+  const f="💡 "+APP_FACTS[(typeof dayOfYear==="function"?dayOfYear():0)%APP_FACTS.length];
+  if(el.dataset.cur!==f){ el.textContent=f; el.dataset.cur=f; }
+}
 function updateClock(){
   updateHeaderBg();
+  renderHeaderFact();
   const now=new Date();
   const h=now.getHours();
   const greet=h<12?"Good morning":h<17?"Good afternoon":h<21?"Good evening":"Good night";
