@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "May 31, 2026 · 4:19 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "May 31, 2026 · 5:17 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1900,6 +1900,19 @@ function renderShopping() {
       + sh('Rules') + '<ul><li>❌ No food while ammonia is elevated</li><li>✅ Remove uneaten food within 2–3h</li><li>✅ Underfeed rather than overfeed</li></ul>');
     html += panel('🔁 Ongoing Maintenance (once stable)','<ul><li>Weekly ~20% water change + test NH3 / NO2 / NO3 / pH</li><li>Remove uneaten food within 2–3h</li><li>Replenish almond leaves every 2–3 weeks</li><li>Monthly: scrape nerite eggs off the glass</li></ul>');
     html += panel('🥚 Calcium Project','Rinse eggshells → air dry → crush → drop 1–2 chunks near the feeding dish; shrimp &amp; snails graze directly. Replenish weekly. Free, and essential for shrimp molting.');
+    html += '<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(0,229,204,.05));border:1px solid rgba(139,92,246,.35);border-radius:12px;padding:13px 15px;margin-bottom:10px">'
+      + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🧪 Side Project · concept / to-build</div>'
+      + '<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">🪰➡️🕷️ Auto Fly Feeder — Jumping Spider Enclosure</div>'
+      + '<div class="tlog"><div style="font-size:12.5px;color:rgba(232,244,253,.82);line-height:1.6;font-family:\'Lora\',serif">'
+      + '<b style="color:#7fe9dd">Goal:</b> a contraption that attracts houseflies and funnels them automatically into the jumping spider enclosure as live food.'
+      + sh('How it works')
+      + 'A small external bait chamber (a cup or jar holding a fly attractant — a bit of overripe fruit or moist protein) connects to the enclosure through a one-way funnel / cone. Flies follow the scent in through the narrow funnel and cannot easily get back out, so they end up inside as prey. Keep the bait OUTSIDE the main enclosure so it does not stink up or mold the habitat, and use a narrow aperture so only a few flies pass at a time (do not flood it).'
+      + sh('3D-print parts · Sovol SV06')
+      + '<ul><li>Funnel / cone adapter — the one-way entry</li><li>Bait-cup lid with a built-in cone</li><li>Mesh-vented connector sized to the enclosure opening</li></ul>'
+      + sh('Caveats')
+      + '<ul><li>Use clean, pesticide-free flies only</li><li>Meter the flow — a few at a time, do not flood it</li><li>Do not overstress the spider</li></ul>'
+      + '<div style="font-size:11px;color:#8b9bb5;font-style:italic;margin-top:6px">Status: concept / to-build — a future side project, not part of the current temporary setup.</div>'
+      + '</div></div></div>';
   }
 
   else if (tankSub === "setup") {
@@ -1969,6 +1982,36 @@ function renderGrocery() {
     { id:'groc-greenonion', label:'🌿 Green onion' },
   ];
   const doneCount = grocItems.filter(i => shopping[i.id]).length;
+  const bugCard = (bd,tc,title,sub,items,note) =>
+    '<div style="background:#0a1628;border:1px solid '+bd+';border-radius:14px;padding:4px 16px 12px;margin-bottom:14px">'
+    + '<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:'+tc+';padding:11px 0 1px">'+title+'</div>'
+    + (sub?'<div style="font-size:11px;color:#8b9bb5;font-style:italic;font-family:\'Lora\',serif;margin-bottom:2px">'+sub+'</div>':'')
+    + items.map(it=>checkItem(it[0],it[1])).join('')
+    + (note?'<div style="font-size:11px;color:#9bb3c9;font-style:italic;font-family:\'Lora\',serif;line-height:1.5;margin-top:8px">'+note+'</div>':'')
+    + '</div>';
+  const bugSection =
+    '<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(74,212,144,.05));border:1px solid rgba(139,92,246,.3);border-radius:14px;padding:14px 16px;margin-bottom:16px">'
+    + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🐛 Bug Starter Kit · TEMPORARY</div>'
+    + '<div style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px">Petco run — quick starter</div>'
+    + '<div style="font-size:11.5px;color:#c9b8e8;font-style:italic;font-family:\'Lora\',serif;line-height:1.5">⚠️ This is a QUICK TEMPORARY setup — just enough to house the jumping spider and 2 katydids right now. The full enclosures and bioactive ecosystem come LATER.</div>'
+    + '</div>'
+    + bugCard('rgba(139,92,246,.25)','#b794f6','🕷️ Jumping Spider Condo','Solo · small and tall · lives mostly dry',
+        [['bug-spider-terr','🏠 Small tall terrarium — Exo Terra Nano Tall (8×8×12 in), keep it small'],
+         ['bug-spider-bark','🌿 Twig / cork bark — anchor for webbing up top'],
+         ['bug-spider-food','🪰 Food: flightless fruit flies (small spider) OR small / pinhead crickets (big adult)']],
+        'Lives mostly dry — no damp substrate needed.')
+    + bugCard('rgba(74,212,144,.25)','#4AD490','🦗 Katydid Resort','2 katydids + cleanup crew · roomier than the spider',
+        [['bug-katy-terr','🏠 Taller screen-top terrarium — Nano / Mini Tall, roomier than the spider'],
+         ['bug-katy-substrate','🟫 Coco coir substrate — Exo Terra Coco Husk'],
+         ['bug-katy-climb','🌿 Twigs / branches + cork bark — climbing and molting'],
+         ['bug-katy-isopods','🐛 Isopod culture — Petco cups (cleanup crew)'],
+         ['bug-katy-food','🌿 Food: fresh basil / leaves daily + optional apple slice']],
+        '')
+    + bugCard('rgba(0,229,204,.25)','#00e5cc','🛒 Shared — buy once','Covers both enclosures',
+        [['bug-shared-mister','💦 Spray mister'],
+         ['bug-shared-coir','🟫 One bag coco coir — covers both enclosures'],
+         ['bug-shared-crickets','🦗 Cup of small crickets — backup food']],
+        '💡 Tips: keep the spider enclosure noticeably smaller than the katydid one. Grab springtails if available (usually easier to find online later).');
 
   el.innerHTML =
     '<div style="text-align:center;margin-bottom:20px;padding-top:4px">'
@@ -1983,7 +2026,8 @@ function renderGrocery() {
 
     + '<div style="background:#0a1628;border:1px solid rgba(45,184,112,.2);border-radius:14px;padding:2px 16px;margin-bottom:16px">'
     + grocItems.map(i => checkItem(i.id, i.label)).join('')
-    + '</div>';
+    + '</div>'
+    + bugSection;
 }
 
 function renderPrint() {
