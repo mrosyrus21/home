@@ -1,0 +1,7 @@
+# ── Secrets — NEVER commit ────────────────────────────────
+.deploy-token
+*.deploy-token
+
+# OS cruft
+.DS_Store
+Thumbs.db
