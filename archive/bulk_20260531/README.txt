@@ -23,6 +23,8 @@ Display copies in images/:
   rosemary_20260531.jpg      <- rosemary.jpg
 Archived alternates (NOT displayed): tomato_heirloom_fruit.jpg, basil_closeup.jpg,
   cherry_tomato_fruit.jpg, cherry_tomato_plant.jpg
-AMBIGUOUS / skipped (need user input): strawberry_pit_AMBIGUOUS_{1,2}.jpg (two pots of
-  strawberries - not the single potted 'strawberry' entry which already has photos),
+RESOLVED: strawberry_pot_{1,2}.jpg (was strawberry_pit_AMBIGUOUS_{1,2}) = the multi-plant
+  STRAWBERRY POT (terracotta multi-pocket pot). Now its own app entry 'strawberry_pot' with a
+  dedicated terracotta-accent dual-photo card. Display copies: images/strawberry_pot_{1,2}.jpg.
+STILL AMBIGUOUS / skipped (need user input):
   tomato_flowering_UNASSIGNED.jpg (flowering, no fruit - heirloom vs cherry unclear).
