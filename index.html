@@ -599,7 +599,8 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-{ const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=EYEBROWS[(typeof dayOfYear==="function"?dayOfYear():0)%EYEBROWS.length]; }
+const LAST_DEPLOY = "May 31, 2026 · 3:10 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+{ const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
 const ROOMS = {
