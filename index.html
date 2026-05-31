@@ -779,7 +779,7 @@ const PLANTS = [
   { id:"basil1",   name:"Sweet Basil #1",  emoji:"🌿", loc:"greenhouse", freq:"Morning only — top 2 inches dry before watering. Greenhouse stays humid at night", days:3, overwater:true, trimDays:7,
     trim:"Pinch flower buds the moment you see them. Cut just above a leaf pair, leaving 2-3 sets below. Remove all yellowing lower leaves. Never cut more than ⅓ at once. Every 1-2 weeks." },
   { id:"basil2",   name:"Sweet Basil #2",  emoji:"🌿", loc:"greenhouse", freq:"Morning only — top 2 inches dry before watering", days:3, overwater:true, trimDays:7,
-    trim:"Pinch flower buds immediately, cut above leaf nodes, remove yellow lower leaves. Bushy growth = more harvest." },
+    trim:"Pinch out every flower bud the moment it appears. Cut stems just above a leaf pair so each cut branches into two, and strip off any yellowing lower leaves. Bushier growth means more harvest — never take more than a third at once." },
   { id:"parsley",  name:"Curled Parsley",  emoji:"🌿", loc:"greenhouse", freq:"Morning — when top 2 inches dry, every 3-4 days", days:3, trimDays:14,
     trim:"Dead flower stalks → cut at base completely. Harvest outer stems at the base, leaving young inner growth. Never take more than half. Every 2-3 weeks." },
   { id:"mint",     name:"Peppermint",      emoji:"🌿", loc:"greenhouse", freq:"⚠️ Died back badly (May 29) — HOLD water until soil is dry AND you confirm the crown is alive. Mint almost always regrows from the roots", days:3, overwater:true, trimDays:7,
@@ -787,7 +787,7 @@ const PLANTS = [
   { id:"dill",     name:"Dill",            emoji:"🌿", loc:"greenhouse", freq:"Morning — when top 2 inches dry", days:3, trimDays:7,
     trim:"Snip outer fronds near the base. Cut flower heads to extend leaf production. Once fully flowered it declines — let go to seed if you want seeds for cooking." },
   { id:"rosemary", name:"Rosemary",        emoji:"🌿", loc:"greenhouse", freq:"Morning — weekly or less, drought tolerant", days:7, trimDays:14,
-    trim:"Only trim new green growth — never cut into woody brown stems. Snip sprigs as you cook. Light shaping only." },
+    trim:"Only ever trim soft green growth — cutting into the woody brown stems leaves bare gaps that will not releaf. Snip sprigs as you cook, and do light shaping to keep it bushy and upright." },
 
   // ── OUTDOOR EDIBLES ───────────────────────────────────────────────────────
   { id:"strawberry",    name:"Strawberry",         emoji:"🍓", loc:"outdoor", freq:"Daily — single round pot in full sun, so it dries out fast. Water deeply at the base each morning; in a heat wave it may want a second drink in the evening. Keep soil consistently moist while flowering and fruiting.", days:1, trimDays:14,
@@ -832,39 +832,86 @@ const PLANT_INFO = {
 };
 
 const WATER_INFO = {
-  philodendron:{fact:"Heartleaf philodendron is a champion air-purifier and can trail for years from one vine.",sign:"Leaves droop and curl a bit when thirsty; flat and perky means it's happy."},
-  ivy:{fact:"English ivy is one of the best air-filtering houseplants there is.",sign:"Crispy brown edges = too dry; limp, yellowing leaves = too wet."},
-  fittonia:{fact:"Nicknamed the 'nerve plant' for its glowing vein patterns.",sign:"It literally collapses flat when thirsty, then springs back within an hour of a drink."},
-  croton:{fact:"Croton leaves get more vivid the more bright light they get.",sign:"Dropping leaves usually means the soil went too dry — or it caught a cold draft."},
-  jade:{fact:"Jade is a succulent that can live for decades and symbolizes prosperity.",sign:"Plump, firm leaves = hydrated; wrinkled or soft leaves = time to water."},
-  basil1:{fact:"Basil is in the mint family, and pinching it makes it bushier.",sign:"Wilts dramatically in heat and bounces back fast — but water before it gets that far."},
-  basil2:{fact:"Regular harvesting keeps basil from flowering and turning bitter.",sign:"Soil should feel like a wrung-out sponge; bone-dry means droopy leaves."},
-  parsley:{fact:"Parsley is biennial and packed with vitamin K.",sign:"Let it dry out and it bolts sooner — keep the top inch lightly moist."},
-  mint:{fact:"Mint spreads so aggressively it's best kept contained in a pot.",sign:"Wilts quickly when dry but rebounds within hours; keep it consistently damp."},
-  dill:{fact:"Dill's flavor is strongest right before it flowers.",sign:"Slightly moist soil keeps it from bolting; water at the base."},
-  rosemary:{fact:"Rosemary means 'dew of the sea' and is happily drought-tolerant.",sign:"Let it dry between waterings — overwatering is the #1 rosemary killer."},
-  strawberry:{fact:"Strawberries are the only fruit with seeds on the outside — about 200 each.",sign:"Shallow roots: when the surface dries it's time. Steady moisture = sweeter berries."},
-  tomato:{fact:"Tomatoes are technically a fruit; deep, even watering prevents cracking.",sign:"Curling leaves + dry topsoil = water now, always at the base, never the leaves."},
-  cherry_tomato:{fact:"Cherry tomatoes pack more sugar than the big ones.",sign:"Keep moisture steady — swing dry-to-wet and the skins split."},
-  jalapeno:{fact:"A jalapeño's heat lives in the white pith — and mild water stress makes it hotter.",sign:"Let the top 2 inches dry first; a little midday wilt is fine."},
-  raspberry:{fact:"Each raspberry is a cluster of tiny 'drupelets'.",sign:"Wants about an inch of water a week — deep soaks beat daily sprinkles."},
-  dianthus:{fact:"Dianthus means 'flower of the gods', and many smell like cloves.",sign:"Water at the base and let the surface dry slightly; soggy soil rots the crown."},
-  daisy:{fact:"'Daisy' comes from 'day's eye' — it opens at dawn and closes at dusk.",sign:"Droopy stems can mean too little OR too much — check that it drains."},
-  candytuft:{fact:"Candytuft is named for Candia (old Crete), not candy.",sign:"Drought-tolerant — let it dry between drinks; it sulks in constantly wet soil."}
+  philodendron:{when:"Check weekly. Water only when the top 1–2 inches of soil feel dry, then water deeply until it drains from the bottom and empty the saucer. Keep it in bright indirect light.",thirst:"Forgiving and drought-tolerant — it would much rather sit a little dry than soggy, which rots its roots."},
+  ivy:{when:"Water about weekly, when the top inch is dry — soak until it drains, then tip out the saucer. Mist the leaves or group it with other plants for humidity.",thirst:"A thirsty plant that still hates wet feet: it wants the soil moist but never standing in water."},
+  fittonia:{when:"Keep the soil lightly and consistently moist — check every 2–3 days and water as the surface starts to dry. It craves humidity.",thirst:"The drama queen of water — it collapses flat the instant it is thirsty and revives within an hour of a drink."},
+  croton:{when:"Water when the top inch is dry, usually every 5–7 days, keeping it evenly moist in bright warm light. Do not let it fully dry out.",thirst:"Sensitive to swings — both bone-dry soil and cold drafts make it drop leaves in protest."},
+  jade:{when:"Let the soil dry out completely, then water deeply and leave it alone for 2–3 weeks. Water much less in winter.",thirst:"A true succulent that stores water in its leaves, so underwatering is nearly impossible — but overwatering is fatal."},
+  basil1:{when:"Water in the MORNING only, when the top 2 inches feel dry — usually daily in heat. Soak the soil, not the leaves; the greenhouse holds humidity overnight, so evening water invites mold.",thirst:"A heavy summer drinker that wilts fast in heat — water it before it flops, not after."},
+  basil2:{when:"Morning only, when the top 2 inches are dry. Water at the base until the soil feels like a wrung-out sponge; avoid wetting the foliage.",thirst:"Wants steady moisture — let it go bone-dry and the leaves droop and toughen."},
+  parsley:{when:"Morning water every 3–4 days, whenever the top 2 inches dry out. Water at the base and keep it lightly moist.",thirst:"Dislikes drying out completely — drought stress makes it bolt to seed sooner."},
+  mint:{when:"⚠️ On HOLD — it died back badly (May 29). Do not water on a schedule: only water once the soil is dry AND you have confirmed the crown is still firm and green, then resume morning water.",thirst:"Normally a water-lover that wilts then bounces back in hours — but right now soggy soil is the enemy while it recovers."},
+  dill:{when:"Morning water when the top 2 inches dry, every couple of days. Water at the base and keep it from drying out fully.",thirst:"Likes slightly moist soil — let it dry hard and it bolts and flowers early."},
+  rosemary:{when:"Water sparingly — only about weekly, and let it dry well between drinks. Morning water at the base; when in doubt, skip it.",thirst:"Mediterranean and drought-tolerant — overwatering is the number-one way to kill rosemary."},
+  strawberry:{when:"Daily — the round pot in full sun dries fast. Water deeply at the base each morning; in a heat wave it may want a second drink in the evening. Keep evenly moist while flowering and fruiting.",thirst:"Shallow-rooted and quick to dry — steady moisture is what makes the berries plump and sweet."},
+  tomato:{when:"Morning, at the base, deep and CONSISTENT — daily in heat. Never wet the leaves. Ease off slightly as the fruit ripens.",thirst:"Consistency is everything: swinging from dry to drenched is exactly what causes cracking and catfacing."},
+  cherry_tomato:{when:"Morning, at the base, daily in heat; ease off once the fruit is ripening to prevent splitting.",thirst:"Steady water keeps the skins intact — a sudden big drink after a dry spell makes them burst."},
+  jalapeno:{when:"Water at the base every 2–3 days, letting the top 2 inches dry first. A little controlled dryness is good for it.",thirst:"Mild water stress concentrates the heat — keep it on the lean side for hotter peppers."},
+  raspberry:{when:"Deep soak at the base every 2–3 days — aim for about an inch of water a week. Deep and infrequent beats daily sprinkles.",thirst:"Its roots run wide and shallow, so it wants deep soaks that reach them, not surface splashes."},
+  dianthus:{when:"Water at the base every 2–3 days, letting the surface dry slightly between. Keep water off the flowers and crown.",thirst:"Hates soggy soil — a constantly wet crown is what rots these plants."},
+  daisy:{when:"Morning water about every 2 days for consistency. Crucial: make sure it is not sitting in water — the nursery basket inside the pot traps moisture.",thirst:"A tricky reader — droopy stems can mean too little OR too much water, so always check drainage first."},
+  candytuft:{when:"Water every 3–4 days, letting it dry between — it is fairly drought-tolerant. Do not overwater.",thirst:"Happiest on the dry side; it sulks and rots in soil that stays wet."}
 };
 
+const FUN_FACTS = {
+  philodendron:["Those heart-shaped leaves can trail several feet indoors — in the wild it climbs tree trunks toward the light.","A cutting in a glass of water roots in a couple of weeks, so one plant becomes many for free.","It is a NASA-listed air-purifier that quietly pulls toxins out of indoor air."],
+  ivy:["Ivy clings to almost any surface using tiny root-like holdfasts that secrete a natural glue.","English ivy is one of the best air-filtering houseplants there is.","Outdoors it can climb 80+ feet, but indoors it makes a tidy trailing vine."],
+  fittonia:["Called the nerve plant for its glowing vein patterns, which come in pink, red, and white.","It dramatically faints flat when thirsty, then springs upright within an hour of a drink.","A rainforest groundcover at heart, so it thrives in the humidity of a terrarium."],
+  croton:["Croton leaves change color with light — more sun means brighter reds, oranges, and yellows.","Every croton has its own leaf pattern; no two plants are exactly alike.","It sulks and drops leaves when moved, then settles once it is used to its new spot."],
+  jade:["A succulent that can live for decades — jade is widely seen as a symbol of good luck and prosperity.","Each plump leaf is a little water tank, which is why jade shrugs off a missed watering.","A single fallen leaf laid on soil will root and grow into a whole new plant."],
+  basil1:["Basil is in the mint family, and pinching it makes it bushier — the more you harvest, the more it grows.","Basil and tomatoes are companions both in the garden and on the plate.","Keep cut basil on the counter, never the fridge — cold turns the leaves black."],
+  basil2:["Ancient cultures saw basil as a symbol of love and protection; today it is the heart of pesto.","There are 60+ varieties — Thai, lemon, cinnamon, purple — each with its own aroma.","Letting basil flower tells the plant to stop making leaves, so keep pinching the buds."],
+  parsley:["Parsley is biennial — leaves the first year, flowers the second — and it is loaded with vitamin K.","Chewing fresh parsley really does help neutralize garlic and onion breath.","It is a magnet for swallowtail butterflies, whose caterpillars feed on the leaves."],
+  mint:["Peppermint is a natural hybrid of watermint and spearmint, and it spreads so fast it is best kept potted.","Mint's menthol is what makes it feel cold on your tongue — it tricks your nerves.","A few sprigs in open ground can take over an entire bed in a season."],
+  dill:["Dill's name comes from old Norse dilla, to soothe — it was once used to calm fussy babies.","Both the feathery fronds and the seeds are edible, with different flavors.","Like parsley, dill feeds swallowtail caterpillars — leave a little for them."],
+  rosemary:["Rosemary means dew of the sea and can live 20+ years — it loves dry feet and full sun.","Students in ancient Greece wore rosemary sprigs, believing it boosted memory.","Its woody stems make great grilling skewers that perfume the food."],
+  strawberry:["A strawberry is not a true berry, and it is the only fruit with seeds on the outside — about 200 each.","Those tiny seeds are actually the real fruits; the sweet red part is swollen stem tissue.","One plant sends out runners that root into whole new plants for free."],
+  tomato:["Tomatoes are technically a fruit; heirloom means the variety has been saved and passed down 50+ years.","They were once feared as poisonous in Europe because they belong to the nightshade family.","A tomato on a sunny sill keeps ripening — chilling it in the fridge kills the flavor."],
+  cherry_tomato:["Cherry tomatoes taste sweeter than big ones — more skin per bite concentrates the sugars.","Husky types stay compact and bushy, which makes them perfect for pots.","They ripen in waves, so a single plant can feed you cherries all summer long."],
+  jalapeno:["A jalapeño's heat lives in the white pith, not the seeds — and less water makes it hotter.","Leave one on the plant and it turns red, sweeter, and hotter.","Smoke-dry a ripe red jalapeño and you have made a chipotle."],
+  raspberry:["Each raspberry is a cluster of tiny drupelets, and the canes fruit in their second year.","The hollow center is why raspberries are so delicate — they bruise in the bowl.","Green primocanes this year become the fruiting floricanes of next year."],
+  dianthus:["Dianthus means flower of the gods in Greek, and many kinds smell just like cloves.","The color word pink came from these flowers' frilly, pinked edges.","Deadheading spent blooms is the single best trick to keep it flowering all summer."],
+  daisy:["Daisy comes from day's eye — the flower opens at dawn and closes again at dusk.","What looks like one flower is actually hundreds of tiny florets packed together.","Daisies are in the same plant family as sunflowers and lettuce."],
+  candytuft:["Candytuft is named for Candia (old Crete), not candy — though the clusters look sweet enough to eat.","It is evergreen, so the foliage stays green through winter in mild climates.","Shear it back after blooming and it often rewards you with a second flush."]
+};
+
+const CARE_INFO = {
+  philodendron:{fact:"Pinching the vine tips just past a leaf makes it branch and stay full instead of going long and bare."},
+  ivy:{fact:"Wiping the leaves and checking their undersides keeps spider mites — ivy's main pest — from taking hold."},
+  fittonia:{fact:"Pinching off the tiny flower spikes keeps the plant pouring energy into those colorful leaves."},
+  croton:{fact:"Rotating the pot a quarter-turn each week keeps its colorful leaves growing evenly toward the light."},
+  jade:{fact:"Turning jade regularly keeps it from leaning, and its trunk thickens with age into a little tree."},
+  basil1:{fact:"Pinching out the growing tip tricks basil into branching — one cut becomes two stems."},
+  basil2:{fact:"Removing flower buds keeps the plant making tender leaves instead of going to seed."},
+  parsley:{fact:"Snipping the oldest outer stems first keeps the productive young center growing."},
+  mint:{fact:"Cutting mint back hard whenever it gets leggy forces fresh, tender new growth."},
+  dill:{fact:"Pinching the central flower stalk early keeps dill leafy for much longer."},
+  rosemary:{fact:"Light, regular shaping of green growth keeps rosemary bushy — never cut into old wood."},
+  strawberry:{fact:"Snipping off runners sends the plant's energy into berries instead of new plants."},
+  tomato:{fact:"Removing the suckers in the leaf joints channels energy into fewer, bigger fruit."},
+  cherry_tomato:{fact:"This compact type needs almost no pruning — just clear the leaves that touch the soil."},
+  jalapeno:{fact:"Pinching the very first flowers gives you a bushier plant and a bigger later harvest."},
+  raspberry:{fact:"Tying canes to a support and snipping off dead tips is most of raspberry care."},
+  dianthus:{fact:"Deadheading — snipping spent blooms back to a bud — is the heart of keeping it flowering."},
+  daisy:{fact:"Deadheading spent flowers and clearing yellow leaves keeps it blooming and healthy."},
+  candytuft:{fact:"A hard shear right after bloom keeps candytuft compact instead of woody and sprawling."}
+};
+
+function dayOfYear(){ const n=new Date(); return Math.floor((n-new Date(n.getFullYear(),0,0))/86400000); }
+function dailyFact(id){ const a=FUN_FACTS[id]; if(a&&a.length) return a[dayOfYear()%a.length]; return (PLANT_INFO[id]||{}).fact||""; }
+
 const HARVEST_INFO = {
-  basil1:{fact:"The more you cut basil, the bushier it grows.",how:"Once stems are 6+ inches, snip the stem tip just above a leaf pair — that node splits into two new branches. Always harvest from the top, never take more than a third at once, and pinch off any flower buds. Morning picking gives the best flavor.",date:"2026-05-30"},
-  basil2:{fact:"Pinch flower buds the moment you see them, or the leaves turn bitter.",how:"Cut 4–6 inch stem tips just above a leaf pair to force bushier growth, then strip the leaves off the stem. Keep all flower buds pinched. Use right away or stand the stems in water — basil bruises and blackens fast in the fridge.",date:"2026-05-30"},
-  mint:{fact:"Unpicked mint gets woody — harvest it aggressively.",how:"Snip stems just above a leaf node and the plant rebranches there. Take the top third regularly, and cut the whole plant back by half if it gets leggy. Rinse and use fresh, or hang small bundles to dry.",date:"2026-05-30"},
-  rosemary:{fact:"Rosemary's oils and flavor peak in the morning.",how:"In the morning, cut 2–4 inch sprigs of soft green new growth — never cut into the woody brown stems, they won't regrow. Take no more than a third of the plant. Strip the leaves backward off the stem to use.",date:"2026-05-30"},
-  parsley:{fact:"Parsley regrows from the center all season long.",how:"Harvest the outermost full-size stems right at the base, working inward, and leave the small inner growth to keep it producing. Take up to half at a time. Cut with scissors rather than tearing.",date:"2026-06-05"},
-  dill:{fact:"Both the feathery fronds and the seeds are usable.",how:"Snip the outer feathery fronds near the base as needed, ideally in the morning. To delay bolting, cut off flower heads early — or let one head flower and dry on the plant if you want dill seed.",date:"2026-06-10"},
-  strawberry:{fact:"Strawberries don't ripen any further once they're picked.",how:"Pick only when fully, evenly red — they won't ripen off the plant. Pinch or snip the stem just above the berry and leave the green cap on to avoid bruising. Check every 1–2 days and harvest in the cool morning.",date:"2026-06-20"},
-  jalapeno:{fact:"Green jalapeños are milder; left to redden they turn sweeter and hotter.",how:"Snip (don't yank) the stem with scissors when peppers are 3–4 inches, firm, and dark glossy green, leaving a short stub of stem on the pepper. For hotter, sweeter peppers let some turn red on the plant. Frequent picking pushes more fruit.",date:"2026-07-10"},
-  cherry_tomato:{fact:"Sweetest left on the vine until fully colored.",how:"Pick when fully colored and slightly soft — a ripe one releases with a gentle twist. Check daily once they start to blush, because over-ripe cherries split. If most of a truss is ripe, harvest the whole cluster.",date:"2026-07-15"},
-  tomato:{fact:"Pick at the 'breaker' stage and ripen on the counter to beat splitting.",how:"Best picked at the 'breaker' stage (first blush of color) and ripened on the counter to beat cracking and critters — or wait for deep color with a slight give. Twist gently or snip the stem. Never refrigerate; cold kills the flavor.",date:"2026-07-20"},
-  raspberry:{fact:"A ripe raspberry slips off its core with a gentle tug.",how:"A ripe berry slips off its white core with the lightest tug — if it resists, leave it another day. Pick into a shallow container so they don't crush, every 2–3 days, ideally in the cool morning. Eat or freeze the same day.",date:"2027-06-15"}
+  basil1:{how:"Once stems are 6+ inches, snip a stem tip just above a pair of leaves — that node splits into two new branches, so always cut from the top. Strip the leaves off the stem to use, take no more than a third of the plant at once, and pinch out any flower buds you find.",fact:"The more you cut basil, the bushier it grows.",date:"2026-05-30"},
+  basil2:{how:"Cut 4–6 inch stem tips just above a leaf pair to force branching, then strip the leaves from the stem. Harvest from the top down and keep every flower bud pinched off.",fact:"Pinch flower buds the moment you see them, or the leaves turn bitter.",date:"2026-05-30"},
+  mint:{how:"Snip stems just above a leaf node and the plant rebranches there into two. Take the top third regularly, and cut the whole plant back by half if it gets leggy. Use fresh, or hang small bundles to dry.",fact:"Unpicked mint gets woody — harvesting it hard keeps it tender.",date:"2026-05-30"},
+  rosemary:{how:"In the morning, cut 2–4 inch sprigs of soft green new growth — never cut into the woody brown stems, which will not regrow. Strip the needles backward off the stem to use, and take no more than a third.",fact:"Rosemary's aromatic oils and flavor peak in the morning.",date:"2026-05-30"},
+  parsley:{how:"Harvest the outermost full-size stems right at the base, working your way inward, and leave the small inner growth to keep producing. Use scissors rather than tearing, and never take more than half.",fact:"Parsley regrows from the center all season long.",date:"2026-06-05"},
+  dill:{how:"Snip the outer feathery fronds near the base as you need them. Cut off flower heads early to keep the leaves coming — or let one head dry on the plant to harvest dill seed.",fact:"Both the feathery fronds and the seeds are usable, with different flavors.",date:"2026-06-10"},
+  strawberry:{how:"Pick only when fully, evenly red. Pinch or snip the stem just above the berry and leave the green cap on so it does not bruise — never tug the fruit itself. Check the plant every 1–2 days.",fact:"Strawberries do not ripen any further once they are picked.",date:"2026-06-20"},
+  jalapeno:{how:"Snip the stem with scissors rather than yanking (a tug snaps the branch), leaving a short stub on the pepper. Pick them firm and dark glossy green, or leave some on to turn red for more heat and sweetness.",fact:"Frequent picking signals the plant to set even more peppers.",date:"2026-07-10"},
+  cherry_tomato:{how:"Pick when fully colored and slightly soft — a ripe one releases with a gentle twist of the stem. If most of a cluster is ripe, harvest the whole truss at once. Check daily.",fact:"Left too long they split, so pick promptly once they color up.",date:"2026-07-15"},
+  tomato:{how:"Twist gently or snip the stem once the fruit is deep-colored with a slight give — or pick at the first blush of color and ripen it on the counter to beat cracking and critters. Never refrigerate.",fact:"Counter-ripening from the breaker stage protects the fruit from splitting.",date:"2026-07-20"},
+  raspberry:{how:"A ripe berry slips off its pale core with the lightest tug — if it resists, leave it another day. Pick into a shallow container so they do not crush each other, every 2–3 days in the cool morning.",fact:"A ripe raspberry leaves its core behind on the cane — that hollow is the giveaway.",date:"2027-06-15"}
 };
 
 
@@ -1036,7 +1083,7 @@ function dailyHabits() {
   const keys=[
     "calldt-"+today,
     "morning-bed-"+today,"morning-blinds-"+today,"morning-water-"+today,
-    "morning-stretch-"+today,"morning-walk-"+today,"morning-zoey-"+today,"morning-shower-"+today,
+    "morning-stretch-"+today,"morning-pushups-"+today,"morning-walk-"+today,"morning-zoey-"+today,"morning-shower-"+today,
     "evening-dogwalk-"+today,
     "teeth-morning-"+today,"meal-breakfast-"+today,
     "meal-lunch-"+today,"meal-dinner-"+today,
@@ -1281,6 +1328,7 @@ function renderToday() {
   let dbl=!!laundry["morning-blinds-"+today]; hab(361, strip("☀️","Open blinds — get natural light in",dbl,"#FCD34D","toggleMorning('blinds')","Morning","1 min"), dbl);
   let d1=!!laundry["morning-water-"+today];   hab(362, strip("💧","Drink 16oz water + take vitamins",d1,"#38BDF8","toggleMorning('water')","Morning","2 min"),d1);
   let d2=!!laundry["morning-stretch-"+today]; hab(370, strip("🧘","Stretching exercises",    d2,"#FB923C","toggleMorning('stretch')","Morning","15 min"),       d2);
+  let dpu=!!laundry["morning-pushups-"+today]; hab(372, strip("💪","12 pushups",            dpu,"#F87171","toggleMorning('pushups')","Morning","2 min","Right after stretching — knock out a set of 12."), dpu);
   let d3=!!laundry["morning-walk-"+today];    hab(380, strip("🐕","Morning dog walk / play",   d3,"#4ADE80","toggleMorning('walk')",   "Morning","20–30 min"),      d3);
   let dz=!!laundry["morning-zoey-"+today];    hab(382, strip("👅","Give Zoey her lick / snuffle mat", dz,"#F472B6","toggleMorning('zoey')",  "Daily","10 min","Enrichment — calms her and burns mental energy"), dz);
   let dms=!!laundry["morning-shower-"+today]; hab(385, strip("🚿","Morning shower",           dms,"#06B6D4","toggleMorning('shower')","Morning","10 min"),          dms);
@@ -1634,11 +1682,11 @@ function renderGarden() {
       else if(st==="soon"){bTxt="⚠️ Due soon";bCol="#FBBF24";bl="💧 Water";bc="soon";}
       else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Water";bc="ok";}
       let body=hdr(p, days!==null?days+"d ago":"never");
-      body+=sect("💧 Watering","#7EB8F0",p.freq);
-      if(wi.sign) body+=sect("👀 Thirst check","#22D3EE",wi.sign);
-      body+=factBox(wi.fact);
+      body+=sect("💧 When & how","#7EB8F0",wi.when||p.freq);
+      if(wi.thirst) body+=sect("👀 Thirst check","#22D3EE",wi.thirst);
       if(p.overwater) body+='<div style="margin-top:4px"><span class="overwater-badge">⚠️ overwater risk</span></div>';
       body+='<button class="water-btn '+bc+'" onclick="waterPlant(\''+p.id+'\')" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">'+bl+'</button>';
+      body+=factBox(dailyFact(p.id));
       html+=pcard(p,bTxt,bCol,body);
     });
     const tks=gardenTasksOn(today);
@@ -1656,9 +1704,9 @@ function renderGarden() {
         const bTxt=ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
         const bCol=ready?"#4ADE80":soon?"#FBBF24":"#9bb3c9";
         let body=hdr(p, ready?"ready":h.date);
-        body+=sect("🌾 When","#FBBF24", ready?"Ready to harvest now.":"Around "+h.date+" — about "+diff+" days out.");
         body+=sect("✂️ How to pick","#4ADE80",h.how);
-        body+=factBox(h.fact);
+        body+=sect("🌟 Good to know","#FBBF24",h.fact);
+        body+=factBox(dailyFact(p.id));
         html+=pcard(p,bTxt,bCol,body);
       });
   }
@@ -1682,24 +1730,24 @@ function renderGarden() {
     const tDueSet=new Set(plantsTrimDueOn(today).map(p=>p.id));
     const tDoneArr=PLANTS.filter(p=>p.trimDays&&trimmed[p.id]===today);
     const tTotal=tDueSet.size+tDoneArr.length, tDoneC=tDoneArr.length;
-    html += `<div class="section-label">❤️ Plant Care — ${tDoneC}/${tTotal} trims done</div>`;
-    if(tDueSet.size) html += `<div onclick="trimAllDue('${today}')" style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="font-size:18px">✂️</div><div style="font-size:13px;font-weight:600;color:#FB923C">Mark all as trimmed today</div></div>`;
+    html += `<div class="section-label">❤️ Plant Care — ${tDoneC}/${tTotal} tended</div>`;
+    if(tDueSet.size) html += `<div onclick="trimAllDue('${today}')" style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="font-size:18px">🌿</div><div style="font-size:13px;font-weight:600;color:#FB923C">Mark all as tended today</div></div>`;
     const turg = p => { if(!p.trim) return -2; if(trimmed[p.id]===today) return -1; const dT=daysSinceTrimmed(p.id); if(dT===null) return 999; if(!p.trimDays) return 0.5; return dT/p.trimDays; };
     [...PLANTS].sort((x,y)=>turg(y)-turg(x)).forEach(p=>{
       const info=PLANT_INFO[p.id]||{};
       let bTxt="",bCol="#4AD490";
-      if(p.trim){ const dT=daysSinceTrimmed(p.id), doneT=trimmed[p.id]===today; const due=!doneT&&(dT===null||(p.trimDays&&dT>=p.trimDays)); if(doneT){bTxt="✓ Trimmed";bCol="#4AD490";} else if(due){bTxt="✂️ Needs trim";bCol="#FB923C";} }
+      if(p.trim){ const dT=daysSinceTrimmed(p.id), doneT=trimmed[p.id]===today; const due=!doneT&&(dT===null||(p.trimDays&&dT>=p.trimDays)); if(doneT){bTxt="✓ Tended";bCol="#4AD490";} else if(due){bTxt="🌿 Needs tending";bCol="#FB923C";} }
       let body=hdr(p,"");
-      body+=factBox(info.fact);
-      body+=sect("💧 Watering","#7EB8F0",p.freq);
+      if(CARE_INFO[p.id]) body+=sect("🌿 Care note","#86C232",CARE_INFO[p.id].fact);
       if(p.trim){
         const dT=daysSinceTrimmed(p.id), doneT=trimmed[p.id]===today;
         const due=!doneT&&(dT===null||(p.trimDays&&dT>=p.trimDays));
         const soon=!doneT&&!due&&p.trimDays&&dT>=p.trimDays-2;
         const stTxt=doneT?"done today":dT===null?"not yet":due?"due now":soon?"soon ("+dT+"d)":dT+"d ago";
-        body+=sect("✂️ Maintenance · "+stTxt,"#FB923C",p.trim);
-        body+='<button class="water-btn" onclick="trimPlant(\''+p.id+'\')" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px;background:'+(doneT?'rgba(45,184,112,.15)':'rgba(251,146,60,.15)')+';border:1px solid '+(doneT?'#2DB870':'#FB923C')+';color:'+(doneT?'#4AD490':'#FB923C')+'">'+(doneT?'✓ Trimmed':'✂️ Mark trimmed')+'</button>';
+        body+=sect("🌿 Maintenance · "+stTxt,"#FB923C",p.trim);
+        body+='<button class="water-btn" onclick="trimPlant(\''+p.id+'\')" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px;background:'+(doneT?'rgba(45,184,112,.15)':'rgba(251,146,60,.15)')+';border:1px solid '+(doneT?'#2DB870':'#FB923C')+';color:'+(doneT?'#4AD490':'#FB923C')+'">'+(doneT?'✓ Tended':'🌿 Mark tended')+'</button>';
       }
+      body+=factBox(dailyFact(p.id));
       html+=pcard(p,bTxt,bCol,body);
     });
   }
