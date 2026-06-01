@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "May 31, 2026 · 5:39 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "May 31, 2026 · 6:26 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -836,15 +836,17 @@ const PLANTS = [
   { id:"strawberry",    name:"Strawberry",         emoji:"🍓", loc:"outdoor", freq:"Daily — single round pot in full sun, so it dries out fast. Water deeply at the base each morning; in a heat wave it may want a second drink in the evening. Keep soil consistently moist while flowering and fruiting.", days:1, trimDays:14,
     trim:"Pinch off runners unless you want new plants (root them into pots). Remove browning/dead outer leaves. White flowers are open now — pinch a few of the earliest for bigger berries on the rest." },
   { id:"strawberry_pot", name:"Strawberry Pot (multi-plant)", emoji:"🍓", loc:"outdoor", freq:"Daily — a tall terracotta strawberry pot with a plant in each pocket, so it dries out fast and unevenly. Water in at the top and let it seep down through the pockets; in heat give the lower pockets a direct drink too. Keep every pocket evenly moist while the plants establish.", days:1, trimDays:14,
-    trim:"🔥 Sunburn first: leaves scorched in a day, so move the pots to morning sun with afternoon shade for 1–2 weeks and keep the mix evenly moist — a fried mother cannot root runners. Runner triage (you have ~4): snip any runner whose tip or baby plant has gone brown and crispy — it is dead and only drains the plant. Keep the 1–2 best green, bendy runners per plant and trim off their burnt tips. When a green runner grows a little leaf tuft at a node, lay that node on moist soil in an empty pocket or a small 3–4 inch pot and pin it down (bent wire, a paperclip, or a small stone) with the crown level — do NOT cut it from the mother yet. After 2–3 weeks, tug gently: if it has rooted, snip the runner free. Pinch all flowers this first year, and stop allowing new runners by mid-August so each plant hardens off for winter." },
+    trim:"✅ Runners cleared — all runners were taken off and one is now rooting in a temp black pot, so the pot can put its energy into the crowns and berries. 🔥 Sunburn watch: leaves scorched in a day, so move the pots to morning sun with afternoon shade for 1–2 weeks and keep the mix evenly moist — a fried mother cannot root runners. Runner triage (you have ~4): snip any runner whose tip or baby plant has gone brown and crispy — it is dead and only drains the plant. Keep the 1–2 best green, bendy runners per plant and trim off their burnt tips. When a green runner grows a little leaf tuft at a node, lay that node on moist soil in an empty pocket or a small 3–4 inch pot and pin it down (bent wire, a paperclip, or a small stone) with the crown level — do NOT cut it from the mother yet. After 2–3 weeks, tug gently: if it has rooted, snip the runner free. Pinch all flowers this first year, and stop allowing new runners by mid-August so each plant hardens off for winter." },
   { id:"tomato",        name:"Heirloom Tomato",     emoji:"🍅", loc:"outdoor", freq:"Morning at the base — deep & CONSISTENT every day in heat (uneven watering is what causes the catfacing/cracking). Ease off slightly as fruit ripens.", days:1, trimDays:7,
     trim:"Pinch out suckers (the shoots in the V between stem and a branch) weekly. Strip leaves touching the soil. Re-stake or cage it — it is leaning and outgrowing the bamboo. Harvest beefsteaks as they turn deep red and slightly soft." },
   { id:"cherry_tomato", name:"Husky Cherry Tomato", emoji:"🍒", loc:"outdoor", freq:"Morning at the base — daily in heat, ease off when ripening to prevent splitting.", days:1, trimDays:10,
     trim:"Compact (determinate) type — do NOT sucker-prune it or you cut your harvest. Just remove leaves touching the soil and yellowing growth. Pick cherries promptly once they blush and it pushes out more clusters." },
   { id:"jalapeno",      name:"Jalapeño",            emoji:"🌶️", loc:"outdoor", freq:"Morning at the base — every 2-3 days, let the top 2 inches dry. Less water = hotter pepper.", days:2, trimDays:21,
-    trim:"Pinch the first flowers for a bushier plant and a bigger later harvest. Remove yellowing lower leaves. Pick at 3-4 inches, firm and dark green, for best heat." },
+    trim:"🐞 Aphids spotted on it — blast them off with water or wipe them down, and use them: this is the perfect start for the aphid + ladybug culture (snip an aphid-covered leaf into a deli cup and add ladybug larvae — see the bug plan). Then: pinch the first flowers for a bushier plant and a bigger later harvest, remove yellowing lower leaves, and pick at 3-4 inches, firm and dark green, for best heat." },
   { id:"raspberry",     name:"Raspberry",           emoji:"🍇", loc:"outdoor", freq:"Morning at the base — every 2-3 days, deep soak.", days:2, trimDays:21,
     trim:"First-year canes (primocanes) — do NOT cut them back; they fruit next year. Tie them to the support as they grow and snip any dead or damaged tips." },
+  { id:"ristra",        name:"Ristra Pepper",       emoji:"🌶️", loc:"greenhouse", freq:"Just germinated — keep the seed mix lightly and evenly moist (never soggy) and give it the brightest, warm light you have. Water gently at the soil or from below so you do not flatten the sprout.", days:2, trimDays:30,
+    trim:"Seedling stage — no pruning. Once it has 2–3 sets of true leaves, pot it up into a bigger container and harden it off gradually before it ever goes outside. Pinch the very first flower buds later for a bushier, more productive plant." },
 
   // ── OUTDOOR ORNAMENTALS ───────────────────────────────────────────────────
   { id:"dianthus",  name:"Dianthus / Pinks", emoji:"🌸", loc:"outdoor", freq:"Morning — every 2-3 days at the base, try not to wet the flowers.", days:2, trimDays:5,
@@ -871,6 +873,7 @@ const PLANT_INFO = {
   tomato:       { fact:"Tomatoes are technically fruit; 'heirloom' means the variety has been saved and passed down 50+ years.", photo:"images/tomato_20260531.jpg" },
   cherry_tomato:{ fact:"Cherry tomatoes taste sweeter than big ones — more skin per bite concentrates the sugars.", photo:"images/cherry_tomato_20260531.jpg" },
   jalapeno:     { fact:"A jalapeño's heat lives in the white pith, not the seeds — and less water makes it hotter.", photo:"images/jalapeno_20260531.jpg" },
+  ristra:       { fact:"Ristra peppers are the classic chiles strung into the hanging red ristras of the Southwest — a New Mexico / Hatch / cayenne-type chile dried on the string.", photo:"images/ristra_20260531.jpg" },
   raspberry:    { fact:"Each raspberry is a cluster of tiny 'drupelets', and the canes fruit in their second year.", photo:"images/raspberry_20260531.jpg" },
   dianthus:     { fact:"Dianthus means 'flower of the gods' in Greek, and many kinds smell just like cloves.", photo:"images/dianthus_20260531.jpg" },
   daisy:        { fact:"'Daisy' comes from 'day's eye' — the flower opens at dawn and closes again at dusk.", photo:"images/daisy_20260531.jpg" },
@@ -894,6 +897,7 @@ const WATER_INFO = {
   tomato:{when:"Morning, at the base, deep and CONSISTENT — daily in heat. Never wet the leaves. Ease off slightly as the fruit ripens.",thirst:"Consistency is everything: swinging from dry to drenched is exactly what causes cracking and catfacing."},
   cherry_tomato:{when:"Morning, at the base, daily in heat; ease off once the fruit is ripening to prevent splitting.",thirst:"Steady water keeps the skins intact — a sudden big drink after a dry spell makes them burst."},
   jalapeno:{when:"Water at the base every 2–3 days, letting the top 2 inches dry first. A little controlled dryness is good for it.",thirst:"Mild water stress concentrates the heat — keep it on the lean side for hotter peppers."},
+  ristra:{when:"Tiny seedling — keep the mix evenly moist, never wet. Water gently at the soil (a mister or bottom-watering is safest) so the sprout is not knocked over, in bright warm light.",thirst:"A fragile sprout: it wants steady moisture, but a soggy mix will damp it off — let the very surface dry slightly between drinks."},
   raspberry:{when:"Deep soak at the base every 2–3 days — aim for about an inch of water a week. Deep and infrequent beats daily sprinkles.",thirst:"Its roots run wide and shallow, so it wants deep soaks that reach them, not surface splashes."},
   dianthus:{when:"Water at the base every 2–3 days, letting the surface dry slightly between. Keep water off the flowers and crown.",thirst:"Hates soggy soil — a constantly wet crown is what rots these plants."},
   daisy:{when:"Morning water about every 2 days for consistency. Crucial: make sure it is not sitting in water — the nursery basket inside the pot traps moisture.",thirst:"A tricky reader — droopy stems can mean too little OR too much water, so always check drainage first."},
@@ -917,6 +921,7 @@ const FUN_FACTS = {
   tomato:["Tomatoes are technically a fruit; heirloom means the variety has been saved and passed down 50+ years.","They were once feared as poisonous in Europe because they belong to the nightshade family.","A tomato on a sunny sill keeps ripening — chilling it in the fridge kills the flavor."],
   cherry_tomato:["Cherry tomatoes taste sweeter than big ones — more skin per bite concentrates the sugars.","Husky types stay compact and bushy, which makes them perfect for pots.","They ripen in waves, so a single plant can feed you cherries all summer long."],
   jalapeno:["A jalapeño's heat lives in the white pith, not the seeds — and less water makes it hotter.","Leave one on the plant and it turns red, sweeter, and hotter.","Smoke-dry a ripe red jalapeño and you have made a chipotle."],
+  ristra:["Ristra chiles are the ones strung into the hanging red ristras of New Mexico.","Every pepper starts as two seed leaves (cotyledons) — the real pepper leaves come next.","Easing back on water late in the season concentrates a chile heat."],
   raspberry:["Each raspberry is a cluster of tiny drupelets, and the canes fruit in their second year.","The hollow center is why raspberries are so delicate — they bruise in the bowl.","Green primocanes this year become the fruiting floricanes of next year."],
   dianthus:["Dianthus means flower of the gods in Greek, and many kinds smell just like cloves.","The color word pink came from these flowers' frilly, pinked edges.","Deadheading spent blooms is the single best trick to keep it flowering all summer."],
   daisy:["Daisy comes from day's eye — the flower opens at dawn and closes again at dusk.","What looks like one flower is actually hundreds of tiny florets packed together.","Daisies are in the same plant family as sunflowers and lettuce."],
@@ -940,6 +945,7 @@ const CARE_INFO = {
   tomato:{fact:"Removing the suckers in the leaf joints channels energy into fewer, bigger fruit."},
   cherry_tomato:{fact:"This compact type needs almost no pruning — just clear the leaves that touch the soil."},
   jalapeno:{fact:"Pinching the very first flowers gives you a bushier plant and a bigger later harvest."},
+  ristra:{fact:"At the seedling stage the whole job is bright light, gentle moisture, and patience — pot it up once it has a few true leaves."},
   raspberry:{fact:"Tying canes to a support and snipping off dead tips is most of raspberry care."},
   dianthus:{fact:"Deadheading — snipping spent blooms back to a bud — is the heart of keeping it flowering."},
   daisy:{fact:"Deadheading spent flowers and clearing yellow leaves keeps it blooming and healthy."},
@@ -959,6 +965,7 @@ const HARVEST_INFO = {
   strawberry:{how:"Pick only when fully, evenly red. Pinch or snip the stem just above the berry and leave the green cap on so it does not bruise — never tug the fruit itself. Check the plant every 1–2 days.",fact:"Strawberries do not ripen any further once they are picked.",date:"2026-06-20"},
   strawberry_pot:{how:"Pick each berry only when it is fully, evenly red, snipping the stem just above the green cap so you do not bruise it — never tug the fruit. With many plants in one pot, check every pocket every 1–2 days; ripe ones hide behind the leaves.",fact:"Because each pocket ripens on its own schedule, a strawberry pot gives a longer, staggered picking season than a single plant.",date:"2026-06-25"},
   jalapeno:{how:"Snip the stem with scissors rather than yanking (a tug snaps the branch), leaving a short stub on the pepper. Pick them firm and dark glossy green, or leave some on to turn red for more heat and sweetness.",fact:"Frequent picking signals the plant to set even more peppers.",date:"2026-07-10"},
+  ristra:{how:"Months away — it just germinated. Eventually pick pods green for fresh chile, or let them turn fully red to dry and string into a ristra. Cut with scissors, leaving a short stem.",fact:"For a ristra you want fully red, unblemished pods with the stems on, so they string and dry without rotting.",date:"2026-09-15"},
   cherry_tomato:{how:"Pick when fully colored and slightly soft — a ripe one releases with a gentle twist of the stem. If most of a cluster is ripe, harvest the whole truss at once. Check daily.",fact:"Left too long they split, so pick promptly once they color up.",date:"2026-07-15"},
   tomato:{how:"Twist gently or snip the stem once the fruit is deep-colored with a slight give — or pick at the first blush of color and ripen it on the counter to beat cracking and critters. Never refrigerate.",fact:"Counter-ripening from the breaker stage protects the fruit from splitting.",date:"2026-07-20"},
   raspberry:{how:"A ripe berry slips off its pale core with the lightest tug — if it resists, leave it another day. Pick into a shallow container so they do not crush each other, every 2–3 days in the cool morning.",fact:"A ripe raspberry leaves its core behind on the cane — that hollow is the giveaway.",date:"2027-06-15"}
@@ -1720,11 +1727,10 @@ function renderGarden() {
       +'<div style="padding:13px 15px">'+body+'</div></div>';
   }
   function pcardStrawberryPot(p, badgeTxt, badgeCol, body){
-    const a='images/strawberry_pot_1.jpg', b='images/strawberry_pot_2.jpg';
+    const a='images/strawberry_pot_1.jpg';
     return '<div style="background:linear-gradient(150deg,#2a1c12,#160f0a);border:1.5px solid rgba(212,118,10,.55);border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 4px 24px rgba(212,118,10,.20)">'
       +'<div style="position:relative;height:172px;display:flex;gap:2px;border-bottom:1px solid rgba(212,118,10,.35)">'
-      +'<img src="'+a+'" alt="'+p.name+' — view 1" loading="lazy" style="width:50%;height:100%;object-fit:cover;object-position:center" onerror="this.style.display=\'none\'"/>'
-      +'<img src="'+b+'" alt="'+p.name+' — view 2" loading="lazy" style="width:50%;height:100%;object-fit:cover;object-position:center" onerror="this.style.display=\'none\'"/>'
+      +'<img src="'+a+'" alt="'+p.name+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center" onerror="this.style.display=\'none\'"/>'
       +'<div style="position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px;background:rgba(212,118,10,.92);color:#fff;font-family:\'Lora\',serif;letter-spacing:.04em;box-shadow:0 2px 8px rgba(0,0,0,.45)">🍓 Strawberry pot · multi-plant</div>'
       +(badgeTxt?'<div style="position:absolute;top:10px;right:10px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(6,5,10,.8);border:1px solid '+badgeCol+';color:'+badgeCol+';font-family:\'Lora\',serif">'+badgeTxt+'</div>':'')
       +'<div style="position:absolute;bottom:0;left:0;right:0;height:34px;background:linear-gradient(180deg,transparent,rgba(22,15,10,.92))"></div>'
