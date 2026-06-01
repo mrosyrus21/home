@@ -1895,11 +1895,8 @@ function renderShopping() {
       <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">✅ Cycled · 🦐 Stocked · ✅ Stable</div>
       <div style="font-size:12px;color:rgba(232,244,253,.78);font-family:'Lora',serif;line-height:1.5">Cycled 5/27, then 10 Blue Dream shrimp + 2 nerites added. The post-stocking mini cycle is <b style="color:#4AD490">complete as of 5/30 — ammonia back to 0</b>. <b style="color:#4AD490">Cleared to resume feeding and start the calcium project.</b></div></div>`;
     html += panel('🛒 Shopping &amp; Next Purchases',
-      buy('shop-mossball','$14.99','Moss Ball (Aegagropila linnaei)')
-      + buy('shop-moss','$14.99','Java or Christmas Moss (TC)')
-      + buy('shop-almond','from $5','More almond leaves — stock up')
-      + buy('shop-airstone','~$10','Ring air stone — fits around the fake anemone')
-      + `<div style="font-size:10px;color:#5a7a99;margin-top:8px;font-style:italic">All from Aqua Rocks Colorado (ask for Tommy).</div>`);
+      buy('shop-airstone','~$10','Ring air stone — fits around the fake anemone')
+      + `<div style="font-size:10px;color:#5a7a99;margin-top:8px;font-style:italic">The ring air stone is from Aqua Rocks Colorado (ask for Tommy).</div>`);
     html += panel('⚗️ Right Now (May 30)','✅ Mini cycle <b>complete</b> — ammonia is back to <b>0</b> (NO2 0, NO3 5, pH 7.6). Tank is stable. Cleared to resume feeding and begin the calcium project. Keep an eye on pH/alk with the eggshell in.');
     html += panel('🍤 Feeding Plan','<b style="color:#4AD490">Cleared to feed — mini cycle resolved 5/30.</b> Resume the <b>half stick every other day</b>.'
       + sh('Foods') + '<b>Primary:</b> Color Studio Shrimp Premium — HALF stick every other day (10 shrimp, 3.7 gal). <b>Backup:</b> Ultra Fresh micro pellet. <b>Natural (their main food):</b> biofilm on moss / pearl weed / roots + almond leaves (replace every 2–3 wks). <b>Veggies:</b> blanched zucchini / spinach / cucumber / peas, small piece once stable.'
@@ -1912,6 +1909,13 @@ function renderShopping() {
       + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🐛 Bug Starter Kit · TEMPORARY</div>'
       + '<div style="font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:5px">Petco run — quick temporary starter</div>'
       + '<div style="font-size:11.5px;color:#c9b8e8;font-style:italic;font-family:\'Lora\',serif;line-height:1.5">⚠️ TEMPORARY only — just enough to house the spider and katydids now; the full enclosures and bioactive ecosystem come LATER. Rule: predators never share with prey, so 2 enclosures + 1 deli-cup culture.</div></div>';
+    html += '<div style="background:#0a1628;border:1px solid rgba(139,92,246,.25);border-radius:12px;padding:11px 15px;margin-bottom:10px">'
+      + '<div style="font-family:\'Playfair Display\',serif;font-size:13px;font-weight:700;color:#b794f6;margin-bottom:5px">🛒 Tonight at Petco vs. later</div>'
+      + '<div style="font-size:12px;color:rgba(232,244,253,.82);line-height:1.6;font-family:\'Lora\',serif">'
+      + '<b style="color:#4AD490">✅ Petco tonight:</b> both terrariums, coco coir (one bag covers both), cork bark + twigs/branches, the spray mister, and a deli cup. Grab a basic airstone for the shrimp tank too if you want.<br><br>'
+      + '<b style="color:#FBBF24">❔ Petco maybe — check the reptile-food aisle or ask:</b> flightless fruit fly culture, and an isopod culture for the cleanup crew. Live cultures vary by store, so call ahead if you can.<br><br>'
+      + '<b style="color:#E07070">🔜 Later / not at Petco:</b> ladybug larvae (order online or grab from a garden center) and springtails (online). The aphids are already free on your jalapeño; basil and an apple slice come from home/grocery; the exact ring airstone is an Aqua Rocks pickup.'
+      + '</div></div>';
     html += bugP('🕷️ Jumping Spider Condo','Solo · predators never share with prey · lives mostly dry',
       [['bug-spider-terr','🏠 Small tall terrarium — Exo Terra Nano Tall (8×8×12 in), keep it small'],
        ['bug-spider-bark','🌿 Twig / cork bark — anchor for webbing up top'],
