@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "May 31, 2026 · 6:58 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "May 31, 2026 · 7:00 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2018,6 +2018,7 @@ function renderGrocery() {
 
   const grocItems = [
     { id:'groc-greenonion', label:'🌿 Green onion' },
+    { id:'groc-eggs', label:'🥚 Eggs' },
   ];
   const doneCount = grocItems.filter(i => shopping[i.id]).length;
 
@@ -2029,7 +2030,7 @@ function renderGrocery() {
 
     + '<div style="background:rgba(74,212,144,.07);border:1px solid rgba(74,212,144,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">'
     + '<div style="font-size:12px;color:rgba(232,244,253,.7);font-family:\'Lora\',serif">' + doneCount + ' of ' + grocItems.length + ' picked up</div>'
-    + (doneCount > 0 ? '<div onclick="[\'groc-greenonion\'].forEach(id=>{shopping[id]=false});saveShopping();renderGrocery()" style="font-size:11px;color:#5a7a99;font-family:\'Lora\',serif;cursor:pointer;text-decoration:underline">Clear all</div>' : '')
+    + (doneCount > 0 ? '<div onclick="[\'groc-greenonion\',\'groc-eggs\'].forEach(id=>{shopping[id]=false});saveShopping();renderGrocery()" style="font-size:11px;color:#5a7a99;font-family:\'Lora\',serif;cursor:pointer;text-decoration:underline">Clear all</div>' : '')
     + '</div>'
 
     + '<div style="background:#0a1628;border:1px solid rgba(45,184,112,.2);border-radius:14px;padding:2px 16px;margin-bottom:16px">'
