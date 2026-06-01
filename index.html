@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "May 31, 2026 · 7:12 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 1, 2026 · 10:47 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1103,7 +1103,7 @@ function waterStatus(p) {
 }
 
 let gardenSub = "watering";
-let tankSub = "todo";
+let tankSub = "system";
 function switchTab(t) {
   currentTab=t;
   setTabBg(t);
@@ -1128,7 +1128,7 @@ function renderSubtabs(t) {
   if(!el) return;
   let subs=null, cur=null, fn=null;
   if(t==="garden"){ subs=[["watering","💧 Watering"],["harvest","🌾 Harvest"],["care","❤️ Care"]]; cur=gardenSub; fn="switchGardenSub"; }
-  else if(t==="shopping"){ subs=[["todo","✅ To-Do"],["setup","🐠 Setup"],["params","🧪 Params"],["history","📚 Log"]]; cur=tankSub; fn="switchTankSub"; }
+  else if(t==="shopping"){ subs=[["system","🗂️ System"],["todo","✅ To-Do"],["setup","🐠 Setup"],["params","🧪 Params"],["history","📚 Log"]]; cur=tankSub; fn="switchTankSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
 }
@@ -1884,12 +1884,29 @@ function renderShopping() {
 
   let html = `
   <div style="text-align:center;margin-bottom:12px;padding-top:4px">
-    <div style="font-size:9px;letter-spacing:.25em;color:#00e5cc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🌊 Cyrus · 3.7 Gal · Neocaridina</div>
-    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4fc3f7,#00e5cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Nano Aquaponics Tank</div>
-    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated May 30, 2026</div>
+    <div style="font-size:9px;letter-spacing:.25em;color:#00e5cc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🌊 Cyrus · 5 Tanks · Aquatic + Terrestrial</div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4fc3f7,#00e5cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Tank &amp; Enclosure System</div>
+    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated May 31, 2026</div>
   </div>`;
 
-  if (tankSub === "todo") {
+  if (tankSub === "system") {
+    const stat=(txt,clr)=>'<span style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:'+clr+';border:1px solid '+clr+';border-radius:20px;padding:2px 8px;white-space:nowrap">'+txt+'</span>';
+    const tcard=(num,name,dims,vol,medium,mclr,who,st)=>'<div style="background:#0a1628;border:1px solid rgba(0,229,204,.18);border-radius:12px;padding:12px 14px;margin-bottom:9px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px"><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:#7fe9dd">'+num+'&nbsp;&nbsp;'+name+'</div>'+st+'</div>'
+      +'<div style="font-size:11px;color:#8b9bb5;font-family:\'Lora\',serif;margin-bottom:6px">'+dims+' · <b style="color:#cfe3f5">'+vol+'</b> · <span style="color:'+mclr+'">'+medium+'</span></div>'
+      +'<div style="font-size:12.5px;color:rgba(232,244,253,.85);line-height:1.5;font-family:\'Lora\',serif">'+who+'</div></div>';
+    html += '<div style="background:linear-gradient(135deg,rgba(0,229,204,.1),rgba(139,92,246,.08));border:1px solid rgba(0,229,204,.3);border-radius:14px;padding:13px 15px;margin-bottom:12px">'
+      +'<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#00e5cc;font-family:\'Lora\',serif;margin-bottom:4px">The System · 5 tanks + 1 culture</div>'
+      +'<div style="font-size:12px;color:rgba(232,244,253,.8);font-family:\'Lora\',serif;line-height:1.5">A mix of aquatic and terrestrial setups. <b style="color:#7fe9dd">These may share water or be physically linked later</b> (e.g. a shared sump / aquaponics loop), so keep water params and placement compatible.</div></div>';
+    html += tcard('#5','Imagitarium cube <span style="font-size:11px;color:#8b9bb5">(current)</span>','11.2×11.4×11.1 in','3.7 gal','💧 Aquatic','#4fc3f7','<b>Blue Dream Neocaridina</b> colony + 2 Tiger nerites — established &amp; cycled.',stat('Active','#4AD490'));
+    html += tcard('#1','Divided cube · lidless','15×10×7 in','~4.5 gal','💧 Aquatic','#4fc3f7','<b>Two-color shrimp</b> — Red (Bloody Mary) + Yellow (Yellow Neon), one per side. Needs a <b>fine-mesh divider</b> so they can\'t cross-breed.',stat('Planned','#F5B830'));
+    html += tcard('#2','Rounded face · built-in light','10×12×7 in','~3.6 gal','🏜️ Dry only','#F5B830','<b>Jumping spider</b> (single). Side crack leaks liquid only — too small to escape through. Built-in light = viewing.',stat('Planned','#F5B830'));
+    html += tcard('#3','Tall tank','11×16×11 in','~8.4 gal','🌿 Either','#b794f6','<b>Herbivore katydid display</b> + safe mates (isopods, springtails, stick insects). 16-inch height gives molting clearance.',stat('Planned','#F5B830'));
+    html += tcard('#4','Wide tank','19×11×10 in','~9 gal','❓ Test first','#8b9bb5','<b>TBD</b> — leak-test for water first; likely the future <b>big aquatic tank</b>.',stat('Testing','#8b9bb5'));
+    html += tcard('🐞','Aphid + ladybug culture','deli cup / small bin','—','🌱 Culture','#4AD490','Garden help / sell / give away. Close the loop with <b>springtails + isopods</b> as decomposers.',stat('Buy today','#E07070'));
+  }
+
+  else if (tankSub === "todo") {
     html += `<div style="background:linear-gradient(135deg,rgba(0,229,204,.1),rgba(79,195,247,.08));border:1px solid rgba(0,229,204,.3);border-radius:14px;padding:13px 15px;margin-bottom:12px">
       <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#00e5cc;font-family:'Lora',serif;margin-bottom:4px">Status — May 30</div>
       <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">✅ Cycled · 🦐 Stocked · ✅ Stable</div>
@@ -1997,7 +2014,7 @@ function renderShopping() {
     html += panel('💎 Hardness Journey','Started at 250 ppm (too high). Cause: Sunwinx LECA (NOT substrate/coral). Fix: swapped to Aqua Rocks LECA + partial distilled-water changes (max 30–40%). Now stable at 125 ppm ✅.'+sh('Water Change Rules')+'<ul><li>✅ Distilled from King Soopers / Safeway / Walmart</li><li>✅ Small tap additions to raise hardness/alk</li><li>❌ No Eldorado Spring, fridge-filtered, or chemical pH adjusters</li></ul>');
     html += panel('📚 Key Lessons','<ul><li>No air through a submersible pump (cavitation)</li><li>Low alk (under 36) suppresses nitrifiers — they need carbonates</li><li>Bubbler HIGH during cycling</li><li>Prime detoxifies without stalling the cycle</li><li>Nerite eggs never hatch in freshwater</li><li>Molts = white shells — leave them (calcium)</li><li>One shrimp color per tank; cull lightest, keep darkest</li><li>Back wall is black plastic — side glass is the background</li></ul>');
     html += panel('🧬 Breeding Notes','<b>Blue Dream:</b> deepen blue over generations — cull pale offspring. Females carry 20–30 eggs ~30 days; babies hatch as mini adults. <b>Tiger Nerites:</b> can\'t breed in freshwater (lay harmless white eggs). <b>Mystery snails (future):</b> easy, eggs above waterline, controllable.');
-    html += panel('🔮 Future Plans','<b>Tank #2 (small):</b> Bloody Mary Neocaridina + Mystery snails (Ivory + Magenta). <b>Tank #3 (large):</b> fish + full aquaponics scale-up — sweet-potato system scales with fish waste.');
+    html += panel('🔮 Future Plans','<b>#1 divided:</b> Red + Yellow shrimp (fine-mesh divider). <b>#2:</b> jumping spider. <b>#3:</b> katydid + stick-insect mates. <b>#4:</b> leak-test → future big aquatic tank. <b>Aphids/ladybugs:</b> garden culture + springtails/isopods to close the loop. Tanks may share water or link into one system down the line.');
     html += panel('📍 Local Resources','<b style="color:#7fe9dd">Aqua Rocks Colorado</b> (primary — ask for Tommy) · 6771 E 50th Ave, Commerce City · (720) 219-0303 · Tue–Sat 10–6 (closed Mon) · aquarockscolorado.com<br><br><b>Backup:</b> Cultivate Hydroponics North · 6400 E 44th Ave, Denver · (720) 420-7599<br><br><b>Distilled water:</b> King Soopers / Safeway / Walmart (under $2/gal)');
   }
 
