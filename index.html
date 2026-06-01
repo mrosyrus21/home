@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 1, 2026 · 10:47 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 1, 2026 · 12:39 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1084,7 +1084,7 @@ function toggle(id)  { checked[id]=!checked[id]; save(); renderAll(); }
 function toggleLaundry() { const k=todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function waterPlant(id)  { watered[id]=todayKey(); saveW(); renderAll(); }
 
-const NO_PROGRESS=new Set(["errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
+const NO_PROGRESS=new Set(["fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -1395,6 +1395,22 @@ function renderToday() {
 
 
 
+
+  // ── FIX SMART START (priority, pinned until done) ─────────────────────────────
+  if(!checked["fix_smart_start"]){
+    topHtml+=`<div style="background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.4);border-left:4px solid #F59E0B;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,158,11,.1)" onclick="toggle('fix_smart_start')">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,.5),transparent)"></div>
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#F59E0B;margin-bottom:6px;font-family:'Lora',serif">⚠️ Priority</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="font-size:28px;flex-shrink:0">🔧</div>
+        <div style="flex:1">
+          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#FCE9C8">Fix Smart Start</div>
+          <div style="font-size:12px;color:rgba(245,200,130,.85);font-style:italic;margin-top:3px">Tap when it is handled.</div>
+        </div>
+        <div style="width:30px;height:30px;border-radius:50%;border:2px solid #F59E0B;background:transparent;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0"></div>
+      </div>
+    </div>`;
+  }
 
   // Freeze watch — active May 18-19
   if(today>="2026-05-18"&&today<="2026-05-19"){
@@ -2036,6 +2052,7 @@ function renderGrocery() {
   const grocItems = [
     { id:'groc-greenonion', label:'🌿 Green onion' },
     { id:'groc-eggs', label:'🥚 Eggs' },
+    { id:'groc-croissants', label:'🥐 Croissants' },
   ];
   const doneCount = grocItems.filter(i => shopping[i.id]).length;
 
@@ -2047,7 +2064,7 @@ function renderGrocery() {
 
     + '<div style="background:rgba(74,212,144,.07);border:1px solid rgba(74,212,144,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">'
     + '<div style="font-size:12px;color:rgba(232,244,253,.7);font-family:\'Lora\',serif">' + doneCount + ' of ' + grocItems.length + ' picked up</div>'
-    + (doneCount > 0 ? '<div onclick="[\'groc-greenonion\',\'groc-eggs\'].forEach(id=>{shopping[id]=false});saveShopping();renderGrocery()" style="font-size:11px;color:#5a7a99;font-family:\'Lora\',serif;cursor:pointer;text-decoration:underline">Clear all</div>' : '')
+    + (doneCount > 0 ? '<div onclick="[\'groc-greenonion\',\'groc-eggs\',\'groc-croissants\'].forEach(id=>{shopping[id]=false});saveShopping();renderGrocery()" style="font-size:11px;color:#5a7a99;font-family:\'Lora\',serif;cursor:pointer;text-decoration:underline">Clear all</div>' : '')
     + '</div>'
 
     + '<div style="background:#0a1628;border:1px solid rgba(45,184,112,.2);border-radius:14px;padding:2px 16px;margin-bottom:16px">'
