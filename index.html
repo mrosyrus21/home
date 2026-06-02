@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 1, 2026 · 12:39 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 1, 2026 · 11:00 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1150,7 +1150,7 @@ function dailyHabits() {
   if(!isMon())     keys.push(today);
   if(isWeekday())  keys.push("lunch-msg-"+today);
   if(!isWeekday()) keys.push("evening-vitamins-"+today);
-  if(isMon())      keys.push("monday-league-dinner-"+today);
+  if(isMon())      keys.push("evening-league-dinner-"+today);
   const done=keys.filter(k=>!!laundry[k]).length;
   return {done, total:keys.length};
 }
@@ -1503,7 +1503,7 @@ function renderToday() {
   let dl2=!!laundry["meal-lunch-"+today]; hab(725, strip("🥗","Lunch",dl2,"#B47C14","toggleMeal('lunch')","Midday","30 min",isWeekday()?"Step away from the desk, actually eat":""), dl2);
 
   // Evening / night
-  if(isMon()){ let dld=!!laundry["monday-league-dinner-"+today]; hab(1060, strip("🎱","Eat dinner before pool league",dld,"#F59E0B","toggleEvening('league-dinner')","Evening","30 min","Don't play on an empty stomach"), dld); }
+  if(isMon()){ let dld=!!laundry["evening-league-dinner-"+today]; hab(1060, strip("🎱","Eat dinner before pool league",dld,"#F59E0B","toggleEvening('league-dinner')","Evening","30 min","Don't play on an empty stomach"), dld); }
   let d6=!!laundry["meal-dinner-"+today]; hab(1080, strip("🍽️","Dinner",d6,"#B47C14","toggleMeal('dinner')","Evening","30 min"), d6);
   let dse=!!laundry["evening-stop-eating-"+today]; hab(1085, strip("🍽️","Stop eating for the night",dse,"#6366F1","toggleEvening('stop-eating')","Evening","–","Kitchen closes — 2 hrs before bed minimum"), dse);
   let ddw=!!laundry["evening-dogwalk-"+today]; hab(1090, strip("🐕","Afternoon / evening dog walk + play",ddw,"#4ADE80","toggleEvening('dogwalk')","Afternoon/Eve","20–30 min","Second walk + fetch — wears her out for the night"), ddw);
@@ -2171,9 +2171,9 @@ function renderPrint() {
         <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">A fresh suggestion each day — no pressure, just for the joy of it</div>
       </div>
       <div style="background:linear-gradient(135deg,rgba(251,146,60,.12),rgba(192,132,252,.08));border:1px solid rgba(251,146,60,.35);border-radius:14px;padding:13px 15px;margin-bottom:12px">
-        <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#FB923C;font-family:'Lora',serif;margin-bottom:4px">🛠️ Currently Printing</div>
+        <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#4AD490;font-family:'Lora',serif;margin-bottom:4px">✅ Just Finished</div>
         <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">🎎 Anime Elegance</div>
-        <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">Your tall figurine, in progress. Big slender prints love a rock-solid frame — the <b style="color:#818CF8">Tier 3 frame enhancement</b> in the Upgrade Path below is the cure for wobble at this height.</div>
+        <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">Your tall figurine — printed and done. ✅ Nice work. Pick your next print whenever you are ready and I will swap this card.</div>
       </div>
       <div style="background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.3);border-radius:14px;padding:14px 15px">
         <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#c084fc;font-family:'Lora',serif;margin-bottom:8px">🎲 Today's Fun Print Idea</div>
