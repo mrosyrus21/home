@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 1, 2026 · 11:19 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 1, 2026 · 11:45 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -651,18 +651,20 @@ const TASKS = {
 
   // ── KITCHEN ───────────────────────────────────────────────────────────────
   e_k1:       { room:"kitchen", label:"Move stuff off kitchen floor that doesn't belong", level:"easy", note:"🎯 Hack: grab a laundry basket, sweep everything that doesn't LIVE on the floor into it, then redistribute. Ten minutes for instant 'whoa, clean' dopamine. Your floor is not a shelf, no matter how convincingly it argues otherwise." },
-  k_cabinets: { room:"kitchen", label:"Wipe down all cabinet and drawer fronts", level:"easy", note:"Warm water + a drop of dish soap + microfiber. Greasy spots by the stove? Baking-soda paste. Go top-to-bottom so drips land on dirty doors, not the ones you just cleaned." },
   k_filter:   { room:"kitchen", label:"Clean the dishwasher filter", level:"easy", note:"Twist out the cylinder at the bottom, rinse under hot water, old toothbrush for the gunk. Most people never do this and then blame the dishwasher. ~5 min and your glasses come out actually clean." },
   k_utensils: { room:"kitchen", label:"Organize the utensil drawer and junk drawer", level:"easy", note:"Dump it ALL out. Be honest about the 7 takeout chopsticks and the pens that don't write. A $3 drawer divider is genuinely life-changing. Junk-drawer rule: if you forgot you owned it, you don't need it." },
-  k5:         { room:"kitchen", label:"Walk the kitchen & give a permanent home to anything that keeps ending up on the counter", level:"easy", note:"Counters are prime real estate, not a parking lot. Everything that 'lives' there needs a real home in a cabinet or drawer. No home? It's either trash or it's moving in somewhere today." },
+  k5:         { room:"kitchen", label:"Find permanent homes for everything — use the space wisely", level:"moderate", note:"Give every item one permanent home and use the space wisely. As you go, get rid of what you do not need — ONLY keep what you will actually use." },
   k1:         { room:"kitchen", label:"Deep clean fridge — toss expired food", level:"moderate", note:"Pull everything, toss the expired (yes, that sauce from a previous era too), wipe shelves with baking-soda water. Leave an open box of baking soda to keep it fresh. Bonus game: count your half-used condiments. 🏆" },
   k2:         { room:"kitchen", label:"Organize pantry & cabinets by use", level:"moderate", note:"Group by job: baking, breakfast, snacks, dinner. Labels facing out. Keep an 'eat me first' bin for stuff near its date. Clear bins beat random bags. Future-you making dinner will high-five present-you." },
-  k3:         { room:"kitchen", label:"Clear permanent clutter off counters", level:"moderate", note:"Goal: wipe the whole counter in one sweep without moving 12 things. Anything you use less than weekly goes in a cabinet. A clear counter makes cooking feel ten times easier — promise." },
+  k3:         { room:"kitchen", label:"Clear EVERYTHING off the counters, then deep-clean them", level:"moderate", note:"The foundation — do this FIRST. Take it ALL off (do not shuffle counter to counter), then deep-clean every surface and keep them clear from here on.", steps:["Take everything off the countertops — every single item, fully off. Do NOT move things counter to counter; clear them completely.","Deep-clean every countertop (warm water + dish soap, baking-soda paste on the greasy spots), then keep them clear going forward."] },
   k6:         { room:"kitchen", label:"Label containers & organize spices", level:"moderate", note:"Toss spices older than ~2 years (they're just sad dust now). Group by cuisine or alphabetize. A tiered shelf or lazy susan means no more knocking over the cumin to reach the paprika." },
   k_stovetop: { room:"kitchen", label:"Deep clean stovetop grates and burners", level:"moderate", note:"Soak the grates in hot soapy water (or a baking-soda + vinegar bath) while you scrub the surface. Old toothbrush for the crevices. Don't forget the knobs — secretly the grimiest part of the whole kitchen. 🫣" },
   k4:         { room:"kitchen", label:"Deep clean oven inside and out", level:"hard", note:"Baking-soda paste overnight, wipe with vinegar in the morning — it fizzes the grime off with no toxic fumes. Pull the racks and do them in the tub. This is the kitchen's boss battle; beat it and the room is YOURS. 🎉" },
   k_sink:     { room:"kitchen", label:"Scrub & shine the sink until it sparkles", level:"easy", note:"FlyLady's #1 rule: a shiny sink anchors the whole kitchen. Scrub, rinse, then DRY it with a towel so it actually shines. Weirdly powerful — a gleaming sink makes you not want to pile dishes in it." },
   k_reward:   { room:"kitchen", label:"Cook one great meal in your fresh kitchen 🍳", level:"easy", note:"You earned this. Make something you love in the clean kitchen — snip herbs from the garden straight into the pot. THIS is why you did all the scrubbing." },
+  k_dishes:   { room:"kitchen", label:"Wash all the dishes & put them in permanent homes", level:"moderate", note:"Wash every dish, dry them, and put each one in its permanent home — not back on the counter." },
+  k_btmcab:   { room:"kitchen", label:"Organize the bottom cabinets", level:"moderate", note:"Empty, wipe, and organize the lower cabinets. Toss what you do not use; keep only what earns its spot." },
+  k_garage:   { room:"kitchen", label:"Bring the kitchen stuff in from the garage & assign cabinets", level:"hard", note:"Do this AFTER the counters are cleared and clean. As you put things away, declutter — ONLY keep what you will actually use.", steps:["Move the car outside to make room.","Get ALL the kitchen items out of the garage and into the kitchen.","Pick a pantry cabinet.","Pick the dishes cabinets.","As you put things away, get rid of what you do not need — only keep what you will use."] },
 
   // ── LIVING ROOM ───────────────────────────────────────────────────────────
   e_l1:      { room:"living", label:"Fold & break down cardboard boxes — store or recycle", level:"easy" },
@@ -754,7 +756,7 @@ const SCHEDULE = [
   // ── WEEK 1 · KITCHEN (top priority) ───────────────────────────────────────
   { date:"2026-05-31", tasks:["e_k1","k5"],               note:"🚀 DAY ONE. Two easy wins only — clear the floor, give counter strays a home. Momentum is the whole game; we start tiny on purpose." },
   { date:"2026-06-01", tasks:[], off:true, offNote:"Pool league night 🎱 — rack 'em. Zero chores. Recovery is part of the plan." },
-  { date:"2026-06-02", tasks:["k_cabinets","k_utensils"], note:"Cabinet fronts + the chaos drawer. Put on a hype playlist — you'll be done before track 4." },
+  { date:"2026-06-02", tasks:["k_utensils"], note:"The chaos drawer. Put on a hype playlist — you'll be done before track 4." },
   { date:"2026-06-03", tasks:["k_filter"],                note:"Light day — just the dishwasher filter. One small gross-but-satisfying win, then go enjoy your evening." },
   { date:"2026-06-04", tasks:["k3"],                      note:"Counter-clearing day. Goal: wipe it in one sweep without playing Tetris with the appliances." },
   { date:"2026-06-05", tasks:["k1","xfinity_call"],       note:"Fridge day — toss the mystery jars. Plus ⭐ call Xfinity Retention and knock that $135 bill down." },
@@ -1104,6 +1106,7 @@ function waterStatus(p) {
 
 let gardenSub = "watering";
 let tankSub = "system";
+let printSub = "todo";
 function switchTab(t) {
   currentTab=t;
   setTabBg(t);
@@ -1129,11 +1132,13 @@ function renderSubtabs(t) {
   let subs=null, cur=null, fn=null;
   if(t==="garden"){ subs=[["watering","💧 Watering"],["harvest","🌾 Harvest"],["care","❤️ Care"]]; cur=gardenSub; fn="switchGardenSub"; }
   else if(t==="shopping"){ subs=[["system","🗂️ System"],["todo","✅ To-Do"],["setup","🐠 Setup"],["params","🧪 Params"],["history","📚 Log"]]; cur=tankSub; fn="switchTankSub"; }
+  else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","🎨 Wishlist"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
 }
 function switchGardenSub(x) { gardenSub=x; renderSubtabs("garden"); renderGarden(); }
 function switchTankSub(x) { tankSub=x; renderSubtabs("shopping"); renderShopping(); }
+function switchPrintSub(x) { printSub=x; renderSubtabs("print"); renderPrint(); }
 
 function dailyHabits() {
   const today=todayKey();
@@ -2162,7 +2167,7 @@ function renderPrint() {
   }
 
   const fpPick = PRINT_SCHEDULE[Math.floor(Date.now()/86400000)%PRINT_SCHEDULE.length];
-  el.innerHTML = `
+  const _wish = `
     <!-- FUN PRINT OF THE DAY -->
     <div style="margin-bottom:28px">
       <div style="text-align:center;margin-bottom:14px;padding-top:4px">
@@ -2188,6 +2193,8 @@ function renderPrint() {
 
     <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);margin-bottom:24px"></div>
 
+`;
+  const _upg = `
     <!-- UPGRADES -->
     <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);margin-bottom:24px"></div>
     <div style="text-align:center;margin-bottom:14px;padding-top:2px">
@@ -2265,6 +2272,30 @@ function renderPrint() {
       <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;line-height:1.6">Print brackets and clips in <strong style="color:var(--text)">PETG or ABS</strong> — not PLA. Enclosure interiors can reach 45°C+ during ABS prints and PLA will warp and fail. PETG handles up to ~80°C and is easy to print on the SV06 Plus.</div>
     </div>
   `;
+  const _todo = `    <!-- PRINT TO-DO -->
+    <div style="text-align:center;margin-bottom:16px;padding-top:4px">
+      <div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🖨️ Print Queue</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#c084fc,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">To-Do</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(129,140,248,.08));border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:13px 15px;margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#22D3EE;font-family:'Lora',serif;margin-bottom:4px">🟢 Active Print</div>
+      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">💧 Droplet Watering Can</div>
+      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">On the bed now.</div>
+    </div>
+    <div onclick="toggleFunPrint('buy_blue_filament')" style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:13px 15px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:11px">
+      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['buy_blue_filament']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['buy_blue_filament']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['buy_blue_filament']?'✓':''}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['buy_blue_filament']?'#4AD490':'var(--text)'};${funPrints['buy_blue_filament']?'text-decoration:line-through':''}">🧵 Buy Sovol blue filament</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Tap when it is ordered.</div></div>
+    </div>
+    <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#A78BFA;font-family:'Lora',serif;margin-bottom:8px">🎯 Up next — 3 picks (none are SV06 mods)</div>
+    <div style="background:#0d0d1a;border:1px solid rgba(129,140,248,.15);border-radius:12px;padding:4px 15px 10px;margin-bottom:8px">
+      <div style="display:flex;gap:11px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)"><div style="font-size:26px">🚤</div><div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--text)">1. 3DBenchy</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif">The classic test boat — perfect first print to dial in the new blue filament. (Printables / Thingiverse)</div></div></div>
+      <div style="display:flex;gap:11px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)"><div style="font-size:26px">🐙</div><div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--text)">2. Articulated Octopus (flexi)</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif">Print-in-place, zero supports, looks great in blue. (search McGybeer / Cinderwing on Printables)</div></div></div>
+      <div style="display:flex;gap:11px;padding:10px 0"><div style="font-size:26px">🪴</div><div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--text)">3. Self-watering planter</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif">Ties into your garden, flat-bottom, no supports. (Printables)</div></div></div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);font-family:'Lora',serif;font-style:italic;text-align:center;padding:4px 0 8px">Get the right filament sorted first, then queue these up.</div>
+  
+`;
+  el.innerHTML = printSub==="wishlist"?_wish:(printSub==="upgrades"?_upg:_todo);
   // Update fun print progress bar
   const fpDone = PRINT_SCHEDULE.filter(p => funPrints[p.id]).length;
   const fpEl = document.getElementById('fpPct'); if(fpEl) fpEl.textContent = fpDone+'/14';
