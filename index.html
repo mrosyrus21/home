@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 2, 2026 · 9:01 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 2, 2026 · 3:42 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1401,6 +1401,21 @@ function renderToday() {
 
 
 
+  // ── THUNDERSTORM WATCH (Jun 2, pinned today) ─────────────────────────────────
+  if(today==="2026-06-02"){ const stDone=!!checked["storm_jun2"];
+    topHtml+=`<div style="background:linear-gradient(135deg,rgba(251,146,60,.16),rgba(251,146,60,.04));border:1px solid rgba(251,146,60,.45);border-left:4px solid #FB923C;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(251,146,60,.12)" onclick="toggle('storm_jun2')">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,146,60,.5),transparent)"></div>
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FB923C;margin-bottom:6px;font-family:'Lora',serif">⛈️ Thunderstorm — happening now</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="font-size:28px;flex-shrink:0">${stDone?"✅":"⛈️"}</div>
+        <div style="flex:1">
+          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${stDone?"var(--text3)":"#FCE9C8"};${stDone?"text-decoration:line-through":""}">Protect the plants — storm rolling in</div>
+          <div style="font-size:12px;color:${stDone?"var(--text3)":"rgba(245,200,130,.85)"};font-style:italic;margin-top:4px">They took hail yesterday. Get the vulnerable pots under cover NOW — the strawberry pots, the New Mexico Chile seedling, anything small or already damaged. Secure loose yard items, skip watering (the storm is bringing it), and unplug / do not run the 3D printer during the lightning.</div>
+        </div>
+        <div style="width:30px;height:30px;border-radius:50%;border:2px solid ${stDone?"#10B981":"#FB923C"};background:${stDone?"#10B981":"transparent"};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0">${stDone?"✓":""}</div>
+      </div>
+    </div>`;
+  }
   // ── FIX SMART START (priority, pinned until done) ─────────────────────────────
   if(!checked["fix_smart_start"]){
     topHtml+=`<div style="background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.4);border-left:4px solid #F59E0B;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,158,11,.1)" onclick="toggle('fix_smart_start')">
