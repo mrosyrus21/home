@@ -995,6 +995,7 @@ let grocCustom = {};
 let printCustom = {};
 let taskCustom = {};
 let painLog = {};
+let litfulo = {};
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -1020,6 +1021,7 @@ function savePushed() { ST.child('pushed').set(pushed); }
 function saveWP()     { ST.child('waterPushed').set(waterPushed); }
 function saveLaundry(){ ST.child('laundry').set(laundry); }
 function savePain(){ ST.child('painLog').set(painLog); }
+function saveLit(){ ST.child('litfulo').set(litfulo); }
 function toggleExpand(id){ expanded[id]=!expanded[id]; ST.child('expanded').set(expanded); renderAll(); }
 function toggleEvening(habit){ const k="evening-"+habit+"-"+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function saveShopping(){ ST.child('shopping').set(shopping); }
@@ -2451,6 +2453,39 @@ function logPain(val) {
   savePain();
   renderAll();
 }
+function logRefill(n){ litfulo={startDate:todayKey(),startDoses:n,reorderAt:7}; saveLit(); renderAll(); }
+function clearRefill(){ litfulo={}; saveLit(); renderAll(); }
+function litRefillHtml(){
+  const lit=litfulo||{};
+  const wrap=(inner)=>`<div style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:var(--rad);padding:13px 16px;margin:-6px 0 14px">${inner}</div>`;
+  if(!(lit.startDate&&lit.startDoses)){
+    return wrap(`<div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;margin-bottom:9px">📦 <b style="color:var(--text)">Refill tracking</b> — not set. Log a refill to start the countdown.</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="logRefill(30)" style="flex:1;padding:9px 0;border-radius:9px;background:rgba(99,102,241,.14);border:1px solid rgba(99,102,241,.4);color:#A5B4FC;cursor:pointer;font-family:'Lora',serif;font-size:12.5px;font-weight:600">Log 30-day refill</button>
+        <button onclick="logRefill(90)" style="flex:1;padding:9px 0;border-radius:9px;background:rgba(99,102,241,.14);border:1px solid rgba(99,102,241,.4);color:#A5B4FC;cursor:pointer;font-family:'Lora',serif;font-size:12.5px;font-weight:600">Log 90-day refill</button>
+      </div>`);
+  }
+  const today=todayKey();
+  const elapsed=Math.max(0,Math.round((new Date(today+"T12:00:00")-new Date(lit.startDate+"T12:00:00"))/86400000));
+  const left=Math.max(0,lit.startDoses-elapsed);
+  const buf=(lit.reorderAt!=null?lit.reorderAt:7);
+  const rd=new Date(lit.startDate+"T12:00:00"); rd.setDate(rd.getDate()+(lit.startDoses-buf));
+  const rby=`${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,"0")}-${String(rd.getDate()).padStart(2,"0")}`;
+  const dtr=Math.round((rd-new Date(today+"T12:00:00"))/86400000);
+  let col,msg;
+  if(left<=0){col="#EF4444";msg="Out of doses — refill now";}
+  else if(dtr<=0){col="#EF4444";msg="Reorder now";}
+  else if(dtr<=5){col="#F59E0B";msg=`Reorder soon — ${dtr} day${dtr>1?"s":""} of buffer left`;}
+  else{col="#2DB870";msg=`On track — reorder in ${dtr} days`;}
+  const rbyNice=new Date(rby+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  return wrap(`<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:${col};line-height:1">${left}</div>
+      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif">dose${left===1?"":"s"} left · reorder by <b style="color:${col}">${rbyNice}</b></div>
+    </div>
+    <div style="height:6px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:7px"><div style="height:100%;width:${Math.min(100,Math.round(left/lit.startDoses*100))}%;background:${col}"></div></div>
+    <div style="font-size:11.5px;color:${col};font-family:'Lora',serif;font-style:italic">${msg}</div>
+    <div style="font-size:10.5px;color:var(--text3);font-family:'Lora',serif;margin-top:7px">Started ${new Date(lit.startDate+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})} with ${lit.startDoses} · <span onclick="logRefill(30)" style="color:#A5B4FC;cursor:pointer;text-decoration:underline">log 30</span> · <span onclick="logRefill(90)" style="color:#A5B4FC;cursor:pointer;text-decoration:underline">log 90</span> · <span onclick="clearRefill()" style="color:var(--text3);cursor:pointer;text-decoration:underline">reset</span></div>`);
+}
 
 // ── WELLNESS TAB ──────────────────────────────────────────────────────────────
 function renderWellness() {
@@ -2474,6 +2509,7 @@ function renderWellness() {
       <div style="width:26px;height:26px;border-radius:50%;border:2px solid ${litDone?"#10B981":"rgba(99,102,241,.5)"};background:${litDone?"#10B981":"transparent"};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0;transition:all .25s cubic-bezier(.34,1.56,.64,1)">${litDone?"✓":""}</div>
     </div>
   </div>`;
+  out += litRefillHtml();
 
   // ── Sleep setup checklist ──
   const SLEEP_ITEMS = [
@@ -2580,6 +2616,7 @@ ST.on('value', snap => {
   printCustom = d.printCustom || {};
   taskCustom  = d.taskCustom  || {};
   painLog     = d.painLog     || {};
+  litfulo     = d.litfulo     || {};
   // one-time idempotent migration of any legacy localStorage pain entries up to Firebase
   try { const legacy = JSON.parse(localStorage.getItem("painlog")||"{}"); let added=false; for(const k in legacy){ if(painLog[k]==null){ painLog[k]=legacy[k]; added=true; } } if(added){ ST.child('painLog').set(painLog); } } catch(e){}
   const flags = d.flags       || {};
