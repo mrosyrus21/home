@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 3, 2026 · 10:18 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 3, 2026 · 12:38 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -644,6 +644,7 @@ let pushed   = {};
 let waterPushed = {};
 let expanded = {};
 let trimmed  = {};
+let harvested = {};
 let shopping  = {};
 let funPrints = {};
 let grocCustom = {};
@@ -695,6 +696,8 @@ function addTaskC(roomId){ const el=document.getElementById('taskInput-'+roomId)
 function removeTaskC(id){ delete taskCustom[id]; if(checked[id]){ delete checked[id]; save(); } saveTasksC(); renderRooms(); }
 function printCustomHtml(){ const ids=Object.keys(printCustom); if(!ids.length) return ''; const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); return '<div style="background:#0d0d1a;border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:2px 15px;margin-bottom:8px">'+ids.map(id=>'<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,.05)"><div style="flex:1;font-size:13px;color:var(--text);font-family:\'Lora\',serif">'+esc(printCustom[id])+'</div><div onclick="removePrint(\''+id+'\')" style="font-size:17px;color:#5a7a99;cursor:pointer;padding:0 2px;line-height:1">×</div></div>').join('')+'</div>'; }
 function saveTrimmed(){ ST.child('trimmed').set(trimmed); }
+function saveHarvested(){ ST.child('harvested').set(harvested); }
+function harvestPlant(id){ if(harvested[id]===todayKey()) delete harvested[id]; else harvested[id]=todayKey(); saveHarvested(); renderAll(); }
 function toggleFunPrint(id){ funPrints[id]=funPrints[id]?null:1; saveFunPrints(); renderAll(); }
 function trimPlant(id){ trimmed[id]=todayKey(); saveTrimmed(); renderAll(); }
 function daysSinceTrimmed(id){ if(!trimmed[id]) return null; return Math.round((new Date(todayKey()+"T12:00:00")-new Date(trimmed[id]+"T12:00:00"))/86400000); }
@@ -1539,12 +1542,14 @@ function renderGarden() {
       .forEach(o=>{ const p=o.p, h=o.h;
         const diff=Math.ceil((new Date(h.date+"T12:00:00")-todayDate)/86400000);
         const ready=diff<=0, soon=diff>0&&diff<=14;
-        const bTxt=ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
-        const bCol=ready?"#4ADE80":soon?"#FBBF24":"#9bb3c9";
+        const hDone=harvested[p.id]===today;
+        const bTxt=hDone?"✓ Harvested":ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
+        const bCol=hDone?"#2DB870":ready?"#4ADE80":soon?"#FBBF24":"#9bb3c9";
         let body=hdr(p, ready?"ready":h.date);
         body+=sect("✂️ How to pick","#4ADE80",h.how);
         body+=sect("🌟 Good to know","#FBBF24",h.fact);
         body+=wxHarvestNote(p);
+        body+='<button class="water-btn" onclick="harvestPlant(\''+p.id+'\')" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px;background:'+(hDone?'rgba(45,184,112,.15)':'rgba(74,222,128,.12)')+';border:1px solid '+(hDone?'#2DB870':'#4ADE80')+';color:'+(hDone?'#4AD490':'#4ADE80')+'">'+(hDone?'✓ Harvested today · tap to undo':'🌾 Mark harvested')+'</button>';
         body+=factBox(dailyFact(p.id));
         html+=pcard(p,bTxt,bCol,body);
       });
@@ -2265,6 +2270,7 @@ ST.on('value', snap => {
   waterPushed = d.waterPushed || {};
   expanded    = d.expanded    || {};
   trimmed     = d.trimmed     || {};
+  harvested   = d.harvested   || {};
   shopping    = d.shopping    || {};
   funPrints   = d.funPrints   || {};
   grocCustom  = d.grocCustom  || {};
