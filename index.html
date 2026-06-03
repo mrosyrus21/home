@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 2, 2026 · 7:37 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 2, 2026 · 7:40 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2038,6 +2038,27 @@ function renderShopping() {
       +'Added 5/27 via ~1.5h drip acclimation, no losses. Shrimp grazing &amp; riding bubbles; snails cruising the glass.');
     html += panel('🧰 Equipment On Hand',
       '<b>Treatment:</b> Seachem Prime · Tetra SafeStart · filter regenerator<br><b>Testing:</b> multi-param strips · ammonia strips · API Master Kit<br><b>Food:</b> Color Studio 40g · Ultra Fresh 53g<br><b>Accessories:</b> glass feeding tube · almond leaves · air pump + airstone · 3D-printed lid · spare sponges · hydro baskets · rockwool + LECA');
+    const tchk=(id,label)=>{const d=!!checked[id];return '<div onclick="toggle(\''+id+'\')" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(0,229,204,.12);cursor:pointer;font-size:12.5px;'+(d?'opacity:.5;text-decoration:line-through':'')+'"><div style="width:18px;height:18px;border-radius:5px;border:1.5px solid '+(d?'#4AD490':'rgba(0,229,204,.4)')+';background:'+(d?'rgba(74,212,144,.15)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#4AD490;font-weight:900;font-size:10px">'+(d?'✓':'')+'</div><div style="flex:1;color:rgba(232,244,253,.82)">'+label+'</div></div>';};
+    html += panel('🐠 Per-Tank Setup Checklists',
+      sh('💧 #1 · Divided cube — two-color shrimp')
+      + tchk('t1-1','Leak-check, rinse, set up filter + heater (72–74°F)')
+      + tchk('t1-2','Add substrate + plants, then install the fine-mesh divider')
+      + tchk('t1-3','Cycle fully (NH3 0, NO2 0) before any shrimp go in')
+      + tchk('t1-4','Stock: Red Bloody Mary one side, Yellow Neon the other')
+      + sh('🏜️ #2 · Rounded/lit — jumping spider (DRY)')
+      + tchk('t2-1','NO water — dry coco / paper substrate only')
+      + tchk('t2-2','Add cork bark + twigs for webbing anchors up top')
+      + tchk('t2-3','Confirm cross-ventilation and an escape-proof lid')
+      + tchk('t2-4','Food: flightless fruit flies + found pests (no crickets)')
+      + sh('🌿 #3 · Tall — katydid display (terrestrial)')
+      + tchk('t3-1','Coco coir substrate (Exo Terra Coco Husk)')
+      + tchk('t3-2','Branches + cork bark for climbing and molting clearance')
+      + tchk('t3-3','Add the isopod + springtail cleanup crew')
+      + tchk('t3-4','Food: fresh basil daily; room for a size-matched roommate')
+      + sh('❓ #4 · Wide — TEST tank (future aquatic)')
+      + tchk('t4-1','Fill and LEAK-TEST 24–48 hrs before trusting it')
+      + tchk('t4-2','If it holds: set it up as the big aquatic tank and cycle')
+      + tchk('t4-3','If it leaks: re-silicone the seams or repurpose it dry'));
   }
 
   else if (tankSub === "params") {
