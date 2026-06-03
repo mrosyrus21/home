@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 2, 2026 · 8:24 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 2, 2026 · 8:34 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -840,9 +840,9 @@ const PLANTS = [
   { id:"strawberry_pot", name:"Strawberry Pot (multi-plant)", emoji:"🍓", loc:"outdoor", freq:"Daily — a tall terracotta strawberry pot with a plant in each pocket, so it dries out fast and unevenly. Water in at the top and let it seep down through the pockets; in heat give the lower pockets a direct drink too. Keep every pocket evenly moist while the plants establish.", days:1, trimDays:14,
     trim:"✅ Runners cleared — all runners were taken off and the one that was rooting in a temp pot got snapped in the June 1 storm — so the pot is now putting all its energy into the crowns and berries. 🔥 Sunburn watch: leaves scorched in a day, so move the pots to morning sun with afternoon shade for 1–2 weeks and keep the mix evenly moist — a fried mother cannot root runners. Runner triage (you have ~4): snip any runner whose tip or baby plant has gone brown and crispy — it is dead and only drains the plant. Keep the 1–2 best green, bendy runners per plant and trim off their burnt tips. When a green runner grows a little leaf tuft at a node, lay that node on moist soil in an empty pocket or a small 3–4 inch pot and pin it down (bent wire, a paperclip, or a small stone) with the crown level — do NOT cut it from the mother yet. After 2–3 weeks, tug gently: if it has rooted, snip the runner free. Pinch all flowers this first year, and stop allowing new runners by mid-August so each plant hardens off for winter." },
   { id:"tomato",        name:"Heirloom Tomato",     emoji:"🍅", loc:"outdoor", freq:"Morning at the base — deep & CONSISTENT every day in heat (uneven watering is what causes the catfacing/cracking). Ease off slightly as fruit ripens.", days:1, trimDays:7,
-    trim:"Pinch out suckers (the shoots in the V between stem and a branch) weekly. Strip leaves touching the soil. Re-stake or cage it — it is leaning and outgrowing the bamboo. Harvest beefsteaks as they turn deep red and slightly soft." },
+    trim:"Pinch out suckers (the shoots in the V between stem and a branch) weekly. Strip leaves touching the soil. Re-stake or cage it — it is leaning and outgrowing the bamboo. Harvest beefsteaks as they turn deep red and slightly soft. 🌨️ Hail (Jun 1): the storm shredded some leaves — leave the torn ones on for now (they still feed the plant), snip only crushed or hanging bits with a clean cut so disease cannot enter the wound, and keep watering even; it should push fresh growth within a few days." },
   { id:"cherry_tomato", name:"Husky Cherry Tomato", emoji:"🍒", loc:"outdoor", freq:"Morning at the base — daily in heat, ease off when ripening to prevent splitting.", days:1, trimDays:10,
-    trim:"Compact (determinate) type — do NOT sucker-prune it or you cut your harvest. Just remove leaves touching the soil and yellowing growth. Pick cherries promptly once they blush and it pushes out more clusters." },
+    trim:"Compact (determinate) type — do NOT sucker-prune it or you cut your harvest. Just remove leaves touching the soil and yellowing growth. Pick cherries promptly once they blush and it pushes out more clusters. 🌨️ Hail (Jun 1): same storm damage — do not strip the tattered leaves, just remove anything crushed or snapped, then let it recover; determinate plants bounce back fast with steady water." },
   { id:"jalapeno",      name:"Jalapeño",            emoji:"🌶️", loc:"outdoor", freq:"Morning at the base — every 2-3 days, let the top 2 inches dry. Less water = hotter pepper.", days:2, trimDays:21,
     trim:"🐞 Aphids spotted on it — blast them off with water or wipe them down, and use them: this is the perfect start for the aphid + ladybug culture (snip an aphid-covered leaf into a deli cup and add ladybug larvae — see the bug plan). Then: pinch the first flowers for a bushier plant and a bigger later harvest, remove yellowing lower leaves, and pick at 3-4 inches, firm and dark green, for best heat." },
   { id:"raspberry",     name:"Raspberry",           emoji:"🍇", loc:"outdoor", freq:"Morning at the base — every 2-3 days, deep soak.", days:2, trimDays:21,
@@ -1417,7 +1417,8 @@ function wxAlerts(){
 }
 
 function dtDateKey(n){ const d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-function dtStreak(){ let n=0; for(let i=0;i<366;i++){ if(laundry["calldt-"+dtDateKey(i)]) n++; else if(i===0) continue; else break; } return n; }
+function streakOf(prefix){ let n=0; for(let i=0;i<366;i++){ if(laundry[prefix+dtDateKey(i)]) n++; else if(i===0) continue; else break; } return n; }
+function dtStreak(){ return streakOf("calldt-"); }
 function renderToday() {
   const el=document.getElementById("view-today"),sched=todaySched(),today=todayKey();
   const items=[];
@@ -2437,12 +2438,13 @@ function renderWellness() {
 
   // ── Litfulo med reminder ──
   const litDone = !!laundry["well-litfulo-"+today];
+  const litStk = streakOf("well-litfulo-");
   out += `<div class="section-label">💊 Medications</div>
   <div onclick="toggleWellness('litfulo')" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.${litDone?"15":"3"});border-radius:var(--rad);padding:16px 18px;margin-bottom:14px;cursor:pointer;transition:all .2s;box-shadow:0 2px 12px rgba(99,102,241,.08)">
     <div style="display:flex;align-items:center;gap:14px">
       <div style="font-size:30px;flex-shrink:0">${litDone?"✅":"💊"}</div>
       <div style="flex:1">
-        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${litDone?"var(--text3)":"var(--text)"};${litDone?"text-decoration:line-through":""}">Litfulo (ritlecitinib)</div>
+        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${litDone?"var(--text3)":"var(--text)"};${litDone?"text-decoration:line-through":""}">Litfulo (ritlecitinib)${litStk>=2?` <span style="font-size:11px;color:#FB923C;border:1px solid #FB923C55;border-radius:10px;padding:1px 7px;margin-left:6px;vertical-align:middle">🔥 ${litStk}d</span>`:""}</div>
         <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;margin-top:3px">Take daily · JAK inhibitor for alopecia areata · Currently refilling</div>
         <div style="font-size:11px;color:rgba(99,102,241,.7);font-family:'Lora',serif;margin-top:3px;font-style:italic">Missing doses may worsen symptoms — stay consistent when refill arrives</div>
       </div>
@@ -2484,6 +2486,14 @@ function renderWellness() {
     </div>
     ${todayPain ? `<div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;font-style:italic;text-align:center">Logged for ${today} — tap to change</div>` : ""}
   </div>`;
+
+  // ── 7-day pain history ──
+  { const PCOL={good:"#2DB870",sore:"#F59E0B",bad:"#EF4444"};
+    let dots="";
+    for(let i=6;i>=0;i--){ const dk=dtDateKey(i); const v=log[dk]; const c=v?PCOL[v]:"rgba(255,255,255,.06)"; const dd=new Date(); dd.setDate(dd.getDate()-i); const dl=["Su","Mo","Tu","We","Th","Fr","Sa"][dd.getDay()];
+      dots+=`<div style="flex:1;text-align:center"><div style="height:30px;border-radius:6px;background:${c};border:1px solid rgba(255,255,255,.06)"></div><div style="font-size:9px;color:var(--text3);margin-top:4px;font-family:'Lora',serif">${dl}</div></div>`; }
+    out += `<div class="section-label">📈 Last 7 Days</div>
+  <div style="background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:var(--rad);padding:14px 16px 12px;margin-bottom:14px"><div style="display:flex;gap:7px">${dots}</div></div>`; }
 
   // ── Doctor visit notes ──
   out += `<div class="section-label">🏥 Doctor Visit Notes — May 28, 2026</div>
