@@ -354,3 +354,21 @@ const HARVEST_INFO = {
   tomato:{how:"Twist gently or snip the stem once the fruit is deep-colored with a slight give — or pick at the first blush of color and ripen it on the counter to beat cracking and critters. Never refrigerate.",fact:"Counter-ripening from the breaker stage protects the fruit from splitting.",date:"2026-07-20"},
   raspberry:{how:"A ripe berry slips off its pale core with the lightest tug — if it resists, leave it another day. Pick into a shallow container so they do not crush each other, every 2–3 days in the cool morning.",fact:"A ripe raspberry leaves its core behind on the cane — that hollow is the giveaway.",date:"2027-06-15"}
 };
+
+/* ── RECIPES ──────────────────────────────────────────────────────────────
+   Placeholder list so the Food → Recipes tab has a featured card + grid + a
+   full detail page. Replace these with the real recipe list when ready.
+   Shape: { id, name, emoji, photo?, time?, difficulty?, servings?, tags?[],
+            featured?, blurb?, ingredients?[], steps?[] }                     */
+const RECIPES = [
+  { id:"r_ph1", name:"Your featured recipe goes here", emoji:"🍽️", featured:true,
+    time:"—", difficulty:"—", tags:["example"],
+    blurb:"This is the featured slot at the top of the Recipes tab. Send me your recipe list and your favorite lands right here.",
+    ingredients:[], steps:[] },
+  { id:"r_ph2", name:"Recipe card example", emoji:"🥗", time:"—", difficulty:"Easy", tags:["example"],
+    blurb:"Each recipe you give me becomes a card like this — tap it to open the full page.",
+    ingredients:[], steps:[] },
+  { id:"r_ph3", name:"Recipe card example", emoji:"🍲", time:"—", difficulty:"Easy", tags:["example"],
+    blurb:"Cards are styled like the plant cards. Photos show here once you add them.",
+    ingredients:[], steps:[] }
+];
