@@ -1757,15 +1757,29 @@ function renderRooms() {
   el.innerHTML=html;
 }
 
-function plantsDueOn(dateStr) {
+function plantsDueOn(dateStr, ignoreWx) {
   const target = new Date(dateStr+"T12:00:00");
+  // weather adjustment applies only to TODAY (the forecast horizon), never to future calendar dates
+  const wxOn = !ignoreWx && typeof todayKey==="function" && dateStr===todayKey() && typeof WXF!=="undefined" && WXF.ready;
   return PLANTS.filter(p => {
     if(waterPushed[p.id]&&waterPushed[p.id]>dateStr) return false;
     if (!watered[p.id]) return true;
     const last = new Date(watered[p.id]+"T12:00:00");
     const days = Math.round((target - last) / 86400000);
-    return days >= p.days;
+    let need = p.days;
+    if(wxOn && (p.loc==="outdoor"||p.loc==="greenhouse")){
+      if(WXF.hot) need = Math.max(1, need - 1);              // heat: bring watering forward a day
+      if(WXF.rainToday && p.loc==="outdoor") need = need + 2; // rain: let the sky water outdoor plants
+    }
+    return days >= need;
   });
+}
+// outdoor plants that WOULD be due today but the forecast rain is covering (so they're auto-skipped)
+function rainDeferredPlants(){
+  if(typeof WXF==="undefined" || !WXF.ready || !WXF.rainToday) return [];
+  const today=todayKey();
+  const dueNow=new Set(plantsDueOn(today).map(p=>p.id));
+  return plantsDueOn(today,true).filter(p=>p.loc==="outdoor" && !dueNow.has(p.id));
 }
 
 function gardenTasksOn(dateStr) {
@@ -1831,9 +1845,11 @@ function renderGarden() {
 
   if (gardenSub === "watering") {
     const dueSet = new Set(plantsDueOn(today).map(p=>p.id));
+    const rainSet = new Set(rainDeferredPlants().map(p=>p.id));
     const doneArr = PLANTS.filter(p=>watered[p.id]===today);
     const total = dueSet.size + doneArr.length, done = doneArr.length;
     html += `<div class="section-label">💧 Watering — ${done}/${total} done today</div>`;
+    if (rainSet.size) html += `<div style="background:rgba(126,184,240,.08);border:1px solid #7EB8F0;border-radius:10px;padding:10px 13px;margin-bottom:12px;font-size:12.5px;color:#7EB8F0;font-family:'Lora',serif;line-height:1.5">🌧️ Rain (${WXF.pop}%) is covering ${rainSet.size} outdoor plant${rainSet.size>1?"s":""} today — auto-skipped from the due list. Water anyway if a light shower won't soak the pots.</div>`;
     if (dueSet.size) html += `<div onclick="waterAllDue()" style="background:rgba(45,184,112,.1);border:1px solid rgba(45,184,112,.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="font-size:18px">💧</div><div style="font-size:13px;font-weight:600;color:#4AD490">Mark all as watered today</div></div>`;
     else if (total) html += `<div style="background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">✅</div><div style="font-size:13px;color:#4AD490;font-style:italic">All watered today — nice work</div></div>`;
     const urg = p => { if(watered[p.id]===today) return -1000; if(waterPushed[p.id]&&waterPushed[p.id]>today) return -500; const dd=daysSinceWatered(p.id); if(dd===null) return 1e9; return dd-(p.days||7); };
@@ -1842,9 +1858,9 @@ function renderGarden() {
       let bTxt,bCol,bl,bc;
       if(doneT){bTxt="✓ Watered";bCol="#4AD490";bl="✓ Watered today";bc="ok";}
       else if(needs){bTxt="💧 Needs water";bCol="#E07070";bl="💧 Water now";bc="now";}
+      else if(rainSet.has(p.id)){bTxt="🌧️ Rain's got it";bCol="#7EB8F0";bl="💧 Water anyway";bc="ok";}
       else if(st==="soon"){bTxt="⚠️ Due soon";bCol="#FBBF24";bl="💧 Water";bc="soon";}
       else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Water";bc="ok";}
-      if(WXF.ready&&p.loc==="outdoor"&&needs&&WXF.rainToday){bTxt="🌧️ Rain coming";bCol="#7EB8F0";bl="💧 Water anyway";}
       let body=hdr(p, days!==null?days+"d ago":"never");
       body+=sect("💧 When & how","#7EB8F0",wi.when||p.freq);
       if(wi.thirst) body+=sect("👀 Thirst check","#22D3EE",wi.thirst);
