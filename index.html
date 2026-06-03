@@ -994,6 +994,7 @@ let funPrints = {};
 let grocCustom = {};
 let printCustom = {};
 let taskCustom = {};
+let painLog = {};
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -1018,6 +1019,7 @@ function saveG()      { ST.child('gnat').set(gnat); }
 function savePushed() { ST.child('pushed').set(pushed); }
 function saveWP()     { ST.child('waterPushed').set(waterPushed); }
 function saveLaundry(){ ST.child('laundry').set(laundry); }
+function savePain(){ ST.child('painLog').set(painLog); }
 function toggleExpand(id){ expanded[id]=!expanded[id]; ST.child('expanded').set(expanded); renderAll(); }
 function toggleEvening(habit){ const k="evening-"+habit+"-"+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function saveShopping(){ ST.child('shopping').set(shopping); }
@@ -2429,9 +2431,8 @@ function toggleWellness(key) {
   renderAll();
 }
 function logPain(val) {
-  const log = JSON.parse(localStorage.getItem("painlog")||"{}");
-  log[todayKey()] = val;
-  localStorage.setItem("painlog", JSON.stringify(log));
+  painLog[todayKey()] = val;
+  savePain();
   renderAll();
 }
 
@@ -2439,7 +2440,7 @@ function logPain(val) {
 function renderWellness() {
   const el = document.getElementById("view-wellness");
   const today = todayKey();
-  const log   = JSON.parse(localStorage.getItem("painlog")||"{}");
+  const log   = painLog;
   let out = "";
 
   // ── Litfulo med reminder ──
@@ -2562,6 +2563,9 @@ ST.on('value', snap => {
   grocCustom  = d.grocCustom  || {};
   printCustom = d.printCustom || {};
   taskCustom  = d.taskCustom  || {};
+  painLog     = d.painLog     || {};
+  // one-time idempotent migration of any legacy localStorage pain entries up to Firebase
+  try { const legacy = JSON.parse(localStorage.getItem("painlog")||"{}"); let added=false; for(const k in legacy){ if(painLog[k]==null){ painLog[k]=legacy[k]; added=true; } } if(added){ ST.child('painLog').set(painLog); } } catch(e){}
   const flags = d.flags       || {};
 
   // One-time: initial plant watering baseline
