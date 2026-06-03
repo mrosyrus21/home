@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 3, 2026 · 12:48 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 3, 2026 · 2:02 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1467,7 +1467,6 @@ function renderGarden() {
   const today = todayKey();
   const d = new Date();
   let html = `<div class="today-date">${d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</div>`;
-  if(today<="2026-06-05"){ html += `<div style="background:linear-gradient(135deg,rgba(96,165,250,.14),rgba(96,165,250,.03));border:1px solid rgba(96,165,250,.4);border-left:4px solid #60A5FA;border-radius:14px;padding:13px 15px;margin-bottom:14px;box-shadow:0 0 24px rgba(96,165,250,.1)"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#60A5FA;margin-bottom:5px;font-family:'Lora',serif">🌩️ Storm aftermath · Jun 1</div><div style="font-size:12.5px;color:rgba(232,244,253,.85);font-family:'Lora',serif;line-height:1.55">Outdoor plants took a light afternoon rain + minor hail — some hail melted in the pots, so they got a <b>little</b> water, but not a deep soak. <b style="color:#BFDBFE">The thirsty ones still need a proper water.</b> Check the big outdoor plants (tomatoes, raspberry, jalapeño) for torn or bruised leaves and snapped stems, and tidy any breakage. The multi-strawberry pot's rooting runner got snapped in the storm.</div></div>`; }
   const photo_ = id => (PLANT_INFO[id]||{}).photo;
   function pcardStrawberry(p, badgeTxt, badgeCol, body){
     const a='images/strawberry_single_1.jpg', b='images/strawberry_single_2.jpg';
@@ -1542,14 +1541,16 @@ function renderGarden() {
     const todayDate=new Date(today+"T12:00:00");
     html += `<div class="section-label">🌾 Harvest</div>`;
     PLANTS.filter(p=>HARVEST_INFO[p.id]).map(p=>({p,h:HARVEST_INFO[p.id]}))
-      .sort((x,y)=>{ const hx=harvested[x.p.id]===today?1:0, hy=harvested[y.p.id]===today?1:0; if(hx!==hy) return hx-hy; return new Date(x.h.date)-new Date(y.h.date); })
+      .sort((x,y)=>{ const hx=harvested[x.p.id]===today?1:0, hy=harvested[y.p.id]===today?1:0; if(hx!==hy) return hx-hy; const dx=x.h.date?new Date(x.h.date):todayDate, dy=y.h.date?new Date(y.h.date):todayDate; return dx-dy; })
       .forEach(o=>{ const p=o.p, h=o.h;
-        const diff=Math.ceil((new Date(h.date+"T12:00:00")-todayDate)/86400000);
-        const ready=diff<=0, soon=diff>0&&diff<=14;
+        const ong=!!h.ongoing;
+        const diff=ong?null:Math.ceil((new Date(h.date+"T12:00:00")-todayDate)/86400000);
+        const ready=!ong&&diff<=0, soon=!ong&&diff>0&&diff<=14;
         const hDone=harvested[p.id]===today;
-        const bTxt=hDone?"✓ Harvested":ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
-        const bCol=hDone?"#2DB870":ready?"#4ADE80":soon?"#FBBF24":"#9bb3c9";
-        let body=hdr(p, ready?"ready":h.date);
+        const bTxt=hDone?"✓ Harvested":ong?"🌿 Pick when ripe":ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
+        const bCol=hDone?"#2DB870":(ong||ready)?"#4ADE80":soon?"#FBBF24":"#9bb3c9";
+        let body=hdr(p, ong?"when ripe":(ready?"ready":h.date));
+        if(ong&&h.signs) body+=sect("👀 Ready when you see…","#4ADE80",h.signs);
         body+=sect("✂️ How to pick","#4ADE80",h.how);
         body+=sect("🌟 Good to know","#FBBF24",h.fact);
         body+=wxHarvestNote(p);
