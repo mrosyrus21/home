@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 2, 2026 · 7:27 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 2, 2026 · 7:37 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -986,6 +986,7 @@ let trimmed  = {};
 let shopping  = {};
 let funPrints = {};
 let grocCustom = {};
+let printCustom = {};
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -1016,9 +1017,13 @@ function saveShopping(){ ST.child('shopping').set(shopping); }
 function toggleShop(id){ shopping[id]=!shopping[id]; saveShopping(); renderShopping(); }
 function saveFunPrints(){ ST.child('funPrints').set(funPrints); }
 function saveGroc(){ ST.child('grocCustom').set(grocCustom); }
-function addGroc(){ const el=document.getElementById('grocInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; grocCustom['gc-'+Date.now().toString(36)]=v; saveGroc(); renderGrocery(); }
+function addGroc(){ const el=document.getElementById('grocInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; if(!/\p{Extended_Pictographic}/u.test([...v][0]||'')) v=grocEmoji(v)+' '+v; grocCustom['gc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; saveGroc(); renderGrocery(); }
 function removeGroc(id){ delete grocCustom[id]; if(shopping[id]){ delete shopping[id]; saveShopping(); } saveGroc(); renderGrocery(); }
 function clearGroc(){ ['groc-greenonion','groc-eggs','groc-croissants'].concat(Object.keys(grocCustom)).forEach(id=>{ shopping[id]=false; }); saveShopping(); renderGrocery(); }
+function savePrint(){ ST.child('printCustom').set(printCustom); }
+function addPrint(){ const el=document.getElementById('printInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; printCustom['pc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; savePrint(); renderPrint(); }
+function removePrint(id){ delete printCustom[id]; savePrint(); renderPrint(); }
+function printCustomHtml(){ const ids=Object.keys(printCustom); if(!ids.length) return ''; const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); return '<div style="background:#0d0d1a;border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:2px 15px;margin-bottom:8px">'+ids.map(id=>'<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,.05)"><div style="flex:1;font-size:13px;color:var(--text);font-family:\'Lora\',serif">'+esc(printCustom[id])+'</div><div onclick="removePrint(\''+id+'\')" style="font-size:17px;color:#5a7a99;cursor:pointer;padding:0 2px;line-height:1">×</div></div>').join('')+'</div>'; }
 function saveTrimmed(){ ST.child('trimmed').set(trimmed); }
 function toggleFunPrint(id){ funPrints[id]=funPrints[id]?null:1; saveFunPrints(); renderAll(); }
 function trimPlant(id){ trimmed[id]=todayKey(); saveTrimmed(); renderAll(); }
@@ -2061,6 +2066,17 @@ function renderShopping() {
   el.innerHTML = html;
 }
 
+const GROC_EMOJI = {
+  "almond milk":"🥛","oat milk":"🥛","milkshake":"🥤","milk":"🥛","cheese":"🧀","butter":"🧈","yogurt":"🥛","cream":"🥛","ice cream":"🍨","egg":"🥚",
+  "apple":"🍎","banana":"🍌","orange":"🍊","lemon":"🍋","lime":"🍋","grape":"🍇","strawberr":"🍓","blueberr":"🫐","raspberr":"🍓","watermelon":"🍉","melon":"🍈","peach":"🍑","cherr":"🍒","pear":"🍐","pineapple":"🍍","mango":"🥭","coconut":"🥥","kiwi":"🥝",
+  "sweet potato":"🍠","potato":"🥔","tomato":"🍅","avocado":"🥑","eggplant":"🍆","carrot":"🥕","corn":"🌽","bell pepper":"🫑","jalapeno":"🌶️","chili":"🌶️","cucumber":"🥒","lettuce":"🥬","spinach":"🥬","kale":"🥬","broccoli":"🥦","cauliflower":"🥦","garlic":"🧄","green onion":"🌿","scallion":"🌿","onion":"🧅","mushroom":"🍄","ginger":"🫚","cilantro":"🌿","parsley":"🌿","basil":"🌿","mint":"🌿","herb":"🌿","celery":"🥬","peas":"🫛","bean":"🫘","lentil":"🫘",
+  "baguette":"🥖","croissant":"🥐","bagel":"🥯","pretzel":"🥨","pancake":"🥞","waffle":"🧇","muffin":"🧁","cupcake":"🧁","cake":"🍰","pie":"🥧","cookie":"🍪","donut":"🍩","doughnut":"🍩","tortilla":"🫓","flatbread":"🫓","bread":"🍞","rice":"🍚",
+  "chicken":"🍗","turkey":"🦃","beef":"🥩","steak":"🥩","bacon":"🥓","ham":"🍖","sausage":"🌭","hot dog":"🌭","meat":"🥩","salmon":"🐟","tuna":"🐟","fish":"🐟","shrimp":"🦐","crab":"🦀","lobster":"🦞","tofu":"🧊",
+  "spaghetti":"🍝","pasta":"🍝","ramen":"🍜","noodle":"🍜","soup":"🥫","flour":"🌾","sugar":"🧂","olive oil":"🫒","oil":"🫒","honey":"🍯","jam":"🍓","peanut butter":"🥜","peanut":"🥜","nut":"🥜","cereal":"🥣","oatmeal":"🥣","oats":"🥣","popcorn":"🍿","chip":"🍟","fries":"🍟","cracker":"🍘","chocolate":"🍫","candy":"🍬","salt":"🧂",
+  "coffee":"☕","tea":"🍵","juice":"🧃","soda":"🥤","cola":"🥤","beer":"🍺","wine":"🍷","water":"💧",
+  "toilet paper":"🧻","paper towel":"🧻","tissue":"🧻","napkin":"🧻","soap":"🧼","shampoo":"🧴","conditioner":"🧴","detergent":"🧴","bleach":"🧴","toothpaste":"🪥","toothbrush":"🪥","floss":"🦷","razor":"🪒","sponge":"🧽","trash bag":"🗑️","battery":"🔋","light bulb":"💡","candle":"🕯️","foil":"🌯","ziploc":"🛍️","bag":"🛍️"
+};
+function grocEmoji(t){ t=(t||'').toLowerCase(); const ks=Object.keys(GROC_EMOJI).sort((a,b)=>b.length-a.length); for(const k of ks){ if(t.indexOf(k)!==-1) return GROC_EMOJI[k]; } return '🛒'; }
 function renderGrocery() {
   const el = document.getElementById("view-grocery");
   const green = '#4AD490', teal = '#00e5cc';
@@ -2314,6 +2330,12 @@ function renderPrint() {
     <div style="background:linear-gradient(135deg,rgba(192,132,252,.14),rgba(129,140,248,.06));border:1px solid rgba(192,132,252,.4);border-radius:12px;padding:12px 15px;margin-bottom:12px">
       <div style="display:flex;align-items:center;gap:12px"><div style="font-size:30px">🐉</div><div style="flex:1"><div style="font-size:15px;font-weight:700;color:var(--text)">Cute Flexi Dragon</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">cinderwing3d · Printables / MakerWorld — print-in-place, no supports, killer in blue.</div></div></div>
     </div>
+    <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#A78BFA;font-family:'Lora';margin-bottom:8px">➕ Your own ideas</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input id="printInput" type="text" placeholder="Add a print idea…" onkeydown="if(event.key==='Enter')addPrint()" style="flex:1;background:#0d0d1a;border:1px solid rgba(167,139,250,.3);border-radius:10px;padding:10px 13px;color:var(--text);font-family:'Lora';font-size:14px;outline:none">
+      <div onclick="addPrint()" style="background:rgba(167,139,250,.18);border:1px solid #A78BFA;border-radius:10px;padding:10px 16px;color:#A78BFA;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap">+ Add</div>
+    </div>
+    ${printCustomHtml()}
     <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#A78BFA;font-family:'Lora',serif;margin-bottom:8px">🦎 Articulated / flexi list</div>
     <div style="background:#0d0d1a;border:1px solid rgba(129,140,248,.15);border-radius:12px;padding:4px 15px 8px;margin-bottom:8px">
       <div style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="font-size:13px;font-weight:600;color:var(--text)">Flexi Rex</span> <span style="font-size:11px;color:var(--text3);font-family:'Lora',serif">— Flexi Factory (Dan Sopala) · Thingiverse / MakerWorld</span></div>
@@ -2478,6 +2500,7 @@ ST.on('value', snap => {
   shopping    = d.shopping    || {};
   funPrints   = d.funPrints   || {};
   grocCustom  = d.grocCustom  || {};
+  printCustom = d.printCustom || {};
   const flags = d.flags       || {};
 
   // One-time: initial plant watering baseline
