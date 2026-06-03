@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 2, 2026 · 8:21 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 2, 2026 · 8:24 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -987,6 +987,7 @@ let shopping  = {};
 let funPrints = {};
 let grocCustom = {};
 let printCustom = {};
+let taskCustom = {};
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -1023,6 +1024,10 @@ function clearGroc(){ ['groc-greenonion','groc-eggs','groc-croissants'].concat(O
 function savePrint(){ ST.child('printCustom').set(printCustom); }
 function addPrint(){ const el=document.getElementById('printInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; printCustom['pc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; savePrint(); renderPrint(); }
 function removePrint(id){ delete printCustom[id]; savePrint(); renderPrint(); }
+function roomTaskEntries(roomId){ return Object.entries(TASKS).filter(([id,t])=>t.room===roomId).concat(Object.entries(taskCustom).filter(([id,t])=>t.room===roomId)); }
+function saveTasksC(){ ST.child('taskCustom').set(taskCustom); }
+function addTaskC(roomId){ const el=document.getElementById('taskInput-'+roomId); if(!el) return; const v=(el.value||'').trim(); if(!v) return; taskCustom['ct-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={room:roomId,label:v,level:'easy'}; el.value=''; saveTasksC(); renderRooms(); }
+function removeTaskC(id){ delete taskCustom[id]; if(checked[id]){ delete checked[id]; save(); } saveTasksC(); renderRooms(); }
 function printCustomHtml(){ const ids=Object.keys(printCustom); if(!ids.length) return ''; const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); return '<div style="background:#0d0d1a;border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:2px 15px;margin-bottom:8px">'+ids.map(id=>'<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,.05)"><div style="flex:1;font-size:13px;color:var(--text);font-family:\'Lora\',serif">'+esc(printCustom[id])+'</div><div onclick="removePrint(\''+id+'\')" style="font-size:17px;color:#5a7a99;cursor:pointer;padding:0 2px;line-height:1">×</div></div>').join('')+'</div>'; }
 function saveTrimmed(){ ST.child('trimmed').set(trimmed); }
 function toggleFunPrint(id){ funPrints[id]=funPrints[id]?null:1; saveFunPrints(); renderAll(); }
@@ -1309,7 +1314,7 @@ const TIME_META={
 };
 function getTaskTime(id){
   if(TIME_META[id]) return TIME_META[id];
-  const t=TASKS[id]; if(!t) return {order:850,timeLabel:"Afternoon",dur:"~30 min"};
+  const t=TASKS[id]||taskCustom[id]; if(!t) return {order:850,timeLabel:"Afternoon",dur:"~30 min"};
   const isWknd=(new Date().getDay()===0||new Date().getDay()===6);
   if(t.level==="hard")     return isWknd?{order:440,timeLabel:"Morning",dur:"2–4 hrs"}:{order:840,timeLabel:"Afternoon",dur:"2–4 hrs"};
   if(t.level==="moderate") return isWknd?{order:460,timeLabel:"Morning",dur:"1–2 hrs"}:{order:860,timeLabel:"Afternoon",dur:"1–2 hrs"};
@@ -1367,7 +1372,7 @@ function todaysPlan(){
   const order=["kitchen","living","office","bedroom","bathroom","backyard","garage"];
   const lv={easy:0,moderate:1,hard:2};
   for(const roomId of order){
-    const all=Object.entries(TASKS).filter(([id,t])=>t.room===roomId);
+    const all=roomTaskEntries(roomId);
     if(!all.length) continue;
     const done=all.filter(([id])=>checked[id]).length, total=all.length;
     if(done>=total) continue;
@@ -1381,7 +1386,7 @@ function todaysPlan(){
   return {ids:[], roomId:"kitchen", roomName:"", color:"#10B981", roomDone:0, roomTotal:0, roomPct:100};
 }
 function planCard(id){
-  const t=TASKS[id]; if(!t) return "";
+  const t=TASKS[id]||taskCustom[id]; if(!t) return "";
   const r=ROOMS[t.room]||ROOMS.kitchen;
   const isDone=!!checked[id];
   const open=!!expanded[id];
@@ -1627,7 +1632,7 @@ function renderTimeline() {
   const order=["kitchen","living","office","bedroom","bathroom","backyard","garage"];
   const lv={easy:0,moderate:1,hard:2};
   const rooms=order.map(roomId=>{
-    const all=Object.entries(TASKS).filter(([id,t])=>t.room===roomId);
+    const all=roomTaskEntries(roomId);
     const rem=all.filter(([id])=>!checked[id]).map(([id,t])=>({id,level:t.level}));
     rem.sort((a,b)=>(lv[a.level]??1)-(lv[b.level]??1));
     return {roomId, rem, total:all.length, done:all.filter(([id])=>checked[id]).length};
@@ -1697,7 +1702,7 @@ function renderRooms() {
   let html="";
   order.forEach(roomId=>{
     const r=ROOMS[roomId];
-    const allT=Object.entries(TASKS).filter(([id,t])=>t.room===roomId);
+    const allT=roomTaskEntries(roomId);
     const done=allT.filter(([id])=>checked[id]).length,total=allT.length;
     const pct=total?Math.round(done/total*100):0;
     const isComplete=total>0&&done===total;
@@ -1731,8 +1736,10 @@ function renderRooms() {
             ${t.note?`<div style="font-size:11px;color:var(--text2);font-style:italic;margin-top:4px;padding:6px 10px;border-radius:6px;background:rgba(0,0,0,.2);border:1px solid var(--border)">${t.note}</div>`:""}
           </div>
           ${levelBadge(t.level)}
+          ${taskCustom[id]?`<button onclick="event.stopPropagation();removeTaskC('${id}')" title="Remove" style="background:none;border:none;color:var(--text3);font-size:18px;line-height:1;cursor:pointer;padding:0 4px">×</button>`:""}
         </div>`;
       });
+      html+=`<div style="display:flex;gap:8px;margin-top:10px"><input id="taskInput-${roomId}" placeholder="➕ Add a task to ${r.name}…" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter'){event.stopPropagation();addTaskC('${roomId}')}" style="flex:1;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:8px;padding:8px 11px;color:var(--text);font-size:13px;font-family:inherit"><button onclick="event.stopPropagation();addTaskC('${roomId}')" style="background:${r.color}22;border:1px solid ${r.color}55;color:${r.color};border-radius:8px;padding:0 14px;font-size:13px;font-weight:600;cursor:pointer">Add</button></div>`;
       html+=`</div>`;
     }
 
@@ -2538,6 +2545,7 @@ ST.on('value', snap => {
   funPrints   = d.funPrints   || {};
   grocCustom  = d.grocCustom  || {};
   printCustom = d.printCustom || {};
+  taskCustom  = d.taskCustom  || {};
   const flags = d.flags       || {};
 
   // One-time: initial plant watering baseline
