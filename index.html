@@ -985,6 +985,7 @@ let expanded = {};
 let trimmed  = {};
 let shopping  = {};
 let funPrints = {};
+let grocCustom = {};
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -1014,6 +1015,10 @@ function toggleEvening(habit){ const k="evening-"+habit+"-"+todayKey(); laundry[
 function saveShopping(){ ST.child('shopping').set(shopping); }
 function toggleShop(id){ shopping[id]=!shopping[id]; saveShopping(); renderShopping(); }
 function saveFunPrints(){ ST.child('funPrints').set(funPrints); }
+function saveGroc(){ ST.child('grocCustom').set(grocCustom); }
+function addGroc(){ const el=document.getElementById('grocInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; grocCustom['gc-'+Date.now().toString(36)]=v; saveGroc(); renderGrocery(); }
+function removeGroc(id){ delete grocCustom[id]; if(shopping[id]){ delete shopping[id]; saveShopping(); } saveGroc(); renderGrocery(); }
+function clearGroc(){ ['groc-greenonion','groc-eggs','groc-croissants'].concat(Object.keys(grocCustom)).forEach(id=>{ shopping[id]=false; }); saveShopping(); renderGrocery(); }
 function saveTrimmed(){ ST.child('trimmed').set(trimmed); }
 function toggleFunPrint(id){ funPrints[id]=funPrints[id]?null:1; saveFunPrints(); renderAll(); }
 function trimPlant(id){ trimmed[id]=todayKey(); saveTrimmed(); renderAll(); }
@@ -2059,35 +2064,40 @@ function renderShopping() {
 function renderGrocery() {
   const el = document.getElementById("view-grocery");
   const green = '#4AD490', teal = '#00e5cc';
-
-  function checkItem(id, label) {
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  function row(id, label, removable) {
     const done = !!shopping[id];
-    return '<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid rgba(45,184,112,.15);cursor:pointer;font-size:14px;'
-      + 'color:' + (done ? '#3a5a5a' : 'var(--text)') + ';' + (done ? 'text-decoration:line-through;' : '') + 'font-family:\'Lora\',serif" onclick="toggleShop(\'' + id + '\')">'
+    const x = removable ? '<div onclick="event.stopPropagation();removeGroc(\'' + id + '\')" style="font-size:18px;color:#5a7a99;padding:0 2px 0 8px;cursor:pointer;flex-shrink:0;line-height:1">×</div>' : '';
+    return '<div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(45,184,112,.15);font-size:14px;color:' + (done ? '#3a5a5a' : 'var(--text)') + ';' + (done ? 'text-decoration:line-through;' : '') + 'font-family:\'Lora\',serif">'
+      + '<div onclick="toggleShop(\'' + id + '\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer">'
       + '<div style="width:24px;height:24px;border-radius:7px;border:1.5px solid ' + (done ? green : 'rgba(45,184,112,.35)') + ';background:' + (done ? 'rgba(74,212,144,.15)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:' + green + ';font-weight:900">' + (done ? '✓' : '') + '</div>'
-      + label + '</div>';
+      + '<span>' + label + '</span></div>' + x + '</div>';
   }
-
   const grocItems = [
     { id:'groc-greenonion', label:'🌿 Green onion' },
     { id:'groc-eggs', label:'🥚 Eggs' },
     { id:'groc-croissants', label:'🥐 Croissants' },
   ];
-  const doneCount = grocItems.filter(i => shopping[i.id]).length;
-
+  const customIds = Object.keys(grocCustom);
+  const allIds = grocItems.map(i => i.id).concat(customIds);
+  const doneCount = allIds.filter(id => shopping[id]).length;
   el.innerHTML =
     '<div style="text-align:center;margin-bottom:20px;padding-top:4px">'
     + '<div style="font-size:9px;letter-spacing:.2em;color:' + green + ';text-transform:uppercase;font-family:\'Lora\',serif;margin-bottom:4px">🛒 Shopping List</div>'
     + '<div style="font-family:\'Playfair Display\',serif;font-size:24px;font-weight:700;background:linear-gradient(135deg,' + green + ',' + teal + ');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Grocery</div>'
-    + '<div style="font-size:10px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic">Tap items to check off as you shop</div></div>'
-
-    + '<div style="background:rgba(74,212,144,.07);border:1px solid rgba(74,212,144,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">'
-    + '<div style="font-size:12px;color:rgba(232,244,253,.7);font-family:\'Lora\',serif">' + doneCount + ' of ' + grocItems.length + ' picked up</div>'
-    + (doneCount > 0 ? '<div onclick="[\'groc-greenonion\',\'groc-eggs\',\'groc-croissants\'].forEach(id=>{shopping[id]=false});saveShopping();renderGrocery()" style="font-size:11px;color:#5a7a99;font-family:\'Lora\',serif;cursor:pointer;text-decoration:underline">Clear all</div>' : '')
+    + '<div style="font-size:10px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic">Tap to check off · type below to add your own</div></div>'
+    + '<div style="display:flex;gap:8px;margin-bottom:14px">'
+    + '<input id="grocInput" type="text" placeholder="Add an item…" onkeydown="if(event.key===\'Enter\')addGroc()" style="flex:1;background:#0a1628;border:1px solid rgba(45,184,112,.3);border-radius:10px;padding:11px 13px;color:var(--text);font-family:\'Lora\',serif;font-size:14px;outline:none">'
+    + '<div onclick="addGroc()" style="background:rgba(74,212,144,.18);border:1px solid ' + green + ';border-radius:10px;padding:11px 16px;color:' + green + ';font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;white-space:nowrap">+ Add</div>'
     + '</div>'
-
+    + '<div style="background:rgba(74,212,144,.07);border:1px solid rgba(74,212,144,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">'
+    + '<div style="font-size:12px;color:rgba(232,244,253,.7);font-family:\'Lora\',serif">' + doneCount + ' of ' + allIds.length + ' picked up</div>'
+    + (doneCount > 0 ? '<div onclick="clearGroc()" style="font-size:11px;color:#5a7a99;font-family:\'Lora\',serif;cursor:pointer;text-decoration:underline">Clear all</div>' : '')
+    + '</div>'
     + '<div style="background:#0a1628;border:1px solid rgba(45,184,112,.2);border-radius:14px;padding:2px 16px;margin-bottom:16px">'
-    + grocItems.map(i => checkItem(i.id, i.label)).join('')
+    + grocItems.map(i => row(i.id, i.label, false)).join('')
+    + customIds.map(id => row(id, esc(grocCustom[id]), true)).join('')
+    + (allIds.length === grocItems.length ? '' : '')
     + '</div>';
 }
 
@@ -2467,6 +2477,7 @@ ST.on('value', snap => {
   trimmed     = d.trimmed     || {};
   shopping    = d.shopping    || {};
   funPrints   = d.funPrints   || {};
+  grocCustom  = d.grocCustom  || {};
   const flags = d.flags       || {};
 
   // One-time: initial plant watering baseline
