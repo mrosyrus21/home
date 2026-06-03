@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 2, 2026 · 8:04 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 2, 2026 · 8:21 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1341,13 +1341,24 @@ function strip(emoji,label,done,color,onclick,tl,dur,sub,pushFn){
 }
 
 function agendaHtml(items){
-  items.sort((a,b)=>(a.order||999)-(b.order||999));
   const buckets=[["Morning",0,700],["Midday",700,840],["Afternoon",840,1060],["Evening",1060,1240],["Night",1240,1e9]];
+  const bidx=o=>{ const i=buckets.findIndex(x=>o>=x[1]&&o<x[2]); return i<0?buckets.length:i; };
+  // Smarter ordering: keep time buckets in order, but float incomplete items
+  // to the top of each bucket and sink completed ones to the bottom.
+  items.sort((a,b)=>{
+    const oa=a.order||999, ob=b.order||999, ba=bidx(oa), bb=bidx(ob);
+    if(ba!==bb) return ba-bb;
+    const da=a.done?1:0, db=b.done?1:0;
+    if(da!==db) return da-db;
+    return oa-ob;
+  });
+  const h=new Date().getHours();
+  const nowName = h<11?"Morning":h<13?"Midday":h<17?"Afternoon":h<21?"Evening":"Night";
   let out="", cur=null;
   items.forEach(it=>{
-    const b=buckets.find(x=>(it.order||999)>=x[1]&&(it.order||999)<x[2]);
-    const name=b?b[0]:"Anytime";
-    if(name!==cur){ cur=name; out+=`<div class="agenda-h">${name}</div>`; }
+    const i=bidx(it.order||999);
+    const name=i<buckets.length?buckets[i][0]:"Anytime";
+    if(name!==cur){ cur=name; out+=`<div class="agenda-h">${name}${name===nowName?' <span style="font-size:9px;letter-spacing:.15em;color:#F5B830;border:1px solid #F5B83055;border-radius:10px;padding:1px 7px;margin-left:7px;vertical-align:middle">📍 NOW</span>':''}</div>`; }
     out+=it.html;
   });
   return out;
