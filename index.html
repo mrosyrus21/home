@@ -621,7 +621,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 2, 2026 · 7:40 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 2, 2026 · 7:47 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1400,6 +1400,8 @@ function wxAlerts(){
   return out.join('');
 }
 
+function dtDateKey(n){ const d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function dtStreak(){ let n=0; for(let i=0;i<366;i++){ if(laundry["calldt-"+dtDateKey(i)]) n++; else if(i===0) continue; else break; } return n; }
 function renderToday() {
   const el=document.getElementById("view-today"),sched=todaySched(),today=todayKey();
   const items=[];
@@ -1407,9 +1409,10 @@ function renderToday() {
 
   // ── CALL DT (pinned top always) ───────────────────────────────────────────────
   const dtDone=!!laundry["calldt-"+today];
+  const dtStk=dtStreak();
   let topHtml=`<div style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.12);position:relative;overflow:hidden;cursor:pointer;" onclick="toggleDT()">
     <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(220,30,30,.5),transparent)"></div>
-    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:6px;font-family:'Lora',serif">🚨 Extreme Priority — Every Day</div>
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:6px;font-family:'Lora',serif">🚨 Extreme Priority — Every Day${dtStk>=2?' · 🔥 '+dtStk+'-day streak':''}</div>
     <div style="display:flex;align-items:center;gap:14px">
       <div style="font-size:30px;flex-shrink:0">${dtDone?"✅":"📞"}</div>
       <div style="flex:1">
