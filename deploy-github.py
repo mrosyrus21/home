@@ -67,6 +67,8 @@ try:
         ampm = "AM" if now.hour < 12 else "PM"
         stamp = f"{mons[now.month-1]} {now.day}, {now.year} · {h12}:{now.minute:02d} {ampm} MT"
         html = open(idx, "r", encoding="utf-8").read()
+        import time as _t
+        html = re.sub(r'data\.js\?v=[0-9]*', "data.js?v="+_t.strftime("%Y%m%d%H%M%S"), html)
         new = re.sub(r'(const LAST_DEPLOY = ")[^"]*(";)', lambda m: m.group(1)+stamp+m.group(2), html, count=1)
         if new != html:
             open(idx, "w", encoding="utf-8").write(new)
