@@ -1378,6 +1378,18 @@ function planCard(id){
   c+='</div></div>';
   return c;
 }
+function wxAlerts(){
+  if(typeof WXF==="undefined" || !WXF.ready) return '';
+  const out=[];
+  const card=(a,icon,title,body)=>'<div style="background:linear-gradient(135deg,'+a+'24,'+a+'08);border:1px solid '+a+'66;border-left:4px solid '+a+';border-radius:var(--rad);padding:13px 16px;margin-bottom:12px;box-shadow:0 0 20px '+a+'1f"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:'+a+';margin-bottom:5px;font-family:\'Lora\',serif">'+icon+' '+title+'</div><div style="font-size:12.5px;color:rgba(232,244,253,.85);font-family:\'Lora\',serif;line-height:1.55">'+body+'</div></div>';
+  if(WXF.code>=95) out.push(card('#FB923C','⛈️','Thunderstorms — '+WXF.temp+'°','Get the hail-prone pots under cover, secure loose yard items, skip watering (the storm brings it), and unplug / do not run the 3D printer during lightning.'));
+  if(WXF.frost) out.push(card('#60A5FA','🥶','Frost risk — low '+WXF.lo+'°','Cover or bring in the tender outdoor plants tonight: tomatoes, peppers, strawberries, and the New Mexico Chile seedling.'));
+  if(WXF.hot) out.push(card('#F5B830','🔥','Heat — high '+WXF.hi+'°','Water deeply early, and give seedlings plus recently hail-damaged plants some afternoon shade.'));
+  if(WXF.windy) out.push(card('#A78BFA','💨','Wind — gusts to '+WXF.windMax+' mph','Move or shelter the light pots, re-stake the tomatoes, and keep the greenhouse flap closed.'));
+  if(WXF.rainToday && WXF.code<95) out.push(card('#22D3EE','🌧️','Rain likely today — '+WXF.pop+'%','Outdoor watering can probably wait — let the rain do it, then check the pots actually got a deep soak (a light shower does not count).'));
+  return out.join('');
+}
+
 function renderToday() {
   const el=document.getElementById("view-today"),sched=todaySched(),today=todayKey();
   const items=[];
@@ -1401,21 +1413,7 @@ function renderToday() {
 
 
 
-  // ── THUNDERSTORM WATCH (Jun 2, pinned today) ─────────────────────────────────
-  if(today==="2026-06-02"){ const stDone=!!checked["storm_jun2"];
-    topHtml+=`<div style="background:linear-gradient(135deg,rgba(251,146,60,.16),rgba(251,146,60,.04));border:1px solid rgba(251,146,60,.45);border-left:4px solid #FB923C;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(251,146,60,.12)" onclick="toggle('storm_jun2')">
-      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,146,60,.5),transparent)"></div>
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FB923C;margin-bottom:6px;font-family:'Lora',serif">⛈️ Thunderstorm — happening now</div>
-      <div style="display:flex;align-items:center;gap:14px">
-        <div style="font-size:28px;flex-shrink:0">${stDone?"✅":"⛈️"}</div>
-        <div style="flex:1">
-          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${stDone?"var(--text3)":"#FCE9C8"};${stDone?"text-decoration:line-through":""}">Protect the plants — storm rolling in</div>
-          <div style="font-size:12px;color:${stDone?"var(--text3)":"rgba(245,200,130,.85)"};font-style:italic;margin-top:4px">They took hail yesterday. Get the vulnerable pots under cover NOW — the strawberry pots, the New Mexico Chile seedling, anything small or already damaged. Secure loose yard items, skip watering (the storm is bringing it), and unplug / do not run the 3D printer during the lightning.</div>
-        </div>
-        <div style="width:30px;height:30px;border-radius:50%;border:2px solid ${stDone?"#10B981":"#FB923C"};background:${stDone?"#10B981":"transparent"};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0">${stDone?"✓":""}</div>
-      </div>
-    </div>`;
-  }
+  topHtml += wxAlerts();
   // ── FIX SMART START (priority, pinned until done) ─────────────────────────────
   if(!checked["fix_smart_start"]){
     topHtml+=`<div style="background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.4);border-left:4px solid #F59E0B;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,158,11,.1)" onclick="toggle('fix_smart_start')">
@@ -2550,6 +2548,7 @@ function loadWeather(){
       renderHeaderWeather();
       if(typeof currentTab!=="undefined"){
         if(currentTab==="garden" && document.getElementById("view-garden")) renderGarden();
+        if(currentTab==="today") renderToday();
         if(currentTab==="forecast" && document.getElementById("view-forecast")) renderForecast();
       }
     }).catch(()=>{});
