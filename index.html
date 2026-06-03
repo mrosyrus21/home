@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#06050A">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Garden">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Schedule 📅</title><!-- TITLE TAG — matches CONFIG.title above -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -621,7 +627,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 2, 2026 · 9:16 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 2, 2026 · 9:27 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2755,5 +2761,6 @@ function updateClock(){
 updateClock();
 setInterval(updateClock,30000);
 </script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});}</script>
 </body>
 </html>
