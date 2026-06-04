@@ -357,7 +357,28 @@ const HARVEST_INFO = {
    Shape: { id, name, emoji, photo?, time?, difficulty?, servings?, tags?[],
             featured?, blurb?, ingredients?[], steps?[] }                     */
 const RECIPES = [
-  { id:"r_ph1", name:"Your featured recipe goes here", emoji:"🍽️", featured:true,
+  { id:"r_beef_tenderloin", name:"Beef Tenderloin with Garden Veggie Sauté + Grilled Romaine", emoji:"🥩", featured:true,
+    time:"~45 min", difficulty:"Medium", servings:"2–3", tags:["dinner","garden"],
+    blurb:"A restaurant-style seared beef tenderloin with a one-pan sauté of squash, zucchini, mushrooms, green onions and spinach, finished with quick-grilled romaine — most of it straight from the garden.",
+    ingredients:[
+      "Beef tenderloin (about 1 to 1.5 lb, or individual steaks)",
+      "Olive oil + butter",
+      "Salt, pepper, garlic",
+      "1 yellow squash, sliced",
+      "1 zucchini, sliced",
+      "8 oz mushrooms, sliced",
+      "1 bunch green onions, chopped",
+      "A few handfuls of spinach",
+      "1 to 2 romaine hearts"
+    ],
+    steps:[
+      "Season the tenderloin well with salt and pepper, and let it come to room temperature.",
+      "Sear in a hot oiled cast-iron pan 2 to 3 minutes per side, basting with butter and garlic, and finish to about 130°F for medium-rare. Rest 10 minutes.",
+      "In the same pan, brown the mushrooms, then add the zucchini and yellow squash for 4 to 5 minutes. Add the green onions, toss in the spinach to wilt, and season.",
+      "Halve the romaine hearts, brush with oil, and sear or grill cut-side down 1 to 2 minutes (or use them raw as a side salad).",
+      "Slice the tenderloin and plate it with the veggie sauté and the romaine."
+    ]},
+  { id:"r_ph1", name:"Your featured recipe goes here", emoji:"🍽️", featured:false,
     time:"—", difficulty:"—", tags:["example"],
     blurb:"This is the featured slot at the top of the Recipes tab. Send me your recipe list and your favorite lands right here.",
     ingredients:[], steps:[] },

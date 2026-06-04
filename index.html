@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 3, 2026 · 9:19 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 3, 2026 · 9:40 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -648,6 +648,9 @@ let harvested = {};
 let shopping  = {};
 let funPrints = {};
 let grocCustom = {};
+let inventory = {};
+let grocPurchased = {};
+const GROC_BUILTIN=[{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
 let printCustom = {};
 let taskCustom = {};
 let painLog = {};
@@ -687,6 +690,24 @@ function saveGroc(){ ST.child('grocCustom').set(grocCustom); }
 function addGroc(){ const el=document.getElementById('grocInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; if(!/\p{Extended_Pictographic}/u.test([...v][0]||'')) v=grocEmoji(v)+' '+v; grocCustom['gc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; saveGroc(); renderGrocery(); }
 function removeGroc(id){ delete grocCustom[id]; if(shopping[id]){ delete shopping[id]; saveShopping(); } saveGroc(); renderGrocery(); }
 function clearGroc(){ ['groc-greenonion','groc-eggs','groc-croissants'].concat(Object.keys(grocCustom)).forEach(id=>{ shopping[id]=false; }); saveShopping(); renderGrocery(); }
+function saveInv(){ ST.child('inventory').set(inventory); }
+function saveGrocPurchased(){ ST.child('grocPurchased').set(grocPurchased); }
+function invKey(s){ return String(s||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim().split(' ').map(function(w){ return (w.length>3&&w.charAt(w.length-1)==='s')?w.slice(0,-1):w; }).join(' '); }
+function splitEmoji(label){ const m=String(label||'').match(/^\s*(\p{Extended_Pictographic}[️‍\p{Extended_Pictographic}]*)\s*(.*)$/u); return m?{emoji:m[1],name:(m[2]||'').trim()||m[1]}:{emoji:'',name:String(label||'').trim()}; }
+function grocLabel(id){ const b=GROC_BUILTIN.find(function(i){return i.id===id;}); if(b) return b.label; if(grocCustom[id]) return grocCustom[id]; return id; }
+function buyGroc(id){ const sp=splitEmoji(grocLabel(id)); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:sp.emoji||'🛒',inStock:true,ts:Date.now()}; grocPurchased[id]=true; if(shopping[id]){ delete shopping[id]; saveShopping(); } saveInv(); saveGrocPurchased(); renderGrocery(); }
+function addInv(){ const el=document.getElementById('invInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; const sp=splitEmoji(v); const em=sp.emoji||grocEmoji(sp.name); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:em,inStock:true,ts:Date.now()}; saveInv(); renderGrocery(); }
+function addToGrocery(name,emoji){ const k=invKey(name);
+  const bi=GROC_BUILTIN.find(function(i){return invKey(splitEmoji(i.label).name)===k;}); if(bi){ if(grocPurchased[bi.id]){ delete grocPurchased[bi.id]; saveGrocPurchased(); } return; }
+  const cu=Object.keys(grocCustom).find(function(id){return invKey(splitEmoji(grocCustom[id]).name)===k;}); if(cu){ if(grocPurchased[cu]){ delete grocPurchased[cu]; saveGrocPurchased(); } return; }
+  grocCustom['gc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=(emoji||grocEmoji(name))+' '+name; saveGroc(); }
+function invRanOut(k){ const it=inventory[k]; if(!it) return; it.inStock=false; saveInv(); addToGrocery(it.name,it.emoji); renderGrocery(); }
+function invBackInStock(k){ const it=inventory[k]; if(!it) return; it.inStock=true; saveInv();
+  const bi=GROC_BUILTIN.find(function(i){return invKey(splitEmoji(i.label).name)===k;}); if(bi){ grocPurchased[bi.id]=true; saveGrocPurchased(); }
+  const cu=Object.keys(grocCustom).find(function(id){return invKey(splitEmoji(grocCustom[id]).name)===k;}); if(cu){ grocPurchased[cu]=true; saveGrocPurchased(); }
+  renderGrocery(); }
+function removeInv(k){ const it=inventory[k]; const wasIn=it&&it.inStock; const nm=it?it.name:''; const em=it?it.emoji:''; delete inventory[k]; saveInv(); if(wasIn&&nm) addToGrocery(nm,em); renderGrocery(); }
+
 function savePrint(){ ST.child('printCustom').set(printCustom); }
 function addPrint(){ const el=document.getElementById('printInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; printCustom['pc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; savePrint(); renderPrint(); }
 function removePrint(id){ delete printCustom[id]; savePrint(); renderPrint(); }
@@ -769,7 +790,7 @@ function toggle(id)  { checked[id]=!checked[id]; save(); renderAll(); }
 function toggleLaundry() { const k=todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function waterPlant(id)  { watered[id]=todayKey(); saveW(); renderAll(); }
 
-const NO_PROGRESS=new Set(["proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
+const NO_PROGRESS=new Set(["proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -817,7 +838,7 @@ function renderSubtabs(t) {
   if(t==="garden"){ subs=[["watering","💧 Watering"],["harvest","🌾 Harvest"],["care","❤️ Care"]]; cur=gardenSub; fn="switchGardenSub"; }
   else if(t==="shopping"){ subs=[["system","🗂️ System"],["todo","✅ To-Do"],["setup","🐠 Setup"],["params","🧪 Params"],["history","📚 Log"]]; cur=tankSub; fn="switchTankSub"; }
   else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","🎨 Wishlist"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
-  else if(t==="grocery"){ subs=[["list","🛒 List"],["recipes","🍳 Recipes"]]; cur=foodSub; fn="switchFoodSub"; }
+  else if(t==="grocery"){ subs=[["list","🛒 List"],["recipes","🍳 Recipes"],["inventory","🧺 Inventory"]]; cur=foodSub; fn="switchFoodSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
 }
@@ -1135,6 +1156,18 @@ function renderToday() {
 
   // ── TONIGHT'S PROJECTS (pinned until done) ────────────────────────────────────
   const NIGHT_PROJECTS=[
+    { id:"proj_greenonion", emoji:"🌿", hex:"#34D399", rgb:"52,211,153",
+      eyebrow:"🌙 Tonight's Project · Regrow",
+      title:"Regrow green onions",
+      tonight:"Stand the white root ends root-down in a glass with about an inch of water on a bright windowsill.",
+      steps:[
+        "Save the white root ends, about 1 to 2 inches long, with the roots still intact.",
+        "Stand them root-down in a glass with about 1 inch of water.",
+        "Put the glass on a bright windowsill — indirect light is fine.",
+        "Change the water every 1 to 2 days.",
+        "New green tops regrow in days — snip what you need and they keep regrowing for weeks.",
+        "Optional: pot them into soil for sturdier, longer-term growth."
+      ]},
     { id:"proj_romaine", emoji:"🥬", hex:"#4ADE80", rgb:"74,222,128",
       eyebrow:"🌙 Tonight's Project · Regrow",
       title:"Regrow a romaine head",
@@ -1926,43 +1959,68 @@ function closeRecipe(){ const el=document.getElementById('recipe-page'); if(el) 
 function renderGrocery() {
   const el = document.getElementById("view-grocery");
   if(foodSub==="recipes"){ el.innerHTML=recipesHtml(); return; }
+  if(foodSub==="inventory"){ el.innerHTML=inventoryHtml(); return; }
   const green = '#4AD490', teal = '#00e5cc';
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   function row(id, label, removable) {
-    const done = !!shopping[id];
     const x = removable ? '<div onclick="event.stopPropagation();removeGroc(\'' + id + '\')" style="font-size:18px;color:#5a7a99;padding:0 2px 0 8px;cursor:pointer;flex-shrink:0;line-height:1">×</div>' : '';
-    return '<div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(45,184,112,.15);font-size:14px;color:' + (done ? '#3a5a5a' : 'var(--text)') + ';' + (done ? 'text-decoration:line-through;' : '') + 'font-family:\'Lora\',serif">'
-      + '<div onclick="toggleShop(\'' + id + '\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer">'
-      + '<div style="width:24px;height:24px;border-radius:7px;border:1.5px solid ' + (done ? green : 'rgba(45,184,112,.35)') + ';background:' + (done ? 'rgba(74,212,144,.15)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:' + green + ';font-weight:900">' + (done ? '✓' : '') + '</div>'
+    return '<div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(45,184,112,.15);font-size:14px;color:var(--text);font-family:\'Lora\',serif">'
+      + '<div onclick="buyGroc(\'' + id + '\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer">'
+      + '<div style="width:24px;height:24px;border-radius:7px;border:1.5px solid rgba(45,184,112,.35);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:' + green + ';font-weight:900"></div>'
       + '<span>' + label + '</span></div>' + x + '</div>';
   }
-  const grocItems = [
-    { id:'groc-greenonion', label:'🌿 Green onion' },
-    { id:'groc-eggs', label:'🥚 Eggs' },
-    { id:'groc-croissants', label:'🥐 Croissants' },
-  ];
-  const customIds = Object.keys(grocCustom);
-  const allIds = grocItems.map(i => i.id).concat(customIds);
-  const doneCount = allIds.filter(id => shopping[id]).length;
+  const builtin = GROC_BUILTIN.filter(i => !grocPurchased[i.id]);
+  const customIds = Object.keys(grocCustom).filter(id => !grocPurchased[id]);
+  const total = builtin.length + customIds.length;
   el.innerHTML =
     '<div style="text-align:center;margin-bottom:20px;padding-top:4px">'
     + '<div style="font-size:9px;letter-spacing:.2em;color:' + green + ';text-transform:uppercase;font-family:\'Lora\',serif;margin-bottom:4px">🛒 Shopping List</div>'
     + '<div style="font-family:\'Playfair Display\',serif;font-size:24px;font-weight:700;background:linear-gradient(135deg,' + green + ',' + teal + ');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Grocery</div>'
-    + '<div style="font-size:10px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic">Tap to check off · type below to add your own</div></div>'
+    + '<div style="font-size:10px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic">Tap an item when you buy it — it moves to your Kitchen Inventory</div></div>'
     + '<div style="display:flex;gap:8px;margin-bottom:14px">'
     + '<input id="grocInput" type="text" placeholder="Add an item…" onkeydown="if(event.key===\'Enter\')addGroc()" style="flex:1;background:#0a1628;border:1px solid rgba(45,184,112,.3);border-radius:10px;padding:11px 13px;color:var(--text);font-family:\'Lora\',serif;font-size:14px;outline:none">'
     + '<div onclick="addGroc()" style="background:rgba(74,212,144,.18);border:1px solid ' + green + ';border-radius:10px;padding:11px 16px;color:' + green + ';font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;white-space:nowrap">+ Add</div>'
     + '</div>'
-    + '<div style="background:rgba(74,212,144,.07);border:1px solid rgba(74,212,144,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">'
-    + '<div style="font-size:12px;color:rgba(232,244,253,.7);font-family:\'Lora\',serif">' + doneCount + ' of ' + allIds.length + ' picked up</div>'
-    + (doneCount > 0 ? '<div onclick="clearGroc()" style="font-size:11px;color:#5a7a99;font-family:\'Lora\',serif;cursor:pointer;text-decoration:underline">Clear all</div>' : '')
-    + '</div>'
-    + '<div style="background:#0a1628;border:1px solid rgba(45,184,112,.2);border-radius:14px;padding:2px 16px;margin-bottom:16px">'
-    + grocItems.map(i => row(i.id, i.label, false)).join('')
-    + customIds.map(id => row(id, esc(grocCustom[id]), true)).join('')
-    + (allIds.length === grocItems.length ? '' : '')
-    + '</div>';
+    + (total === 0
+        ? '<div style="background:rgba(74,212,144,.07);border:1px solid rgba(74,212,144,.2);border-radius:12px;padding:18px 16px;text-align:center;font-size:12.5px;color:rgba(232,244,253,.6);font-family:\'Lora\',serif">Nothing on the list — you are stocked up. 🎉</div>'
+        : '<div style="background:#0a1628;border:1px solid rgba(45,184,112,.2);border-radius:14px;padding:2px 16px;margin-bottom:16px">'
+          + builtin.map(i => row(i.id, i.label, false)).join('')
+          + customIds.map(id => row(id, esc(grocCustom[id]), true)).join('')
+          + '</div>');
 }
+
+function inventoryHtml(){
+  const green='#4AD490', teal='#00e5cc';
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const keys=Object.keys(inventory);
+  const inStock=keys.filter(k=>inventory[k].inStock).sort((a,b)=>inventory[a].name.localeCompare(inventory[b].name));
+  const out=keys.filter(k=>!inventory[k].inStock).sort((a,b)=>inventory[a].name.localeCompare(inventory[b].name));
+  function row(k,instock){
+    const it=inventory[k];
+    const act = instock
+      ? '<div onclick="invRanOut(\'' + esc(k) + '\')" style="font-size:10px;padding:5px 10px;border-radius:20px;background:rgba(245,158,11,.14);border:1px solid rgba(245,158,11,.5);color:#F5C56B;cursor:pointer;white-space:nowrap;font-family:\'Lora\',serif">Ran out</div>'
+      : '<div onclick="invBackInStock(\'' + esc(k) + '\')" style="font-size:10px;padding:5px 10px;border-radius:20px;background:rgba(74,212,144,.14);border:1px solid rgba(74,212,144,.5);color:' + green + ';cursor:pointer;white-space:nowrap;font-family:\'Lora\',serif">Back in stock</div>';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(45,184,112,.12);font-size:14px;font-family:\'Lora\',serif;' + (instock?'':'opacity:.6') + '">'
+      + '<div style="font-size:18px;flex-shrink:0">' + (it.emoji||'🛒') + '</div>'
+      + '<span style="flex:1;color:var(--text);' + (instock?'':'text-decoration:line-through') + '">' + esc(it.name) + '</span>'
+      + act
+      + '<div onclick="removeInv(\'' + esc(k) + '\')" style="font-size:18px;color:#5a7a99;padding:0 2px 0 6px;cursor:pointer;flex-shrink:0;line-height:1">×</div>'
+      + '</div>';
+  }
+  let h='<div style="text-align:center;margin-bottom:20px;padding-top:4px">'
+    + '<div style="font-size:9px;letter-spacing:.2em;color:' + green + ';text-transform:uppercase;font-family:\'Lora\',serif;margin-bottom:4px">🧺 Kitchen Inventory</div>'
+    + '<div style="font-family:\'Playfair Display\',serif;font-size:24px;font-weight:700;background:linear-gradient(135deg,' + green + ',' + teal + ');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">In Stock</div>'
+    + '<div style="font-size:10px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic">What is in the kitchen right now · buying a grocery item adds it here</div></div>'
+    + '<div style="display:flex;gap:8px;margin-bottom:14px">'
+    + '<input id="invInput" type="text" placeholder="Add an item you have…" onkeydown="if(event.key===\'Enter\')addInv()" style="flex:1;background:#0a1628;border:1px solid rgba(45,184,112,.3);border-radius:10px;padding:11px 13px;color:var(--text);font-family:\'Lora\',serif;font-size:14px;outline:none">'
+    + '<div onclick="addInv()" style="background:rgba(74,212,144,.18);border:1px solid ' + green + ';border-radius:10px;padding:11px 16px;color:' + green + ';font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;white-space:nowrap">+ Add</div>'
+    + '</div>';
+  if(inStock.length){ h+='<div style="background:#0a1628;border:1px solid rgba(45,184,112,.2);border-radius:14px;padding:2px 16px;margin-bottom:16px">'+inStock.map(k=>row(k,true)).join('')+'</div>'; }
+  else { h+='<div style="background:rgba(74,212,144,.07);border:1px solid rgba(74,212,144,.2);border-radius:12px;padding:18px 16px;text-align:center;font-size:12.5px;color:rgba(232,244,253,.6);font-family:\'Lora\',serif;margin-bottom:16px">Nothing in stock yet — add items above, or check things off the grocery list.</div>'; }
+  if(out.length){ h+='<div class="section-label">🛒 Ran out — now on the shopping list</div><div style="background:#0a1628;border:1px solid rgba(245,158,11,.18);border-radius:14px;padding:2px 16px">'+out.map(k=>row(k,false)).join('')+'</div>'; }
+  return h;
+}
+
 
 function renderPrint() {
   const PRINT_SCHEDULE = [
@@ -2390,6 +2448,8 @@ ST.on('value', snap => {
   shopping    = d.shopping    || {};
   funPrints   = d.funPrints   || {};
   grocCustom  = d.grocCustom  || {};
+  inventory   = d.inventory   || {};
+  grocPurchased = d.grocPurchased || {};
   printCustom = d.printCustom || {};
   taskCustom  = d.taskCustom  || {};
   painLog     = d.painLog     || {};
@@ -2414,6 +2474,13 @@ ST.on('value', snap => {
   if (!flags['rain-2026-05-18']) {
     PLANTS.filter(p => p.loc === "outdoor").forEach(p => { watered[p.id] = "2026-05-18"; });
     ST.update({ watered, 'flags/rain-2026-05-18': '1' });
+    return;
+  }
+  // One-time: seed kitchen inventory with starting in-stock items
+  if (!flags['inventory-seed-v1']) {
+    const seed=[['green onions','🌿'],['yellow squash','🟡'],['zucchini','🥒'],['mushrooms','🍄'],['spinach','🥬'],['romaine lettuce','🥗']];
+    seed.forEach(function(p){ const k=invKey(p[0]); if(!inventory[k]) inventory[k]={name:p[0],emoji:p[1],inStock:true,ts:Date.now()}; });
+    ST.update({ inventory: inventory, 'flags/inventory-seed-v1': 'done' });
     return;
   }
 
