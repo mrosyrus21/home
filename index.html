@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 3, 2026 · 10:30 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 3, 2026 · 10:49 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -650,6 +650,7 @@ let funPrints = {};
 let grocCustom = {};
 let inventory = {};
 let grocPurchased = {};
+let recipeServ = {};
 const GROC_BUILTIN=[{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
 let printCustom = {};
 let taskCustom = {};
@@ -688,7 +689,7 @@ function toggleShop(id){ shopping[id]=!shopping[id]; saveShopping(); renderShopp
 function saveFunPrints(){ ST.child('funPrints').set(funPrints); }
 function saveGroc(){ ST.child('grocCustom').set(grocCustom); }
 function addGroc(){ const el=document.getElementById('grocInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; if(!/\p{Extended_Pictographic}/u.test([...v][0]||'')) v=grocEmoji(v)+' '+v; grocCustom['gc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; saveGroc(); renderGrocery(); }
-function removeGroc(id){ delete grocCustom[id]; if(shopping[id]){ delete shopping[id]; saveShopping(); } saveGroc(); renderGrocery(); }
+function removeGroc(id){ if(grocCustom[id]!==undefined){ delete grocCustom[id]; saveGroc(); } else { grocPurchased[id]=true; saveGrocPurchased(); } if(shopping[id]){ delete shopping[id]; saveShopping(); } renderGrocery(); }
 function clearGroc(){ ['groc-greenonion','groc-eggs','groc-croissants'].concat(Object.keys(grocCustom)).forEach(id=>{ shopping[id]=false; }); saveShopping(); renderGrocery(); }
 function saveInv(){ ST.child('inventory').set(inventory); }
 function saveGrocPurchased(){ ST.child('grocPurchased').set(grocPurchased); }
@@ -696,7 +697,8 @@ function toast(msg){ try{ let t=document.getElementById('hg-toast'); if(!t){ t=d
 function invKey(s){ return String(s||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim().split(' ').map(function(w){ return (w.length>3&&w.charAt(w.length-1)==='s')?w.slice(0,-1):w; }).join(' '); }
 function splitEmoji(label){ const m=String(label||'').match(/^\s*(\p{Extended_Pictographic}[️‍\p{Extended_Pictographic}]*)\s*(.*)$/u); return m?{emoji:m[1],name:(m[2]||'').trim()||m[1]}:{emoji:'',name:String(label||'').trim()}; }
 function grocLabel(id){ const b=GROC_BUILTIN.find(function(i){return i.id===id;}); if(b) return b.label; if(grocCustom[id]) return grocCustom[id]; return id; }
-function buyGroc(id){ const sp=splitEmoji(grocLabel(id)); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:sp.emoji||'🛒',inStock:true,ts:Date.now()}; grocPurchased[id]=true; if(shopping[id]){ delete shopping[id]; saveShopping(); } saveInv(); saveGrocPurchased(); renderGrocery(); toast('✓ '+sp.name+' → Kitchen Inventory'); }
+function capFirst(s){ s=String(s||''); for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); if(c>=97&&c<=122){ return s.slice(0,i)+s[i].toUpperCase()+s.slice(i+1); } if((c>=65&&c<=90)||(c>=48&&c<=57)){ return s; } } return s; }
+function buyGroc(id){ const sp=splitEmoji(grocLabel(id)); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:sp.emoji||'🛒',inStock:true,ts:Date.now()}; grocPurchased[id]=true; if(shopping[id]){ delete shopping[id]; saveShopping(); } saveInv(); saveGrocPurchased(); renderGrocery(); toast('✓ '+capFirst(sp.name)+' → Kitchen Inventory'); }
 function addInv(){ const el=document.getElementById('invInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; const sp=splitEmoji(v); const em=sp.emoji||grocEmoji(sp.name); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:em,inStock:true,ts:Date.now()}; saveInv(); renderGrocery(); }
 function addToGrocery(name,emoji){ const k=invKey(name);
   const bi=GROC_BUILTIN.find(function(i){return invKey(splitEmoji(i.label).name)===k;}); if(bi){ if(grocPurchased[bi.id]){ delete grocPurchased[bi.id]; saveGrocPurchased(); } return; }
@@ -1937,12 +1939,19 @@ function recipesHtml(){
   if(rest.length) h+='<div class="section-label">🍽️ All Recipes</div>'+rest.map(r=>recipeCard(r,false)).join('');
   return h;
 }
-function openRecipe(id){
+function baseServ(r){ const m=String((r&&r.servings)||'').match(/\d+/); return m?Math.max(1,parseInt(m[0],10)):2; }
+function _parseNum(tok){ tok=String(tok).trim(); if(/^\d+\s*\/\s*\d+$/.test(tok)){ const p=tok.split('/'); const n=parseFloat(p[0]),d=parseFloat(p[1]); return d?n/d:NaN; } return parseFloat(tok); }
+function _fmtQty(n){ if(!isFinite(n)||n<0) return null; const map=[[0,''],[0.125,'⅛'],[0.25,'¼'],[1/3,'⅓'],[0.375,'⅜'],[0.5,'½'],[0.625,'⅝'],[2/3,'⅔'],[0.75,'¾'],[0.875,'⅞'],[1,'']]; let whole=Math.floor(n+1e-9), frac=n-whole, best=map[0], bd=2; for(const m of map){ const d=Math.abs(frac-m[0]); if(d<bd){bd=d;best=m;} } if(bd>0.07){ return String(Math.round(n*10)/10); } let w=whole, f=best[1]; if(best[0]===1){ w+=1; f=''; } if(w===0&&f==='') return '0'; if(f==='') return String(w); return (w>0?w+' ':'')+f; }
+function scaleIngredient(line, ratio){ if(!isFinite(ratio)||ratio===1) return line; try{ return String(line).replace(/\d+\s*\/\s*\d+|\d+\.\d+|\d+/g, function(tok){ const v=_parseNum(tok); if(!isFinite(v)) return tok; const out=_fmtQty(v*ratio); return out==null?tok:out; }); }catch(e){ return line; } }
+function setServings(id,delta){ const r=(typeof RECIPES!=='undefined'?RECIPES:[]).find(function(x){return x.id===id;}); if(!r) return; const base=baseServ(r); const cur=recipeServ[id]||base; recipeServ[id]=Math.max(1,cur+delta); openRecipe(id,true); }
+function openRecipe(id, keepScroll){
   const r=(typeof RECIPES!=='undefined'?RECIPES:[]).find(x=>x.id===id); if(!r) return;
   const el=document.getElementById('recipe-page'); if(!el) return;
-  const ing=(r.ingredients||[]).map(i=>'<li style="margin-bottom:6px;font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.5">'+i+'</li>').join('');
+  const base=baseServ(r); const serv=recipeServ[id]||base; const ratio=serv/base;
+  const ing=(r.ingredients||[]).map(i=>'<li style="margin-bottom:6px;font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.5">'+scaleIngredient(i,ratio)+'</li>').join('');
+  const servCtl='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:10px 14px;background:rgba(212,144,10,.07);border:1px solid var(--aborder,rgba(212,144,10,.3));border-radius:10px"><span style="font-family:\'Lora\',serif;font-size:13px;color:var(--text2)">🍽️ Servings</span><div style="display:flex;align-items:center;gap:14px;margin-left:auto"><button onclick="setServings(\''+r.id+'\',-1)" aria-label="fewer servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">\u2212</button><span style="font-family:\'Playfair Display\',serif;font-size:19px;color:var(--text);min-width:22px;text-align:center">'+serv+'</span><button onclick="setServings(\''+r.id+'\',1)" aria-label="more servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">+</button></div></div>';
   const steps=(r.steps||[]).map((st,i)=>'<div style="display:flex;gap:12px;margin-bottom:12px"><div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(212,144,10,.18);border:1px solid var(--amber);color:var(--amber2);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">'+(i+1)+'</div><div style="font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.55;padding-top:3px">'+st+'</div></div>').join('');
-  const meta=[r.time&&('⏱️ '+r.time), r.difficulty&&('📊 '+r.difficulty), r.servings&&('🍽️ Serves '+r.servings)].filter(Boolean);
+  const meta=[r.time&&('⏱️ '+r.time), r.difficulty&&('📊 '+r.difficulty)].filter(Boolean);
   el.innerHTML='<div style="max-width:560px;margin:0 auto">'
     +'<div onclick="closeRecipe()" style="display:inline-flex;align-items:center;gap:6px;padding:10px 4px 14px;color:var(--text2);font-family:\'Lora\',serif;font-size:14px;cursor:pointer">← Back to recipes</div>'
     +'<div style="position:relative;height:240px;border-radius:var(--rad);overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2417,#0f0e14);margin-bottom:16px">'
@@ -1951,12 +1960,13 @@ function openRecipe(id){
     +'<h1 style="font-family:\'Playfair Display\',serif;font-size:24px;color:var(--text);margin:0 0 8px">'+r.name+'</h1>'
     +(meta.length?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">'+meta.map(m=>'<span style="font-size:12px;padding:4px 11px;border-radius:20px;background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border)">'+m+'</span>').join('')+'</div>':'')
     +(r.blurb?'<div style="font-size:13.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;margin-bottom:18px">'+r.blurb+'</div>':'')
+    +(ing?servCtl:'')
     +(ing?'<div style="font-family:\'Playfair Display\',serif;font-size:17px;color:var(--text);margin-bottom:10px">🧺 Ingredients</div><ul style="margin:0 0 22px;padding-left:20px">'+ing+'</ul>':'')
     +(steps?'<div style="font-family:\'Playfair Display\',serif;font-size:17px;color:var(--text);margin-bottom:12px">👩‍🍳 Steps</div>'+steps:'')
     +(r.note?'<div style="margin-top:18px;background:rgba(212,144,10,.08);border:1px solid var(--aborder,rgba(212,144,10,.3));border-radius:9px;padding:12px 14px;font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.55;font-style:italic">📝 '+r.note+'</div>':'')
     +((!ing&&!steps)?'<div style="background:rgba(212,144,10,.08);border:1px solid var(--aborder);border-radius:9px;padding:14px;font-size:13px;color:var(--amber2);font-family:\'Lora\',serif;line-height:1.5">This is a placeholder card. Send me this recipe and I will fill in the ingredients and steps right here.</div>':'')
     +'<div style="height:50px"></div></div>';
-  el.style.display='block'; el.scrollTop=0; window.scrollTo(0,0);
+  el.style.display='block'; if(!keepScroll){ el.scrollTop=0; window.scrollTo(0,0); }
 }
 function closeRecipe(){ const el=document.getElementById('recipe-page'); if(el) el.style.display='none'; window.scrollTo(0,0); }
 function renderGrocery() {
@@ -1965,12 +1975,13 @@ function renderGrocery() {
   if(foodSub==="inventory"){ el.innerHTML=inventoryHtml(); return; }
   const green = '#4AD490', teal = '#00e5cc';
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  function row(id, label, removable) {
-    const x = removable ? '<div onclick="event.stopPropagation();removeGroc(\'' + id + '\')" style="font-size:18px;color:#5a7a99;padding:0 2px 0 8px;cursor:pointer;flex-shrink:0;line-height:1">×</div>' : '';
+  function row(id, label) {
     return '<div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(45,184,112,.15);font-size:14px;color:var(--text);font-family:\'Lora\',serif">'
       + '<div onclick="buyGroc(\'' + id + '\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer">'
       + '<div style="width:24px;height:24px;border-radius:7px;border:1.5px solid rgba(45,184,112,.35);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:' + green + ';font-weight:900"></div>'
-      + '<span>' + label + '</span></div>' + x + '</div>';
+      + '<span>' + label + '</span></div>'
+      + '<div onclick="event.stopPropagation();removeGroc(\'' + id + '\')" style="font-size:18px;color:#5a7a99;padding:0 2px 0 8px;cursor:pointer;flex-shrink:0;line-height:1">×</div>'
+      + '</div>';
   }
   const builtin = GROC_BUILTIN.filter(i => !grocPurchased[i.id]);
   const customIds = Object.keys(grocCustom).filter(id => !grocPurchased[id]);
@@ -1987,8 +1998,8 @@ function renderGrocery() {
     + (total === 0
         ? '<div style="background:rgba(74,212,144,.07);border:1px solid rgba(74,212,144,.2);border-radius:12px;padding:18px 16px;text-align:center;font-size:12.5px;color:rgba(232,244,253,.6);font-family:\'Lora\',serif">Nothing on the list — you are stocked up. 🎉</div>'
         : '<div style="background:#0a1628;border:1px solid rgba(45,184,112,.2);border-radius:14px;padding:2px 16px;margin-bottom:16px">'
-          + builtin.map(i => row(i.id, i.label, false)).join('')
-          + customIds.map(id => row(id, esc(grocCustom[id]), true)).join('')
+          + builtin.map(i => row(i.id, capFirst(i.label))).join('')
+          + customIds.map(id => row(id, esc(capFirst(grocCustom[id])))).join('')
           + '</div>');
 }
 
@@ -2005,7 +2016,7 @@ function inventoryHtml(){
       : '<div onclick="invBackInStock(\'' + esc(k) + '\')" style="font-size:10px;padding:5px 10px;border-radius:20px;background:rgba(74,212,144,.14);border:1px solid rgba(74,212,144,.5);color:' + green + ';cursor:pointer;white-space:nowrap;font-family:\'Lora\',serif">Back in stock</div>';
     return '<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(45,184,112,.12);font-size:14px;font-family:\'Lora\',serif;' + (instock?'':'opacity:.6') + '">'
       + '<div style="font-size:18px;flex-shrink:0">' + (it.emoji||'🛒') + '</div>'
-      + '<span style="flex:1;color:var(--text);' + (instock?'':'text-decoration:line-through') + '">' + esc(it.name) + '</span>'
+      + '<span style="flex:1;color:var(--text);' + (instock?'':'text-decoration:line-through') + '">' + esc(capFirst(it.name)) + '</span>'
       + act
       + '<div onclick="removeInv(\'' + esc(k) + '\')" style="font-size:18px;color:#5a7a99;padding:0 2px 0 6px;cursor:pointer;flex-shrink:0;line-height:1">×</div>'
       + '</div>';
