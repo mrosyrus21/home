@@ -617,7 +617,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260603200450"></script>
+<script src="./data.js?v=20260603223016"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 3, 2026 · 10:04 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 3, 2026 · 10:30 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -692,10 +692,11 @@ function removeGroc(id){ delete grocCustom[id]; if(shopping[id]){ delete shoppin
 function clearGroc(){ ['groc-greenonion','groc-eggs','groc-croissants'].concat(Object.keys(grocCustom)).forEach(id=>{ shopping[id]=false; }); saveShopping(); renderGrocery(); }
 function saveInv(){ ST.child('inventory').set(inventory); }
 function saveGrocPurchased(){ ST.child('grocPurchased').set(grocPurchased); }
+function toast(msg){ try{ let t=document.getElementById('hg-toast'); if(!t){ t=document.createElement('div'); t.id='hg-toast'; t.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:rgba(18,26,38,.97);color:#EAF2FB;border:1px solid rgba(74,212,144,.5);border-radius:12px;padding:11px 18px;font-family:Lora,serif;font-size:13.5px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.5);opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:84vw;text-align:center'; document.body.appendChild(t); } t.textContent=msg; requestAnimationFrame(function(){ t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)'; }); clearTimeout(window.__toastT); window.__toastT=setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; },1900); }catch(e){} }
 function invKey(s){ return String(s||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim().split(' ').map(function(w){ return (w.length>3&&w.charAt(w.length-1)==='s')?w.slice(0,-1):w; }).join(' '); }
 function splitEmoji(label){ const m=String(label||'').match(/^\s*(\p{Extended_Pictographic}[️‍\p{Extended_Pictographic}]*)\s*(.*)$/u); return m?{emoji:m[1],name:(m[2]||'').trim()||m[1]}:{emoji:'',name:String(label||'').trim()}; }
 function grocLabel(id){ const b=GROC_BUILTIN.find(function(i){return i.id===id;}); if(b) return b.label; if(grocCustom[id]) return grocCustom[id]; return id; }
-function buyGroc(id){ const sp=splitEmoji(grocLabel(id)); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:sp.emoji||'🛒',inStock:true,ts:Date.now()}; grocPurchased[id]=true; if(shopping[id]){ delete shopping[id]; saveShopping(); } saveInv(); saveGrocPurchased(); renderGrocery(); }
+function buyGroc(id){ const sp=splitEmoji(grocLabel(id)); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:sp.emoji||'🛒',inStock:true,ts:Date.now()}; grocPurchased[id]=true; if(shopping[id]){ delete shopping[id]; saveShopping(); } saveInv(); saveGrocPurchased(); renderGrocery(); toast('✓ '+sp.name+' → Kitchen Inventory'); }
 function addInv(){ const el=document.getElementById('invInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; const sp=splitEmoji(v); const em=sp.emoji||grocEmoji(sp.name); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:em,inStock:true,ts:Date.now()}; saveInv(); renderGrocery(); }
 function addToGrocery(name,emoji){ const k=invKey(name);
   const bi=GROC_BUILTIN.find(function(i){return invKey(splitEmoji(i.label).name)===k;}); if(bi){ if(grocPurchased[bi.id]){ delete grocPurchased[bi.id]; saveGrocPurchased(); } return; }
@@ -1729,7 +1730,8 @@ function renderShopping() {
     ["5/27","0","0","5","7.2","—","—","CYCLED — two 0/0 ✅"],
     ["5/27*","0.25","0","5","7.6","125","60","Post-livestock mini cycle"],
     ["5/29","0.25","0","5","7.6","—","—","Mini cycling, dosed Prime"],
-    ["5/30","0","0","5","7.6","—","—","Mini cycle COMPLETE — NH3 back to 0 ✅"]
+    ["5/30","0","0","5","7.6","—","—","Mini cycle COMPLETE — NH3 back to 0 ✅"],
+    ["6/2","1.0","0","5","7.6","125","—","Ammonia spike 0→0.5→1.0 (feeding + 82°F heat + pulled anemone) — WC + Prime + SafeStart, feeding paused"]
   ];
   const rows = P.map(r=>`<tr>${r.map((c,i)=>`<td${i===0?' style="color:#7fe9dd;font-weight:700"':(i===7?' style="color:#9bb3c9;white-space:normal;min-width:160px"':'')}>${c}</td>`).join('')}</tr>`).join('');
   const chip=(v,k,cls)=>`<div style="background:#0a1628;border:1px solid #1a3a5c;border-radius:10px;padding:9px 4px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:${cls==='warn'?'#F5B830':cls==='ok'?'#4AD490':'#00e5cc'}">${v}</div><div style="font-size:8px;letter-spacing:.05em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif">${k}</div></div>`;
@@ -1753,7 +1755,7 @@ function renderShopping() {
     html += '<div style="background:linear-gradient(135deg,rgba(0,229,204,.1),rgba(139,92,246,.08));border:1px solid rgba(0,229,204,.3);border-radius:14px;padding:13px 15px;margin-bottom:12px">'
       +'<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#00e5cc;font-family:\'Lora\',serif;margin-bottom:4px">The System · 5 tanks + 1 culture</div>'
       +'<div style="font-size:12px;color:rgba(232,244,253,.8);font-family:\'Lora\',serif;line-height:1.5">A mix of aquatic and terrestrial setups. <b style="color:#7fe9dd">These may share water or be physically linked later</b> (e.g. a shared sump / aquaponics loop), so keep water params and placement compatible.</div></div>';
-    html += tcard('#5','Imagitarium cube <span style="font-size:11px;color:#8b9bb5">(current)</span>','11.2×11.4×11.1 in','3.7 gal','💧 Aquatic','#4fc3f7','<b>Blue Dream Neocaridina</b> colony + 2 Tiger nerites — established &amp; cycled.',stat('Active','#4AD490'));
+    html += tcard('#5','Imagitarium cube <span style="font-size:11px;color:#8b9bb5">(current)</span>','11.2×11.4×11.1 in','3.7 gal','💧 Aquatic','#4fc3f7','<b>Blue Dream Neocaridina</b> colony + 2 Tiger nerites. <b style="color:#F5B830">⚠️ Working through an ammonia spike (1.0, 6/2) — see To-Do.</b>',stat('NH3 spike','#F5B830'));
     html += tcard('#1','Divided cube · lidless','15×10×7 in','~4.5 gal','💧 Aquatic','#4fc3f7','<b>Two-color shrimp</b> — Red (Bloody Mary) + Yellow (Yellow Neon), one per side. Needs a <b>fine-mesh divider</b> so they can\'t cross-breed.',stat('Planned','#F5B830'));
     html += tcard('#2','Rounded face · built-in light','10×12×7 in','~3.6 gal','🏜️ Dry only','#F5B830','<b>Jumping spider</b> (single). Side crack leaks liquid only — too small to escape through. Built-in light = viewing.',stat('Planned','#F5B830'));
     html += tcard('#3','Tall tank','11×16×11 in','~8.4 gal','🌿 Either','#b794f6','<b>Herbivore katydid display</b> + safe mates (isopods, springtails, stick insects). 16-inch height gives molting clearance.',stat('Planned','#F5B830'));
@@ -1762,15 +1764,15 @@ function renderShopping() {
   }
 
   else if (tankSub === "todo") {
-    html += `<div style="background:linear-gradient(135deg,rgba(0,229,204,.1),rgba(79,195,247,.08));border:1px solid rgba(0,229,204,.3);border-radius:14px;padding:13px 15px;margin-bottom:12px">
-      <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#00e5cc;font-family:'Lora',serif;margin-bottom:4px">Status — May 30</div>
-      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">✅ Cycled · 🦐 Stocked · ✅ Stable</div>
-      <div style="font-size:12px;color:rgba(232,244,253,.78);font-family:'Lora',serif;line-height:1.5">Cycled 5/27, then 10 Blue Dream shrimp + 2 nerites added. The post-stocking mini cycle is <b style="color:#4AD490">complete as of 5/30 — ammonia back to 0</b>. <b style="color:#4AD490">Cleared to resume feeding and start the calcium project.</b></div></div>`;
+    html += `<div style="background:linear-gradient(135deg,rgba(245,184,48,.12),rgba(245,184,48,.05));border:1px solid rgba(245,184,48,.4);border-radius:14px;padding:13px 15px;margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;margin-bottom:4px">Status — June 2 ⚠️</div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">⚠️ Ammonia spike · 🌡️ Heat · 🦐 Shrimp stressed</div>
+      <div style="font-size:12px;color:rgba(232,244,253,.78);font-family:'Lora',serif;line-height:1.5">Ammonia climbed <b style="color:#F5B830">0 → 0.5 → 1.0 (5/31–6/2)</b> from resumed feeding + an 82°F heat spike + pulling the fake anemone. Shrimp are less active. <b style="color:#F5B830">Plan: 30–40% distilled water change → Prime → SafeStart → no feeding → find any dead shrimp.</b></div></div>`;
     html += panel('🛒 Shopping &amp; Next Purchases',
       buy('shop-airstone','~$10','Ring air stone — fits around the fake anemone')
       + `<div style="font-size:10px;color:#5a7a99;margin-top:8px;font-style:italic">The ring air stone is from Aqua Rocks Colorado (ask for Tommy).</div>`);
-    html += panel('⚗️ Right Now (May 30)','✅ Mini cycle <b>complete</b> — ammonia is back to <b>0</b> (NO2 0, NO3 5, pH 7.6). Tank is stable. Cleared to resume feeding and begin the calcium project. Keep an eye on pH/alk with the eggshell in.');
-    html += panel('🍤 Feeding Plan','<b style="color:#4AD490">Cleared to feed — mini cycle resolved 5/30.</b> Resume the <b>half stick every other day</b>.'
+    html += panel('⚗️ Right Now (June 2)','<b style="color:#F5B830">Ammonia is at 1.0 and climbing</b> (NO2 0, NO3 5). Triggers: resumed feeding + an 82°F heat spike + removing the fake anemone. <b>Do now:</b> 30–40% distilled water change (temp-matched ~75°F) → re-dose Prime for the full volume → dose Tetra SafeStart → keep the airstone running high → hold temp ~74°F. Repeat daily until ammonia reads 0, and hunt for any dead shrimp.');
+    html += panel('🍤 Feeding Plan','<b style="color:#F5B830">PAUSED — no feeding while ammonia is up (6/2).</b> Resume the <b>half stick every other day</b> only once ammonia is back to <b>0</b>.'
       + sh('Foods') + '<b>Primary:</b> Color Studio Shrimp Premium — HALF stick every other day (10 shrimp, 3.7 gal). <b>Backup:</b> Ultra Fresh micro pellet. <b>Natural (their main food):</b> biofilm on moss / pearl weed / roots + almond leaves (replace every 2–3 wks). <b>Veggies:</b> blanched zucchini / spinach / cucumber / peas, small piece once stable.'
       + sh('Rules') + '<ul><li>❌ No food while ammonia is elevated</li><li>✅ Remove uneaten food within 2–3h</li><li>✅ Underfeed rather than overfeed</li></ul>');
     html += panel('🔁 Ongoing Maintenance (once stable)','<ul><li>Weekly ~20% water change + test NH3 / NO2 / NO3 / pH</li><li>Remove uneaten food within 2–3h</li><li>Replenish almond leaves every 2–3 weeks</li><li>Monthly: scrape nerite eggs off the glass</li></ul>');
@@ -1832,8 +1834,8 @@ function renderShopping() {
       +'<div class="kv"><span>Back wall</span><span>Black plastic filter housing (not glass — no rear background)</span></div>'
       +'<div class="kv"><span>Sides</span><span>Clear glass ~11×11 in — the background option</span></div>'
       +'<div class="kv"><span>Filter</span><span>3-stage internal: carbon · bio media · foam sponge (+ spare seeding sponges)</span></div>'
-      +'<div class="kv"><span>Heater</span><span>Was 80°F (cycling) → target 72–74°F. Currently ~77°F, dialing down.</span></div>'
-      +'<div class="kv"><span>Aeration</span><span>Air pump + airstone (better one from Aqua Rocks)</span></div>'
+      +'<div class="kv"><span>Heater</span><span>Was 80°F (cycling) → target 72–74°F. Held ~74°F during the 6/2 heat spike.</span></div>'
+      +'<div class="kv"><span>Aeration</span><span>Air pump + airstone — swapped to one smaller airstone (6/2); tube weighted down with petrified wood. Run high during the heat.</span></div>'
       +'<div class="kv"><span>Lighting</span><span>Black LED bar across top + blue LED inside</span></div>');
     html += panel('🌱 Hydroponics',
       '<div class="kv"><span>Baskets 1–3</span><span>Sweet potato (established roots) — grown for vines/leaves/roots, <b>no tubers</b></span></div>'
@@ -1841,7 +1843,7 @@ function renderShopping() {
       +'<div class="kv"><span>Spare</span><span>1 acrylic hang-on basket each side (LECA only)</span></div>'
       +'Roots hang in the tank — absorb nitrates/ammonia and give shrimp biofilm to graze. LECA is the aquarium-safe Aqua Rocks type (old Sunwinx removed — it leached hardness). Airstones under the pots planned for root oxygen.');
     html += panel('🪨 Hardscape &amp; Decor',
-      '<b>Substrate:</b> glow gravel (tested 0 hardness ✅). <b>Decor:</b> fake glowing coral/anemone (center) · glass Japanese lantern · large white/quartz rock · glass shrimp feeding tube · quartz &amp; amethyst crystal beds · decorative hut · petrified wood. <b>Plants:</b> Cuba Pearl Weed (planted 5/27) + Indian almond leaves. <b>Planned:</b> moss ball, Java/Christmas moss on the white rock.');
+      '<b>Substrate:</b> glow gravel (tested 0 hardness ✅). <b>Decor:</b> glass Japanese lantern · large white/quartz rock · glass shrimp feeding tube · quartz &amp; amethyst crystal beds · decorative hut · petrified wood (now weighting the airstone tube). <b style="color:#F5B830">Removed 6/2:</b> fake glowing coral/anemone (stirred up detritus → watch NH3). <b>Plants:</b> Cuba Pearl Weed (planted 5/27; rest added 6/2 in thumb-sized patches) + Indian almond leaves. <b>Planned:</b> moss ball, Java/Christmas moss on the white rock.');
     html += panel('🦐 Livestock',
       '<div class="kv"><span>Shrimp</span><span>10× Blue Dream Neocaridina, high grade (dark blue). One color only — breeding colony.</span></div>'
       +'<div class="kv"><span>Snails</span><span>2× Nerite (Tiger) — glass cleaners; can\'t breed in freshwater. Don\'t leave upside down.</span></div>'
@@ -1872,7 +1874,7 @@ function renderShopping() {
   }
 
   else if (tankSub === "params") {
-    html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('0','NH3','ok')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('77°','Temp','warn')}</div>`;
+    html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('1.0','NH3','warn')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('74°','Temp','ok')}</div>`;
     html += panel('🎯 Neocaridina Targets',
       '<div class="kv"><span>Ammonia</span><span>0 ppm</span></div>'
       +'<div class="kv"><span>Nitrite</span><span>0 ppm</span></div>'
@@ -1951,6 +1953,7 @@ function openRecipe(id){
     +(r.blurb?'<div style="font-size:13.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;margin-bottom:18px">'+r.blurb+'</div>':'')
     +(ing?'<div style="font-family:\'Playfair Display\',serif;font-size:17px;color:var(--text);margin-bottom:10px">🧺 Ingredients</div><ul style="margin:0 0 22px;padding-left:20px">'+ing+'</ul>':'')
     +(steps?'<div style="font-family:\'Playfair Display\',serif;font-size:17px;color:var(--text);margin-bottom:12px">👩‍🍳 Steps</div>'+steps:'')
+    +(r.note?'<div style="margin-top:18px;background:rgba(212,144,10,.08);border:1px solid var(--aborder,rgba(212,144,10,.3));border-radius:9px;padding:12px 14px;font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.55;font-style:italic">📝 '+r.note+'</div>':'')
     +((!ing&&!steps)?'<div style="background:rgba(212,144,10,.08);border:1px solid var(--aborder);border-radius:9px;padding:14px;font-size:13px;color:var(--amber2);font-family:\'Lora\',serif;line-height:1.5">This is a placeholder card. Send me this recipe and I will fill in the ingredients and steps right here.</div>':'')
     +'<div style="height:50px"></div></div>';
   el.style.display='block'; el.scrollTop=0; window.scrollTo(0,0);
@@ -2662,7 +2665,16 @@ function updateClock(){
 updateClock();
 setInterval(updateClock,30000);
 </script>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});}</script>
+<script>if('serviceWorker' in navigator){
+  var __hgReloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      try{ reg.update(); }catch(e){}
+      document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
+    }).catch(function(){});
+  });
+}</script>
 <div id="recipe-page" style="display:none;position:fixed;inset:0;z-index:200;overflow-y:auto;background:var(--bg);padding:16px 16px 40px"></div>
 </body>
 </html>

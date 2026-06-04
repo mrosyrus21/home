@@ -357,27 +357,29 @@ const HARVEST_INFO = {
    Shape: { id, name, emoji, photo?, time?, difficulty?, servings?, tags?[],
             featured?, blurb?, ingredients?[], steps?[] }                     */
 const RECIPES = [
-  { id:"r_beef_tenderloin", name:"Beef Tenderloin with Garden Veggie Sauté + Grilled Romaine", emoji:"🥩", featured:true,
+  { id:"r_beef_tenderloin", name:"Beef Tenderloin with Mushroom Pan Sauce & Garlicky Spinach", emoji:"🥩", featured:true,
     time:"~45 min", difficulty:"Medium", servings:"2–3", tags:["dinner","garden"],
-    blurb:"A restaurant-style seared beef tenderloin with a one-pan sauté of squash, zucchini, mushrooms, green onions and spinach, finished with quick-grilled romaine — most of it straight from the garden.",
+    blurb:"A restaurant-style seared beef tenderloin with a rich mushroom pan sauce and quick garlicky spinach, plus a crisp romaine side salad. Properly paired — no forcing every vegetable onto the plate.",
     ingredients:[
-      "Beef tenderloin (about 1 to 1.5 lb, or individual steaks)",
-      "Olive oil + butter",
-      "Salt, pepper, garlic",
-      "1 yellow squash, sliced",
-      "1 zucchini, sliced",
-      "8 oz mushrooms, sliced",
-      "1 bunch green onions, chopped",
-      "A few handfuls of spinach",
-      "1 to 2 romaine hearts"
+      "Beef tenderloin (about 1 to 1.5 lb, steaks or a roast)",
+      "Salt + black pepper",
+      "Olive oil + 2 to 3 Tbsp butter",
+      "3 to 4 cloves garlic",
+      "8 oz cremini or button mushrooms, sliced",
+      "About 1/3 cup beef broth or red wine",
+      "A few handfuls of fresh spinach",
+      "2 to 3 green onions, sliced",
+      "1 to 2 romaine hearts + a simple Dijon-lemon vinaigrette (for a raw side salad)"
     ],
     steps:[
-      "Season the tenderloin well with salt and pepper, and let it come to room temperature.",
-      "Sear in a hot oiled cast-iron pan 2 to 3 minutes per side, basting with butter and garlic, and finish to about 130°F for medium-rare. Rest 10 minutes.",
-      "In the same pan, brown the mushrooms, then add the zucchini and yellow squash for 4 to 5 minutes. Add the green onions, toss in the spinach to wilt, and season.",
-      "Halve the romaine hearts, brush with oil, and sear or grill cut-side down 1 to 2 minutes (or use them raw as a side salad).",
-      "Slice the tenderloin and plate it with the veggie sauté and the romaine."
-    ]},
+      "Season the tenderloin generously with salt and pepper, and let it come to room temperature, about 30 minutes.",
+      "Sear in a hot oiled cast-iron pan 2 to 3 minutes per side; add butter and a smashed garlic clove and baste. Cook to 130°F for medium-rare, then rest 10 minutes.",
+      "Mushroom pan sauce: in the same pan, melt butter and sauté the mushrooms until deep golden. Add minced garlic and the white parts of the green onions for 1 minute, then deglaze with the broth or wine, scraping up the fond. Reduce by half, swirl in a knob of butter, and season.",
+      "Garlicky spinach: quickly wilt the spinach in a little butter and garlic, and salt it lightly.",
+      "Romaine side salad: chop the romaine and toss it with the Dijon-lemon vinaigrette.",
+      "Slice the rested tenderloin, spoon the mushroom sauce over, and scatter the green onion tops. Serve with the spinach and the romaine salad."
+    ],
+    note:"Zucchini and yellow squash were intentionally left out — they don't pair as strongly with tenderloin. Save them for another dish." },
   { id:"r_ph1", name:"Your featured recipe goes here", emoji:"🍽️", featured:false,
     time:"—", difficulty:"—", tags:["example"],
     blurb:"This is the featured slot at the top of the Recipes tab. Send me your recipe list and your favorite lands right here.",
