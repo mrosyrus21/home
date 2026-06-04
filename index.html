@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 3, 2026 · 2:05 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 3, 2026 · 9:19 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -769,7 +769,7 @@ function toggle(id)  { checked[id]=!checked[id]; save(); renderAll(); }
 function toggleLaundry() { const k=todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function waterPlant(id)  { watered[id]=todayKey(); saveW(); renderAll(); }
 
-const NO_PROGRESS=new Set(["fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
+const NO_PROGRESS=new Set(["proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -1131,6 +1131,68 @@ function renderToday() {
       </div>
     </div>`;
   }
+
+
+  // ── TONIGHT'S PROJECTS (pinned until done) ────────────────────────────────────
+  const NIGHT_PROJECTS=[
+    { id:"proj_romaine", emoji:"🥬", hex:"#4ADE80", rgb:"74,222,128",
+      eyebrow:"🌙 Tonight's Project · Regrow",
+      title:"Regrow a romaine head",
+      tonight:"Cut the base, set it cut-side-up in a shallow water dish, put it on a bright windowsill.",
+      steps:[
+        "Slice the base off the romaine about 1 inch tall and keep the stump.",
+        "Set it cut-side-up in a shallow dish with about half an inch of water, so the base sits submerged.",
+        "Put the dish on a bright windowsill — indirect light is fine.",
+        "Change the water every day to keep it from going rotten.",
+        "New leaves push up from the center in 3 to 5 days.",
+        "After about a week you can optionally pot it into moist soil (bury the base, leaves above the surface) for a longer second harvest.",
+        "Snip baby leaves as they grow. Expect about 2 weeks before it bolts and turns bitter."
+      ]},
+    { id:"proj_ladybugs", emoji:"🐞", hex:"#F87171", rgb:"248,113,113",
+      eyebrow:"🌙 Tonight's Project · Live ladybugs",
+      title:"Ladybug care",
+      tonight:"Mist the plant, set the ladybugs on the aphid plant, add a damp cotton ball plus a soaked raisin as backup, and fridge any you are not releasing.",
+      steps:[
+        "Keep them cool: if you are not setting them up tonight, store them in the fridge crisper — they go dormant and keep 1 to 2 weeks. Never leave them in a warm car or room.",
+        "Food is aphids — that is their diet. Put them on the aphid source: the jalapeño that has aphids, or another aphid host plant.",
+        "Short on aphids? Stopgap food is a few water-soaked raisins or a dab of honey or sugar-water on a leaf or bottle cap, plus a small fruit slice — but aphids are the real food.",
+        "Water: mist the leaves or enclosure lightly every day; they drink the droplets. A damp cotton ball or sponge is a safe water source.",
+        "No open water — ladybugs drown in it.",
+        "Environment: ventilated, room temperature once they are active, with plant cover to shelter in.",
+        "Releasing some to the garden instead? Do it at dusk, after misting the plants, so they settle in instead of flying off."
+      ]},
+    { id:"proj_bioactive", emoji:"🪲", hex:"#A78BFA", rgb:"167,139,250",
+      eyebrow:"🌙 Tonight's Project · Bioactive cleanup crew",
+      title:"Set up the bioactive cleanup ecosystem",
+      tonight:"Hydrate the coco substrate, add leaf litter and bark, seed springtails and isopods, then mist.",
+      steps:[
+        "Hydrate the coco substrate: break up the brick and add water until it is damp but not soggy, then layer a couple of inches in the enclosure.",
+        "Add leaf litter, bark, and a hide or two on top — food and cover for the crew.",
+        "Seed the springtails (pour in a starter portion) and the isopods (a scoop) onto the substrate.",
+        "Mist to keep it humid, and make sure there is cross-ventilation.",
+        "Let it establish for a few days — they reproduce and eat mold and waste, keeping the enclosure clean.",
+        "Important: fruit flies are NOT part of this cleanup crew — they are the feeder culture for the jumping spider. Keep the fruit fly culture separate and use it to feed the spider; do not add them to the bioactive vivarium."
+      ]}
+  ];
+  NIGHT_PROJECTS.forEach(p=>{
+    if(checked[p.id]) return; // pinned until done
+    const open=!!expanded[p.id];
+    const stepsHtml=p.steps.map((s,i)=>`<div style="display:flex;gap:8px;padding:5px 0;font-size:12.5px;color:rgba(232,244,253,.85);font-family:'Lora',serif;line-height:1.5"><span style="color:${p.hex};font-weight:700;flex-shrink:0">${i+1}.</span><span>${s}</span></div>`).join('');
+    topHtml+=`<div style="background:linear-gradient(135deg,rgba(${p.rgb},.14),rgba(${p.rgb},.03));border:1px solid rgba(${p.rgb},.4);border-left:4px solid ${p.hex};border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 0 24px rgba(${p.rgb},.1)">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(${p.rgb},.5),transparent)"></div>
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:${p.hex};margin-bottom:6px;font-family:'Lora',serif">${p.eyebrow}</div>
+      <div style="display:flex;align-items:center;gap:14px;cursor:pointer" onclick="toggle('${p.id}')">
+        <div style="font-size:28px;flex-shrink:0">${p.emoji}</div>
+        <div style="flex:1">
+          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#EAF2FB">${p.title}</div>
+          <div style="font-size:12px;color:rgba(${p.rgb},.95);font-style:italic;margin-top:3px">✅ Tonight: ${p.tonight}</div>
+        </div>
+        <div style="width:30px;height:30px;border-radius:50%;border:2px solid ${p.hex};background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+      </div>
+      <div onclick="event.stopPropagation();toggleExpand('${p.id}')" style="font-size:11px;margin-top:10px;color:${p.hex};cursor:pointer;font-family:'Lora',serif;font-weight:600">${open?'▲ Hide steps':'▼ Show step-by-step'}</div>
+      ${open?`<div style="margin-top:8px;border-top:1px solid rgba(${p.rgb},.25);padding-top:8px">${stepsHtml}</div>`:''}
+    </div>`;
+  });
 
   // Freeze watch — active May 18-19
   if(today>="2026-05-18"&&today<="2026-05-19"){
