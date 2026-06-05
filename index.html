@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 4, 2026 · 7:39 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 4, 2026 · 8:48 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1770,6 +1770,7 @@ function renderShopping() {
       <div style="font-size:12px;color:rgba(232,244,253,.78);font-family:'Lora',serif;line-height:1.5">Ammonia climbed <b style="color:#F5B830">0 → 0.5 → 1.0 (5/31–6/2)</b> from resumed feeding + an 82°F heat spike + pulling the fake anemone. Shrimp are less active. <b style="color:#F5B830">Plan: 30–40% distilled water change → Prime → SafeStart → no feeding → find any dead shrimp.</b></div></div>`;
     html += panel('🛒 Shopping &amp; Next Purchases',
       buy('shop-airstone','~$10','Ring air stone — fits around the fake anemone')
+      + buy('shop-mossball','Petco','Weighted moss ball — wrap with Java or Christmas moss (CO₂ tabs already in the substrate, so it will thrive)')
       + `<div style="font-size:10px;color:#5a7a99;margin-top:8px;font-style:italic">The ring air stone is from Aqua Rocks Colorado (ask for Tommy).</div>`);
     html += panel('⚗️ Right Now (June 2)','<b style="color:#F5B830">Ammonia is at 1.0 and climbing</b> (NO2 0, NO3 5). Triggers: resumed feeding + an 82°F heat spike + removing the fake anemone. <b>Do now:</b> 30–40% distilled water change (temp-matched ~75°F) → re-dose Prime for the full volume → dose Tetra SafeStart → keep the airstone running high → hold temp ~74°F. Repeat daily until ammonia reads 0, and hunt for any dead shrimp.');
     html += panel('🍤 Feeding Plan','<b style="color:#F5B830">PAUSED — no feeding while ammonia is up (6/2).</b> Resume the <b>half stick every other day</b> only once ammonia is back to <b>0</b>.'
@@ -1777,42 +1778,6 @@ function renderShopping() {
       + sh('Rules') + '<ul><li>❌ No food while ammonia is elevated</li><li>✅ Remove uneaten food within 2–3h</li><li>✅ Underfeed rather than overfeed</li></ul>');
     html += panel('🔁 Ongoing Maintenance (once stable)','<ul><li>Weekly ~20% water change + test NH3 / NO2 / NO3 / pH</li><li>Remove uneaten food within 2–3h</li><li>Replenish almond leaves every 2–3 weeks</li><li>Monthly: scrape nerite eggs off the glass</li></ul>');
     html += panel('🥚 Calcium Project','Rinse eggshells → air dry → crush → drop 1–2 chunks near the feeding dish; shrimp &amp; snails graze directly. Replenish weekly. Free, and essential for shrimp molting.');
-    const bbuy=(id,label)=>{const d=!!shopping[id];return '<div onclick="toggleShop(\''+id+'\')" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid rgba(139,92,246,.18);cursor:pointer;font-size:12.5px;'+(d?'opacity:.5;text-decoration:line-through':'')+'"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid '+(d?'#b794f6':'rgba(139,92,246,.4)')+';background:'+(d?'rgba(139,92,246,.15)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#b794f6;font-weight:900;font-size:11px">'+(d?'✓':'')+'</div><div style="flex:1;color:var(--text)">'+label+'</div></div>';};
-    const bugP=(title,sub,items,note)=>'<div style="background:#0a1628;border:1px solid rgba(139,92,246,.25);border-radius:12px;padding:4px 15px 11px;margin-bottom:10px"><div style="font-family:\'Playfair Display\',serif;font-size:14px;font-weight:700;color:#b794f6;padding:11px 0 1px">'+title+'</div>'+(sub?'<div style="font-size:11px;color:#8b9bb5;font-style:italic;font-family:\'Lora\',serif;margin-bottom:2px">'+sub+'</div>':'')+items.map(it=>bbuy(it[0],it[1])).join('')+(note?'<div style="font-size:11px;color:#9bb3c9;font-style:italic;font-family:\'Lora\',serif;line-height:1.5;margin-top:8px">'+note+'</div>':'')+'</div>';
-    html += '<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(74,212,144,.05));border:1px solid rgba(139,92,246,.3);border-radius:12px;padding:13px 15px;margin-bottom:10px">'
-      + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🐛 Bug Starter Kit · TEMPORARY</div>'
-      + '<div style="font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:5px">Petco run — quick temporary starter</div>'
-      + '<div style="font-size:11.5px;color:#c9b8e8;font-style:italic;font-family:\'Lora\',serif;line-height:1.5">⚠️ Mostly historical now — the bioactive ladybug + cleanup tub (#2) is up and running. The jumping-spider and katydid plans were scratched (both got loose / vanished when released). Ladybugs went into the tub and out to the garden.</div></div>';
-    html += '<div style="background:#0a1628;border:1px solid rgba(139,92,246,.25);border-radius:12px;padding:11px 15px;margin-bottom:10px">'
-      + '<div style="font-family:\'Playfair Display\',serif;font-size:13px;font-weight:700;color:#b794f6;margin-bottom:5px">🛒 Tonight vs. a daytime run</div>'
-      + '<div style="font-size:12px;color:rgba(232,244,253,.82);line-height:1.6;font-family:\'Lora\',serif">'
-      + '<b style="color:#4AD490">🌙 Tonight — your local Petco (open til 8 PM Sun):</b> Petco runs 9–8 on Sundays chain-wide, so your home store is open until ~8. Grab the hardware: terrarium, Exo Terra Coco Husk, cork bark, a mister, a deli cup. Their live cultures ship, so not tonight.<br><br>'
-      + '<b style="color:#FBBF24">🦎 Live cultures (fruit flies, isopods) — a daytime trip:</b> a dedicated reptile shop stocks these in-store, but the good ones (e.g. 5280 Reptile Room) are up in Wheat Ridge / Northglenn and close ~6pm — so another day, or just order online.<br><br>'
-      + '<b style="color:#E07070">🌱 Ladybugs — a garden center, daytime:</b> a nursery carries them in season (Petco does not sell them), but they close evenings — go during the day or order online. Aphids are free on your jalapeño; basil + apple from home; ring airstone is an Aqua Rocks errand.'
-      + '</div></div>';
-    html += bugP('🐞 Aphid + Ladybug Culture','Disposable deli cup · aphid farm + ladybug nursery in one',
-      [['bug-cul-cup','🥡 Disposable deli cup / clear container'],
-       ['bug-cul-aphid','🌱 Aphid-covered plant cutting — the aphid food source'],
-       ['bug-cul-ladybug','🐞 Ladybug larvae — grow and release onto the plants']],
-      'The cup grows ladybugs to release onto the garden plants, where they hunt the aphids.');
-    html += bugP('🛒 Shared — buy once','Bioactive tub + garden ladybugs',
-      [['bug-shared-mister','💦 Spray mister'],
-       ['bug-shared-coir','🟫 One bag coco coir'],
-       ['bug-shared-food','🍇 Raisins / honey — ladybug stopgap food']],
-      '💡 Tip: keep the bioactive tub damp (not soggy) and let the isopods + springtails run the cleanup.');
-    html += '<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(0,229,204,.05));border:1px solid rgba(139,92,246,.35);border-radius:12px;padding:13px 15px;margin-bottom:10px">'
-      + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🧪 Side Project · concept / to-build</div>'
-      + '<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">🪰 Auto Fly Feeder — shelved (was built to feed the now-gone jumping spider)</div>'
-      + '<div class="tlog"><div style="font-size:12.5px;color:rgba(232,244,253,.82);line-height:1.6;font-family:\'Lora\',serif">'
-      + '<b style="color:#7fe9dd">Goal:</b> a contraption that attracts houseflies and funnels them automatically into the jumping spider enclosure as live food.'
-      + sh('How it works')
-      + 'A small external bait chamber (a cup or jar holding a fly attractant — a bit of overripe fruit or moist protein) connects to the enclosure through a one-way funnel / cone. Flies follow the scent in through the narrow funnel and cannot easily get back out, so they end up inside as prey. Keep the bait OUTSIDE the main enclosure so it does not stink up or mold the habitat, and use a narrow aperture so only a few flies pass at a time (do not flood it).'
-      + sh('3D-print parts · Sovol SV06')
-      + '<ul><li>Funnel / cone adapter — the one-way entry</li><li>Bait-cup lid with a built-in cone</li><li>Mesh-vented connector sized to the enclosure opening</li></ul>'
-      + sh('Caveats')
-      + '<ul><li>Use clean, pesticide-free flies only</li><li>Meter the flow — a few at a time, do not flood it</li><li>Do not overstress the spider</li></ul>'
-      + '<div style="font-size:11px;color:#8b9bb5;font-style:italic;margin-top:6px">Status: concept / to-build — a future side project, not part of the current temporary setup.</div>'
-      + '</div></div></div>';
   }
 
   else if (tankSub === "setup") {
@@ -2222,12 +2187,20 @@ function renderPrint() {
     </div>
     <div style="background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(129,140,248,.08));border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:13px 15px;margin-bottom:12px">
       <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#22D3EE;font-family:'Lora',serif;margin-bottom:4px">🟢 Active Print</div>
-      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">💧 Droplet Watering Can</div>
-      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">On the bed now.</div>
+      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">🌱 Desktop Hydroponics</div>
+      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">On the bed now. ✅ Done: 2× Droplet Watering Can.</div>
     </div>
     <div onclick="toggleFunPrint('buy_blue_filament')" style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:13px 15px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:11px">
       <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['buy_blue_filament']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['buy_blue_filament']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['buy_blue_filament']?'✓':''}</div>
       <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['buy_blue_filament']?'#4AD490':'var(--text)'};${funPrints['buy_blue_filament']?'text-decoration:line-through':''}">🧵 Buy Sovol blue filament</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Tap when it is ordered.</div></div>
+    </div>
+    <div onclick="toggleFunPrint('buy_flex_filament')" style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:13px 15px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:11px">
+      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['buy_flex_filament']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['buy_flex_filament']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['buy_flex_filament']?'✓':''}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['buy_flex_filament']?'#4AD490':'var(--text)'};${funPrints['buy_flex_filament']?'text-decoration:line-through':''}">🧵 Buy flexible filament (TPU)</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">For the flexi prints. Tap when ordered.</div></div>
+    </div>
+    <div onclick="toggleFunPrint('buy_sub_pump')" style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:13px 15px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:11px">
+      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['buy_sub_pump']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['buy_sub_pump']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['buy_sub_pump']?'✓':''}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['buy_sub_pump']?'#4AD490':'var(--text)'};${funPrints['buy_sub_pump']?'text-decoration:line-through':''}">💧 Buy a tiny submersible pump</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">For the desktop hydroponics. Tap when ordered.</div></div>
     </div>
     <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#A78BFA;font-family:'Lora',serif;margin-bottom:8px">👑 Top pick</div>
     <div style="background:linear-gradient(135deg,rgba(192,132,252,.14),rgba(129,140,248,.06));border:1px solid rgba(192,132,252,.4);border-radius:12px;padding:12px 15px;margin-bottom:12px">
