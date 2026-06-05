@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 4, 2026 · 2:43 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 4, 2026 · 6:54 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1188,27 +1188,24 @@ function renderToday() {
     { id:"proj_ladybugs", emoji:"🐞", hex:"#F87171", rgb:"248,113,113",
       eyebrow:"🌙 Tonight's Project · Live ladybugs",
       title:"Ladybug care",
-      tonight:"Mist the plant, set the ladybugs on the aphid plant, add a damp cotton ball plus a soaked raisin as backup, and fridge any you are not releasing.",
+      tonight:"3 ladybugs now live in the sealed bioactive tub — mist it daily and feed a water-soaked raisin or a dab of honey-water, since there are no aphids in there. The rest are out in the garden eating aphids.",
       steps:[
-        "Keep them cool: if you are not setting them up tonight, store them in the fridge crisper — they go dormant and keep 1 to 2 weeks. Never leave them in a warm car or room.",
-        "Food is aphids — that is their diet. Put them on the aphid source: the jalapeño that has aphids, or another aphid host plant.",
-        "Short on aphids? Stopgap food is a few water-soaked raisins or a dab of honey or sugar-water on a leaf or bottle cap, plus a small fruit slice — but aphids are the real food.",
-        "Water: mist the leaves or enclosure lightly every day; they drink the droplets. A damp cotton ball or sponge is a safe water source.",
-        "No open water — ladybugs drown in it.",
-        "Environment: ventilated, room temperature once they are active, with plant cover to shelter in.",
-        "Releasing some to the garden instead? Do it at dusk, after misting the plants, so they settle in instead of flying off."
+        "The tub trio: 3 ladybugs share the round bioactive container with the isopod + springtail crew. It is sealed with holes poked in the top air vents.",
+        "Feed the tub ladybugs: no aphids in there, so their food is a couple of water-soaked raisins or a small dab of honey / sugar-water on a bottle cap. Refresh every few days and pull anything moldy.",
+        "Water: mist the inside lightly every day — they drink the droplets off the coco, wood, and cholla. Never leave open or standing water; ladybugs drown in it.",
+        "Garden ladybugs: the rest were released onto the plants and instantly cleared the aphids off the jalapeño. A couple per plant — check back in a few days to see which stuck around, and re-release more wherever aphids come back.",
+        "Spares keep 1 to 2 weeks dormant in the fridge crisper; release at dusk after misting so they settle in instead of flying off."
       ]},
     { id:"proj_bioactive", emoji:"🪲", hex:"#A78BFA", rgb:"167,139,250",
-      eyebrow:"🌙 Tonight's Project · Bioactive cleanup crew",
-      title:"Set up the bioactive cleanup ecosystem",
-      tonight:"Hydrate the coco substrate, add leaf litter and bark, seed springtails and isopods, then mist.",
+      eyebrow:"🪲 Established · Bioactive tub",
+      title:"Bioactive tub — keep it going",
+      tonight:"The round tub is planted up: moist coco, the full isopod + springtail cultures, 3 petrified-wood rocks, a red cholla skeleton, and 3 ladybugs. Sealed with poked air-vent holes. Just keep it damp.",
       steps:[
-        "Hydrate the coco substrate: break up the brick and add water until it is damp but not soggy, then layer a couple of inches in the enclosure.",
-        "Add leaf litter, bark, and a hide or two on top — food and cover for the crew.",
-        "Seed the springtails (pour in a starter portion) and the isopods (a scoop) onto the substrate.",
-        "Mist to keep it humid, and make sure there is cross-ventilation.",
-        "Let it establish for a few days — they reproduce and eat mold and waste, keeping the enclosure clean.",
-        "Important: fruit flies are NOT part of this cleanup crew — they are the feeder culture for the jumping spider. Keep the fruit fly culture separate and use it to feed the spider; do not add them to the bioactive vivarium."
+        "What is inside: moist coco substrate, the whole isopod + springtail cultures, 3 petrified-wood rocks, a red cholla (cactus skeleton) branch, and 3 ladybugs.",
+        "Sealed lid with holes poked through the top air vents for cross-ventilation.",
+        "Maintenance: mist whenever the surface looks dry — damp, never soggy. The isopods and springtails eat mold and waste and keep it clean on their own.",
+        "Feed the crew now and then: a pinch of leaf litter, a bit of fish flake, or a small veg scrap if the isopods look hungry.",
+        "Keep the ladybugs raisin / honey-water topped up (see the Ladybug care card)."
       ]}
   ];
   NIGHT_PROJECTS.forEach(p=>{
@@ -1760,8 +1757,8 @@ function renderShopping() {
       +'<div style="font-size:12px;color:rgba(232,244,253,.8);font-family:\'Lora\',serif;line-height:1.5">A mix of aquatic and terrestrial setups. <b style="color:#7fe9dd">These may share water or be physically linked later</b> (e.g. a shared sump / aquaponics loop), so keep water params and placement compatible.</div></div>';
     html += tcard('#5','Imagitarium cube <span style="font-size:11px;color:#8b9bb5">(current)</span>','11.2×11.4×11.1 in','3.7 gal','💧 Aquatic','#4fc3f7','<b>Blue Dream Neocaridina</b> colony + 2 Tiger nerites. <b style="color:#F5B830">⚠️ Working through an ammonia spike (1.0, 6/2) — see To-Do.</b>',stat('NH3 spike','#F5B830'));
     html += tcard('#1','Divided cube · lidless','15×10×7 in','~4.5 gal','💧 Aquatic','#4fc3f7','<b>Two-color shrimp</b> — Red (Bloody Mary) + Yellow (Yellow Neon), one per side. Needs a <b>fine-mesh divider</b> so they can\'t cross-breed.',stat('Planned','#F5B830'));
-    html += tcard('#2','Rounded face · built-in light','10×12×7 in','~3.6 gal','🏜️ Dry only','#F5B830','<b>Jumping spider</b> (single). Side crack leaks liquid only — too small to escape through. Built-in light = viewing.',stat('Planned','#F5B830'));
-    html += tcard('#3','Tall tank','11×16×11 in','~8.4 gal','🌿 Either','#b794f6','<b>Herbivore katydid display</b> + safe mates (isopods, springtails, stick insects). 16-inch height gives molting clearance.',stat('Planned','#F5B830'));
+    html += tcard('#2','Rounded face · built-in light','10×12×7 in','~3.6 gal','🪲 Bioactive','#A78BFA','<b>Bioactive cleanup tub</b> — 3 ladybugs + the isopod & springtail crew in moist coco, with 3 petrified-wood rocks and a red cholla skeleton. Sealed; air holes poked in the top. (Side crack is fine — nothing aquatic in here.)',stat('Running','#4AD490'));
+    html += tcard('#3','Tall tank','11×16×11 in','~8.4 gal','✋ Empty','#8b9bb5','<b>Empty / open</b> — katydid display scratched (they vanished when released). Free for a new use.',stat('Open','#8b9bb5'));
     html += tcard('#4','Wide tank','19×11×10 in','~9 gal','❓ Test first','#8b9bb5','<b>TBD</b> — leak-test for water first; likely the future <b>big aquatic tank</b>.',stat('Testing','#8b9bb5'));
     html += tcard('🐞','Aphid + ladybug culture','deli cup / small bin','—','🌱 Culture','#4AD490','Garden help / sell / give away. Close the loop with <b>springtails + isopods</b> as decomposers.',stat('Buy today','#E07070'));
   }
@@ -1785,7 +1782,7 @@ function renderShopping() {
     html += '<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(74,212,144,.05));border:1px solid rgba(139,92,246,.3);border-radius:12px;padding:13px 15px;margin-bottom:10px">'
       + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🐛 Bug Starter Kit · TEMPORARY</div>'
       + '<div style="font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:5px">Petco run — quick temporary starter</div>'
-      + '<div style="font-size:11.5px;color:#c9b8e8;font-style:italic;font-family:\'Lora\',serif;line-height:1.5">⚠️ TEMPORARY only — just enough to house the spider and katydids now; the full enclosures and bioactive ecosystem come LATER. Rule: predators never share with prey, so 2 enclosures + 1 deli-cup culture.</div></div>';
+      + '<div style="font-size:11.5px;color:#c9b8e8;font-style:italic;font-family:\'Lora\',serif;line-height:1.5">⚠️ Mostly historical now — the bioactive ladybug + cleanup tub (#2) is up and running. The jumping-spider and katydid plans were scratched (both got loose / vanished when released). Ladybugs went into the tub and out to the garden.</div></div>';
     html += '<div style="background:#0a1628;border:1px solid rgba(139,92,246,.25);border-radius:12px;padding:11px 15px;margin-bottom:10px">'
       + '<div style="font-family:\'Playfair Display\',serif;font-size:13px;font-weight:700;color:#b794f6;margin-bottom:5px">🛒 Tonight vs. a daytime run</div>'
       + '<div style="font-size:12px;color:rgba(232,244,253,.82);line-height:1.6;font-family:\'Lora\',serif">'
@@ -1793,31 +1790,19 @@ function renderShopping() {
       + '<b style="color:#FBBF24">🦎 Live cultures (fruit flies, isopods) — a daytime trip:</b> a dedicated reptile shop stocks these in-store, but the good ones (e.g. 5280 Reptile Room) are up in Wheat Ridge / Northglenn and close ~6pm — so another day, or just order online.<br><br>'
       + '<b style="color:#E07070">🌱 Ladybugs — a garden center, daytime:</b> a nursery carries them in season (Petco does not sell them), but they close evenings — go during the day or order online. Aphids are free on your jalapeño; basil + apple from home; ring airstone is an Aqua Rocks errand.'
       + '</div></div>';
-    html += bugP('🕷️ Jumping Spider Condo','Solo · predators never share with prey · lives mostly dry',
-      [['bug-spider-terr','🏠 Small tall terrarium — Exo Terra Nano Tall (8×8×12 in), keep it small'],
-       ['bug-spider-bark','🌿 Twig / cork bark — anchor for webbing up top'],
-       ['bug-spider-food','🪰 Food: flightless fruit flies + found throwaway pests not worth keeping']],
-      'Fed on flightless fruit flies, found bad bugs not worth keeping, and eventually the auto fly feeder below.');
-    html += bugP('🦗 Herbivore Display','Katydids + cleanup crew · room for size-matched roommates',
-      [['bug-katy-terr','🏠 Taller screen-top terrarium — Nano / Mini Tall (roomier than the spider)'],
-       ['bug-katy-substrate','🟫 Coco coir substrate — Exo Terra Coco Husk'],
-       ['bug-katy-climb','🌿 Twigs / branches + cork bark — climbing and molting'],
-       ['bug-katy-isopods','🐛 Isopod culture — Petco cups (cleanup crew)'],
-       ['bug-katy-food','🌿 Food: fresh basil / leaves daily + optional apple slice']],
-      'All herbivores in one display. Can add a size-matched roommate later (e.g. a stick insect) — match sizes so nothing nibbles a smaller bug mid-molt. Moving the katydids here lets the basil recover.');
     html += bugP('🐞 Aphid + Ladybug Culture','Disposable deli cup · aphid farm + ladybug nursery in one',
       [['bug-cul-cup','🥡 Disposable deli cup / clear container'],
        ['bug-cul-aphid','🌱 Aphid-covered plant cutting — the aphid food source'],
        ['bug-cul-ladybug','🐞 Ladybug larvae — grow and release onto the plants']],
-      'The same cheap cup grows ladybugs to release on the garden (they eat aphids) AND feeds the spider.');
-    html += bugP('🛒 Shared — buy once','Covers both enclosures',
+      'The cup grows ladybugs to release onto the garden plants, where they hunt the aphids.');
+    html += bugP('🛒 Shared — buy once','Bioactive tub + garden ladybugs',
       [['bug-shared-mister','💦 Spray mister'],
-       ['bug-shared-coir','🟫 One bag coco coir — covers both enclosures'],
-       ['bug-shared-ff','🪰 Flightless fruit fly culture — spider food']],
-      '💡 Tips: keep the spider enclosure noticeably smaller than the herbivore display. Grab springtails if available (usually easier to find online later).');
+       ['bug-shared-coir','🟫 One bag coco coir'],
+       ['bug-shared-food','🍇 Raisins / honey — ladybug stopgap food']],
+      '💡 Tip: keep the bioactive tub damp (not soggy) and let the isopods + springtails run the cleanup.');
     html += '<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(0,229,204,.05));border:1px solid rgba(139,92,246,.35);border-radius:12px;padding:13px 15px;margin-bottom:10px">'
       + '<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#b794f6;font-family:\'Lora\',serif;margin-bottom:3px">🧪 Side Project · concept / to-build</div>'
-      + '<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">🪰➡️🕷️ Auto Fly Feeder — Jumping Spider Enclosure</div>'
+      + '<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">🪰 Auto Fly Feeder — shelved (was built to feed the now-gone jumping spider)</div>'
       + '<div class="tlog"><div style="font-size:12.5px;color:rgba(232,244,253,.82);line-height:1.6;font-family:\'Lora\',serif">'
       + '<b style="color:#7fe9dd">Goal:</b> a contraption that attracts houseflies and funnels them automatically into the jumping spider enclosure as live food.'
       + sh('How it works')
@@ -1860,16 +1845,14 @@ function renderShopping() {
       + tchk('t1-2','Add substrate + plants, then install the fine-mesh divider')
       + tchk('t1-3','Cycle fully (NH3 0, NO2 0) before any shrimp go in')
       + tchk('t1-4','Stock: Red Bloody Mary one side, Yellow Neon the other')
-      + sh('🏜️ #2 · Rounded/lit — jumping spider (DRY)')
-      + tchk('t2-1','NO water — dry coco / paper substrate only')
-      + tchk('t2-2','Add cork bark + twigs for webbing anchors up top')
-      + tchk('t2-3','Confirm cross-ventilation and an escape-proof lid')
-      + tchk('t2-4','Food: flightless fruit flies + found pests (no crickets)')
-      + sh('🌿 #3 · Tall — katydid display (terrestrial)')
-      + tchk('t3-1','Coco coir substrate (Exo Terra Coco Husk)')
-      + tchk('t3-2','Branches + cork bark for climbing and molting clearance')
-      + tchk('t3-3','Add the isopod + springtail cleanup crew')
-      + tchk('t3-4','Food: fresh basil daily; room for a size-matched roommate')
+      + sh('🪲 #2 · Rounded/lit — bioactive cleanup tub')
+      + tchk('t2-1','Moist coco substrate — damp, not soggy')
+      + tchk('t2-2','Add 3 petrified-wood rocks + red cholla skeleton for cover')
+      + tchk('t2-3','Seed isopods + springtails; add the 3 ladybugs')
+      + tchk('t2-4','Seal lid, poke air holes in the top vents, mist daily')
+      + sh('✋ #3 · Tall — empty (katydid plan scratched)')
+      + tchk('t3-1','Katydids gone — they vanished when released outside')
+      + tchk('t3-2','Clean it out and store, or repurpose it later')
       + sh('❓ #4 · Wide — TEST tank (future aquatic)')
       + tchk('t4-1','Fill and LEAK-TEST 24–48 hrs before trusting it')
       + tchk('t4-2','If it holds: set it up as the big aquatic tank and cycle')
@@ -1895,7 +1878,7 @@ function renderShopping() {
     html += panel('💎 Hardness Journey','Started at 250 ppm (too high). Cause: Sunwinx LECA (NOT substrate/coral). Fix: swapped to Aqua Rocks LECA + partial distilled-water changes (max 30–40%). Now stable at 125 ppm ✅.'+sh('Water Change Rules')+'<ul><li>✅ Distilled from King Soopers / Safeway / Walmart</li><li>✅ Small tap additions to raise hardness/alk</li><li>❌ No Eldorado Spring, fridge-filtered, or chemical pH adjusters</li></ul>');
     html += panel('📚 Key Lessons','<ul><li>No air through a submersible pump (cavitation)</li><li>Low alk (under 36) suppresses nitrifiers — they need carbonates</li><li>Bubbler HIGH during cycling</li><li>Prime detoxifies without stalling the cycle</li><li>Nerite eggs never hatch in freshwater</li><li>Molts = white shells — leave them (calcium)</li><li>One shrimp color per tank; cull lightest, keep darkest</li><li>Back wall is black plastic — side glass is the background</li></ul>');
     html += panel('🧬 Breeding Notes','<b>Blue Dream:</b> deepen blue over generations — cull pale offspring. Females carry 20–30 eggs ~30 days; babies hatch as mini adults. <b>Tiger Nerites:</b> can\'t breed in freshwater (lay harmless white eggs). <b>Mystery snails (future):</b> easy, eggs above waterline, controllable.');
-    html += panel('🔮 Future Plans','<b>#1 divided:</b> Red + Yellow shrimp (fine-mesh divider). <b>#2:</b> jumping spider. <b>#3:</b> katydid + stick-insect mates. <b>#4:</b> leak-test → future big aquatic tank. <b>Aphids/ladybugs:</b> garden culture + springtails/isopods to close the loop. Tanks may share water or link into one system down the line.');
+    html += panel('🔮 Future Plans','<b>#1 divided:</b> Red + Yellow shrimp (fine-mesh divider). <b>#2:</b> bioactive ladybug + cleanup tub (running). <b>#3:</b> empty / open. <b>#4:</b> leak-test → future big aquatic tank. <b>Aphids/ladybugs:</b> garden culture + springtails/isopods to close the loop. Tanks may share water or link into one system down the line.');
     html += panel('📍 Local Resources','<b style="color:#7fe9dd">Aqua Rocks Colorado</b> (primary — ask for Tommy) · 6771 E 50th Ave, Commerce City · (720) 219-0303 · Tue–Sat 10–6 (closed Mon) · aquarockscolorado.com<br><br><b>Backup:</b> Cultivate Hydroponics North · 6400 E 44th Ave, Denver · (720) 420-7599<br><br><b>Distilled water:</b> King Soopers / Safeway / Walmart (under $2/gal)');
   }
 
