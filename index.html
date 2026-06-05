@@ -617,7 +617,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260605013958"></script>
+<script src="./data.js?v=20260605031521"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 4, 2026 · 8:48 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 4, 2026 · 9:15 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1185,28 +1185,6 @@ function renderToday() {
         "After about a week you can optionally pot it into moist soil (bury the base, leaves above the surface) for a longer second harvest.",
         "Snip baby leaves as they grow. Expect about 2 weeks before it bolts and turns bitter."
       ]},
-    { id:"proj_ladybugs", emoji:"🐞", hex:"#F87171", rgb:"248,113,113",
-      eyebrow:"🌙 Tonight's Project · Live ladybugs",
-      title:"Ladybug care",
-      tonight:"3 ladybugs now live in the sealed bioactive tub — mist it daily and feed a water-soaked raisin or a dab of honey-water, since there are no aphids in there. The rest are out in the garden eating aphids.",
-      steps:[
-        "The tub trio: 3 ladybugs share the round bioactive container with the isopod + springtail crew. It is sealed with holes poked in the top air vents.",
-        "Feed the tub ladybugs: no aphids in there, so their food is a couple of water-soaked raisins or a small dab of honey / sugar-water on a bottle cap. Refresh every few days and pull anything moldy.",
-        "Water: mist the inside lightly every day — they drink the droplets off the coco, wood, and cholla. Never leave open or standing water; ladybugs drown in it.",
-        "Garden ladybugs: the rest were released onto the plants and instantly cleared the aphids off the jalapeño. A couple per plant — check back in a few days to see which stuck around, and re-release more wherever aphids come back.",
-        "Spares keep 1 to 2 weeks dormant in the fridge crisper; release at dusk after misting so they settle in instead of flying off."
-      ]},
-    { id:"proj_bioactive", emoji:"🪲", hex:"#A78BFA", rgb:"167,139,250",
-      eyebrow:"🪲 Established · Bioactive tub",
-      title:"Bioactive tub — keep it going",
-      tonight:"The round tub is planted up: moist coco, the full isopod + springtail cultures, 3 petrified-wood rocks, a red cholla skeleton, and 3 ladybugs. Sealed with poked air-vent holes. Just keep it damp.",
-      steps:[
-        "What is inside: moist coco substrate, the whole isopod + springtail cultures, 3 petrified-wood rocks, a red cholla (cactus skeleton) branch, and 3 ladybugs.",
-        "Sealed lid with holes poked through the top air vents for cross-ventilation.",
-        "Maintenance: mist whenever the surface looks dry — damp, never soggy. The isopods and springtails eat mold and waste and keep it clean on their own.",
-        "Feed the crew now and then: a pinch of leaf litter, a bit of fish flake, or a small veg scrap if the isopods look hungry.",
-        "Keep the ladybugs raisin / honey-water topped up (see the Ladybug care card)."
-      ]}
   ];
   NIGHT_PROJECTS.forEach(p=>{
     if(checked[p.id]) return; // pinned until done
