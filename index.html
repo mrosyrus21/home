@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 5, 2026 · 1:06 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 5, 2026 · 1:26 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1735,7 +1735,7 @@ function renderShopping() {
       +'<div style="font-size:12px;color:rgba(232,244,253,.8);font-family:\'Lora\',serif;line-height:1.5">A mix of aquatic and terrestrial setups. <b style="color:#7fe9dd">These may share water or be physically linked later</b> (e.g. a shared sump / aquaponics loop), so keep water params and placement compatible.</div></div>';
     html += tcard('#5','Imagitarium cube <span style="font-size:11px;color:#8b9bb5">(current)</span>','11.2×11.4×11.1 in','3.7 gal','💧 Aquatic','#4fc3f7','<b>Blue Dream Neocaridina</b> colony + 2 Tiger nerites. <b style="color:#F5B830">⚠️ Working through an ammonia spike (1.0, 6/2) — see To-Do.</b>',stat('Recovering','#F5B830'));
     html += tcard('#1','Divided cube · lidless','15×10×7 in','~4.5 gal','💧 Aquatic','#4fc3f7','<b>Two-color shrimp</b> — Red (Bloody Mary) + Yellow (Yellow Neon), one per side. Needs a <b>fine-mesh divider</b> so they can\'t cross-breed.',stat('Planned','#F5B830'));
-    html += tcard('#2','Rounded face · built-in light','10×12×7 in','~3.6 gal','🪲 Bioactive','#A78BFA','<b>Bioactive cleanup tub</b> — 3 ladybugs + the isopod & springtail crew in moist coco, with 3 petrified-wood rocks and a red cholla skeleton. Sealed; air holes poked in the top. (Side crack is fine — nothing aquatic in here.)',stat('Running','#4AD490'));
+    html += tcard('#2','Rounded face · built-in light','10×12×7 in','~3.6 gal','🪲 Bioactive','#A78BFA','<b>Bioactive vivarium — building the cleanup crew.</b> Growing isopods + springtails in moist coco (leaf litter, bark, calcium) with petrified wood + a red cholla skeleton. Ladybugs released and the katydid + spider already out, so the microfauna can boom. Future: a small animal (mourning gecko · dart frog · jumping spider) once it is thriving. Side crack is fine — nothing aquatic in here.',stat('Building','#A78BFA'));
     html += tcard('#3','Tall tank','11×16×11 in','~8.4 gal','✋ Empty','#8b9bb5','<b>Empty / open</b> — katydid display scratched (they vanished when released). Free for a new use.',stat('Open','#8b9bb5'));
     html += tcard('#4','Wide tank','19×11×10 in','~9 gal','❓ Test first','#8b9bb5','<b>TBD</b> — leak-test for water first; likely the future <b>big aquatic tank</b>.',stat('Testing','#8b9bb5'));
     html += tcard('🐞','Aphid + ladybug culture','deli cup / small bin','—','🌱 Culture','#4AD490','Garden help / sell / give away. Close the loop with <b>springtails + isopods</b> as decomposers.',stat('Buy today','#E07070'));
@@ -1756,6 +1756,17 @@ function renderShopping() {
       + sh('Rules') + '<ul><li>❌ No food while ammonia is elevated</li><li>✅ Remove uneaten food within 2–3h</li><li>✅ Underfeed rather than overfeed</li></ul>');
     html += panel('🔁 Ongoing Maintenance (once stable)','<ul><li>Weekly ~20% water change + test NH3 / NO2 / NO3 / pH</li><li>Remove uneaten food within 2–3h</li><li>Replenish almond leaves every 2–3 weeks</li><li>Monthly: scrape nerite eggs off the glass</li></ul>');
     html += panel('🥚 Calcium Project','Rinse eggshells → air dry → crush → drop 1–2 chunks near the feeding dish; shrimp &amp; snails graze directly. Replenish weekly. Free, and essential for shrimp molting.');
+    html += panel('🪲 Bioactive Vivarium (Tank #2) — Build the Cleanup Crew',
+      '<b>Goal:</b> grow a thriving isopod + springtail ecosystem FIRST, then add a small animal (mourning gecko · dart frog · jumping spider) once it is booming. The ladybugs, katydid, and spider are already out, so the microfauna can boom.'
+      + sh('Build steps')
+      + '<ul><li>Deepen the coco base to 2–3 in+ so isopods can burrow &amp; breed</li><li>Add <b>leaf litter</b> (oak / magnolia / beech, pesticide-free) — main food + cover</li><li>Add cork bark / decomposing wood for hides</li><li>Mix in horticultural charcoal + sphagnum moss</li><li>Keep a damp-to-dry moisture gradient; light mist</li><li>Feed the crew: veg bits, a pinch of fish flakes, a little yeast for springtails</li><li>Add live plants (pothos, fern, moss) under the built-in light</li><li>Let it mature <b>3–6 weeks</b> before adding any vertebrate</li></ul>'
+      + sh('Shopping')
+      + buy('bio-leaf','yard / Petco','Leaf litter — oak / magnolia / beech (pesticide-free)')
+      + buy('bio-cuttle','~$3','Cuttlebone or crushed eggshell — calcium for isopods')
+      + buy('bio-charcoal','garden','Horticultural charcoal + sphagnum moss')
+      + buy('bio-isopods','~$10','Dwarf white isopod culture — population booster')
+      + buy('bio-springtails','~$8','Springtail booster culture')
+      + buy('bio-plants','garden','Live plants — pothos cutting / small fern / moss'));
   }
 
   else if (tankSub === "setup") {
