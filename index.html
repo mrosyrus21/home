@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 4, 2026 · 9:31 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 5, 2026 · 1:28 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2403,6 +2403,13 @@ ST.on('value', snap => {
     const seed=[['green onions','🌿'],['yellow squash','🟡'],['zucchini','🥒'],['mushrooms','🍄'],['spinach','🥬'],['romaine lettuce','🥗']];
     seed.forEach(function(p){ const k=invKey(p[0]); if(!inventory[k]) inventory[k]={name:p[0],emoji:p[1],inStock:true,ts:Date.now()}; });
     ST.update({ inventory: inventory, 'flags/inventory-seed-v1': 'done' });
+    return;
+  }
+  // One-time: seed kitchen inventory v2 (Cyrus's items, Jun 4 — spell-checked)
+  if (!flags['inventory-seed-v2']) {
+    const seed2=[['Worcestershire sauce','🍶'],['Cholula hot sauce','🌶️'],["Nanita's mild green chile (jar)",'🌶️'],["Nanita's enchilada sauce (jar)",'🥫'],['Hot green chile (jar)','🌶️'],['Frozen chicken thighs','🍗'],['Frozen pinto beans (cooked)','🫘'],['Frozen white fish','🐟'],['Frozen turkey pot pies','🥧'],['Frozen pizza','🍕'],['Chocolate ice cream','🍨'],['English toffee sugar crystals','🍬']];
+    seed2.forEach(function(p){ const k=invKey(p[0]); if(!inventory[k]) inventory[k]={name:p[0],emoji:p[1],inStock:true,ts:Date.now()}; });
+    ST.update({ inventory: inventory, 'flags/inventory-seed-v2': 'done' });
     return;
   }
 
