@@ -379,15 +379,5 @@ const RECIPES = [
       "Romaine side salad: chop the romaine and toss it with the Dijon-lemon vinaigrette.",
       "Slice the rested tenderloin, spoon the mushroom sauce over, and scatter the green onion tops. Serve with the spinach and the romaine salad."
     ],
-    note:"Zucchini and yellow squash were intentionally left out — they don't pair as strongly with tenderloin. Save them for another dish." },
-  { id:"r_ph1", name:"Your featured recipe goes here", emoji:"🍽️", featured:false,
-    time:"—", difficulty:"—", tags:["example"],
-    blurb:"This is the featured slot at the top of the Recipes tab. Send me your recipe list and your favorite lands right here.",
-    ingredients:[], steps:[] },
-  { id:"r_ph2", name:"Recipe card example", emoji:"🥗", time:"—", difficulty:"Easy", tags:["example"],
-    blurb:"Each recipe you give me becomes a card like this — tap it to open the full page.",
-    ingredients:[], steps:[] },
-  { id:"r_ph3", name:"Recipe card example", emoji:"🍲", time:"—", difficulty:"Easy", tags:["example"],
-    blurb:"Cards are styled like the plant cards. Photos show here once you add them.",
-    ingredients:[], steps:[] }
+    note:"Zucchini and yellow squash were intentionally left out — they don't pair as strongly with tenderloin. Save them for another dish." }
 ];
