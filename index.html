@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 4, 2026 · 9:15 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 4, 2026 · 9:31 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1721,7 +1721,7 @@ function renderShopping() {
   <div style="text-align:center;margin-bottom:12px;padding-top:4px">
     <div style="font-size:9px;letter-spacing:.25em;color:#00e5cc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🌊 Cyrus · 5 Tanks · Aquatic + Terrestrial</div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4fc3f7,#00e5cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Tank &amp; Enclosure System</div>
-    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated May 31, 2026</div>
+    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated June 4, 2026</div>
   </div>`;
 
   if (tankSub === "system") {
@@ -1733,7 +1733,7 @@ function renderShopping() {
     html += '<div style="background:linear-gradient(135deg,rgba(0,229,204,.1),rgba(139,92,246,.08));border:1px solid rgba(0,229,204,.3);border-radius:14px;padding:13px 15px;margin-bottom:12px">'
       +'<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#00e5cc;font-family:\'Lora\',serif;margin-bottom:4px">The System · 5 tanks + 1 culture</div>'
       +'<div style="font-size:12px;color:rgba(232,244,253,.8);font-family:\'Lora\',serif;line-height:1.5">A mix of aquatic and terrestrial setups. <b style="color:#7fe9dd">These may share water or be physically linked later</b> (e.g. a shared sump / aquaponics loop), so keep water params and placement compatible.</div></div>';
-    html += tcard('#5','Imagitarium cube <span style="font-size:11px;color:#8b9bb5">(current)</span>','11.2×11.4×11.1 in','3.7 gal','💧 Aquatic','#4fc3f7','<b>Blue Dream Neocaridina</b> colony + 2 Tiger nerites. <b style="color:#F5B830">⚠️ Working through an ammonia spike (1.0, 6/2) — see To-Do.</b>',stat('NH3 spike','#F5B830'));
+    html += tcard('#5','Imagitarium cube <span style="font-size:11px;color:#8b9bb5">(current)</span>','11.2×11.4×11.1 in','3.7 gal','💧 Aquatic','#4fc3f7','<b>Blue Dream Neocaridina</b> colony + 2 Tiger nerites. <b style="color:#F5B830">⚠️ Working through an ammonia spike (1.0, 6/2) — see To-Do.</b>',stat('Recovering','#F5B830'));
     html += tcard('#1','Divided cube · lidless','15×10×7 in','~4.5 gal','💧 Aquatic','#4fc3f7','<b>Two-color shrimp</b> — Red (Bloody Mary) + Yellow (Yellow Neon), one per side. Needs a <b>fine-mesh divider</b> so they can\'t cross-breed.',stat('Planned','#F5B830'));
     html += tcard('#2','Rounded face · built-in light','10×12×7 in','~3.6 gal','🪲 Bioactive','#A78BFA','<b>Bioactive cleanup tub</b> — 3 ladybugs + the isopod & springtail crew in moist coco, with 3 petrified-wood rocks and a red cholla skeleton. Sealed; air holes poked in the top. (Side crack is fine — nothing aquatic in here.)',stat('Running','#4AD490'));
     html += tcard('#3','Tall tank','11×16×11 in','~8.4 gal','✋ Empty','#8b9bb5','<b>Empty / open</b> — katydid display scratched (they vanished when released). Free for a new use.',stat('Open','#8b9bb5'));
@@ -1743,15 +1743,15 @@ function renderShopping() {
 
   else if (tankSub === "todo") {
     html += `<div style="background:linear-gradient(135deg,rgba(245,184,48,.12),rgba(245,184,48,.05));border:1px solid rgba(245,184,48,.4);border-radius:14px;padding:13px 15px;margin-bottom:12px">
-      <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;margin-bottom:4px">Status — June 2 ⚠️</div>
-      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">⚠️ Ammonia spike · 🌡️ Heat · 🦐 Shrimp stressed</div>
-      <div style="font-size:12px;color:rgba(232,244,253,.78);font-family:'Lora',serif;line-height:1.5">Ammonia climbed <b style="color:#F5B830">0 → 0.5 → 1.0 (5/31–6/2)</b> from resumed feeding + an 82°F heat spike + pulling the fake anemone. Shrimp are less active. <b style="color:#F5B830">Plan: 30–40% distilled water change → Prime → SafeStart → no feeding → find any dead shrimp.</b></div></div>`;
+      <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;margin-bottom:4px">Status — June 4 ✅</div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">✅ Recovering · 🦐 Shrimp active & eating</div>
+      <div style="font-size:12px;color:rgba(232,244,253,.78);font-family:'Lora',serif;line-height:1.5">Ammonia is back down to <b style="color:#4AD490">1.0 and holding</b> after a water change (it had spiked to 1.0 on 5/31–6/2). Temp is under control and no shrimp were lost — they are <b style="color:#4AD490">active and eating again</b>. Keep doing small water changes until it reads 0.</div></div>`;
     html += panel('🛒 Shopping &amp; Next Purchases',
       buy('shop-airstone','~$10','Ring air stone — fits around the fake anemone')
       + buy('shop-mossball','Petco','Weighted moss ball — wrap with Java or Christmas moss (CO₂ tabs already in the substrate, so it will thrive)')
       + `<div style="font-size:10px;color:#5a7a99;margin-top:8px;font-style:italic">The ring air stone is from Aqua Rocks Colorado (ask for Tommy).</div>`);
-    html += panel('⚗️ Right Now (June 2)','<b style="color:#F5B830">Ammonia is at 1.0 and climbing</b> (NO2 0, NO3 5). Triggers: resumed feeding + an 82°F heat spike + removing the fake anemone. <b>Do now:</b> 30–40% distilled water change (temp-matched ~75°F) → re-dose Prime for the full volume → dose Tetra SafeStart → keep the airstone running high → hold temp ~74°F. Repeat daily until ammonia reads 0, and hunt for any dead shrimp.');
-    html += panel('🍤 Feeding Plan','<b style="color:#F5B830">PAUSED — no feeding while ammonia is up (6/2).</b> Resume the <b>half stick every other day</b> only once ammonia is back to <b>0</b>.'
+    html += panel('⚗️ Right Now (June 4)','<b style="color:#4AD490">Ammonia is down to 1.0 and holding</b> after a water change (NO2 0, NO3 5). Temp under control, no losses, shrimp active and eating. Keep up small temp-matched water changes + Prime until ammonia reads 0, and avoid overfeeding.');
+    html += panel('🍤 Feeding Plan','<b style="color:#4AD490">Feeding resumed — shrimp are eating again.</b> <b>Half stick every other day</b>; remove anything uneaten within 2–3h and ease off if ammonia ticks back up.'
       + sh('Foods') + '<b>Primary:</b> Color Studio Shrimp Premium — HALF stick every other day (10 shrimp, 3.7 gal). <b>Backup:</b> Ultra Fresh micro pellet. <b>Natural (their main food):</b> biofilm on moss / pearl weed / roots + almond leaves (replace every 2–3 wks). <b>Veggies:</b> blanched zucchini / spinach / cucumber / peas, small piece once stable.'
       + sh('Rules') + '<ul><li>❌ No food while ammonia is elevated</li><li>✅ Remove uneaten food within 2–3h</li><li>✅ Underfeed rather than overfeed</li></ul>');
     html += panel('🔁 Ongoing Maintenance (once stable)','<ul><li>Weekly ~20% water change + test NH3 / NO2 / NO3 / pH</li><li>Remove uneaten food within 2–3h</li><li>Replenish almond leaves every 2–3 weeks</li><li>Monthly: scrape nerite eggs off the glass</li></ul>');
