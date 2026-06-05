@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 5, 2026 · 1:26 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 5, 2026 · 2:23 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -813,7 +813,7 @@ function waterStatus(p) {
 }
 
 let gardenSub = "watering";
-let tankSub = "system";
+let tankSub = "bluedream";
 let printSub = "todo";
 let foodSub = "list";
 function switchTab(t) {
@@ -840,7 +840,7 @@ function renderSubtabs(t) {
   if(!el) return;
   let subs=null, cur=null, fn=null;
   if(t==="garden"){ subs=[["watering","💧 Watering"],["harvest","🌾 Harvest"],["care","❤️ Care"]]; cur=gardenSub; fn="switchGardenSub"; }
-  else if(t==="shopping"){ subs=[["system","🗂️ System"],["todo","✅ To-Do"],["setup","🐠 Setup"],["params","🧪 Params"],["history","📚 Log"]]; cur=tankSub; fn="switchTankSub"; }
+  else if(t==="shopping"){ subs=[["bluedream","🦐 Blue Dream"],["tall","📏 Tall"],["wide","📐 Wide"],["dry","🏜️ Dry"]]; cur=tankSub; fn="switchTankSub"; }
   else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","🎨 Wishlist"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
   else if(t==="grocery"){ subs=[["list","🛒 List"],["recipes","🍳 Recipes"],["inventory","🧺 Inventory"]]; cur=foodSub; fn="switchFoodSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
@@ -1691,149 +1691,128 @@ function renderShopping() {
     ["5/9","1.0","0","5","7.6","250","80","Nitrate appeared — moving"],
     ["5/10","0.75","0","5","7.8","250","120","Alk spike (white rock?)"],
     ["5/14","0.5","0","5","7.2","250","80","Still stalled"],
-    ["5/15","0.5","0","10","7.6","250","60","Nitrate climbing"],
     ["5/16","0.5","0","5","6.8","125","60","80% change, baskets out"],
     ["5/17","0.5","0","0","7.2","50","20","Hardness/alk too low"],
-    ["5/18","0.5","0","10","7.6","125","80","Recovering"],
-    ["5/19","0.5","0","2","7.6","125","125","Alk high"],
-    ["5/20a","0.5","0","0","7.6","125","80",""],
-    ["5/20p","—","0","10","7.6","125","80",""],
     ["5/22","0.5","1","30","7.6","175","80","NO2 spike! Stage 2. New LECA raised hardness"],
-    ["5/23","0.5","1","25","7.4","125","80",""],
     ["5/24m","0","3","35","7.2","125","60","NH3 hits 0! NO2 spike normal"],
     ["5/24e","0","2","35","7.4","125","70","Added Prime + TetraSafeStart"],
-    ["5/25","0","~0","—","7.4","—","—","Strip: NO2 nearly gone"],
     ["5/26","0","0.25","5","7.6","—","—","New API liquid kit"],
-    ["5/26b","~0","~0","—","—","—","—","Essentially cycled"],
     ["5/27","0","0","5","7.2","—","—","CYCLED — two 0/0 ✅"],
     ["5/27*","0.25","0","5","7.6","125","60","Post-livestock mini cycle"],
-    ["5/29","0.25","0","5","7.6","—","—","Mini cycling, dosed Prime"],
     ["5/30","0","0","5","7.6","—","—","Mini cycle COMPLETE — NH3 back to 0 ✅"],
-    ["6/2","1.0","0","5","7.6","125","—","Ammonia spike 0→0.5→1.0 (feeding + 82°F heat + pulled anemone) — WC + Prime + SafeStart, feeding paused"]
+    ["6/2","1.0","0","5","7.6","125","—","Ammonia spike 0→0.5→1.0 (feeding + 82°F heat + pulled anemone) — WC + Prime + SafeStart, feeding paused"],
+    ["6/4","1.0","0","5","7.6","125","74","Down & holding after a water change — shrimp active & eating, no losses"]
   ];
   const rows = P.map(r=>`<tr>${r.map((c,i)=>`<td${i===0?' style="color:#7fe9dd;font-weight:700"':(i===7?' style="color:#9bb3c9;white-space:normal;min-width:160px"':'')}>${c}</td>`).join('')}</tr>`).join('');
   const chip=(v,k,cls)=>`<div style="background:#0a1628;border:1px solid #1a3a5c;border-radius:10px;padding:9px 4px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:${cls==='warn'?'#F5B830':cls==='ok'?'#4AD490':'#00e5cc'}">${v}</div><div style="font-size:8px;letter-spacing:.05em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif">${k}</div></div>`;
   const buy=(id,price,label)=>{const d=!!shopping[id];return `<div onclick="toggleShop('${id}')" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid rgba(26,58,92,.4);cursor:pointer;font-size:12.5px;${d?'opacity:.5;text-decoration:line-through':''}"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid ${d?'#4AD490':'#1a3a5c'};background:${d?'rgba(74,212,144,.15)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#4AD490;font-weight:900;font-size:11px">${d?'✓':''}</div><div style="flex:1"><b style="color:var(--text)">${label}</b></div><div style="color:#00e5cc;font-family:'Playfair Display',serif;font-weight:700;font-size:12px">${price}</div></div>`;};
   const panel=(title,inner)=>`<div style="background:#0a1628;border:1px solid rgba(0,229,204,.18);border-radius:12px;padding:13px 15px;margin-bottom:10px"><div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#7fe9dd;margin-bottom:8px">${title}</div><div class="tlog"><div style="font-size:12.5px;color:rgba(232,244,253,.82);line-height:1.6;font-family:'Lora',serif">${inner}</div></div></div>`;
   const sh=t=>`<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#4fc3f7;font-family:'Lora',serif;margin:11px 0 4px">${t}</div>`;
+  const tchk=(id,label)=>{const d=!!checked[id];return '<div onclick="toggle(\''+id+'\')" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(0,229,204,.12);cursor:pointer;font-size:12.5px;'+(d?'opacity:.5;text-decoration:line-through':'')+'"><div style="width:18px;height:18px;border-radius:5px;border:1.5px solid '+(d?'#4AD490':'rgba(0,229,204,.4)')+';background:'+(d?'rgba(74,212,144,.15)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#4AD490;font-weight:900;font-size:10px">'+(d?'✓':'')+'</div><div style="flex:1;color:rgba(232,244,253,.82)">'+label+'</div></div>';};
+  const hero=(src,cap)=>`<div style="position:relative;border-radius:14px;overflow:hidden;margin-bottom:12px;border:1px solid rgba(0,229,204,.2);background:#0a1628"><img src="${src}" alt="${cap}" loading="lazy" style="width:100%;display:block;max-height:360px;object-fit:cover" onerror="this.parentNode.style.display='none'"><div style="position:absolute;bottom:0;left:0;right:0;padding:9px 13px;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:11px;color:#cfe3f5;font-family:'Lora',serif">${cap}</div></div>`;
+  const banner=(rgb,eyebrow,title,body)=>`<div style="background:linear-gradient(135deg,rgba(${rgb},.12),rgba(${rgb},.05));border:1px solid rgba(${rgb},.4);border-radius:14px;padding:13px 15px;margin-bottom:12px"><div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgb(${rgb});font-family:'Lora',serif;margin-bottom:4px">${eyebrow}</div><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">${title}</div><div style="font-size:12px;color:rgba(232,244,253,.78);font-family:'Lora',serif;line-height:1.5">${body}</div></div>`;
+  const specs=(dims,vol,medium)=>`<div style="font-size:11.5px;color:#8b9bb5;font-family:'Lora',serif;text-align:center;margin-bottom:12px">${dims} · <b style="color:#cfe3f5">${vol}</b> · ${medium}</div>`;
 
+  const TITLES={bluedream:'🦐 Blue Dream Cube',tall:'📏 Tall Tank',wide:'📐 Wide Tank',dry:'🏜️ Dry Terrarium'};
   let html = `
   <div style="text-align:center;margin-bottom:12px;padding-top:4px">
-    <div style="font-size:9px;letter-spacing:.25em;color:#00e5cc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🌊 Cyrus · 5 Tanks · Aquatic + Terrestrial</div>
-    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4fc3f7,#00e5cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Tank &amp; Enclosure System</div>
-    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated June 4, 2026</div>
+    <div style="font-size:9px;letter-spacing:.25em;color:#00e5cc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🌊 Cyrus · Tanks · pick a tank above</div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4fc3f7,#00e5cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">${TITLES[tankSub]||'Tanks'}</div>
+    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated June 5, 2026</div>
   </div>`;
 
-  if (tankSub === "system") {
-    const stat=(txt,clr)=>'<span style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:'+clr+';border:1px solid '+clr+';border-radius:20px;padding:2px 8px;white-space:nowrap">'+txt+'</span>';
-    const tcard=(num,name,dims,vol,medium,mclr,who,st)=>'<div style="background:#0a1628;border:1px solid rgba(0,229,204,.18);border-radius:12px;padding:12px 14px;margin-bottom:9px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px"><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:#7fe9dd">'+num+'&nbsp;&nbsp;'+name+'</div>'+st+'</div>'
-      +'<div style="font-size:11px;color:#8b9bb5;font-family:\'Lora\',serif;margin-bottom:6px">'+dims+' · <b style="color:#cfe3f5">'+vol+'</b> · <span style="color:'+mclr+'">'+medium+'</span></div>'
-      +'<div style="font-size:12.5px;color:rgba(232,244,253,.85);line-height:1.5;font-family:\'Lora\',serif">'+who+'</div></div>';
-    html += '<div style="background:linear-gradient(135deg,rgba(0,229,204,.1),rgba(139,92,246,.08));border:1px solid rgba(0,229,204,.3);border-radius:14px;padding:13px 15px;margin-bottom:12px">'
-      +'<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#00e5cc;font-family:\'Lora\',serif;margin-bottom:4px">The System · 5 tanks + 1 culture</div>'
-      +'<div style="font-size:12px;color:rgba(232,244,253,.8);font-family:\'Lora\',serif;line-height:1.5">A mix of aquatic and terrestrial setups. <b style="color:#7fe9dd">These may share water or be physically linked later</b> (e.g. a shared sump / aquaponics loop), so keep water params and placement compatible.</div></div>';
-    html += tcard('#5','Imagitarium cube <span style="font-size:11px;color:#8b9bb5">(current)</span>','11.2×11.4×11.1 in','3.7 gal','💧 Aquatic','#4fc3f7','<b>Blue Dream Neocaridina</b> colony + 2 Tiger nerites. <b style="color:#F5B830">⚠️ Working through an ammonia spike (1.0, 6/2) — see To-Do.</b>',stat('Recovering','#F5B830'));
-    html += tcard('#1','Divided cube · lidless','15×10×7 in','~4.5 gal','💧 Aquatic','#4fc3f7','<b>Two-color shrimp</b> — Red (Bloody Mary) + Yellow (Yellow Neon), one per side. Needs a <b>fine-mesh divider</b> so they can\'t cross-breed.',stat('Planned','#F5B830'));
-    html += tcard('#2','Rounded face · built-in light','10×12×7 in','~3.6 gal','🪲 Bioactive','#A78BFA','<b>Bioactive vivarium — building the cleanup crew.</b> Growing isopods + springtails in moist coco (leaf litter, bark, calcium) with petrified wood + a red cholla skeleton. Ladybugs released and the katydid + spider already out, so the microfauna can boom. Future: a small animal (mourning gecko · dart frog · jumping spider) once it is thriving. Side crack is fine — nothing aquatic in here.',stat('Building','#A78BFA'));
-    html += tcard('#3','Tall tank','11×16×11 in','~8.4 gal','✋ Empty','#8b9bb5','<b>Empty / open</b> — katydid display scratched (they vanished when released). Free for a new use.',stat('Open','#8b9bb5'));
-    html += tcard('#4','Wide tank','19×11×10 in','~9 gal','❓ Test first','#8b9bb5','<b>TBD</b> — leak-test for water first; likely the future <b>big aquatic tank</b>.',stat('Testing','#8b9bb5'));
-    html += tcard('🐞','Aphid + ladybug culture','deli cup / small bin','—','🌱 Culture','#4AD490','Garden help / sell / give away. Close the loop with <b>springtails + isopods</b> as decomposers.',stat('Buy today','#E07070'));
+  if (tankSub === "bluedream") {
+    html += hero('images/tank_bluedream_20260604.jpg','Blue Dream cube — LED bar, colorful substrate, hydro baskets + feeding tube');
+    html += specs('11.2 × 11.4 × 11.1 in','3.7 gal','💧 Aquatic — Imagitarium PRO Deluxe cube');
+    html += banner('245,184,48','Status — June 4 ⚠️→✅','Recovering from an ammonia spike · 🦐 shrimp active & eating','Ammonia spiked <b style="color:#F5B830">0 → 0.5 → 1.0 (5/31–6/2)</b> from resumed feeding + an 82°F heat spike + pulling the fake anemone. After a water change it is <b style="color:#4AD490">down to 1.0 and holding</b> — no shrimp lost, and they are active and eating again. Keep doing small temp-matched water changes until it reads 0.');
+    html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('1.0','NH3','warn')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('74°','Temp','ok')}</div>`;
+    html += panel('⚗️ Right Now (June 4)','<b style="color:#4AD490">Ammonia down to 1.0 and holding</b> after a water change (NO2 0, NO3 5). Temp under control, no losses, shrimp active and eating. Keep up small temp-matched water changes + Prime until ammonia reads 0, and avoid overfeeding.');
+    html += panel('🎯 Neocaridina Targets',
+      '<div class="kv"><span>Ammonia</span><span>0 ppm <span style="color:#F5B830">(1.0 — recovering)</span></span></div>'
+      +'<div class="kv"><span>Nitrite</span><span>0 ppm <span style="color:#4AD490">(0 ✅)</span></span></div>'
+      +'<div class="kv"><span>Nitrate</span><span>under 20 ppm <span style="color:#4AD490">(5 ✅)</span></span></div>'
+      +'<div class="kv"><span>pH</span><span>6.8–7.5 <span style="color:#F5B830">(7.6 — slightly high, fine)</span></span></div>'
+      +'<div class="kv"><span>Hardness</span><span>100–150 ppm <span style="color:#4AD490">(125 ✅)</span></span></div>'
+      +'<div class="kv"><span>Temp</span><span>72–74°F <span style="color:#4AD490">(74 ✅)</span></span></div>');
+    html += panel('🍤 Feeding Plan','<b style="color:#4AD490">Feeding resumed — shrimp are eating again.</b> <b>Half stick every other day</b>; remove anything uneaten within 2–3h and ease off if ammonia ticks back up.'
+      + sh('Foods') + '<b>Primary:</b> Color Studio Shrimp Premium — HALF stick every other day (10 shrimp, 3.7 gal). <b>Backup:</b> Ultra Fresh micro pellet. <b>Natural:</b> biofilm on moss / pearl weed / roots + almond leaves (replace every 2–3 wks). <b>Veggies:</b> blanched zucchini / spinach / cucumber / peas once stable.'
+      + sh('Rules') + '<ul><li>❌ No food while ammonia is elevated</li><li>✅ Remove uneaten food within 2–3h</li><li>✅ Underfeed rather than overfeed</li></ul>');
+    html += panel('🛒 Shopping &amp; Next Purchases',
+      buy('shop-airstone','~$10','Ring air stone')
+      + buy('shop-mossball','Petco','Weighted moss ball — wrap with Java or Christmas moss')
+      + `<div style="font-size:10px;color:#5a7a99;margin-top:8px;font-style:italic">Ring air stone is from Aqua Rocks Colorado (ask for Tommy).</div>`);
+    html += panel('🔧 Tank Hardware',
+      '<div class="kv"><span>Top</span><span>Open top + 3D-printed escape lid (DAP Rapid Fuse, cured, aquarium-safe)</span></div>'
+      +'<div class="kv"><span>Filter</span><span>3-stage internal: carbon · bio media · foam sponge (+ spare seeding sponges)</span></div>'
+      +'<div class="kv"><span>Heater</span><span>Target 72–74°F. Held ~74°F during the 6/2 heat spike.</span></div>'
+      +'<div class="kv"><span>Aeration</span><span>Air pump + airstone — swapped to one smaller airstone (6/2); tube weighted with petrified wood. Run high in the heat.</span></div>'
+      +'<div class="kv"><span>Lighting</span><span>Black LED bar across top + blue LED inside</span></div>');
+    html += panel('🌱 Hydroponics (hang-on baskets)',
+      '<div class="kv"><span>Baskets 1–3</span><span>Sweet potato (established roots) — vines/leaves/roots, <b>no tubers</b></span></div>'
+      +'<div class="kv"><span>Basket 4</span><span>Ristra/Mexican pepper seed (germinating)</span></div>'
+      +'Roots hang in the tank — absorb nitrates/ammonia and give shrimp biofilm to graze. LECA is the aquarium-safe Aqua Rocks type.');
+    html += panel('🪨 Hardscape &amp; Decor',
+      '<b>Substrate:</b> glow gravel (tested 0 hardness ✅). <b>Decor:</b> glass Japanese lantern · large white/quartz rock · glass shrimp feeding tube · quartz &amp; amethyst crystal beds · decorative hut · petrified wood (weighting the airstone tube). <b style="color:#F5B830">Removed 6/2:</b> fake glowing coral/anemone (stirred up detritus → watch NH3). <b>Plants:</b> Cuba Pearl Weed (5/27; rest added 6/2 in thumb-sized patches) + Indian almond leaves.');
+    html += panel('🦐 Livestock',
+      '<div class="kv"><span>Shrimp</span><span>10× Blue Dream Neocaridina, high grade (dark blue) — one-color breeding colony</span></div>'
+      +'<div class="kv"><span>Snails</span><span>2× Nerite (Tiger) — glass cleaners; can\'t breed in freshwater</span></div>'
+      +'Added 5/27 via ~1.5h drip acclimation, no losses.');
+    html += panel('🧰 Equipment On Hand','<b>Treatment:</b> Seachem Prime · Tetra SafeStart · filter regenerator<br><b>Testing:</b> multi-param strips · ammonia strips · API Master Kit<br><b>Food:</b> Color Studio 40g · Ultra Fresh 53g');
+    html += `<div style="height:6px"></div><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif;text-align:center;margin:14px 0 8px">— History &amp; Log —</div>`;
+    html += panel('📋 Full Parameter Log',`<div class="tbl"><table><thead><tr><th>Date</th><th>NH3</th><th>NO2</th><th>NO3</th><th>pH</th><th>Hard</th><th>Alk</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></div><div style="font-size:10px;color:#5a7a99;margin-top:4px">* Livestock added 5/27/2026</div>`);
+    html += panel('🔄 Cycling History','Fishless cycle, early May (Tetra SafeStart + filter regenerator, no water changes, heater 80°F, bubbler HIGH). Wk 1–2 ammonia stalled at 0.5; 5/22 nitrite spiked (stage-2 on); 5/24 ammonia hit 0; 5/27 both 0/0 — CYCLED ✅.');
+    html += panel('💎 Hardness Journey','Started at 250 ppm (too high) from Sunwinx LECA — NOT substrate/coral. Fixed by swapping to Aqua Rocks LECA + partial distilled-water changes (max 30–40%). Now stable at 125 ppm ✅.'+sh('Water Change Rules')+'<ul><li>✅ Distilled from King Soopers / Safeway / Walmart</li><li>✅ Small tap additions to raise hardness/alk</li><li>❌ No Eldorado Spring, fridge-filtered, or chemical pH adjusters</li></ul>');
+    html += panel('📚 Key Lessons','<ul><li>No air through a submersible pump (cavitation)</li><li>Low alk (under 36) suppresses nitrifiers</li><li>Bubbler HIGH during cycling</li><li>Prime detoxifies without stalling the cycle</li><li>Molts = white shells — leave them (calcium)</li><li>One shrimp color per tank; cull lightest, keep darkest</li></ul>');
+    html += panel('🧬 Breeding Notes','<b>Blue Dream:</b> deepen blue over generations — cull pale offspring. Females carry 20–30 eggs ~30 days. <b>Tiger Nerites:</b> can\'t breed in freshwater. <b>Planned (separate divided cube):</b> Red Bloody Mary + Yellow Neon shrimp, one color per side behind a fine-mesh divider.');
+    html += panel('📍 Local Resources','<b style="color:#7fe9dd">Aqua Rocks Colorado</b> (primary — ask for Tommy) · 6771 E 50th Ave, Commerce City · (720) 219-0303 · Tue–Sat 10–6<br><b>Distilled water:</b> King Soopers / Safeway / Walmart (under $2/gal)');
   }
 
-  else if (tankSub === "todo") {
-    html += `<div style="background:linear-gradient(135deg,rgba(245,184,48,.12),rgba(245,184,48,.05));border:1px solid rgba(245,184,48,.4);border-radius:14px;padding:13px 15px;margin-bottom:12px">
-      <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;margin-bottom:4px">Status — June 4 ✅</div>
-      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">✅ Recovering · 🦐 Shrimp active & eating</div>
-      <div style="font-size:12px;color:rgba(232,244,253,.78);font-family:'Lora',serif;line-height:1.5">Ammonia is back down to <b style="color:#4AD490">1.0 and holding</b> after a water change (it had spiked to 1.0 on 5/31–6/2). Temp is under control and no shrimp were lost — they are <b style="color:#4AD490">active and eating again</b>. Keep doing small water changes until it reads 0.</div></div>`;
-    html += panel('🛒 Shopping &amp; Next Purchases',
-      buy('shop-airstone','~$10','Ring air stone — fits around the fake anemone')
-      + buy('shop-mossball','Petco','Weighted moss ball — wrap with Java or Christmas moss (CO₂ tabs already in the substrate, so it will thrive)')
-      + `<div style="font-size:10px;color:#5a7a99;margin-top:8px;font-style:italic">The ring air stone is from Aqua Rocks Colorado (ask for Tommy).</div>`);
-    html += panel('⚗️ Right Now (June 4)','<b style="color:#4AD490">Ammonia is down to 1.0 and holding</b> after a water change (NO2 0, NO3 5). Temp under control, no losses, shrimp active and eating. Keep up small temp-matched water changes + Prime until ammonia reads 0, and avoid overfeeding.');
-    html += panel('🍤 Feeding Plan','<b style="color:#4AD490">Feeding resumed — shrimp are eating again.</b> <b>Half stick every other day</b>; remove anything uneaten within 2–3h and ease off if ammonia ticks back up.'
-      + sh('Foods') + '<b>Primary:</b> Color Studio Shrimp Premium — HALF stick every other day (10 shrimp, 3.7 gal). <b>Backup:</b> Ultra Fresh micro pellet. <b>Natural (their main food):</b> biofilm on moss / pearl weed / roots + almond leaves (replace every 2–3 wks). <b>Veggies:</b> blanched zucchini / spinach / cucumber / peas, small piece once stable.'
-      + sh('Rules') + '<ul><li>❌ No food while ammonia is elevated</li><li>✅ Remove uneaten food within 2–3h</li><li>✅ Underfeed rather than overfeed</li></ul>');
-    html += panel('🔁 Ongoing Maintenance (once stable)','<ul><li>Weekly ~20% water change + test NH3 / NO2 / NO3 / pH</li><li>Remove uneaten food within 2–3h</li><li>Replenish almond leaves every 2–3 weeks</li><li>Monthly: scrape nerite eggs off the glass</li></ul>');
-    html += panel('🥚 Calcium Project','Rinse eggshells → air dry → crush → drop 1–2 chunks near the feeding dish; shrimp &amp; snails graze directly. Replenish weekly. Free, and essential for shrimp molting.');
-    html += panel('🪲 Bioactive Vivarium (Tank #2) — Build the Cleanup Crew',
-      '<b>Goal:</b> grow a thriving isopod + springtail ecosystem FIRST, then add a small animal (mourning gecko · dart frog · jumping spider) once it is booming. The ladybugs, katydid, and spider are already out, so the microfauna can boom.'
+  else if (tankSub === "tall") {
+    html += hero('images/tank_tall_20260604.jpg','Tall tank — currently empty / open');
+    html += specs('11 × 16 × 11 in','~8.4 gal','✋ Empty / open');
+    html += banner('139,155,181','Status — Open','✋ Empty &amp; available','This tall tank is <b>empty and open</b> right now — free for a new use. Clean it out and store it, or set it up later (it is a good height for a planted aquatic tank or a tall terrestrial build).');
+    html += panel('📐 Specs','<div class="kv"><span>Footprint</span><span>11 × 16 × 11 in (tall)</span></div><div class="kv"><span>Volume</span><span>~8.4 gal</span></div><div class="kv"><span>State</span><span>Empty, no livestock, no water</span></div>');
+    html += `<div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif;text-align:center;margin:14px 0 8px">— Notes —</div>`;
+    html += panel('📝 Next Steps',
+      tchk('tall-1','Clean it out and store, or pick a new purpose')
+      + tchk('tall-2','If going aquatic: leak-check, then cycle before stocking')
+      + tchk('tall-3','If going planted/terrestrial: pick substrate + lighting'));
+  }
+
+  else if (tankSub === "wide") {
+    html += hero('images/tank_wide_20260604.jpg','Wide tank — being set up; leak-test before trusting it with water');
+    html += specs('19 × 11 × 10 in','~9 gal','❓ Test first → future big aquatic');
+    html += banner('79,195,247','Status — Setting up','📐 The future big aquatic tank','The widest tank — slated to become the <b>big aquatic tank</b>. <b>Leak-test it first</b> (fill 24–48 hrs) before trusting it, then cycle it like any new tank. Decor is going in, but don\'t stock until it holds water and reads 0/0.');
+    html += panel('📐 Specs','<div class="kv"><span>Footprint</span><span>19 × 11 × 10 in (wide)</span></div><div class="kv"><span>Volume</span><span>~9 gal</span></div><div class="kv"><span>Plan</span><span>Leak-test → cycle → big aquatic tank</span></div>');
+    html += `<div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif;text-align:center;margin:14px 0 8px">— Setup checklist —</div>`;
+    html += panel('🐠 Get It Running',
+      tchk('wide-1','Fill and LEAK-TEST 24–48 hrs before trusting it')
+      + tchk('wide-2','If it holds: set up filter + heater and cycle fully (NH3 0, NO2 0)')
+      + tchk('wide-3','If it leaks: re-silicone the seams or repurpose it dry')
+      + tchk('wide-4','Once cycled: stock as the big aquatic tank'));
+  }
+
+  else if (tankSub === "dry") {
+    html += hero('images/tank_dry_20260604.jpg','Dry terrarium — rounded face, built-in light; building the bioactive cleanup crew');
+    html += specs('10 × 12 × 7 in','~3.6 gal','🪲 Bioactive — dry / terrestrial');
+    html += banner('167,139,250','Status — Building','🪲 Growing the cleanup crew','A <b>dry bioactive vivarium</b> — rounded face with a built-in light. The plan: grow a thriving <b>isopod + springtail</b> ecosystem in moist coco first, then add a small animal once it is booming. The side crack is fine — nothing aquatic in here.');
+    html += panel('🪲 Bioactive Build — Cleanup Crew',
+      '<b>Goal:</b> grow a thriving isopod + springtail colony FIRST, then (much later) add a small animal — a <b>mourning gecko</b> or <b>dart frog</b> — once the microfauna is booming.'
       + sh('Build steps')
-      + '<ul><li>Deepen the coco base to 2–3 in+ so isopods can burrow &amp; breed</li><li>Add <b>leaf litter</b> (oak / magnolia / beech, pesticide-free) — main food + cover</li><li>Add cork bark / decomposing wood for hides</li><li>Mix in horticultural charcoal + sphagnum moss</li><li>Keep a damp-to-dry moisture gradient; light mist</li><li>Feed the crew: veg bits, a pinch of fish flakes, a little yeast for springtails</li><li>Add live plants (pothos, fern, moss) under the built-in light</li><li>Let it mature <b>3–6 weeks</b> before adding any vertebrate</li></ul>'
-      + sh('Shopping')
-      + buy('bio-leaf','yard / Petco','Leaf litter — oak / magnolia / beech (pesticide-free)')
+      + '<ul><li>Deepen the coco base to 2–3 in+ so isopods can burrow &amp; breed</li><li>Add <b>leaf litter</b> (oak / magnolia / beech, pesticide-free) — main food + cover</li><li>Add cork bark / petrified wood + a red cholla skeleton for hides</li><li>Mix in horticultural charcoal + sphagnum moss</li><li>Keep a damp-to-dry moisture gradient; light daily mist</li><li>Feed the crew: veg bits, a pinch of fish flakes, a little yeast for springtails</li><li>Add live plants (pothos, fern, moss) under the built-in light</li><li>Let it mature <b>3–6 weeks</b> before adding any animal</li></ul>');
+    html += panel('🛒 Shopping',
+      buy('bio-leaf','yard / Petco','Leaf litter — oak / magnolia / beech (pesticide-free)')
       + buy('bio-cuttle','~$3','Cuttlebone or crushed eggshell — calcium for isopods')
       + buy('bio-charcoal','garden','Horticultural charcoal + sphagnum moss')
       + buy('bio-isopods','~$10','Dwarf white isopod culture — population booster')
       + buy('bio-springtails','~$8','Springtail booster culture')
       + buy('bio-plants','garden','Live plants — pothos cutting / small fern / moss'));
-  }
-
-  else if (tankSub === "setup") {
-    html += panel('🔧 Tank Hardware',
-      '<div class="kv"><span>Tank</span><span>Imagitarium PRO Deluxe 3.7 gal glass cube (11.2 × 11.1 × 11.4 in)</span></div>'
-      +'<div class="kv"><span>Top</span><span>Open top + 3D-printed escape lid (DAP Rapid Fuse, cured, aquarium-safe). White bloom above waterline is cosmetic — scrape off.</span></div>'
-      +'<div class="kv"><span>Back wall</span><span>Black plastic filter housing (not glass — no rear background)</span></div>'
-      +'<div class="kv"><span>Sides</span><span>Clear glass ~11×11 in — the background option</span></div>'
-      +'<div class="kv"><span>Filter</span><span>3-stage internal: carbon · bio media · foam sponge (+ spare seeding sponges)</span></div>'
-      +'<div class="kv"><span>Heater</span><span>Was 80°F (cycling) → target 72–74°F. Held ~74°F during the 6/2 heat spike.</span></div>'
-      +'<div class="kv"><span>Aeration</span><span>Air pump + airstone — swapped to one smaller airstone (6/2); tube weighted down with petrified wood. Run high during the heat.</span></div>'
-      +'<div class="kv"><span>Lighting</span><span>Black LED bar across top + blue LED inside</span></div>');
-    html += panel('🌱 Hydroponics',
-      '<div class="kv"><span>Baskets 1–3</span><span>Sweet potato (established roots) — grown for vines/leaves/roots, <b>no tubers</b></span></div>'
-      +'<div class="kv"><span>Basket 4</span><span>Ristra/Mexican pepper seed (germinating — TBD)</span></div>'
-      +'<div class="kv"><span>Spare</span><span>1 acrylic hang-on basket each side (LECA only)</span></div>'
-      +'Roots hang in the tank — absorb nitrates/ammonia and give shrimp biofilm to graze. LECA is the aquarium-safe Aqua Rocks type (old Sunwinx removed — it leached hardness). Airstones under the pots planned for root oxygen.');
-    html += panel('🪨 Hardscape &amp; Decor',
-      '<b>Substrate:</b> glow gravel (tested 0 hardness ✅). <b>Decor:</b> glass Japanese lantern · large white/quartz rock · glass shrimp feeding tube · quartz &amp; amethyst crystal beds · decorative hut · petrified wood (now weighting the airstone tube). <b style="color:#F5B830">Removed 6/2:</b> fake glowing coral/anemone (stirred up detritus → watch NH3). <b>Plants:</b> Cuba Pearl Weed (planted 5/27; rest added 6/2 in thumb-sized patches) + Indian almond leaves. <b>Planned:</b> moss ball, Java/Christmas moss on the white rock.');
-    html += panel('🦐 Livestock',
-      '<div class="kv"><span>Shrimp</span><span>10× Blue Dream Neocaridina, high grade (dark blue). One color only — breeding colony.</span></div>'
-      +'<div class="kv"><span>Snails</span><span>2× Nerite (Tiger) — glass cleaners; can\'t breed in freshwater. Don\'t leave upside down.</span></div>'
-      +'Added 5/27 via ~1.5h drip acclimation, no losses. Shrimp grazing &amp; riding bubbles; snails cruising the glass.');
-    html += panel('🧰 Equipment On Hand',
-      '<b>Treatment:</b> Seachem Prime · Tetra SafeStart · filter regenerator<br><b>Testing:</b> multi-param strips · ammonia strips · API Master Kit<br><b>Food:</b> Color Studio 40g · Ultra Fresh 53g<br><b>Accessories:</b> glass feeding tube · almond leaves · air pump + airstone · 3D-printed lid · spare sponges · hydro baskets · rockwool + LECA');
-    const tchk=(id,label)=>{const d=!!checked[id];return '<div onclick="toggle(\''+id+'\')" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(0,229,204,.12);cursor:pointer;font-size:12.5px;'+(d?'opacity:.5;text-decoration:line-through':'')+'"><div style="width:18px;height:18px;border-radius:5px;border:1.5px solid '+(d?'#4AD490':'rgba(0,229,204,.4)')+';background:'+(d?'rgba(74,212,144,.15)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#4AD490;font-weight:900;font-size:10px">'+(d?'✓':'')+'</div><div style="flex:1;color:rgba(232,244,253,.82)">'+label+'</div></div>';};
-    html += panel('🐠 Per-Tank Setup Checklists',
-      sh('💧 #1 · Divided cube — two-color shrimp')
-      + tchk('t1-1','Leak-check, rinse, set up filter + heater (72–74°F)')
-      + tchk('t1-2','Add substrate + plants, then install the fine-mesh divider')
-      + tchk('t1-3','Cycle fully (NH3 0, NO2 0) before any shrimp go in')
-      + tchk('t1-4','Stock: Red Bloody Mary one side, Yellow Neon the other')
-      + sh('🪲 #2 · Rounded/lit — bioactive cleanup tub')
-      + tchk('t2-1','Moist coco substrate — damp, not soggy')
-      + tchk('t2-2','Add 3 petrified-wood rocks + red cholla skeleton for cover')
-      + tchk('t2-3','Seed isopods + springtails; add the 3 ladybugs')
-      + tchk('t2-4','Seal lid, poke air holes in the top vents, mist daily')
-      + sh('✋ #3 · Tall — empty (katydid plan scratched)')
-      + tchk('t3-1','Katydids gone — they vanished when released outside')
-      + tchk('t3-2','Clean it out and store, or repurpose it later')
-      + sh('❓ #4 · Wide — TEST tank (future aquatic)')
-      + tchk('t4-1','Fill and LEAK-TEST 24–48 hrs before trusting it')
-      + tchk('t4-2','If it holds: set it up as the big aquatic tank and cycle')
-      + tchk('t4-3','If it leaks: re-silicone the seams or repurpose it dry'));
-  }
-
-  else if (tankSub === "params") {
-    html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('1.0','NH3','warn')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('74°','Temp','ok')}</div>`;
-    html += panel('🎯 Neocaridina Targets',
-      '<div class="kv"><span>Ammonia</span><span>0 ppm</span></div>'
-      +'<div class="kv"><span>Nitrite</span><span>0 ppm</span></div>'
-      +'<div class="kv"><span>Nitrate</span><span>under 20 ppm <span style="color:#4AD490">(5 ✅)</span></span></div>'
-      +'<div class="kv"><span>pH</span><span>6.8–7.5 <span style="color:#F5B830">(7.6 — slightly high, fine)</span></span></div>'
-      +'<div class="kv"><span>Hardness</span><span>100–150 ppm <span style="color:#4AD490">(125 ✅)</span></span></div>'
-      +'<div class="kv"><span>Alkalinity</span><span>36–72 ppm <span style="color:#4AD490">(60 ✅)</span></span></div>'
-      +'<div class="kv"><span>Temp</span><span>72–74°F <span style="color:#F5B830">(77 — dialing down)</span></span></div>');
-    html += panel('🚰 Denver Tap Baseline','NO3 0 · NO2 0 · Chlorine 0 · NaCl 0 · Hardness 125 · pH 7.7 · Alk 120');
-    html += panel('📋 Full Parameter Log',`<div class="tbl"><table><thead><tr><th>Date</th><th>NH3</th><th>NO2</th><th>NO3</th><th>pH</th><th>Hard</th><th>Alk</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></div><div style="font-size:10px;color:#5a7a99;margin-top:4px">* Livestock added 5/27/2026</div>`);
-  }
-
-  else {
-    html += panel('🔄 Cycling History','Fishless cycle, early May. Tetra SafeStart + filter regenerator, no water changes, heater 80°F, bubbler HIGH.<ul><li>Wk 1–2: ammonia stalled at 0.5</li><li>5/22: nitrite spiked to 1 — stage-2 bacteria on</li><li>5/24: ammonia hit 0</li><li>5/24–25: nitrite 3 → 2 → ~0</li><li>5/27: both 0/0 — CYCLED ✅</li></ul>Assists: Seachem Prime + a 2nd TetraSafeStart dose.');
-    html += panel('💎 Hardness Journey','Started at 250 ppm (too high). Cause: Sunwinx LECA (NOT substrate/coral). Fix: swapped to Aqua Rocks LECA + partial distilled-water changes (max 30–40%). Now stable at 125 ppm ✅.'+sh('Water Change Rules')+'<ul><li>✅ Distilled from King Soopers / Safeway / Walmart</li><li>✅ Small tap additions to raise hardness/alk</li><li>❌ No Eldorado Spring, fridge-filtered, or chemical pH adjusters</li></ul>');
-    html += panel('📚 Key Lessons','<ul><li>No air through a submersible pump (cavitation)</li><li>Low alk (under 36) suppresses nitrifiers — they need carbonates</li><li>Bubbler HIGH during cycling</li><li>Prime detoxifies without stalling the cycle</li><li>Nerite eggs never hatch in freshwater</li><li>Molts = white shells — leave them (calcium)</li><li>One shrimp color per tank; cull lightest, keep darkest</li><li>Back wall is black plastic — side glass is the background</li></ul>');
-    html += panel('🧬 Breeding Notes','<b>Blue Dream:</b> deepen blue over generations — cull pale offspring. Females carry 20–30 eggs ~30 days; babies hatch as mini adults. <b>Tiger Nerites:</b> can\'t breed in freshwater (lay harmless white eggs). <b>Mystery snails (future):</b> easy, eggs above waterline, controllable.');
-    html += panel('🔮 Future Plans','<b>#1 divided:</b> Red + Yellow shrimp (fine-mesh divider). <b>#2:</b> bioactive ladybug + cleanup tub (running). <b>#3:</b> empty / open. <b>#4:</b> leak-test → future big aquatic tank. <b>Aphids/ladybugs:</b> garden culture + springtails/isopods to close the loop. Tanks may share water or link into one system down the line.');
-    html += panel('📍 Local Resources','<b style="color:#7fe9dd">Aqua Rocks Colorado</b> (primary — ask for Tommy) · 6771 E 50th Ave, Commerce City · (720) 219-0303 · Tue–Sat 10–6 (closed Mon) · aquarockscolorado.com<br><br><b>Backup:</b> Cultivate Hydroponics North · 6400 E 44th Ave, Denver · (720) 420-7599<br><br><b>Distilled water:</b> King Soopers / Safeway / Walmart (under $2/gal)');
+    html += `<div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif;text-align:center;margin:14px 0 8px">— Checklist —</div>`;
+    html += panel('🪲 Setup Checklist',
+      tchk('dry-1','Moist coco substrate — damp, not soggy, 2–3 in deep')
+      + tchk('dry-2','Add petrified wood + red cholla skeleton for cover')
+      + tchk('dry-3','Seed isopods + springtails')
+      + tchk('dry-4','Add leaf litter + a few live plants; mist daily'));
   }
 
   el.innerHTML = html;
