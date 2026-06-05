@@ -617,7 +617,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260603223016"></script>
+<script src="./data.js?v=20260605013958"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 4, 2026 · 6:54 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 4, 2026 · 7:39 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2320,6 +2320,17 @@ function litRefillHtml(){
 }
 
 // ── WELLNESS TAB ──────────────────────────────────────────────────────────────
+function medMini(key,name,timing,desc,color){
+  const done=!!laundry["well-"+key+"-"+todayKey()];
+  return '<div onclick="toggleWellness(\''+key+'\')" style="background:'+color+'14;border:1px solid '+color+(done?'22':'44')+';border-radius:var(--rad);padding:14px 16px;margin-bottom:12px;cursor:pointer">'
+    +'<div style="display:flex;align-items:center;gap:13px">'
+    +'<div style="font-size:24px;flex-shrink:0">'+(done?'✅':'💊')+'</div>'
+    +'<div style="flex:1"><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:'+(done?'var(--text3)':'var(--text)')+';'+(done?'text-decoration:line-through':'')+'">'+name+'</div>'
+    +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;margin-top:2px">'+timing+'</div>'
+    +'<div style="font-size:11px;color:'+color+';font-family:\'Lora\',serif;margin-top:2px;font-style:italic">'+desc+'</div></div>'
+    +'<div style="width:24px;height:24px;border-radius:50%;border:2px solid '+(done?'#10B981':color)+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0">'+(done?'✓':'')+'</div>'
+    +'</div></div>';
+}
 function renderWellness() {
   const el = document.getElementById("view-wellness");
   const today = todayKey();
@@ -2342,64 +2353,26 @@ function renderWellness() {
     </div>
   </div>`;
   out += litRefillHtml();
+  out += medMini('eso','Esomeprazole (Nexium)','Once daily, ~30 min before breakfast','Acid reducer (PPI) for reflux','#22D3EE');
+  out += medMini('mag','Magnesium','Daily — with food or in the evening','Supplement: muscle, nerve & sleep support','#84CC16');
 
-  // ── Sleep setup checklist ──
-  const SLEEP_ITEMS = [
-    { key:"knees",   label:"Pillow under knees",                   note:"Tilts pelvis, reduces pressure on glutes and buttock joint" },
-    { key:"arms",    label:"Arms at sides, wrists straight",        note:"Not curled under, not overhead" },
-    { key:"neck",    label:"Pillow keeps neck level with spine",     note:"Not too high, not flat" },
-    { key:"side",    label:"If on side: pillow between knees",       note:"Keeps hips stacked; hug a pillow so shoulder stays neutral" },
-  ];
-  const sleepDone = SLEEP_ITEMS.filter(s => !!laundry["well-sleep-"+s.key+"-"+today]).length;
-  out += `<div class="section-label">🛌 Sleep Setup — ${sleepDone}/${SLEEP_ITEMS.length} ready</div>
-  <div style="background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.18);border-radius:var(--rad);padding:14px 16px;margin-bottom:14px">
-    ${SLEEP_ITEMS.map(s => {
-      const done = !!laundry["well-sleep-"+s.key+"-"+today];
-      return `<div onclick="toggleWellness('sleep-${s.key}')" style="display:flex;align-items:flex-start;gap:11px;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer">
-        <div style="width:20px;height:20px;border-radius:6px;border:1.5px solid ${done?"#8B5CF6":"rgba(139,92,246,.3)"};background:${done?"rgba(139,92,246,.2)":"transparent"};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#A78BFA;font-weight:900;margin-top:1px;transition:all .2s">${done?"✓":""}</div>
-        <div style="flex:1"><div style="font-size:13px;color:${done?"var(--text3)":"var(--text)"};font-family:'Lora',serif;${done?"text-decoration:line-through":""}">${s.label}</div>
-          <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:1px;font-style:italic">${s.note}</div></div>
-      </div>`;
-    }).join("")}
-  </div>`;
-
-  // ── Pain log ──
-  const todayPain = log[today];
-  const PAIN_OPTS = [
-    { val:"good", label:"😌 Good",  col:"#2DB870", bg:"rgba(45,184,112,.12)" },
-    { val:"sore", label:"😬 Sore",  col:"#F59E0B", bg:"rgba(245,158,11,.12)" },
-    { val:"bad",  label:"😖 Bad",   col:"#EF4444", bg:"rgba(239,68,68,.12)"  },
-  ];
-  out += `<div class="section-label">📊 How Are You Feeling Today?</div>
-  <div style="background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">
-    <div style="display:flex;gap:10px;margin-bottom:${todayPain?"14px":"0"}">
-      ${PAIN_OPTS.map(o => `<button onclick="logPain('${o.val}')" style="flex:1;padding:12px 0;border-radius:10px;background:${todayPain===o.val?o.bg:"rgba(255,255,255,.04)"};border:1.5px solid ${todayPain===o.val?o.col:"rgba(255,255,255,.1)"};color:${todayPain===o.val?o.col:"var(--text2)"};cursor:pointer;font-family:'Lora',serif;font-size:13px;font-weight:${todayPain===o.val?"700":"400"};transition:all .2s">${o.label}</button>`).join("")}
+  // ── Get Outside guide ──
+  const outsideDone = !!laundry["well-outside-"+today];
+  out += `<div class="section-label">🌳 Get Outside</div>
+  <div style="background:linear-gradient(135deg,rgba(45,184,112,.12),rgba(132,204,22,.04));border:1px solid rgba(45,184,112,.3);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">
+    <div onclick="toggleWellness('outside')" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:12px">
+      <div style="width:26px;height:26px;border-radius:50%;border:2px solid ${outsideDone?'#10B981':'#4AD490'};background:${outsideDone?'#10B981':'transparent'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0">${outsideDone?'✓':''}</div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:${outsideDone?'var(--text3)':'var(--text)'};${outsideDone?'text-decoration:line-through':''}">${outsideDone?'Got outside today — nice 🌞':'Get outside today'}</div>
     </div>
-    ${todayPain ? `<div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;font-style:italic;text-align:center">Logged for ${today} — tap to change</div>` : ""}
-  </div>`;
-
-  // ── 7-day pain history ──
-  { const PCOL={good:"#2DB870",sore:"#F59E0B",bad:"#EF4444"};
-    let dots="";
-    for(let i=6;i>=0;i--){ const dk=dtDateKey(i); const v=log[dk]; const c=v?PCOL[v]:"rgba(255,255,255,.06)"; const dd=new Date(); dd.setDate(dd.getDate()-i); const dl=["Su","Mo","Tu","We","Th","Fr","Sa"][dd.getDay()];
-      dots+=`<div style="flex:1;text-align:center"><div style="height:30px;border-radius:6px;background:${c};border:1px solid rgba(255,255,255,.06)"></div><div style="font-size:9px;color:var(--text3);margin-top:4px;font-family:'Lora',serif">${dl}</div></div>`; }
-    out += `<div class="section-label">📈 Last 7 Days</div>
-  <div style="background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:var(--rad);padding:14px 16px 12px;margin-bottom:14px"><div style="display:flex;gap:7px">${dots}</div></div>`; }
-
-  // ── Doctor visit notes ──
-  out += `<div class="section-label">🏥 Doctor Visit Notes — May 28, 2026</div>
-  <div style="background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.15);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">
-    <div style="font-size:12px;color:rgba(56,189,248,.9);font-family:'Lora',serif;font-weight:700;margin-bottom:10px">Key Symptom Summary</div>
+    <div style="font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.6;margin-bottom:12px">Even 10–20 minutes outdoors lifts your mood, steadies your energy, and helps you sleep. Pick one:</div>
     ${[
-      ["Current", "Aching pain both arms (wrists, shoulder blade area), both hands/wrists symmetric, buttock joint area, feeling run down"],
-      ["Pattern", "Started left-sided after sleep, spread to both sides over one day. Worse after rest. Previously always left side only."],
-      ["Background", "On Litfulo (ritlecitinib, JAK inhibitor) for alopecia — recently ran out. Was recently sick. Desk job, sit/stand desk."],
-      ["Red flags cleared", "No chest pain, no shortness of breath, no numbness or weakness, no shooting leg pain."],
-      ["Questions", "Symmetric joint pain cause? Viral contribution? Litfulo interaction or rebound? Infection risk from immunosuppression? Labs/imaging?"]
-    ].map(([label, text]) => `<div style="margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.05)">
-      <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(56,189,248,.5);font-family:'Lora',serif;margin-bottom:3px">${label}</div>
-      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.55">${text}</div>
-    </div>`).join("")}
+      ["🏃","Run with Zoey","Start with one short loop — she gets her walk, you get cardio and sun. Build up as it feels good."],
+      ["🌅","Morning sunlight","Get light in your eyes within 30 min of waking — sets your body clock for better sleep and mood."],
+      ["🌿","Tend the garden","Watering, harvesting, checking the ladybugs all count. You're already out there — linger a bit."],
+      ["🚶","After-dinner walk","10–15 minutes helps digestion and winds you down before bed."],
+      ["📵","One phone-free break","Step outside with no phone, even 5 minutes — it resets focus better than a scroll."],
+      ["☕","Take it outside","Coffee, lunch, or a call out on the porch instead of at the desk."]
+    ].map(([e,t,d])=>`<div style="display:flex;gap:11px;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.04)"><div style="font-size:18px;flex-shrink:0">${e}</div><div style="flex:1"><div style="font-size:13px;color:var(--text);font-family:'Lora',serif;font-weight:600">${t}</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:1px">${d}</div></div></div>`).join("")}
   </div>`;
 
   el.innerHTML = out;
