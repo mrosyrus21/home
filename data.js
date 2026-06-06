@@ -224,8 +224,8 @@ const PLANTS = [
     trim:"Pinch out every flower bud the moment it appears. Cut stems just above a leaf pair so each cut branches into two, and strip off any yellowing lower leaves. Bushier growth means more harvest — never take more than a third at once." },
   { id:"parsley",  name:"Curled Parsley",  emoji:"🌿", loc:"greenhouse", freq:"Morning — when top 2 inches dry, every 3-4 days", days:3, trimDays:14,
     trim:"Dead flower stalks → cut at base completely. Harvest outer stems at the base, leaving young inner growth. Never take more than half. Every 2-3 weeks." },
-  { id:"mint",     name:"Peppermint",      emoji:"🌿", loc:"greenhouse", freq:"⚠️ Died back badly (May 29) — HOLD water until soil is dry AND you confirm the crown is alive. Mint almost always regrows from the roots", days:3, overwater:true, trimDays:7,
-    trim:"Cut all the dead/bare stems back hard. Check the base: firm and green means it will regenerate fast; mushy means root rot from overwatering. Do not water on a schedule until you see new growth pushing up." },
+  { id:"mint",     name:"Peppermint",      emoji:"🌿", loc:"greenhouse", freq:"🌱 Recovering — new growth Jun 6; keep evenly moist, it's coming back. Gentle morning water", days:3, overwater:true, trimDays:7,
+    trim:"The hard cut-back worked — fresh shoots are pushing up from the crown (Jun 6). Let the new growth establish; once stems have a few leaf pairs, pinch tips to bush it out. Leave the remaining old stems until the new flush fills in." },
   { id:"dill",     name:"Dill",            emoji:"🌿", loc:"greenhouse", freq:"Morning — when top 2 inches dry", days:3, trimDays:7,
     trim:"Snip outer fronds near the base. Cut flower heads to extend leaf production. Once fully flowered it declines — let go to seed if you want seeds for cooking." },
   { id:"rosemary", name:"Rosemary",        emoji:"🌿", loc:"greenhouse", freq:"Morning — weekly or less, drought tolerant", days:7, trimDays:14,
@@ -265,7 +265,7 @@ const PLANT_INFO = {
   basil1:       { fact:"Basil is in the mint family, and pinching it makes it bushier — the more you harvest, the more it grows.", photo:"images/basil1_20260531.jpg" },
   basil2:       { fact:"Ancient cultures saw basil as a symbol of love and protection; today it's the heart of pesto.", photo:"images/basil2_20260531.jpg" },
   parsley:      { fact:"Parsley is biennial — leaves the first year, flowers the second — and it's loaded with vitamin K.", photo:"images/parsley_20260531.jpg" },
-  mint:         { fact:"Peppermint is a natural hybrid of watermint and spearmint, and it spreads so fast it's best kept potted.", photo:"images/mint_20260531.jpg" },
+  mint:         { fact:"Peppermint is a natural hybrid of watermint and spearmint, and it spreads so fast it's best kept potted.", photo:"images/mint_20260606.jpg" },
   dill:         { fact:"Dill's name comes from old Norse 'dilla', to soothe — it was once used to calm fussy babies.", photo:"images/dill_20260531.jpg" },
   rosemary:     { fact:"Rosemary means 'dew of the sea' and can live 20+ years — it loves dry feet and full sun.", photo:"images/rosemary_20260531.jpg" },
   strawberry:   { fact:"A strawberry isn't a true berry, and it's the only fruit with seeds on the outside — about 200 each.", photo:"images/strawberry_single_1.jpg" },
@@ -289,7 +289,7 @@ const WATER_INFO = {
   basil1:{when:"Water in the MORNING only, when the top 2 inches feel dry — usually daily in heat. Soak the soil, not the leaves; the greenhouse holds humidity overnight, so evening water invites mold.",thirst:"A heavy summer drinker that wilts fast in heat — water it before it flops, not after."},
   basil2:{when:"Morning only, when the top 2 inches are dry. Water at the base until the soil feels like a wrung-out sponge; avoid wetting the foliage.",thirst:"Wants steady moisture — let it go bone-dry and the leaves droop and toughen."},
   parsley:{when:"Morning water every 3–4 days, whenever the top 2 inches dry out. Water at the base and keep it lightly moist.",thirst:"Dislikes drying out completely — drought stress makes it bolt to seed sooner."},
-  mint:{when:"⚠️ On HOLD — it died back badly (May 29). Do not water on a schedule: only water once the soil is dry AND you have confirmed the crown is still firm and green, then resume morning water.",thirst:"Normally a water-lover that wilts then bounces back in hours — but right now soggy soil is the enemy while it recovers."},
+  mint:{when:"🌱 Recovering — new growth Jun 6; keep evenly moist, it's coming back. Gentle morning water, never soggy.",thirst:"A water-lover that wilts then bounces back in hours. Now that fresh shoots are up, even moisture beats the old drought-hold — the HOLD is over."},
   dill:{when:"Morning water when the top 2 inches dry, every couple of days. Water at the base and keep it from drying out fully.",thirst:"Likes slightly moist soil — let it dry hard and it bolts and flowers early."},
   rosemary:{when:"Water sparingly — only about weekly, and let it dry well between drinks. Morning water at the base; when in doubt, skip it.",thirst:"Mediterranean and drought-tolerant — overwatering is the number-one way to kill rosemary."},
   strawberry:{when:"Daily — the round pot in full sun dries fast. Water deeply at the base each morning; in a heat wave it may want a second drink in the evening. Keep evenly moist while flowering and fruiting.",thirst:"Shallow-rooted and quick to dry — steady moisture is what makes the berries plump and sweet."},
@@ -499,7 +499,8 @@ const FINANCE = {
     { id:"epoch",     label:"Epoch.com",               amt:14.95, note:"bills ~23rd — last seen Apr 23" },
     { id:"everai",    label:"EverAI",                  amt:12.99, note:"last seen Mar 23 — likely already gone" },
     { id:"uberone",   label:"Uber One",                amt:9.99 },
-    { id:"dashpass",  label:"DoorDash DashPass",       amt:9.99 }
+    { id:"dashpass",  label:"DoorDash DashPass",       amt:9.99 },
+    { id:"carwash",   label:"Car wash subscription",   amt:0, note:"amount unknown — pull it off the statement when you cancel, then update this entry" }
   ],
   cancelPending: "Also: verify Amazon Fresh (no charge seen Mar–May) · Amazon Prime free trial bills ~Jul 5 — cancel by ~Jul 2.",
   keeping: "Keeping on purpose: Spotify $14.18 · Claude.ai $21.03 (single) · My Healing Space.",
@@ -530,6 +531,8 @@ const FINANCE = {
     { id:"mon_epoch",     label:"🌙 Epoch.com ($14.95) — verify gone · same statement: confirm EverAI ($12.99) is gone too", note:"Epoch bills ~the 23rd; EverAI was last seen Mar 23 and is likely already dead." },
     { id:"mon_uberone",   label:"🚗 Uber One — verify the $9.99 is gone on the statement" },
     { id:"mon_dashpass",  label:"🚪 DoorDash DashPass — verify the $9.99 is gone on the statement" },
+    { id:"mon_carwash",   label:"🫧 Cancel the car wash subscription", note:"Amount unknown — find it on the statement while you're in there, then update the ✂️ cancel-list entry with the real number." },
+    { id:"mon_cardreset", label:"💳 Decide: card reset to kill small subscriptions?", note:"A decision, not a to-do — no answer pre-picked. FOR: replacing the card number nukes ALL small autopays at once — the fast way to kill zombie charges. AGAINST: it also breaks the autopays you WANT (utilities etc. get re-entered one by one), some subscriptions survive anyway (the card networks auto-update merchants), and it does nothing to the balances. The alternative is already running: this Mondays queue is killing them one a week. Decide on this Monday — either answer is fine." },
     { id:"mon_sweep",     label:"🧾 Final sweep — every cancel-list item checked off against a real statement", note:"When this one's done, the gap card on 📊 Overview should be showing the full ~$372 swing." }
   ],
   advice: [

@@ -643,7 +643,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606145933"></script>
+<script src="./data.js?v=20260606174945"></script>
 <script src="./recipes.js?v=20260606134632"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -655,7 +655,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6 · 3:03 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 7 · 7:49 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2905,7 +2905,7 @@ function renderFinance(){
       +'<div style="width:22px;height:22px;border-radius:6px;border:1.5px solid '+(v?'#10B981':'rgba(248,113,113,.5)')+';background:'+(v?'rgba(16,185,129,.2)':'transparent')+';display:flex;align-items:center;justify-content:center;color:'+G+';font-weight:900;font-size:11px;flex-shrink:0">'+(v?'✓':'')+'</div>'
       +'<div style="flex:1;min-width:0"><div style="font-size:13px;color:'+(v?'var(--text3)':'var(--text)')+';font-family:\'Lora\',serif;'+(v?'text-decoration:line-through':'')+'">'+c.label+'</div>'
       +'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+(v?'verified gone on a statement ✓':(c.note?c.note:'canceled — verify it on the June statement'))+'</div></div>'
-      +'<div style="font-size:13px;font-weight:700;color:'+(v?G:R)+';flex-shrink:0">'+finFmt(c.amt)+'</div></div>';
+      +(c.amt?'<div style="font-size:13px;font-weight:700;color:'+(v?G:R)+';flex-shrink:0">'+finFmt(c.amt)+'</div>':'<div style="font-size:11px;font-weight:700;color:'+(v?G:R)+';flex-shrink:0">$? — check statement</div>')+'</div>';
   });
   out+='<div style="padding:10px 0;font-size:11px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;font-style:italic">'+FINANCE.cancelPending+'<br>'+FINANCE.keeping+'</div></div>';
 
