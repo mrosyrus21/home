@@ -392,5 +392,67 @@ const RECIPES = [
       "Romaine side salad: chop the romaine and toss it with the Dijon-lemon vinaigrette.",
       "Slice the rested tenderloin, spoon the mushroom sauce over, and scatter the green onion tops. Serve with the spinach and the romaine salad."
     ],
-    note:"Zucchini and yellow squash were intentionally left out — they don't pair as strongly with tenderloin. Save them for another dish." }
+    note:"Zucchini and yellow squash were intentionally left out — they don't pair as strongly with tenderloin. Save them for another dish." },
+
+  // ── 🐕 ZOEY'S HOMEMADE DOG FOOD (not people food) ──────────────────────────
+  { id:"r_zoey_chicken", name:"Zoey's Chicken", emoji:"🐕", dog:true,
+    time:"~1 hr batch", difficulty:"Easy", servings:"10-day batch", tags:["dog"],
+    blurb:"Zoey's everyday chicken bowl — gently cooked thigh with a little liver for organs, soft white rice, and mashed-in vegetables.",
+    ingredients:[
+      "Chicken thigh, boneless skinless — the bulk of the batch (about 60%)",
+      "Chicken liver — about 5% of the batch",
+      "White rice, cooked soft — about 20%",
+      "Carrots, green beans, and spinach, finely chopped — about 15%",
+      "Per serving, added fresh: 2.5 mL fish oil + Balance IT Canine (green scoops)"
+    ],
+    steps:[
+      "Simmer or bake the chicken thighs through with no seasoning at all — no salt, no oil needed.",
+      "Cook the liver gently through (it cooks fast — a few minutes in the same pan).",
+      "Cook the white rice soft, a little wetter than you would for people.",
+      "Steam or simmer the carrots, green beans, and spinach until soft, then chop fine or mash.",
+      "Chop or shred the meats, then mix everything evenly so she cannot pick around the vegetables.",
+      "Cool fully, portion into daily containers (460 to 480 g per day), fridge 3 to 4 days of it, freeze the rest.",
+      "At each meal: warm slightly, then stir in the fish oil and Balance IT fresh — never cook the supplements."
+    ],
+    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Finish each serving FRESH with 2.5 mL fish oil + Balance IT Canine (2 to 3 green scoops per day — confirm the exact number with the balance.it generator). NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." },
+  { id:"r_zoey_beef", name:"Zoey's Beef", emoji:"🐕", dog:true,
+    time:"~1 hr batch", difficulty:"Easy", servings:"10-day batch", tags:["dog"],
+    blurb:"The beef rotation — lean ground beef with beef liver, sweet potato for the carb, and three soft vegetables.",
+    ingredients:[
+      "Ground beef, 90/10 lean — the bulk of the batch (about 60%)",
+      "Beef liver — about 5% of the batch",
+      "Sweet potato, peeled and cooked soft — about 20%",
+      "Green beans, carrots, and zucchini, finely chopped — about 15%",
+      "Per serving, added fresh: 2.5 mL fish oil + Balance IT Canine (green scoops)"
+    ],
+    steps:[
+      "Brown the ground beef in a dry pan with no seasoning; drain only if there is pooling fat (90/10 keeps it lean).",
+      "Cook the beef liver gently through and chop it fine.",
+      "Boil or bake the sweet potato until completely soft, then peel and mash.",
+      "Steam the green beans, carrots, and zucchini soft; chop small.",
+      "Mix everything evenly, cool fully, and portion into daily containers (460 to 480 g per day).",
+      "Fridge 3 to 4 days of portions, freeze the rest.",
+      "At each meal: warm slightly, then stir in the fish oil and Balance IT fresh."
+    ],
+    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Finish each serving FRESH with 2.5 mL fish oil + Balance IT Canine (2 to 3 green scoops per day — confirm the exact number with the balance.it generator). NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." },
+  { id:"r_zoey_pork", name:"Zoey's Pork", emoji:"🐕", dog:true,
+    time:"~1 hr batch", difficulty:"Easy", servings:"10-day batch", tags:["dog"],
+    blurb:"The pork rotation — lean pork loin with liver, rice or sweet potato, and green vegetables with a little kale.",
+    ingredients:[
+      "Pork loin, lean, all visible fat trimmed — the bulk of the batch (about 60%)",
+      "Liver (pork or chicken) — about 5% of the batch",
+      "White rice or sweet potato, cooked soft — about 20%",
+      "Green beans, carrots, and kale, finely chopped — about 15%",
+      "Per serving, added fresh: 2.5 mL fish oil + Balance IT Canine (green scoops)"
+    ],
+    steps:[
+      "Trim the pork loin well and simmer or bake it fully through — pork must be cooked through, no pink, and never seasoned.",
+      "Cook the liver gently and chop it fine.",
+      "Cook the rice soft (or boil and mash the sweet potato).",
+      "Steam the green beans, carrots, and kale until soft — kale especially needs to be soft and chopped small.",
+      "Chop the pork small, mix everything evenly, and cool fully.",
+      "Portion into daily containers (460 to 480 g per day): fridge 3 to 4 days, freeze the rest.",
+      "At each meal: warm slightly, then stir in the fish oil and Balance IT fresh."
+    ],
+    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Finish each serving FRESH with 2.5 mL fish oil + Balance IT Canine (2 to 3 green scoops per day — confirm the exact number with the balance.it generator). NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." }
 ];

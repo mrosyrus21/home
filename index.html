@@ -533,6 +533,9 @@ body::after{
   .navbar .util-row{padding:5px 12px 0}
   .navbar{box-shadow:0 4px 14px rgba(0,0,0,.4)}
 }
+@keyframes sinkIn{0%{opacity:0;transform:translateY(-16px) scale(.97)}55%{opacity:1;transform:translateY(3px) scale(1.01)}100%{opacity:1;transform:none}}
+@keyframes glowPulse{0%{box-shadow:0 0 0 rgba(16,185,129,0)}40%{box-shadow:0 0 26px rgba(16,185,129,.45)}100%{box-shadow:0 0 0 rgba(16,185,129,0)}}
+.flow-just-done{animation:sinkIn .5s cubic-bezier(.34,1.56,.64,1),glowPulse 1.2s ease-out;border-radius:var(--rad)}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -617,7 +620,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606070549"></script>
+<script src="./data.js?v=20260606073956"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -628,7 +631,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6, 2026 · 1:05 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 6, 2026 · 1:39 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -656,6 +659,7 @@ let printCustom = {};
 let taskCustom = {};
 let painLog = {};
 let litfulo = {};
+let zoey = {};
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -682,6 +686,12 @@ function saveWP()     { ST.child('waterPushed').set(waterPushed); }
 function saveLaundry(){ ST.child('laundry').set(laundry); }
 function savePain(){ ST.child('painLog').set(painLog); }
 function saveLit(){ ST.child('litfulo').set(litfulo); }
+function saveZoey(){ ST.child('zoey').set(zoey); }
+function zoeyStart(){ zoey={startDate:todayKey()}; saveZoey(); laundry['zoey-feed-'+todayKey()]=true; saveLaundry(); renderAll(); }
+function zoeyHold(){ if(!zoey.startDate) return; const d=new Date(zoey.startDate+'T12:00:00'); d.setDate(d.getDate()+1); zoey.startDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); saveZoey(); toast('Holding this mix an extra day. 🐕'); renderAll(); }
+function toggleZoeyFeed(){ const k='zoey-feed-'+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
+function zoeyDayN(){ if(!zoey.startDate) return 0; return Math.floor((new Date(todayKey()+'T12:00:00')-new Date(zoey.startDate+'T12:00:00'))/86400000)+1; }
+function zoeyMix(n){ if(n<=3) return {h:25,f:75,phase:'Days 1–3'}; if(n<=6) return {h:50,f:50,phase:'Days 4–6'}; if(n<=9) return {h:75,f:25,phase:'Days 7–9'}; return {h:100,f:0,phase:'Days 10–12'}; }
 function toggleExpand(id){ expanded[id]=!expanded[id]; ST.child('expanded').set(expanded); renderAll(); }
 function toggleEvening(habit){ const k="evening-"+habit+"-"+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function saveShopping(){ ST.child('shopping').set(shopping); }
@@ -1147,11 +1157,11 @@ function renderToday() {
   const el=document.getElementById("view-today"), today=todayKey();
   const dow=new Date().getDay();
   const RY=(typeof RHYTHM!=="undefined")?RHYTHM:{breakfast:"8:00 AM",lunch:"12:30 PM",dinner:"6:30 PM",dinnerBy:"8:00 PM",windDown:"9:30 PM",reading:"9:30–10:30 PM",lightsOut:"10:30 PM"};
-  let html="";
+  let topHtml="";
 
   // ── #1 PRIORITY — GET AN ALARM CLOCK (pinned at the very top until checked) ──
   if(!checked["get_alarm_clock"]){
-    html+=`<div style="background:linear-gradient(135deg,rgba(245,184,48,.16),rgba(245,184,48,.04));border:1px solid rgba(245,184,48,.45);border-left:4px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,184,48,.12)" onclick="toggle('get_alarm_clock')">
+    topHtml+=`<div style="background:linear-gradient(135deg,rgba(245,184,48,.16),rgba(245,184,48,.04));border:1px solid rgba(245,184,48,.45);border-left:4px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,184,48,.12)" onclick="toggle('get_alarm_clock')">
       <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,184,48,.5),transparent)"></div>
       <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#F5B830;margin-bottom:6px;font-family:'Lora',serif">⭐ Priority #1</div>
       <div style="display:flex;align-items:center;gap:14px">
@@ -1164,27 +1174,9 @@ function renderToday() {
       </div>
     </div>`;
   }
+  topHtml+=wxAlerts();
 
-  // ── CALL DT (pinned, every day) ───────────────────────────────────────────────
-  const dtDone=!!laundry["calldt-"+today];
-  const dtStk=dtStreak();
-  html+=`<div style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.12);position:relative;overflow:hidden;cursor:pointer;" onclick="toggleDT()">
-    <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(220,30,30,.5),transparent)"></div>
-    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:6px;font-family:'Lora',serif">🚨 Extreme Priority — Every Day${dtStk>=2?' · 🔥 '+dtStk+'-day streak':''}</div>
-    <div style="display:flex;align-items:center;gap:14px">
-      <div style="font-size:30px;flex-shrink:0">${dtDone?"✅":"📞"}</div>
-      <div style="flex:1">
-        <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:${dtDone?"var(--text3)":"#F5DDD8"};${dtDone?"text-decoration:line-through":""}">Call DT</div>
-        <div style="font-size:12px;color:${dtDone?"var(--text3)":"rgba(220,100,100,.8)"};font-style:italic;margin-top:3px">${dtDone?"Done for today — well done.":"Before noon — do not forget."}</div>
-      </div>
-      <div style="width:32px;height:32px;border-radius:50%;border:2px solid ${dtDone?"#10B981":"#DC2626"};background:${dtDone?"#10B981":"transparent"};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:15px;flex-shrink:0;transition:all .25s cubic-bezier(.34,1.56,.64,1);box-shadow:${dtDone?"0 0 12px rgba(16,185,129,.4)":"0 0 8px rgba(220,30,30,.2)"}">${dtDone?"✓":""}</div>
-    </div>
-  </div>`;
-
-  // ── Weather alerts (only when something genuinely needs attention) ────────────
-  html+=wxAlerts();
-
-  // ── STILL OPEN — pinned until done, kept compact on purpose ───────────────────
+  // ── Still-open one-off pins (compact, until done) ─────────────────────────────
   const PIN_OPEN=[
     { id:"fix_smart_start", emoji:"🔧", hex:"#F59E0B", title:"Fix Smart Start", sub:"Tap when it is handled." },
     { id:"proj_greenonion", emoji:"🌿", hex:"#34D399", title:"Regrow green onions",
@@ -1194,96 +1186,155 @@ function renderToday() {
       sub:"Base cut-side-up in a shallow water dish, bright windowsill.",
       steps:["Slice the base off about 1 inch tall and keep the stump.","Set it cut-side-up in a shallow dish with about half an inch of water.","Bright windowsill — indirect light is fine.","Change the water every day.","New leaves push up from the center in 3 to 5 days.","After about a week, optionally pot it into moist soil.","Snip baby leaves as they grow; expect about 2 weeks before it bolts."] },
   ];
-  const openPins=PIN_OPEN.filter(p=>!checked[p.id]);
-  if(openPins.length){
-    openPins.forEach(p=>{
-      const open=!!expanded[p.id];
-      html+=`<div style="display:flex;flex-direction:column;background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid ${p.hex};border-radius:var(--rad);padding:11px 16px;margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="font-size:18px;flex-shrink:0">${p.emoji}</div>
-          <div style="flex:1;min-width:0">
-            <div style="font-family:'Playfair Display',serif;font-size:14px;color:var(--text)">${p.title}</div>
-            <div class="habit-sub">${p.sub}</div>
-          </div>
-          ${p.steps?`<button onclick="event.stopPropagation();toggleExpand('${p.id}')" style="font-size:10px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:${p.hex};cursor:pointer;font-family:'Lora',serif;flex-shrink:0;font-weight:600">${open?"▲ Hide":"▼ Steps"}</button>`:""}
-          <div onclick="toggle('${p.id}')" style="width:26px;height:26px;border-radius:50%;border:2px solid ${p.hex};background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer"></div>
+  PIN_OPEN.filter(p=>!checked[p.id]).forEach(p=>{
+    const open=!!expanded[p.id];
+    topHtml+=`<div style="display:flex;flex-direction:column;background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid ${p.hex};border-radius:var(--rad);padding:11px 16px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:18px;flex-shrink:0">${p.emoji}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Playfair Display',serif;font-size:14px;color:var(--text)">${p.title}</div>
+          <div class="habit-sub">${p.sub}</div>
         </div>
-        ${p.steps&&open?`<div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.07);padding-top:8px">${p.steps.map((s,i)=>`<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5"><span style="color:${p.hex};font-weight:700;flex-shrink:0">${i+1}.</span><span>${s}</span></div>`).join("")}</div>`:""}
-      </div>`;
-    });
+        ${p.steps?`<button onclick="event.stopPropagation();toggleExpand('${p.id}')" style="font-size:10px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:${p.hex};cursor:pointer;font-family:'Lora',serif;flex-shrink:0;font-weight:600">${open?"▲ Hide":"▼ Steps"}</button>`:""}
+        <div onclick="toggle('${p.id}')" style="width:26px;height:26px;border-radius:50%;border:2px solid ${p.hex};background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer"></div>
+      </div>
+      ${p.steps&&open?`<div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.07);padding-top:8px">${p.steps.map((s,i)=>`<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5"><span style="color:${p.hex};font-weight:700;flex-shrink:0">${i+1}.</span><span>${s}</span></div>`).join("")}</div>`:""}
+    </div>`;
+  });
+
+  // ── THE DAY, IN ORDER — one chronological flow; checked items sink to the done pile ──
+  const flow=[];
+  function add(key,order,done,html,passive){ flow.push({key,order,done:!!done,html,passive:!!passive}); }
+
+  // Call DT — morning anchor
+  const dtDone=!!laundry["calldt-"+today];
+  const dtStk=dtStreak();
+  if(!dtDone){
+    add("dt",300,false,`<div style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.12);position:relative;overflow:hidden;cursor:pointer;" onclick="toggleDT()">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(220,30,30,.5),transparent)"></div>
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:6px;font-family:'Lora',serif">🚨 Extreme Priority — Every Day${dtStk>=2?' · 🔥 '+dtStk+'-day streak':''}</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="font-size:30px;flex-shrink:0">📞</div>
+        <div style="flex:1">
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#F5DDD8">Call DT</div>
+          <div style="font-size:12px;color:rgba(220,100,100,.8);font-style:italic;margin-top:3px">Before noon — do not forget.</div>
+        </div>
+        <div style="width:32px;height:32px;border-radius:50%;border:2px solid #DC2626;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(220,30,30,.2)"></div>
+      </div>
+    </div>`);
+  } else {
+    add("dt",300,true,strip("📞","Call DT",true,"#DC2626","toggleDT()","","",dtStk>=2?("🔥 "+dtStk+"-day streak"):""));
   }
 
-  // ── TODAY'S ONE THING — the whole house plan, one task at a time ─────────────
+  // Morning meds + breakfast
+  const litDone=!!laundry["well-litfulo-"+today];
+  add("lit",310,litDone,strip("💊","Litfulo + vitamins",litDone,"#6366F1","toggleWellness('litfulo')","Morning","1 min","With breakfast — logs to the Health tab too"));
+  const mB=!!laundry["meal-breakfast-"+today];
+  add("breakfast",320,mB,strip("🍳","Breakfast",mB,"#B47C14","toggleMeal('breakfast')",RY.breakfast,""));
+
+  // Zoey — food transition tracker (near meals; her food spans the day)
+  const zN=zoeyDayN();
+  if(!zoey.startDate){
+    add("zoey",330,false,`<div style="background:linear-gradient(135deg,rgba(244,114,182,.12),rgba(244,114,182,.03));border:1px solid rgba(244,114,182,.35);border-left:4px solid #F472B6;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#F472B6;margin-bottom:6px;font-family:'Lora',serif">🐕 Zoey — Food Transition · 12 Days</div>
+      <div style="display:flex;align-items:center;gap:13px">
+        <div style="font-size:24px;flex-shrink:0">🥣</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--text)">Start Day 1 — 25% homemade, 75% Farmer's Dog</div>
+          <div class="habit-sub">Days 1–3: 25/75 · 4–6: 50/50 · 7–9: 75/25 · 10–12: 100% homemade. Recipes are in the Recipe Box (🐕).</div>
+        </div>
+        <div onclick="zoeyStart()" style="width:28px;height:28px;border-radius:50%;border:2px solid #F472B6;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer"></div>
+      </div>
+    </div>`);
+  } else if(zN>=1&&zN<=14){
+    const fedToday=!!laundry["zoey-feed-"+today];
+    const mix=zoeyMix(Math.min(zN,12));
+    const label=zN<=12?("Day "+zN+" of 12 — "+mix.h+"% homemade / "+mix.f+"% Farmer's Dog"):"Transition complete — 100% homemade 🎉";
+    add("zoey",330,fedToday,`<div class="${fedToday?'':''}" style="background:linear-gradient(135deg,rgba(244,114,182,.12),rgba(244,114,182,.03));border:1px solid rgba(244,114,182,.35);border-left:4px solid #F472B6;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;${fedToday?'opacity:.6':''}">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#F472B6;margin-bottom:6px;font-family:'Lora',serif">🐕 Zoey — Food Transition${zN<=12?' · '+mix.phase:''}</div>
+      <div style="display:flex;align-items:center;gap:13px">
+        <div style="font-size:24px;flex-shrink:0">🥣</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;color:${fedToday?'var(--text3)':'var(--text)'};${fedToday?'text-decoration:line-through':''}">${label}</div>
+          <div class="habit-sub">Watch stool, appetite, and energy. Soft stool? Hold this mix 2 to 3 extra days.</div>
+          ${zN<=12?`<div style="margin-top:7px;height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden"><div style="height:100%;width:${Math.round(Math.min(zN,12)/12*100)}%;background:#F472B6"></div></div>`:""}
+        </div>
+        ${zN<=12?`<button onclick="event.stopPropagation();zoeyHold()" title="Soft stool — hold this mix an extra day" style="font-size:10px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#F472B6;cursor:pointer;font-family:'Lora',serif;flex-shrink:0;font-weight:600">⏸ Hold</button>`:""}
+        <div onclick="toggleZoeyFeed()" style="width:28px;height:28px;border-radius:50%;border:2px solid ${fedToday?'#10B981':'#F472B6'};background:${fedToday?'#10B981':'transparent'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0;cursor:pointer">${fedToday?'✓':''}</div>
+      </div>
+    </div>`);
+  }
+
+  // Morning dog + garden
+  const dogDone=!!laundry["morning-walk-"+today];
+  add("walk",340,dogDone,strip("🐕","Walk + play with Zoey",dogDone,"#4ADE80","toggleMorning('walk')","Morning","20–30 min"));
+  const waterToday=plantsDueOn(today), trimToday=plantsTrimDueOn(today), gardenToday=gardenTasksOn(today);
+  if(waterToday.length||trimToday.length||gardenToday.length){
+    const gardenDone=(waterToday.length===0||waterToday.every(p=>watered[p.id]===today))&&(trimToday.length===0||trimToday.every(p=>trimmed[p.id]===today))&&(gardenToday.length===0||gardenToday.every(id=>!!checked[id]));
+    add("garden",350,gardenDone,strip("🌿","Garden care — head to the Garden tab",gardenDone,"#2DB870","switchTab('garden')","Morning","–"));
+  }
+
+  // Midday
+  const mL=!!laundry["meal-lunch-"+today];
+  add("lunch",700,mL,strip("🥗","Lunch",mL,"#B47C14","toggleMeal('lunch')",RY.lunch,"",isWeekday()?"Step away from the desk, actually eat":""));
+
+  // The ONE house task — weekend mornings have energy; weekdays it sits after lunch
   const oneId=(dow===1)?null:oneTaskForDate(today);
-  const houseLeft=anyHouseTaskLeft();
-  html+=`<div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin:18px 2px 8px">🏡 Today's One Thing</div>`;
+  const taskOrder=(dow===0||dow===6)?500:800;
   if(dow===1){
-    html+=`<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.03));border:1px solid rgba(139,92,246,.3);border-left:4px solid #8B5CF6;border-radius:var(--rad);padding:18px;margin-bottom:12px;text-align:center">
-      <div style="font-size:30px;margin-bottom:6px">🛋️</div>
-      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#DDD6FE">Monday — rest day</div>
-      <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:5px;font-family:'Lora',serif">No house task today. The house can wait — recharge. Pool league tonight. 🎱</div>
-    </div>`;
+    add("rest",taskOrder,false,`<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.03));border:1px solid rgba(139,92,246,.3);border-left:4px solid #8B5CF6;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;text-align:center">
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#DDD6FE">🛋️ Monday — rest day. No house task.</div>
+      <div style="font-size:11.5px;color:var(--text2);font-style:italic;margin-top:3px;font-family:'Lora',serif">The house can wait — recharge. Pool league tonight. 🎱</div>
+    </div>`,true);
   } else if(oneId){
     const t=TASKS[oneId]||taskCustom[oneId];
     const r=ROOMS[t.room]||ROOMS.kitchen;
     const all=roomTaskEntries(t.room);
     const rDone=all.filter(([id])=>checked[id]).length, rTotal=all.length;
-    const rPct=rTotal?Math.round(rDone/rTotal*100):0;
-    const wknd=(dow===0||dow===6);
-    html+=`<div class="plan-head" style="border-left:4px solid ${r.color}"><span style="font-size:18px">${r.emoji}</span> ${r.name} — one step at a time<span class="plan-frac" style="color:${r.color}">${rDone}/${rTotal}</span></div>`;
-    html+=`<div class="plan-bar"><div class="plan-fill" style="width:${rPct}%;background:${r.color}"></div></div>`;
-    html+=planCard(oneId);
-    html+=`<div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin:-2px 2px 12px">${checked[oneId]?"That was today's whole plan — done. Anything else is a bonus. ✨":(wknd?"The weekend pick — a bigger one, but it is the only one. 💪":"Just this one thing today. That is the whole plan. 🌱")}</div>`;
-  } else if(!houseLeft){
-    html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — maintenance mode. Enjoy it.</div></div>`;
+    add("task",taskOrder,!!checked[oneId],`<div style="font-size:10px;color:${r.color};font-family:'Lora',serif;letter-spacing:.12em;text-transform:uppercase;margin:2px 2px 5px">🏡 Today's one thing · ${r.emoji} ${r.name} ${rDone}/${rTotal}</div>`+planCard(oneId)+(checked[oneId]?"":`<div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin:-4px 2px 12px">${(dow===0||dow===6)?"The weekend pick — a bigger one, but it is the only one. 💪":"Just this one thing today. That is the whole plan. 🌱"}</div>`));
   }
 
-  // ── DAILY ESSENTIALS ──────────────────────────────────────────────────────────
-  html+=`<div style="font-size:9px;letter-spacing:.25em;color:#38BDF8;text-transform:uppercase;font-family:'Lora',serif;margin:18px 2px 8px">💊 Daily Essentials</div>`;
-  const litDone=!!laundry["well-litfulo-"+today];
-  html+=strip("💊","Litfulo + vitamins",litDone,"#6366F1","toggleWellness('litfulo')","Morning","1 min","With breakfast — logs to the Health tab too");
-  const dogDone=!!laundry["morning-walk-"+today];
-  html+=strip("🐕","Walk + play with Zoey",dogDone,"#4ADE80","toggleMorning('walk')","Daily","20–30 min");
-  const waterToday=plantsDueOn(today), trimToday=plantsTrimDueOn(today), gardenToday=gardenTasksOn(today);
-  if(waterToday.length||trimToday.length||gardenToday.length){
-    const gardenDone=(waterToday.length===0||waterToday.every(p=>watered[p.id]===today))&&(trimToday.length===0||trimToday.every(p=>trimmed[p.id]===today))&&(gardenToday.length===0||gardenToday.every(id=>!!checked[id]));
-    html+=strip("🌿","Garden care — head to the Garden tab",gardenDone,"#2DB870","switchTab('garden')","Daily","–");
+  // Dinner + evening wind-down
+  const mD=!!laundry["meal-dinner-"+today];
+  add("dinner",1080,mD,strip("🍽️","Dinner",mD,"#B47C14","toggleMeal('dinner')",RY.dinner,"","Eaten by "+RY.dinnerBy+" — house rule"+(dow===1?" · before pool league 🎱":"")));
+  const wPhone=!!laundry["evening-wind-phone-"+today];
+  add("windphone",1300,wPhone,strip("📵","Phone to the other room — screens off",wPhone,"#8B5CF6","toggleEvening('wind-phone')",RY.windDown,"","No phone, no TV from here — the alarm clock takes over"));
+  const wRead=!!laundry["evening-wind-read-"+today];
+  add("windread",1310,wRead,strip("📖","Reading hour",wRead,"#A78BFA","toggleEvening('wind-read')",RY.reading,"","A real book — whatever you actually enjoy"));
+  const wLights=!!laundry["evening-wind-lights-"+today];
+  add("windlights",1320,wLights,strip("🛏️","Lights out",wLights,"#7C3AED","toggleEvening('wind-lights')",RY.lightsOut,""));
+
+  // ── Sink-to-bottom: unchecked flow first (chronological), done pile at the very bottom ──
+  window.__flowPrev=window.__flowPrev||{};
+  let justDoneKey=null;
+  flow.forEach(it=>{ if(it.done&&window.__flowPrev[it.key]===false) justDoneKey=it.key; });
+  const wrap=it=>(it.key===justDoneKey?`<div class="flow-just-done">${it.html}</div>`:it.html);
+  const active=flow.filter(i=>!i.done).sort((a,b)=>a.order-b.order);
+  const pile=flow.filter(i=>i.done).sort((a,b)=>a.order-b.order);
+  const checkables=flow.filter(i=>!i.passive);
+  const fDone=checkables.filter(i=>i.done).length, fTotal=checkables.length;
+
+  let html=topHtml;
+  html+=`<div style="margin:4px 2px 12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:var(--text2);font-family:'Lora',serif">Today, in order — tap things off as you go</span><span style="font-size:11px;color:#F5B830;font-family:'Lora',serif">${fDone} of ${fTotal}</span></div>
+    <div class="plan-bar"><div class="plan-fill" style="width:${fTotal?Math.round(fDone/fTotal*100):0}%;background:linear-gradient(90deg,#F5B830,#8B5CF6)"></div></div>
+  </div>`;
+  html+=active.map(wrap).join("");
+  if(pile.length){
+    const cheers=["Look at that pile grow. ✨","Every one of these was a choice. Nice. 🌱","That is momentum. 💛","Quietly crushing it. 🌙"];
+    html+=`<div style="display:flex;align-items:center;gap:10px;margin:20px 0 10px"><div style="flex:1;height:1px;background:rgba(16,185,129,.25)"></div><div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#10B981;font-family:'Lora',serif">✨ Done — ${pile.length} today</div><div style="flex:1;height:1px;background:rgba(16,185,129,.25)"></div></div>`;
+    html+=pile.map(wrap).join("");
+    html+=`<div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;text-align:center;margin:6px 0 10px">${cheers[pile.length%cheers.length]}</div>`;
   }
-
-  // ── MEAL RHYTHM — same times every day ────────────────────────────────────────
-  html+=`<div style="font-size:9px;letter-spacing:.25em;color:#B47C14;text-transform:uppercase;font-family:'Lora',serif;margin:18px 2px 8px">🍽️ Meal Rhythm</div>`;
-  const mB=!!laundry["meal-breakfast-"+today], mL=!!laundry["meal-lunch-"+today], mD=!!laundry["meal-dinner-"+today];
-  html+=strip("🍳","Breakfast",mB,"#B47C14","toggleMeal('breakfast')",RY.breakfast,"");
-  html+=strip("🥗","Lunch",mL,"#B47C14","toggleMeal('lunch')",RY.lunch,"",isWeekday()?"Step away from the desk, actually eat":"");
-  html+=strip("🍽️","Dinner",mD,"#B47C14","toggleMeal('dinner')",RY.dinner,"","Eaten by "+RY.dinnerBy+" — house rule"+(dow===1?" · before pool league 🎱":""));
-
-  // ── EVENING WIND-DOWN — the hour before bed ───────────────────────────────────
-  const wPhone=!!laundry["evening-wind-phone-"+today], wRead=!!laundry["evening-wind-read-"+today], wLights=!!laundry["evening-wind-lights-"+today];
-  html+=`<div style="font-size:9px;letter-spacing:.25em;color:#8B5CF6;text-transform:uppercase;font-family:'Lora',serif;margin:18px 2px 8px">🌙 Evening Wind-Down</div>`;
-  html+=`<div style="background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(139,92,246,.02));border:1px solid rgba(139,92,246,.25);border-left:4px solid #8B5CF6;border-radius:var(--rad);padding:14px 16px;margin-bottom:12px">
-    <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-bottom:10px">The hour before bed is yours — no phone, no TV. A real book, then lights out.</div>
-    ${strip("📵","Phone to the other room — screens off",wPhone,"#8B5CF6","toggleEvening('wind-phone')",RY.windDown,"","The alarm clock takes over from here")}
-    ${strip("📖","Reading hour",wRead,"#A78BFA","toggleEvening('wind-read')",RY.reading,"","Whatever book you actually enjoy")}
-    ${strip("🛏️","Lights out",wLights,"#7C3AED","toggleEvening('wind-lights')",RY.lightsOut,"")}
-  </div>`;
-
-  // ── GENTLE PROGRESS ───────────────────────────────────────────────────────────
-  const flow=[dtDone,litDone,dogDone,mB,mL,mD,wPhone,wRead,wLights];
-  if(oneId) flow.push(!!checked[oneId]);
-  const fDone=flow.filter(Boolean).length, fTotal=flow.length;
-  const fPct=Math.round(fDone/fTotal*100);
-  html+=`<div style="margin:16px 2px 8px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:var(--text2);font-family:'Lora',serif">Today's rhythm</span><span style="font-size:11px;color:#F5B830;font-family:'Lora',serif">${fDone} of ${fTotal}</span></div>
-    <div class="plan-bar"><div class="plan-fill" style="width:${fPct}%;background:linear-gradient(90deg,#F5B830,#8B5CF6)"></div></div>
-  </div>`;
-  if(fDone===fTotal){
-    html+=`<div style="background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(16,185,129,.03));border:1px solid rgba(16,185,129,.3);border-radius:var(--rad);padding:16px;margin-bottom:12px;text-align:center">
+  if(fTotal&&fDone===fTotal){
+    html+=`<div style="background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(16,185,129,.03));border:1px solid rgba(16,185,129,.3);border-radius:var(--rad);padding:16px;margin:10px 0 12px;text-align:center">
       <div style="font-size:26px;margin-bottom:4px">🌙</div>
       <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#A7F3D0">Day complete</div>
       <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:4px;font-family:'Lora',serif">Everything that mattered today got done. Sleep well.</div>
     </div>`;
   }
-
+  if(justDoneKey){ try{ const msgs=["Nice. ✓","One less thing. ✨","Done and dusted. 🌱","That felt good, right? 💛","Onward. 🌙"]; toast(msgs[Math.floor(Math.random()*msgs.length)]); }catch(e){} }
+  flow.forEach(it=>{ window.__flowPrev[it.key]=it.done; });
   el.innerHTML=html;
 }
 
@@ -1772,7 +1823,7 @@ const GROC_EMOJI = {
 function grocEmoji(t){ t=(t||'').toLowerCase(); const ks=Object.keys(GROC_EMOJI).sort((a,b)=>b.length-a.length); for(const k of ks){ if(t.indexOf(k)!==-1) return GROC_EMOJI[k]; } return '🛒'; }
 function recipeCard(r, featured){
   const ph=r.photo;
-  const meta=[r.time, r.difficulty, (r.servings?('🍽 '+r.servings):'')].filter(Boolean);
+  const meta=[(r.dog?'🐕 DOG FOOD':''), r.time, r.difficulty, (r.servings?('🍽 '+r.servings):'')].filter(Boolean);
   const badges=meta.map(m=>'<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(140,59,46,.1);color:#8C3B2E;border:1px solid rgba(140,59,46,.25);font-family:\'Lora\',serif">'+m+'</span>').join('');
   return '<div onclick="openRecipe(\''+r.id+'\')" style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;margin-bottom:14px;overflow:hidden;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35)">'
     +'<div style="height:6px;background:repeating-linear-gradient(45deg,#C44536,#C44536 7px,#F5ECD7 7px,#F5ECD7 14px)"></div>'
@@ -1796,10 +1847,16 @@ function recipesHtml(){
   if(!has){
     return '<div class="section-label">📇 Recipe Box</div>'+lid+'<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:24px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px;line-height:1.5">No cards yet — the recipes chat is filling the box. They’ll show up here as cute index cards.</div>';
   }
-  const feat=RECIPES.find(r=>r.featured)||RECIPES[0];
-  const rest=RECIPES.filter(r=>r!==feat);
-  let out='<div class="section-label">📇 Recipe Box</div>'+lid+recipeCard(feat,true);
+  const human=RECIPES.filter(r=>!r.dog), dogs=RECIPES.filter(r=>r.dog);
+  const feat=human.find(r=>r.featured)||human[0];
+  const rest=human.filter(r=>r!==feat);
+  let out='<div class="section-label">📇 Recipe Box</div>'+lid+(feat?recipeCard(feat,true):'');
   if(rest.length) out+=rest.map(r=>recipeCard(r,false)).join('');
+  if(dogs.length){
+    out+='<div style="display:flex;align-items:center;gap:10px;margin:20px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#E8D2A8">🐕 Zoey\u2019s Kitchen</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
+    out+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Rotate the three; supplements go in fresh at serving time.</div>';
+    out+=dogs.map(r=>recipeCard(r,false)).join('');
+  }
   return out;
 }
 function baseServ(r){ const m=String((r&&r.servings)||'').match(/\d+/); return m?Math.max(1,parseInt(m[0],10)):2; }
@@ -2312,6 +2369,7 @@ ST.on('value', snap => {
   taskCustom  = d.taskCustom  || {};
   painLog     = d.painLog     || {};
   litfulo     = d.litfulo     || {};
+  zoey        = d.zoey        || {};
   // one-time idempotent migration of any legacy localStorage pain entries up to Firebase
   try { const legacy = JSON.parse(localStorage.getItem("painlog")||"{}"); let added=false; for(const k in legacy){ if(painLog[k]==null){ painLog[k]=legacy[k]; added=true; } } if(added){ ST.child('painLog').set(painLog); } } catch(e){}
   const flags = d.flags       || {};
