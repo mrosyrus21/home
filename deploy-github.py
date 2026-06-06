@@ -65,7 +65,7 @@ try:
         mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
         h12 = now.hour % 12 or 12
         ampm = "AM" if now.hour < 12 else "PM"
-        stamp = f"{mons[now.month-1]} {now.day}, {now.year} · {h12}:{now.minute:02d} {ampm} MT"
+        stamp = f"{mons[now.month-1]} {now.day} · {h12}:{now.minute:02d} {ampm}"  # short format, America/Denver (MST/MDT auto via ZoneInfo)
         html = open(idx, "r", encoding="utf-8").read()
         import time as _t
         html = re.sub(r'data\.js\?v=[0-9]*', "data.js?v="+_t.strftime("%Y%m%d%H%M%S"), html)
