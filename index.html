@@ -638,7 +638,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6, 2026 · 4:52 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 6, 2026 · 5:01 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -704,7 +704,8 @@ function zoeyDayN(){ if(!zoey.startDate) return 0; return Math.floor((new Date(t
 function zoeyMix(n){ if(n<=3) return {h:25,f:75,phase:'Days 1–3'}; if(n<=6) return {h:50,f:50,phase:'Days 4–6'}; if(n<=9) return {h:75,f:25,phase:'Days 7–9'}; return {h:100,f:0,phase:'Days 10–12'}; }
 function toggleExpand(id){ expanded[id]=!expanded[id]; ST.child('expanded').set(expanded); renderAll(); }
 function toggleEvening(habit){ const k="evening-"+habit+"-"+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
-function toggleReset(k){ const key="reset-"+k+"-"+todayKey(); laundry[key]=!laundry[key]; saveLaundry(); renderAll(); }  // 🔄 sleep-reset one-offs (date-keyed, auto-expire)
+function toggleReset(k){ const key="reset-"+k+"-"+todayKey(); laundry[key]=!laundry[key]; saveLaundry(); renderAll(); }
+function toggleTankDaily(k){ const key="tankd-"+k+"-"+todayKey(); laundry[key]=!laundry[key]; saveLaundry(); renderAll(); }  // 🪲 dry-terrarium daily care (date-keyed, resets daily)  // 🔄 sleep-reset one-offs (date-keyed, auto-expire)
 function saveShopping(){ ST.child('shopping').set(shopping); }
 function toggleShop(id){ shopping[id]=!shopping[id]; saveShopping(); renderShopping(); }
 function saveFunPrints(){ ST.child('funPrints').set(funPrints); }
@@ -1778,6 +1779,7 @@ function renderShopping() {
   const panel=(title,inner)=>`<div style="background:#0a1628;border:1px solid rgba(0,229,204,.18);border-radius:12px;padding:13px 15px;margin-bottom:10px"><div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#7fe9dd;margin-bottom:8px">${title}</div><div class="tlog"><div style="font-size:12.5px;color:rgba(232,244,253,.82);line-height:1.6;font-family:'Lora',serif">${inner}</div></div></div>`;
   const sh=t=>`<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#4fc3f7;font-family:'Lora',serif;margin:11px 0 4px">${t}</div>`;
   const tchk=(id,label)=>{const d=!!checked[id];return '<div onclick="toggle(\''+id+'\')" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(0,229,204,.12);cursor:pointer;font-size:12.5px;'+(d?'opacity:.5;text-decoration:line-through':'')+'"><div style="width:18px;height:18px;border-radius:5px;border:1.5px solid '+(d?'#4AD490':'rgba(0,229,204,.4)')+';background:'+(d?'rgba(74,212,144,.15)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#4AD490;font-weight:900;font-size:10px">'+(d?'✓':'')+'</div><div style="flex:1;color:rgba(232,244,253,.82)">'+label+'</div></div>';};
+  const tdaily=(id,label)=>{const d=!!laundry['tankd-'+id+'-'+todayKey()];return '<div onclick="toggleTankDaily(\''+id+'\')" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(0,229,204,.12);cursor:pointer;font-size:12.5px;'+(d?'opacity:.5;text-decoration:line-through':'')+'"><div style="width:18px;height:18px;border-radius:50%;border:1.5px solid '+(d?'#4AD490':'rgba(0,229,204,.4)')+';background:'+(d?'rgba(74,212,144,.15)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#4AD490;font-weight:900;font-size:10px">'+(d?'✓':'')+'</div><div style="flex:1;color:rgba(232,244,253,.82)">'+label+'</div></div>';};
   const hero=(src,cap)=>`<div style="position:relative;border-radius:14px;overflow:hidden;margin-bottom:12px;border:1px solid rgba(0,229,204,.2);background:#0a1628"><img src="${src}" alt="${cap}" loading="lazy" style="width:100%;display:block;max-height:360px;object-fit:cover" onerror="this.parentNode.style.display='none'"><div style="position:absolute;bottom:0;left:0;right:0;padding:9px 13px;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:11px;color:#cfe3f5;font-family:'Lora',serif">${cap}</div></div>`;
   const banner=(rgb,eyebrow,title,body)=>`<div style="background:linear-gradient(135deg,rgba(${rgb},.12),rgba(${rgb},.05));border:1px solid rgba(${rgb},.4);border-radius:14px;padding:13px 15px;margin-bottom:12px"><div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgb(${rgb});font-family:'Lora',serif;margin-bottom:4px">${eyebrow}</div><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px">${title}</div><div style="font-size:12px;color:rgba(232,244,253,.78);font-family:'Lora',serif;line-height:1.5">${body}</div></div>`;
   const specs=(dims,vol,medium)=>`<div style="font-size:11.5px;color:#8b9bb5;font-family:'Lora',serif;text-align:center;margin-bottom:12px">${dims} · <b style="color:#cfe3f5">${vol}</b> · ${medium}</div>`;
@@ -1862,9 +1864,21 @@ function renderShopping() {
   }
 
   else if (tankSub === "dry") {
-    html += hero('images/tank_dry_20260604.jpg','Dry terrarium — rounded face, built-in light; building the bioactive cleanup crew');
+    html += hero('images/tank_dry_20260604.jpg','Dry terrarium — rounded face, built-in light; stocked & cycling in');
     html += specs('10 × 12 × 7 in','~3.6 gal','🪲 Bioactive — dry / terrestrial');
-    html += banner('167,139,250','Status — Building','🪲 Growing the cleanup crew','A <b>dry bioactive vivarium</b> — rounded face with a built-in light. The plan: grow a thriving <b>isopod + springtail</b> ecosystem in moist coco first, then add a small animal once it is booming. The side crack is fine — nothing aquatic in here.');
+    html += banner('167,139,250','Status — Stocked & cycling in','🪲 Bioactive cleanup crew active','<b>Isopods + springtails</b> are in and working the coco substrate, with fruit flies as the snack layer. Springtails hide in the substrate by day — <b>that is normal</b>; peek at night for a real headcount. The side crack is fine — nothing aquatic in here.');
+    const dDaily=['mist','leaves','perch','headcount'];
+    const dDone=dDaily.filter(k=>!!laundry['tankd-'+k+'-'+todayKey()]).length;
+    html += panel('🧼 Daily care — '+dDone+' of '+dDaily.length+' today',
+      tdaily('mist','🌫️ Light mist — damp, not soggy')
+      + tdaily('leaves','🍃 Fresh untreated leaves for the katydid — basil works')
+      + tdaily('perch','🪵 Check perches are standing — katydids hang upside-down to molt; vertical twigs are life-or-death')
+      + tdaily('headcount','👀 Critter headcount / activity check')
+      + '<div style="font-size:10.5px;color:#5a7a99;font-style:italic;margin-top:6px">Resets every morning, like the daily items on Today.</div>');
+    html += panel('🛠️ Setup still needed',
+      tchk('dry-perches','⬆️ Vertical perches / twigs for the katydid')
+      + tchk('dry-litterbark','🍂 Leaf litter + a bark piece for the isopods')
+      + '<div style="font-size:11px;color:rgba(232,244,253,.6);font-style:italic;line-height:1.55;margin-top:7px">🐞 Ladybugs belong on the garden plants — release at dusk onto the aphid plant. 🦗 The katydid does best in its own enclosure, away from predators.</div>');
     html += panel('🪲 Bioactive Build — Cleanup Crew',
       '<b>Goal:</b> grow a thriving isopod + springtail colony FIRST, then (much later) add a small animal — a <b>mourning gecko</b> or <b>dart frog</b> — once the microfauna is booming.'
       + sh('Build steps')
