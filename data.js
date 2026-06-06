@@ -514,6 +514,23 @@ const FINANCE = {
     { id:"ft_gather",   label:"📋 Gather: Lendmark balance+APR · Nissan payoff · student-loan total · IRS owed · Home Depot card · any Affirm" },
     { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
   ],
+  // ── 📞 FINANCIAL MONDAYS — paced queue, ONE item per Monday (added Jun 6 2026). Order: time-sensitive calls first, then cancels/verifications one a week. Dates assign dynamically: first open item = next Monday; checking one off advances the rest. Done state: fin.monday[id]. ──
+  mondays: [
+    { id:"mon_latefee",   label:"📞 Property management — rent late fee follow-up", note:"No answer Friday — Monday morning is the retry. Ask what the fee is, and whether they'll waive it (first time, rent was paid Jun 5)." },
+    { id:"mon_xfinity",   label:"📞 Xfinity retention call — get $135 down to ~$70–90", note:"Say 'cancel service' at the prompts to reach Retention. Leverage: AT&T Internet Air is $47/mo at your address. Full script on the ✅ To-dos sub-tab." },
+    { id:"mon_family",    label:"👨‍👩‍👧 Family payment renegotiation — $400/mo → ~$200", note:"One honest conversation: stabilizing now, back up when the gap closes." },
+    { id:"mon_amazon",    label:"📦 Cancel Amazon Prime free trial + Amazon Fresh", note:"One sitting, two cancels — same login. Prime bills ~Jul 5 if you miss it.", deadline:"2026-07-02" },
+    { id:"mon_claude",    label:"💳 Duplicate Claude charge — get the $21.03 back", note:"Billed twice in May; one should remain. Contact support first; dispute with the bank if they stall." },
+    { id:"mon_gamepass",  label:"🎮 Xbox Game Pass — verify the $31.11 is gone on the statement", note:"Check it off the ❄️ Debts cancel list when you SEE it missing." },
+    { id:"mon_farmersdog",label:"🐕 Cancel The Farmer's Dog — $215.05/mo", note:"By now the shipment is nearly used up and Zoey's on the one-pot. The big domino falls. 🎉" },
+    { id:"mon_disney",    label:"🏰 Disney+ — verify the $21.69 is gone on the statement" },
+    { id:"mon_chatgpt",   label:"🤖 ChatGPT — verify the $20.00 is gone on the statement" },
+    { id:"mon_crunchy",   label:"🍥 Crunchyroll — verify the $15.18 is gone on the statement" },
+    { id:"mon_epoch",     label:"🌙 Epoch.com ($14.95) — verify gone · same statement: confirm EverAI ($12.99) is gone too", note:"Epoch bills ~the 23rd; EverAI was last seen Mar 23 and is likely already dead." },
+    { id:"mon_uberone",   label:"🚗 Uber One — verify the $9.99 is gone on the statement" },
+    { id:"mon_dashpass",  label:"🚪 DoorDash DashPass — verify the $9.99 is gone on the statement" },
+    { id:"mon_sweep",     label:"🧾 Final sweep — every cancel-list item checked off against a real statement", note:"When this one's done, the gap card on 📊 Overview should be showing the full ~$372 swing." }
+  ],
   advice: [
     { t:"$190 of filament is inventory, not income", b:"The SAVOR balance is real debt — clear it next paycheck, and no hypothetical print-sale math in the One Number. BUT: the hydro and aquarium prints are exactly the functional niche that sells on Etsy and locally. List 2–3 finished prints (it's on the Print → Ideas list); the day one ships, the $190 starts paying itself back. Until then, it's just spending." },
     { t:"The SAVOR card is a tool, not a balance", b:"Brand-new card, $500 limit, ~30% APR. Used for one small bill and paid in full, it quietly builds credit. Carried, $500 at 30% grows about $12 every month it sits. The win condition is simple — the statement always says $0." },
