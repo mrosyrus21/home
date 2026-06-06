@@ -154,10 +154,10 @@ body::after{
 .tl-pill-row{display:flex;justify-content:flex-end;padding:6px 18px 0;position:relative;z-index:1}
 
 /* Tabs */
-.tabs{display:flex;margin-top:8px;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.04)}
+.tabs{display:flex;flex-wrap:wrap;margin-top:8px;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.04)}
 .tabs-secondary{display:flex;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.03);background:rgba(0,0,0,.12)}
 .tab{
-  flex:1;background:none;border:none;cursor:pointer;
+  flex:1 1 22%;background:none;border:none;cursor:pointer;
   padding:10px 0 9px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
   font-family:'Lora',serif;border-bottom:2px solid transparent;
   transition:all .2s;color:var(--text2);position:relative;
@@ -176,6 +176,8 @@ body::after{
 #tab-garden.active::after{background:linear-gradient(90deg,rgba(74,222,128,0),#4ADE80,rgba(74,222,128,0))}
 #tab-wellness.active{color:#38BDF8;text-shadow:0 0 14px rgba(56,189,248,.5)}
 #tab-wellness.active::after{background:linear-gradient(90deg,rgba(56,189,248,0),#38BDF8,rgba(56,189,248,0))}
+#tab-finance.active{color:#FACC15;text-shadow:0 0 14px rgba(250,204,21,.5)}
+#tab-finance.active::after{background:linear-gradient(90deg,rgba(250,204,21,0),#FACC15,rgba(250,204,21,0))}
 #tab-print.active { color:#FB923C; border-bottom-color:#FB923C; }
 .print-step-card { background:rgba(251,146,60,.07); border:1px solid rgba(251,146,60,.2); border-radius:14px; padding:14px 16px; margin-bottom:10px; display:flex; gap:14px; align-items:flex-start; cursor:pointer; transition:background .15s; }
 .print-step-card.done { background:rgba(45,184,112,.06); border-color:rgba(45,184,112,.2); }
@@ -536,6 +538,7 @@ body::after{
 @keyframes sinkIn{0%{opacity:0;transform:translateY(-16px) scale(.97)}55%{opacity:1;transform:translateY(3px) scale(1.01)}100%{opacity:1;transform:none}}
 @keyframes glowPulse{0%{box-shadow:0 0 0 rgba(16,185,129,0)}40%{box-shadow:0 0 26px rgba(16,185,129,.45)}100%{box-shadow:0 0 0 rgba(16,185,129,0)}}
 @keyframes dtTestPulse{0%,100%{box-shadow:0 0 10px rgba(245,184,48,.25)}50%{box-shadow:0 0 30px rgba(245,184,48,.6)}}
+@keyframes dtCallPulse{0%,100%{box-shadow:0 0 10px rgba(220,30,30,.25)}50%{box-shadow:0 0 32px rgba(220,30,30,.65)}}
 .flow-just-done{animation:sinkIn .5s cubic-bezier(.34,1.56,.64,1),glowPulse 1.2s ease-out;border-radius:var(--rad)}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -605,6 +608,7 @@ body::after{
     <button class="tab" onclick="switchTab('grocery')" id="tab-grocery">🍽️ Food</button>
     <button class="tab" onclick="switchTab('print')" id="tab-print">🧊 Print</button>
     <button class="tab" onclick="switchTab('wellness')" id="tab-wellness">💊 Health</button>
+    <button class="tab" onclick="switchTab('finance')" id="tab-finance">💰 Finance</button>
   </div>
   <div class="tabs-secondary" id="subtabs" style="display:none"></div>
 </div>
@@ -617,11 +621,12 @@ body::after{
   <div id="view-shopping" style="display:none"></div>
   <div id="view-grocery" style="display:none"></div>
   <div id="view-wellness" style="display:none"></div>
+  <div id="view-finance" style="display:none"></div>
   <div id="view-print" style="display:none"></div>
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606094928"></script>
+<script src="./data.js?v=20260606104302"></script>
 <script src="./recipes.js?v=20260606094928"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -633,7 +638,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6, 2026 · 4:17 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 6, 2026 · 4:44 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -663,6 +668,7 @@ let taskCustom = {};
 let painLog = {};
 let litfulo = {};
 let zoey = {};
+let fin = {};   // 💰 finance state: bal/debt history, bills paid, cancels verified, to-dos
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -690,6 +696,7 @@ function saveLaundry(){ ST.child('laundry').set(laundry); }
 function savePain(){ ST.child('painLog').set(painLog); }
 function saveLit(){ ST.child('litfulo').set(litfulo); }
 function saveZoey(){ ST.child('zoey').set(zoey); }
+function saveFin(){ ST.child('fin').set(fin); }
 function zoeyStart(){ zoey={startDate:todayKey()}; saveZoey(); laundry['zoey-feed-'+todayKey()]=true; saveLaundry(); renderAll(); }
 function zoeyHold(){ if(!zoey.startDate) return; const d=new Date(zoey.startDate+'T12:00:00'); d.setDate(d.getDate()+1); zoey.startDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); saveZoey(); toast('Holding this mix an extra day. 🐕'); renderAll(); }
 function toggleZoeyFeed(){ const k='zoey-feed-'+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
@@ -697,6 +704,7 @@ function zoeyDayN(){ if(!zoey.startDate) return 0; return Math.floor((new Date(t
 function zoeyMix(n){ if(n<=3) return {h:25,f:75,phase:'Days 1–3'}; if(n<=6) return {h:50,f:50,phase:'Days 4–6'}; if(n<=9) return {h:75,f:25,phase:'Days 7–9'}; return {h:100,f:0,phase:'Days 10–12'}; }
 function toggleExpand(id){ expanded[id]=!expanded[id]; ST.child('expanded').set(expanded); renderAll(); }
 function toggleEvening(habit){ const k="evening-"+habit+"-"+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
+function toggleReset(k){ const key="reset-"+k+"-"+todayKey(); laundry[key]=!laundry[key]; saveLaundry(); renderAll(); }  // 🔄 sleep-reset one-offs (date-keyed, auto-expire)
 function saveShopping(){ ST.child('shopping').set(shopping); }
 function toggleShop(id){ shopping[id]=!shopping[id]; saveShopping(); renderShopping(); }
 function saveFunPrints(){ ST.child('funPrints').set(funPrints); }
@@ -834,12 +842,12 @@ let foodSub = "list";
 function switchTab(t) {
   currentTab=t;
   setTabBg(t);
-  ["today","wellness","timeline","rooms","forecast","garden","shopping","grocery","print"].forEach(v=>{
+  ["today","wellness","finance","timeline","rooms","forecast","garden","shopping","grocery","print"].forEach(v=>{
     const el=document.getElementById("view-"+v);
     if(el) { el.style.display=v===t?"block":"none";
       if(v===t){ el.classList.remove("view-animate"); void el.offsetWidth; el.classList.add("view-animate"); } }
   });
-  ["today","garden","shopping","grocery","print","wellness"].forEach(v=>{
+  ["today","garden","shopping","grocery","print","wellness","finance"].forEach(v=>{
     const tb=document.getElementById("tab-"+v);
     if(tb) tb.className="tab"+(v===t?" active":"");
   });
@@ -1177,7 +1185,8 @@ function dtStreak(){ return streakOf("calldt-"); }
 function renderToday() {
   const el=document.getElementById("view-today"), today=todayKey();
   const dow=new Date().getDay();
-  const RY=(typeof RHYTHM!=="undefined")?RHYTHM:{breakfast:"8:00 AM",lunch:"12:30 PM",dinner:"6:30 PM",dinnerBy:"8:00 PM",windDown:"9:30 PM",reading:"9:30–10:30 PM",lightsOut:"10:30 PM"};
+  const RY=(typeof RHYTHM!=="undefined")?RHYTHM:{breakfast:"8:00 AM",lunch:"12:30 PM",dinner:"6:30 PM",dinnerBy:"8:00 PM",windDown:"10:00 PM",reading:"10:00–11:00 PM",lightsOut:"11:00 PM"};
+  const RESET_DAY="2026-06-06"; // 🔄 one-off sleep-reset day — flow items auto-expire after this date
   let topHtml="";
 
   // ── #1 PRIORITY — GET AN ALARM CLOCK (pinned at the very top until checked) ──
@@ -1231,7 +1240,7 @@ function renderToday() {
   const dtDone=!!laundry["calldt-"+today];
   const dtStk=dtStreak();
   if(!dtDone && dtAsk){
-    add("dt",300,false,`<div style="background:linear-gradient(135deg,rgba(220,30,30,.18),rgba(220,30,30,.06));border:1px solid rgba(220,30,30,.5);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.18);position:relative;overflow:hidden">
+    add("dt",300,false,`<div style="background:linear-gradient(135deg,rgba(220,30,30,.18),rgba(220,30,30,.06));border:1px solid rgba(220,30,30,.5);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;animation:dtCallPulse 2s ease-in-out infinite">
       <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:8px;font-family:'Lora',serif">📞 Call DT — what did the line say?</div>
       <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#F5DDD8;margin-bottom:12px">Test or no?</div>
       <div style="display:flex;gap:10px">
@@ -1241,7 +1250,7 @@ function renderToday() {
       <div onclick="dtCancel()" style="text-align:center;font-size:11px;color:var(--text3,#5a7a99);font-family:'Lora',serif;font-style:italic;margin-top:9px;cursor:pointer">never mind — haven't called yet</div>
     </div>`);
   } else if(!dtDone){
-    add("dt",300,false,`<div style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.12);position:relative;overflow:hidden;cursor:pointer;" onclick="askDT()">
+    add("dt",300,false,`<div style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;animation:dtCallPulse 2s ease-in-out infinite" onclick="askDT()">
       <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(220,30,30,.5),transparent)"></div>
       <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:6px;font-family:'Lora',serif">🚨 Extreme Priority — Every Day${dtStk>=2?' · 🔥 '+dtStk+'-day streak':''}</div>
       <div style="display:flex;align-items:center;gap:14px">
@@ -1277,11 +1286,29 @@ function renderToday() {
     }
   }
 
+
+  // ── 🔄 SLEEP RESET DAY — 2026-06-06 ONLY (all-nighter recovery; auto-expires tomorrow) ──
+  if(today===RESET_DAY){
+    add("rbanner",278,false,`<div style="background:linear-gradient(135deg,rgba(56,189,248,.13),rgba(139,92,246,.07));border:1px solid rgba(56,189,248,.35);border-left:4px solid #38BDF8;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#38BDF8;margin-bottom:6px;font-family:'Lora',serif">🔄 Sleep Reset Day — today only</div>
+      <div style="font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.65">All-nighter recovery: up at 10:30, bright light fast, real meals, no caffeine after 2, no naps — then the normal evening wind-down. One steady day fixes it.</div>
+      <div style="font-size:12px;color:#7DD3FC;font-family:'Lora',serif;font-style:italic;margin-top:7px">Tomorrow morning, 8:00 AM — that's the one that locks the cycle in. 🌅</div>
+    </div>`,true);
+    const rWake=!!laundry["reset-wake-"+today];
+    add("rwake",282,rWake,strip("⏰","Up at 10:30 AM",rWake,"#F5B830","toggleReset('wake')","10:30 AM","","One-day override — tomorrow the 8:00 AM anchor takes over"));
+    const rLight=!!laundry["reset-light-"+today];
+    add("rlight",284,rLight,strip("☀️","Bright light within 30 min of waking",rLight,"#FBBF24","toggleReset('light')","~11:00 AM","","Get outside — water the plants, walk Zoey. Daylight resets the clock."));
+    const rCaff=!!laundry["reset-caffeine-"+today];
+    add("rcaff",750,rCaff,strip("☕","Caffeine cutoff — none after 2:00 PM",rCaff,"#F97316","toggleReset('caffeine')","2:00 PM","","Anything after 2 steals tonight's sleep"));
+    const rNap=!!laundry["reset-nonap-"+today];
+    add("rnap",760,rNap,strip("🚫","No naps today",rNap,"#FB7185","toggleReset('nonap')","All day","","Desperate? 20 min max, before 3 PM — set a timer"));
+  }
+
   // Morning meds + breakfast
   const litDone=!!laundry["well-litfulo-"+today];
   add("lit",310,litDone,strip("💊","Litfulo + vitamins",litDone,"#6366F1","toggleWellness('litfulo')","Morning","1 min","With breakfast — logs to the Health tab too"));
   const mB=!!laundry["meal-breakfast-"+today];
-  add("breakfast",320,mB,strip("🍳","Breakfast",mB,"#B47C14","toggleMeal('breakfast')",RY.breakfast,""));
+  add("breakfast",320,mB,strip("🍳","Breakfast",mB,"#B47C14","toggleMeal('breakfast')",(today===RESET_DAY?"Right after waking":RY.breakfast),""));
 
   // Zoey — food transition tracker (near meals; her food spans the day)
   const zN=zoeyDayN();
@@ -2464,7 +2491,6 @@ function renderWellness() {
   </div>`;
   out += litRefillHtml();
   out += medMini('eso','Esomeprazole (Nexium)','Once daily, ~30 min before breakfast','Acid reducer (PPI) for reflux','#22D3EE');
-  out += medMini('mag','Magnesium','Daily — with food or in the evening','Supplement: muscle, nerve & sleep support','#84CC16');
 
   // ── Get Outside guide ──
   const outsideDone = !!laundry["well-outside-"+today];
@@ -2488,10 +2514,192 @@ function renderWellness() {
   el.innerHTML = out;
 }
 
+
+// ═══ 💰 FINANCE — first budget, kept simple ═══════════════════════════════
+let finEdit=null;     // transient: 'kind:id' balance being edited
+let finTipOff=0;      // transient: advice shuffle offset
+function finFmt(n,whole){ const neg=n<0, a=Math.abs(n);
+  const s=whole?Math.round(a).toLocaleString('en-US'):a.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return (neg?'−$':'$')+s; }
+function finNiceDate(d){ if(!d) return ''; const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const p=String(d).split('-'); return M[+p[1]-1]+' '+(+p[2]); }
+function finSeries(kind,id){ const m=(fin&&fin[kind]&&fin[kind][id])||{}; return Object.keys(m).sort().map(function(d){return {d:d,v:+m[d]};}); }
+function finLatest(kind,id,fb,fbDate){ const s=finSeries(kind,id); if(s.length) return s[s.length-1]; return (fb==null)?null:{d:fbDate||null,v:fb}; }
+function finSet(kind,id,val){ fin[kind]=fin[kind]||{}; fin[kind][id]=fin[kind][id]||{}; fin[kind][id][todayKey()]=val; saveFin(); }
+function finEditOpen(kind,id){ finEdit=kind+':'+id; renderFinance(); setTimeout(function(){ const i=document.getElementById('finEditInput'); if(i){ i.focus(); i.select(); } },60); }
+function finEditCancel(){ finEdit=null; renderFinance(); }
+function finEditSave(kind,id){ const i=document.getElementById('finEditInput'); if(!i) return; const v=parseFloat(String(i.value).replace(/[^0-9.\-]/g,'')); if(isNaN(v)){ toast('Hmm — that does not look like a number'); return; } finSet(kind,id,v); finEdit=null; toast('💾 Saved with today\'s date — trends build from here'); renderFinance(); }
+function finEditBox(kind,id,cur){ return '<div style="display:flex;gap:8px;align-items:center;flex-shrink:0" onclick="event.stopPropagation()">'
+  +'<input id="finEditInput" type="text" inputmode="decimal" value="'+(cur!=null?cur:'')+'" onkeydown="if(event.key===\'Enter\')finEditSave(\''+kind+'\',\''+id+'\')" style="width:104px;background:#0a1628;border:1px solid rgba(250,204,21,.45);border-radius:9px;padding:8px 10px;color:var(--text);font-size:15px;font-weight:700;outline:none;text-align:right">'
+  +'<div onclick="finEditSave(\''+kind+'\',\''+id+'\')" style="background:rgba(250,204,21,.16);border:1px solid rgba(250,204,21,.5);border-radius:9px;padding:8px 12px;color:#FACC15;font-weight:700;font-size:13px;cursor:pointer">Save</div>'
+  +'<div onclick="finEditCancel()" style="font-size:12px;color:#5a7a99;cursor:pointer;font-style:italic">✕</div></div>'; }
+function finBillToggle(id){ const k=id+'-'+todayKey().slice(0,7); fin.bills=fin.bills||{}; if(fin.bills[k]) delete fin.bills[k]; else fin.bills[k]=true; saveFin(); renderFinance(); }
+function finCancelToggle(id){ fin.cancel=fin.cancel||{}; if(fin.cancel[id]) delete fin.cancel[id]; else { fin.cancel[id]=true; try{toast('✂️ Verified gone — your monthly gap just improved');}catch(e){} } saveFin(); renderFinance(); }
+function finTodoToggle(id){ fin.todoDone=fin.todoDone||{}; if(fin.todoDone[id]) delete fin.todoDone[id]; else fin.todoDone[id]=true; saveFin(); renderFinance(); }
+function addFinTodo(){ const el=document.getElementById('finTodoInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; fin.todoCustom=fin.todoCustom||{}; fin.todoCustom['ft-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; el.value=''; saveFin(); renderFinance(); }
+function removeFinTodo(id){ if(fin.todoCustom&&fin.todoCustom[id]!=null) delete fin.todoCustom[id]; if(fin.todoDone&&fin.todoDone[id]) delete fin.todoDone[id]; saveFin(); renderFinance(); }
+function finMoreTips(){ finTipOff+=3; renderFinance(); }
+
+function renderFinance(){
+  const el=document.getElementById('view-finance'); if(!el) return;
+  const today=todayKey(), ym=today.slice(0,7);
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthName=MONTHS[+ym.slice(5)-1];
+  const esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+  const Y='#FACC15', G='#4AD490', R='#F87171';
+  let out='';
+
+  // ── 1 · THE ONE NUMBER ──
+  const cancelGot=FINANCE.cancels.reduce(function(s,c){return s+(((fin.cancel||{})[c.id])?c.amt:0);},0);
+  const cancelLeft=FINANCE.cancels.reduce(function(s,c){return s+(((fin.cancel||{})[c.id])?0:c.amt);},0);
+  const committed=FINANCE.outflowMonthly-cancelGot;
+  const gap=FINANCE.incomeMonthly-committed;
+  const pos=gap>=0;
+  const anchor=new Date(FINANCE.paydayAnchor+'T12:00:00');
+  const now=new Date(); const dayMs=86400000;
+  const into=((Math.floor((now-anchor)/dayMs)%14)+14)%14;
+  const left=(14-into)%14;
+  const nextPd=new Date(now.getTime()+left*dayMs);
+  const pdLabel=finNiceDate(nextPd.getFullYear()+'-'+String(nextPd.getMonth()+1).padStart(2,'0')+'-'+String(nextPd.getDate()).padStart(2,'0'));
+  out+='<div class="section-label">💵 Start here — the one number</div>';
+  out+='<div style="background:linear-gradient(135deg,'+(pos?'rgba(45,184,112,.14)':'rgba(248,113,113,.12)')+',rgba(255,255,255,.02));border:1px solid '+(pos?'rgba(45,184,112,.4)':'rgba(248,113,113,.35)')+';border-radius:var(--rad);padding:18px;margin-bottom:14px">'
+    +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:'+(pos?G:R)+';font-family:\'Lora\',serif;margin-bottom:6px">Monthly gap — income minus committed bills</div>'
+    +'<div style="font-family:\'Playfair Display\',serif;font-size:38px;font-weight:800;color:'+(pos?G:R)+';line-height:1">'+(pos?'+':'')+finFmt(gap,true)+'<span style="font-size:14px;color:var(--text2);font-weight:400;font-family:\'Lora\',serif"> / month</span></div>'
+    +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;margin-top:8px">In ~'+finFmt(FINANCE.incomeMonthly,true)+' · committed out ~'+finFmt(committed,true)+(cancelGot>0?' <span style="color:'+G+'">(already trimmed '+finFmt(cancelGot,true)+' ✂️)</span>':'')+'</div>'
+    +(pos?'<div style="font-size:12.5px;color:'+G+';font-family:\'Lora\',serif;font-style:italic;margin-top:8px">You\'re above water — every verified cancellation widens the margin. 🎉</div>'
+        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b><br>✂️ '+finFmt(cancelLeft,true)+'/mo of cancellations left to verify below<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
+    +'<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:var(--text)">💰 Next paycheck: <b>'+(left===0?'today! 🎉':pdLabel+' — '+(left===1?'tomorrow':'in '+left+' days'))+'</b> <span style="color:var(--text2)">(~$2,250, every other Thursday)</span></div>'
+  +'</div>';
+
+  // ── 2 · ACCOUNTS (tap a balance to update) ──
+  out+='<div class="section-label">🏦 Accounts — tap a balance to update it</div>';
+  FINANCE.accounts.forEach(function(a){
+    const cur=finLatest('bal',a.id,a.start,a.asOf);
+    const ser=finSeries('bal',a.id);
+    const prev=ser.length>1?ser[ser.length-2]:(ser.length===1?{d:a.asOf,v:a.start}:null);
+    const delta=prev?(cur.v-prev.v):null;
+    const editing=finEdit==='bal:'+a.id;
+    out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:14px 16px;margin-bottom:10px">'
+      +'<div style="display:flex;align-items:center;gap:12px">'
+      +'<div style="font-size:24px;flex-shrink:0">'+a.emoji+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text)">'+a.name+'</div>'
+      +'<div style="font-size:11px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin-top:2px">'+(a.note||'')+'</div></div>'
+      +(editing?finEditBox('bal',a.id,cur?cur.v:'')
+        :'<div onclick="finEditOpen(\'bal\',\''+a.id+'\')" style="text-align:right;cursor:pointer;flex-shrink:0"><div style="font-family:\'Playfair Display\',serif;font-size:19px;font-weight:800;color:'+Y+'">'+finFmt(cur.v)+'</div>'
+        +'<div style="font-size:10px;color:var(--text2)">as of '+(cur.d?finNiceDate(cur.d):'?')+' · tap ✏️</div></div>')
+      +'</div>'
+      +(delta!=null?'<div style="font-size:11px;color:'+(delta>=0?G:R)+';font-family:\'Lora\',serif;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">'+(delta>=0?'▲ up ':'▼ down ')+finFmt(Math.abs(delta))+' since '+finNiceDate(prev.d)+(ser.length>2?' · '+ser.slice(-4).map(function(p){return finNiceDate(p.d)+' '+finFmt(p.v,true);}).join(' → '):'')+'</div>':'')
+    +'</div>';
+  });
+
+  // ── 3 · GOAL #1 — $500 buffer ──
+  const sav=finLatest('bal','savings',0.16,'2026-04-30');
+  const bufPct=Math.max(0,Math.min(100,Math.round(sav.v/500*100)));
+  out+='<div class="section-label">🎯 Goal #1 — the $500 starter buffer</div>';
+  out+='<div style="background:linear-gradient(135deg,rgba(250,204,21,.08),rgba(255,255,255,.02));border:1px solid rgba(250,204,21,.3);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text)">'+finFmt(Math.min(sav.v,500))+' of $500</div><div style="font-size:13px;font-weight:700;color:'+Y+'">'+bufPct+'%</div></div>'
+    +'<div style="height:9px;background:rgba(255,255,255,.07);border-radius:6px;overflow:hidden;margin-top:8px"><div style="height:100%;width:'+bufPct+'%;background:linear-gradient(90deg,#FACC15,#FBBF24);border-radius:6px"></div></div>'
+    +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.65;margin-top:10px">This comes <b>before</b> extra debt payments. It lives in savings — update that balance above and this bar moves with it. With the cards maxed, a surprise without a buffer = new debt.</div>'
+    +(sav.v>=500?'<div style="font-size:13px;color:'+G+';font-weight:700;margin-top:8px">🎉 Buffer FUNDED — surprises can\'t reach the cards anymore. Snowball time.</div>':'')
+  +'</div>';
+
+  // ── 4 · BILLS — monthly check-offs ──
+  fin.bills=fin.bills||{};
+  const sortedBills=FINANCE.bills.slice().sort(function(a,b){return a.sort-b.sort;});
+  const paidCt=sortedBills.filter(function(b){return fin.bills[b.id+'-'+ym];}).length;
+  const billTotal=sortedBills.reduce(function(s,b){return s+b.amt;},0);
+  out+='<div class="section-label">🧾 Bills — '+monthName+' · '+paidCt+' of '+sortedBills.length+' paid</div>';
+  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:6px 14px;margin-bottom:14px">';
+  sortedBills.forEach(function(b){
+    const pd=!!fin.bills[b.id+'-'+ym];
+    out+='<div onclick="finBillToggle(\''+b.id+'\')" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer">'
+      +'<div style="width:22px;height:22px;border-radius:50%;border:2px solid '+(pd?'#10B981':'rgba(250,204,21,.45)')+';background:'+(pd?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0">'+(pd?'✓':'')+'</div>'
+      +'<div style="font-size:9.5px;color:var(--text2);width:46px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em">'+b.due+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13px;color:'+(pd?'var(--text3)':'var(--text)')+';'+(pd?'text-decoration:line-through;':'')+'font-family:\'Lora\',serif">'+b.label+'</div>'
+      +(b.note?'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+b.note+'</div>':'')+'</div>'
+      +'<div style="font-size:13px;font-weight:700;color:'+(pd?'var(--text3)':Y)+';flex-shrink:0">'+finFmt(b.amt,true)+'</div></div>';
+  });
+  out+='<div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0 9px;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif"><span>Check each off as it\'s paid — fresh boxes every month.</span><b style="color:var(--text);flex-shrink:0">'+finFmt(billTotal,true)+'/mo</b></div></div>';
+
+  // ── 5 · DEBT SNOWBALL ──
+  out+='<div class="section-label">❄️ Debt snowball — smallest card first</div>';
+  let target=null;
+  const cardCur=FINANCE.debts.filter(function(d){return d.card;}).reduce(function(s,d){ const c=finLatest('debt',d.id,d.start); return s+(c?Math.max(0,c.v):0);},0);
+  FINANCE.debts.forEach(function(d,i){
+    const ser=finSeries('debt',d.id);
+    const base=(d.start!=null)?d.start:(ser.length?ser[0].v:null);
+    const cur=ser.length?ser[ser.length-1]:((d.start!=null)?{d:null,v:d.start}:null);
+    const paidOff=!!(cur&&cur.v<=0);
+    const isTarget=(!target)&&d.card&&cur&&cur.v>0; if(isTarget) target=d.id;
+    const pct=(cur&&base)?Math.max(0,Math.min(100,Math.round((base-cur.v)/base*100))):0;
+    const editing=finEdit==='debt:'+d.id;
+    const col=paidOff?G:(isTarget?'#FB923C':Y);
+    out+='<div style="background:'+(isTarget?'linear-gradient(135deg,rgba(251,146,60,.12),rgba(255,255,255,.02))':'rgba(255,255,255,.03)')+';border:1px solid '+(isTarget?'rgba(251,146,60,.45)':'rgba(255,255,255,.08)')+';border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">'
+      +(isTarget?'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FB923C;font-family:\'Lora\',serif;margin-bottom:6px">🎯 Current target — every spare dollar goes here</div>':'')
+      +'<div style="display:flex;align-items:center;gap:10px">'
+      +'<div style="font-size:12px;color:var(--text2);font-weight:700;flex-shrink:0">#'+(i+1)+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:'+(paidOff?'var(--text3)':'var(--text)')+';'+(paidOff?'text-decoration:line-through;':'')+'font-family:\'Lora\',serif">'+d.label+(paidOff?' — PAID 🎉':'')+'</div>'
+      +'<div style="font-size:10.5px;color:var(--text2);margin-top:1px">min '+finFmt(d.min,true)+'/mo · '+d.apr+(d.note?' · '+d.note:'')+'</div></div>'
+      +(editing?finEditBox('debt',d.id,cur?cur.v:'')
+        :'<div onclick="finEditOpen(\'debt\',\''+d.id+'\')" style="text-align:right;cursor:pointer;flex-shrink:0"><div style="font-size:15px;font-weight:800;color:'+col+';font-family:\'Playfair Display\',serif">'+(cur?finFmt(cur.v,true):'tap to set')+'</div><div style="font-size:9.5px;color:var(--text2)">'+(cur&&cur.d?'as of '+finNiceDate(cur.d):(cur?'from statements':'unknown'))+' ✏️</div></div>')
+      +'</div>'
+      +(base?'<div style="height:7px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden;margin-top:9px"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#34D399,#10B981);border-radius:5px"></div></div><div style="font-size:10px;color:var(--text2);margin-top:3px">'+pct+'% paid down'+(d.start!=null?' · started at '+finFmt(d.start,true):'')+'</div>':'')
+    +'</div>';
+  });
+  out+='<div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.12);border-radius:var(--rad);padding:12px 16px;margin-bottom:14px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.7">💳 Cards together: <b style="color:var(--text)">'+finFmt(cardCur,true)+'</b> at ~29%. An extra $300/mo on the snowball = debt-free in ~15 months and ~$1,570 of interest saved vs minimums. Family loan is 0% — cards first, but keep family in the loop. Tap any balance to update it after a payment — the bars move.</div>';
+
+  // ── 6 · CANCEL LIST ──
+  out+='<div class="section-label">✂️ Cancel list — '+finFmt(cancelGot,true)+' of ~$157/mo verified gone</div>';
+  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:6px 14px;margin-bottom:14px">';
+  FINANCE.cancels.forEach(function(c){
+    const v=!!(fin.cancel||{})[c.id];
+    out+='<div onclick="finCancelToggle(\''+c.id+'\')" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer">'
+      +'<div style="width:22px;height:22px;border-radius:6px;border:1.5px solid '+(v?'#10B981':'rgba(248,113,113,.5)')+';background:'+(v?'rgba(16,185,129,.2)':'transparent')+';display:flex;align-items:center;justify-content:center;color:'+G+';font-weight:900;font-size:11px;flex-shrink:0">'+(v?'✓':'')+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13px;color:'+(v?'var(--text3)':'var(--text)')+';font-family:\'Lora\',serif;'+(v?'text-decoration:line-through':'')+'">'+c.label+'</div>'
+      +'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+(v?'verified gone on a statement ✓':(c.note?c.note:'canceled — verify it on the June statement'))+'</div></div>'
+      +'<div style="font-size:13px;font-weight:700;color:'+(v?G:R)+';flex-shrink:0">'+finFmt(c.amt)+'</div></div>';
+  });
+  out+='<div style="padding:10px 0;font-size:11px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;font-style:italic">'+FINANCE.cancelPending+'<br>'+FINANCE.keeping+'</div></div>';
+
+  // ── 7 · MONEY TO-DOS ──
+  fin.todoDone=fin.todoDone||{}; fin.todoCustom=fin.todoCustom||{};
+  const allTodos=FINANCE.todosSeed.map(function(t){return {id:t.id,label:t.label,custom:false};})
+    .concat(Object.keys(fin.todoCustom).map(function(id){return {id:id,label:esc(fin.todoCustom[id]),custom:true};}));
+  const openT=allTodos.filter(function(t){return !fin.todoDone[t.id];});
+  const doneT=allTodos.filter(function(t){return fin.todoDone[t.id];});
+  out+='<div class="section-label">✅ Money to-dos — '+openT.length+' open</div>';
+  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:10px 14px;margin-bottom:14px">';
+  const finTodoRow=function(t,done){ return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)">'
+    +'<div onclick="finTodoToggle(\''+t.id+'\')" style="width:22px;height:22px;border-radius:50%;border:2px solid '+(done?'#10B981':'rgba(250,204,21,.5)')+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0;cursor:pointer">'+(done?'✓':'')+'</div>'
+    +'<div onclick="finTodoToggle(\''+t.id+'\')" style="flex:1;font-size:13px;color:'+(done?'var(--text3)':'var(--text)')+';font-family:\'Lora\',serif;'+(done?'text-decoration:line-through;':'')+'cursor:pointer;line-height:1.45">'+t.label+'</div>'
+    +(t.custom?'<div onclick="removeFinTodo(\''+t.id+'\')" style="font-size:18px;color:#5a7a99;padding:0 2px 0 8px;cursor:pointer;flex-shrink:0;line-height:1">×</div>':'')
+    +'</div>'; };
+  openT.forEach(function(t){ out+=finTodoRow(t,false); });
+  doneT.forEach(function(t){ out+=finTodoRow(t,true); });
+  out+='<div style="display:flex;gap:8px;padding:11px 0 6px">'
+    +'<input id="finTodoInput" type="text" placeholder="Add a money to-do…" onkeydown="if(event.key===\'Enter\')addFinTodo()" style="flex:1;background:#0a1628;border:1px solid rgba(250,204,21,.3);border-radius:10px;padding:11px 13px;color:var(--text);font-family:\'Lora\',serif;font-size:14px;outline:none">'
+    +'<div onclick="addFinTodo()" style="background:rgba(250,204,21,.14);border:1px solid rgba(250,204,21,.5);border-radius:10px;padding:11px 16px;color:'+Y+';font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;white-space:nowrap">+ Add</div>'
+  +'</div></div>';
+
+  // ── 8 · COACH'S CORNER — rotating advice ──
+  const tips=FINANCE.advice;
+  const dayN=Math.floor(Date.now()/86400000);
+  const i0=(((dayN*3+finTipOff)%tips.length)+tips.length)%tips.length;
+  const t1=tips[i0], t2=tips[(i0+1)%tips.length], t3=tips[(i0+2)%tips.length];
+  out+='<div class="section-label">💡 Coach\'s corner — rotates daily</div>';
+  out+='<div style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(255,255,255,.02));border:1px solid rgba(99,102,241,.3);border-radius:var(--rad);padding:16px 18px;margin-bottom:10px">'
+    +'<div style="font-family:\'Playfair Display\',serif;font-size:15.5px;font-weight:700;color:#A5B4FC;margin-bottom:6px">'+t1.t+'</div>'
+    +'<div style="font-size:13px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.7">'+t1.b+'</div></div>';
+  [t2,t3].forEach(function(t){ out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 16px;margin-bottom:10px"><div style="font-size:13.5px;font-weight:700;color:var(--text);font-family:\'Lora\',serif;margin-bottom:4px">'+t.t+'</div><div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.65">'+t.b+'</div></div>'; });
+  out+='<div onclick="finMoreTips()" style="text-align:center;padding:11px;border:1px dashed rgba(99,102,241,.4);border-radius:var(--rad);color:#A5B4FC;font-size:13px;cursor:pointer;font-family:\'Lora\',serif;margin-bottom:12px">🎲 Show me three more</div>';
+  out+='<div style="font-size:10.5px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:20px">Practical budgeting nudges only — never investment advice. Numbers from your statements, Mar–May 2026.</div>';
+  el.innerHTML=out;
+}
+
 function renderAll() {
   updateHeader();
   if(currentTab==="today")    renderToday();
   if(currentTab==="wellness") renderWellness();
+  if(currentTab==="finance")  renderFinance();
   if(currentTab==="timeline") renderTimeline();
   if(currentTab==="rooms")    renderRooms();
   if(currentTab==="garden")   renderGarden();
@@ -2536,6 +2744,7 @@ ST.on('value', snap => {
   painLog     = d.painLog     || {};
   litfulo     = d.litfulo     || {};
   zoey        = d.zoey        || {};
+  fin         = d.fin         || {};
   // one-time idempotent migration: grocery is FOOD-ONLY (Jun 6 2026) — strip non-food strays
   try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false, ci=false;
     for(const k in grocCustom){ if(NF.test(String(grocCustom[k]))){ delete grocCustom[k]; ch=true; } }

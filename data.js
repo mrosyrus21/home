@@ -15,9 +15,9 @@ const RHYTHM = {
   lunch:     "12:30 PM",
   dinner:    "6:30 PM",        // aim to sit down here...
   dinnerBy:  "8:00 PM",        // ...hard rule: eaten BY this time
-  windDown:  "9:30 PM",        // phone goes to the other room, screens off
-  reading:   "9:30–10:30 PM",  // the reading hour fills the no-screen block
-  lightsOut: "10:30 PM",
+  windDown:  "10:00 PM",       // phone goes to the other room, screens off
+  reading:   "10:00–11:00 PM", // the reading hour fills the no-screen block
+  lightsOut: "11:00 PM",
 };
 
 const ROOMS = {
@@ -37,7 +37,7 @@ const TASKS = {
   errand1:        { room:"priority", label:"Go get distilled water", level:"easy" },
   errand2:        { room:"priority", label:"Go get food", level:"easy" },
   vacuum_bags:    { room:"priority", label:"Buy 8-inch vacuum bags", level:"easy", note:"Moved off the grocery list (grocery is food-only now). Grab them with the next errand run." },
-  rx_setup:       { room:"priority", label:"Set up esomeprazole + magnesium at King Soopers (use GoodRx)", level:"easy", note:"Open GoodRx, search esomeprazole (and magnesium if it is a script) for the King Soopers pharmacy, grab the coupon price, and send or transfer the prescription there. Show the GoodRx coupon at the counter on pickup." },
+  rx_setup:       { room:"priority", label:"Set up esomeprazole at King Soopers (use GoodRx)", level:"easy", note:"Open GoodRx, search esomeprazole for the King Soopers pharmacy, grab the coupon price, and send or transfer the prescription there. Show the GoodRx coupon at the counter on pickup." },
   measure_printer:{ room:"office",   label:"Measure the 3D printer — width, depth, height + room for spools and cables", level:"easy", note:"Do this before buying a desk so you know exactly what fits." },
   find_desk:      { room:"priority", label:"Find a cheap sturdy desk — Marketplace, Craigslist, OfferUp", level:"easy", note:"Must be sturdy — needs to hold the 3D printer. Check FB Marketplace first — people offload office furniture constantly." },
   xfinity_call:   { room:"priority", label:"Call Xfinity Retention — lower the $135 bill", level:"easy", note:"Goal: get $135/mo down to ~$70–90 while KEEPING Xfinity (best gaming latency). Leverage: AT&T Internet Air is only $47/mo and there's no fiber at your address — you're a flight risk they'll want to keep. Call (don't chat), reach Retention, and never take the first offer.", steps:["Call 1-800-XFINITY (1-800-934-6489). At the prompts, say 'cancel service' to get routed to Retention, not regular support.","Open friendly but firm: 'My bill jumped to $135 and that's too high — I'm thinking about switching.'","Drop the leverage: 'AT&T Internet Air is $47/mo. I'd rather stay for the lower latency, but not at this price.'","Ask directly: 'What promotions or loyalty credits can you apply to get me near $70?'","Don't accept the first number — pause, then ask 'Is that the best you can do?'","Keep the SAME internet plan — don't let them add TV/phone/lines to 'save' money.","If they won't budge, ask for the Retention/Loyalty department, or say you'd like to start the cancellation.","Get it in writing: the new monthly rate, contract length, any one-time credits, plus the rep's name/ID — ask for an email confirmation.","No luck? Hang up and call back later for a different rep, or retry near your billing date."] },
@@ -469,3 +469,89 @@ const RECIPES = [
     ],
     note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Eggshell calcium, liver, the occasional egg, sardines, and varied vegetables keep this balanced — no store-bought supplements. NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." }
 ];
+
+// ═══════════════════════════════════════════════════════════════
+// 💰 FINANCE — source: home-and-garden-project/FINANCE_STATE.md (Jun 5 2026)
+// EDIT amounts / bills / debts HERE. Balance history lives in Firebase (fin.*).
+// Privacy rule: last-4 labels only — never account or routing numbers.
+// ═══════════════════════════════════════════════════════════════
+const FINANCE = {
+  incomeMonthly: 4503,
+  outflowMonthly: 4827,
+  paydayAnchor: "2026-06-04",   // biweekly Thursdays from here
+  accounts: [
+    { id:"checking", name:"Capital One 360 Checking", emoji:"🏦", start:1901.08, asOf:"2026-04-30", note:"routinely dips near $0 before payday" },
+    { id:"savings",  name:"Capital One 360 Savings",  emoji:"🌱", start:0.16,    asOf:"2026-04-30", note:"this is where the $500 buffer grows" }
+  ],
+  bills: [
+    { id:"rent",        due:"1st",    sort:1,  label:"🏠 Rent — INCO (Zelle)",       amt:2175.00, note:"grace to the 4th" },
+    { id:"progressive", due:"~2nd",   sort:2,  label:"🚗 Progressive auto insurance", amt:466.82,  note:"recently lowered — new amount TBD" },
+    { id:"xcel",        due:"~6th",   sort:6,  label:"⚡ Xcel Energy",                amt:253,     note:"varies $219–288" },
+    { id:"water",       due:"~6th",   sort:6,  label:"💧 Denver Water",               amt:40 },
+    { id:"studentloan", due:"~6th",   sort:6,  label:"🎓 Student loan — Dept of Ed",  amt:190.54,  note:"ask about income-driven repayment" },
+    { id:"smartstart1", due:"7th",    sort:7,  label:"🚙 Smart Start (1 of 2)",       amt:58.69,   note:"temporary — ends within ~a year" },
+    { id:"nissan",      due:"~15th",  sort:15, label:"🚗 Nissan auto loan",           amt:200.00 },
+    { id:"irs",         due:"~15th",  sort:15, label:"🏛️ IRS payment plan",          amt:50.00 },
+    { id:"lendmark",    due:"~16th",  sort:16, label:"🏦 Lendmark loan",              amt:177.71,  note:"APR unknown — find out" },
+    { id:"smartstart2", due:"21st",   sort:21, label:"🚙 Smart Start (2 of 2)",       amt:58.69 },
+    { id:"xfinity",     due:"~28th",  sort:28, label:"📡 Xfinity internet",           amt:134.76,  note:"retention call — target $70–90" },
+    { id:"healing",     due:"weekly", sort:29, label:"🧠 My Healing Space",           amt:100,     note:"~$25/wk · temporary — ends within ~a year" },
+    { id:"cardmins",    due:"spread", sort:30, label:"💳 Card minimums (5 cards)",    amt:351,     note:"autopay every one of them" },
+    { id:"family",      due:"spread", sort:31, label:"👨‍👩‍👧 Family repayment",          amt:400,     note:"asking to drop to ~$200/mo" },
+    { id:"mint",        due:"yearly", sort:32, label:"📱 Mint Mobile sinking fund",   amt:30,      note:"~$360 billed once a year" },
+    { id:"psn",         due:"yearly", sort:33, label:"🎮 PlayStation sinking fund",   amt:7,       note:"~$86/yr around March" }
+  ],
+  debts: [   // snowball order — smallest card first; tap a balance in the app to update it
+    { id:"c6605",    label:"Cap One Quicksilver •6605", start:489.59,  min:25,     apr:"28.24%", card:true,  note:"snowball target — pay this one first" },
+    { id:"c26529",   label:"Credit One •26529",         start:1003.97, min:51,     apr:"~30%",   card:true,  note:"annual-fee card — close AFTER payoff" },
+    { id:"c4615",    label:"Credit One •4615",          start:1157.83, min:58,     apr:"~30%",   card:true,  note:"over limit — close AFTER payoff" },
+    { id:"c1320",    label:"Cap One Quicksilver •1320", start:1522.50, min:130,    apr:"28.99%", card:true,  note:"autopay now on (had a $29 past-due fee)" },
+    { id:"merrick",  label:"Merrick Bank •4735",        start:2236.74, min:87,     apr:"~30%",   card:true,  note:"$4/mo fee" },
+    { id:"famloan",  label:"Family loan",               start:9300,    min:400,    apr:"0%",     card:false, note:"0% — cards first, but never go quiet on family" },
+    { id:"nissanL",  label:"Nissan auto loan",          start:null,    min:200,    apr:"?",      card:false, note:"payoff unknown" },
+    { id:"lendmarkL",label:"Lendmark Financial",        start:null,    min:177.71, apr:"?",      card:false, note:"balance + APR unknown" },
+    { id:"studentL", label:"Student loans",             start:null,    min:190.54, apr:"?",      card:false, note:"total + servicer unknown" },
+    { id:"irsL",     label:"IRS payment plan",          start:null,    min:50,     apr:"?",      card:false, note:"total owed unknown" }
+  ],
+  cancels: [  // pending cancellations — check one off ONLY once it is verified gone on a statement
+    { id:"dupclaude", label:"Duplicate Claude charge", amt:21.03, note:"billed 2× in May — one should remain" },
+    { id:"chatgpt",   label:"ChatGPT",                 amt:20.00 },
+    { id:"gamepass",  label:"Xbox Game Pass",          amt:31.11 },
+    { id:"disney",    label:"Disney+",                 amt:21.69 },
+    { id:"crunchy",   label:"Crunchyroll",             amt:15.18 },
+    { id:"epoch",     label:"Epoch.com",               amt:14.95, note:"bills ~23rd — last seen Apr 23" },
+    { id:"everai",    label:"EverAI",                  amt:12.99, note:"last seen Mar 23 — likely already gone" },
+    { id:"uberone",   label:"Uber One",                amt:9.99 },
+    { id:"dashpass",  label:"DoorDash DashPass",       amt:9.99 }
+  ],
+  cancelPending: "Also: verify Amazon Fresh (no charge seen Mar–May) · Amazon Prime free trial bills ~Jul 5 — cancel by ~Jul 2.",
+  keeping: "Keeping on purpose: Spotify $14.18 · Claude.ai $21.03 (single) · My Healing Space.",
+  todosSeed: [
+    { id:"ft_xfinity",  label:"📞 Xfinity retention call — target $70–90 (leverage: AT&T Internet Air is $47)" },
+    { id:"ft_family",   label:"👨‍👩‍👧 Talk to family — drop $400/mo to ~$200 while stabilizing" },
+    { id:"ft_verify",   label:"🧾 Verify canceled subs actually stopped (June statements)" },
+    { id:"ft_fresh",    label:"🛒 Cancel Amazon Fresh" },
+    { id:"ft_prime",    label:"📦 Cancel Amazon Prime free trial by ~Jul 2" },
+    { id:"ft_progress", label:"🚗 Get the new (lower) Progressive amount" },
+    { id:"ft_gather",   label:"📋 Gather: Lendmark balance+APR · Nissan payoff · student-loan total · IRS owed · Home Depot card · any Affirm" },
+    { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
+  ],
+  advice: [
+    { t:"Rent first, every first paycheck", b:"Rent is $2,175 — almost a whole paycheck. The day a check lands, set the rent money aside before anything else touches it. The rest of the month gets simpler instantly." },
+    { t:"The $500 buffer comes before extra debt payments", b:"With the cards maxed, any surprise becomes new debt. Even $50 per paycheck builds it in about 5 months — and every dollar in the buffer is a surprise that never reaches a card." },
+    { t:"Smallest card first — •6605 is almost gone", b:"It is only about $490. Clear it, then roll its $25 minimum onto the next card. The snowball works because finishing things feels good — use that." },
+    { t:"Canceled ≠ stopped", b:"Subscriptions love to keep charging after you cancel. Only check one off the Cancel List when you SEE it missing from a statement. That is when the savings become real." },
+    { t:"Stress is the trigger, delivery is the outlet", b:"Eating out ran ~$320/mo — your single biggest flexible lever. Feeling the urge? Ten-minute pause, glass of water, then decide. Half the time the urge passes on its own." },
+    { t:"Kalshi stays at $0", b:"That cap is already saving ~$150 a month. It is one of the strongest moves you have made — protect it." },
+    { t:"Autopay the minimums — all five cards", b:"One month of fees ($29 late + $28 returned) was $57 of pure waste. Autopay makes that impossible. Set it once and forget it." },
+    { t:"Never let an autopay hit an empty account", b:"Move the due date instead — a planned-late bill beats a $35 bounce every time. The ~Jun 6 cluster (Xcel + water + student loan) lands right after payday; keep that money parked until they clear." },
+    { t:"Family at 0% waits — but talk to them", b:"The math says cards first (they are at ~29–30%). But never go quiet on family. The $400 → $200 ask is a conversation, not a confession — they would rather hear from you." },
+    { t:"Vape cap: $40", b:"Down from ~$60. A cap you actually keep beats a quit that does not stick — and it is $20/mo toward the buffer." },
+    { t:"Groceries beat delivery, every time", b:"You already spend ~$300 on groceries — the food is in the house. A days-without-delivery streak works exactly like the Call DT streak does. Start one." },
+    { t:"One number is the whole game", b:"Income minus committed bills — it is the big number at the top of this tab. When it turns green you are winning. Everything else on this page exists to move that one number." },
+    { t:"The squeeze is temporary", b:"Smart Start (~$117) and Healing Space (~$100) both end within about a year — that is $217/mo coming back on its own. You are not stuck; you are in a tunnel with a visible exit." },
+    { t:"Say the magic words on the Xfinity call", b:"\"AT&T Internet Air is $47 at my address.\" That is the leverage line. Target $70–90 and keep cable for gaming ping. Five minutes could be worth $50+ every month." },
+    { t:"Keep the cards open until they are paid", b:"Closing cards early hurts more than it helps. The two annual-fee Credit One cards DO get closed — but only after their balances hit zero." },
+    { t:"Do not budget perfectly — budget simply", b:"First budget ever? Perfect is the enemy. Update balances when you think of it, check bills off as they are paid, glance at the gap. That is the whole job — you are already doing it." }
+  ]
+};
