@@ -403,7 +403,9 @@ const RECIPES = [
       "Chicken liver — about 5% of the batch",
       "White rice, cooked soft — about 20%",
       "Carrots, green beans, and spinach, finely chopped — about 15%",
-      "Per serving, added fresh: 2.5 mL fish oil + Balance IT Canine (green scoops)"
+      "Eggshell calcium — about 1/2 teaspoon per pound of food (kitchen-made, see steps)",
+      "Canned no-salt sardines in water — swap in for part of the meat 1 to 2 times a week",
+      "Egg — a couple times a week, cooked plain"
     ],
     steps:[
       "Simmer or bake the chicken thighs through with no seasoning at all — no salt, no oil needed.",
@@ -412,9 +414,11 @@ const RECIPES = [
       "Steam or simmer the carrots, green beans, and spinach until soft, then chop fine or mash.",
       "Chop or shred the meats, then mix everything evenly so she cannot pick around the vegetables.",
       "Cool fully, portion into daily containers (460 to 480 g per day), fridge 3 to 4 days of it, freeze the rest.",
-      "At each meal: warm slightly, then stir in the fish oil and Balance IT fresh — never cook the supplements."
+      "Eggshell calcium: bake clean, dry shells about 10 minutes at 300°F, grind to a fine powder, and stir in about 1/2 teaspoon per pound of food.",
+      "Through the week: swap part of the meat for canned no-salt sardines in water 1 to 2 times, and toss in a plain cooked egg a couple of times.",
+      "At each meal: warm slightly and serve."
     ],
-    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Finish each serving FRESH with 2.5 mL fish oil + Balance IT Canine (2 to 3 green scoops per day — confirm the exact number with the balance.it generator). NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." },
+    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Eggshell calcium, liver, the occasional egg, sardines, and varied vegetables keep this balanced — no store-bought supplements. NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." },
   { id:"r_zoey_beef", name:"Zoey's Beef", emoji:"🐕", dog:true,
     time:"~1 hr batch", difficulty:"Easy", servings:"10-day batch", tags:["dog"],
     blurb:"The beef rotation — lean ground beef with beef liver, sweet potato for the carb, and three soft vegetables.",
@@ -423,7 +427,9 @@ const RECIPES = [
       "Beef liver — about 5% of the batch",
       "Sweet potato, peeled and cooked soft — about 20%",
       "Green beans, carrots, and zucchini, finely chopped — about 15%",
-      "Per serving, added fresh: 2.5 mL fish oil + Balance IT Canine (green scoops)"
+      "Eggshell calcium — about 1/2 teaspoon per pound of food (kitchen-made, see steps)",
+      "Canned no-salt sardines in water — swap in for part of the meat 1 to 2 times a week",
+      "Egg — a couple times a week, cooked plain"
     ],
     steps:[
       "Brown the ground beef in a dry pan with no seasoning; drain only if there is pooling fat (90/10 keeps it lean).",
@@ -432,9 +438,11 @@ const RECIPES = [
       "Steam the green beans, carrots, and zucchini soft; chop small.",
       "Mix everything evenly, cool fully, and portion into daily containers (460 to 480 g per day).",
       "Fridge 3 to 4 days of portions, freeze the rest.",
-      "At each meal: warm slightly, then stir in the fish oil and Balance IT fresh."
+      "Eggshell calcium: bake clean, dry shells about 10 minutes at 300°F, grind to a fine powder, and stir in about 1/2 teaspoon per pound of food.",
+      "Through the week: swap part of the meat for canned no-salt sardines in water 1 to 2 times, and toss in a plain cooked egg a couple of times.",
+      "At each meal: warm slightly and serve."
     ],
-    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Finish each serving FRESH with 2.5 mL fish oil + Balance IT Canine (2 to 3 green scoops per day — confirm the exact number with the balance.it generator). NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." },
+    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Eggshell calcium, liver, the occasional egg, sardines, and varied vegetables keep this balanced — no store-bought supplements. NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." },
   { id:"r_zoey_pork", name:"Zoey's Pork", emoji:"🐕", dog:true,
     time:"~1 hr batch", difficulty:"Easy", servings:"10-day batch", tags:["dog"],
     blurb:"The pork rotation — lean pork loin with liver, rice or sweet potato, and green vegetables with a little kale.",
@@ -443,7 +451,9 @@ const RECIPES = [
       "Liver (pork or chicken) — about 5% of the batch",
       "White rice or sweet potato, cooked soft — about 20%",
       "Green beans, carrots, and kale, finely chopped — about 15%",
-      "Per serving, added fresh: 2.5 mL fish oil + Balance IT Canine (green scoops)"
+      "Eggshell calcium — about 1/2 teaspoon per pound of food (kitchen-made, see steps)",
+      "Canned no-salt sardines in water — swap in for part of the meat 1 to 2 times a week",
+      "Egg — a couple times a week, cooked plain"
     ],
     steps:[
       "Trim the pork loin well and simmer or bake it fully through — pork must be cooked through, no pink, and never seasoned.",
@@ -452,7 +462,9 @@ const RECIPES = [
       "Steam the green beans, carrots, and kale until soft — kale especially needs to be soft and chopped small.",
       "Chop the pork small, mix everything evenly, and cool fully.",
       "Portion into daily containers (460 to 480 g per day): fridge 3 to 4 days, freeze the rest.",
-      "At each meal: warm slightly, then stir in the fish oil and Balance IT fresh."
+      "Eggshell calcium: bake clean, dry shells about 10 minutes at 300°F, grind to a fine powder, and stir in about 1/2 teaspoon per pound of food.",
+      "Through the week: swap part of the meat for canned no-salt sardines in water 1 to 2 times, and toss in a plain cooked egg a couple of times.",
+      "At each meal: warm slightly and serve."
     ],
-    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Finish each serving FRESH with 2.5 mL fish oil + Balance IT Canine (2 to 3 green scoops per day — confirm the exact number with the balance.it generator). NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." }
+    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Eggshell calcium, liver, the occasional egg, sardines, and varied vegetables keep this balanced — no store-bought supplements. NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." }
 ];
