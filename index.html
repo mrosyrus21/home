@@ -535,6 +535,7 @@ body::after{
 }
 @keyframes sinkIn{0%{opacity:0;transform:translateY(-16px) scale(.97)}55%{opacity:1;transform:translateY(3px) scale(1.01)}100%{opacity:1;transform:none}}
 @keyframes glowPulse{0%{box-shadow:0 0 0 rgba(16,185,129,0)}40%{box-shadow:0 0 26px rgba(16,185,129,.45)}100%{box-shadow:0 0 0 rgba(16,185,129,0)}}
+@keyframes dtTestPulse{0%,100%{box-shadow:0 0 10px rgba(245,184,48,.25)}50%{box-shadow:0 0 30px rgba(245,184,48,.6)}}
 .flow-just-done{animation:sinkIn .5s cubic-bezier(.34,1.56,.64,1),glowPulse 1.2s ease-out;border-radius:var(--rad)}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -632,7 +633,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6, 2026 · 3:49 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 6, 2026 · 4:17 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -977,9 +978,24 @@ function getOverdueTasks() {
 }
 
 function toggleDT() {
-  const k="calldt-"+todayKey(); laundry[k]=!laundry[k];
+  // direct toggle = UNCHECK only (from the done pile). Checking goes through the test gate (askDT).
+  const k="calldt-"+todayKey();
+  if(laundry[k]){ laundry[k]=false; laundry["dtmust-"+todayKey()]=false; laundry["dttest-"+todayKey()]=false; }
+  else { askDT(); return; }
   saveLaundry(); renderAll();
 }
+let dtAsk=false;
+function askDT(){ dtAsk=true; renderToday(); }
+function dtCancel(){ dtAsk=false; renderToday(); }
+function dtAnswer(test){
+  dtAsk=false;
+  const t=todayKey();
+  laundry["calldt-"+t]=true;            // streak key — same as before, both paths
+  if(test){ laundry["dtmust-"+t]=true; laundry["dttest-"+t]=false; }
+  saveLaundry(); renderAll();
+  if(test){ toast('🧪 Test day — added to the top of your flow'); }
+}
+function toggleDTTest(){ const k="dttest-"+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function toggleMorning(habit) {
   const k="morning-"+habit+"-"+todayKey(); laundry[k]=!laundry[k];
   saveLaundry(); renderAll();
@@ -1214,8 +1230,18 @@ function renderToday() {
   // Call DT — morning anchor
   const dtDone=!!laundry["calldt-"+today];
   const dtStk=dtStreak();
-  if(!dtDone){
-    add("dt",300,false,`<div style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.12);position:relative;overflow:hidden;cursor:pointer;" onclick="toggleDT()">
+  if(!dtDone && dtAsk){
+    add("dt",300,false,`<div style="background:linear-gradient(135deg,rgba(220,30,30,.18),rgba(220,30,30,.06));border:1px solid rgba(220,30,30,.5);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.18);position:relative;overflow:hidden">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:8px;font-family:'Lora',serif">📞 Call DT — what did the line say?</div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#F5DDD8;margin-bottom:12px">Test or no?</div>
+      <div style="display:flex;gap:10px">
+        <div onclick="dtAnswer(true)" style="flex:1;text-align:center;padding:13px 10px;border-radius:11px;background:linear-gradient(135deg,rgba(245,184,48,.22),rgba(245,184,48,.08));border:1.5px solid #F5B830;color:#FBE8C0;font-weight:700;font-size:15px;cursor:pointer">🧪 Test</div>
+        <div onclick="dtAnswer(false)" style="flex:1;text-align:center;padding:13px 10px;border-radius:11px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.25);color:var(--text);font-weight:700;font-size:15px;cursor:pointer">No test</div>
+      </div>
+      <div onclick="dtCancel()" style="text-align:center;font-size:11px;color:var(--text3,#5a7a99);font-family:'Lora',serif;font-style:italic;margin-top:9px;cursor:pointer">never mind — haven't called yet</div>
+    </div>`);
+  } else if(!dtDone){
+    add("dt",300,false,`<div style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.12);position:relative;overflow:hidden;cursor:pointer;" onclick="askDT()">
       <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(220,30,30,.5),transparent)"></div>
       <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:6px;font-family:'Lora',serif">🚨 Extreme Priority — Every Day${dtStk>=2?' · 🔥 '+dtStk+'-day streak':''}</div>
       <div style="display:flex;align-items:center;gap:14px">
@@ -1229,6 +1255,26 @@ function renderToday() {
     </div>`);
   } else {
     add("dt",300,true,strip("📞","Call DT",true,"#DC2626","toggleDT()","","",dtStk>=2?("🔥 "+dtStk+"-day streak"):""));
+  }
+
+  // 🧪 Test day — set by the Call DT gate; pinned right under it, loud until done
+  if(laundry["dtmust-"+today]){
+    const testDone=!!laundry["dttest-"+today];
+    if(!testDone){
+      add("dttest",301,false,`<div onclick="toggleDTTest()" style="background:linear-gradient(135deg,rgba(245,184,48,.2),rgba(245,184,48,.05));border:1.5px solid #F5B830;border-left:5px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;cursor:pointer;position:relative;overflow:hidden;animation:dtTestPulse 2.2s ease-in-out infinite">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#F5B830;margin-bottom:6px;font-family:'Lora',serif">🚨 Test Day — Time-Sensitive</div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="font-size:30px;flex-shrink:0">🧪</div>
+          <div style="flex:1">
+            <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#FBE8C0">Go take the test</div>
+            <div style="font-size:12px;color:rgba(245,184,48,.85);font-style:italic;margin-top:3px">The line said today's the day — get it done, then tap this off.</div>
+          </div>
+          <div style="width:32px;height:32px;border-radius:50%;border:2px solid #F5B830;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(245,184,48,.3)"></div>
+        </div>
+      </div>`);
+    } else {
+      add("dttest",301,true,strip("🧪","Go take the test",true,"#F5B830","toggleDTTest()","","","Test day handled ✔"));
+    }
   }
 
   // Morning meds + breakfast
