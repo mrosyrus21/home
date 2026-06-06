@@ -255,7 +255,8 @@ const PLANTS = [
     trim:"Spring bloom is finishing and it is getting leggy — shear the whole plant back by about a third now to keep it compact and trigger a second flush." }];
 
 const PLANT_INFO = {
-  philodendron: { fact:"Those heart-shaped leaves can trail several feet indoors — in the wild it climbs tree trunks toward the light.", photo:"images/philodendron_20260602.jpg" },
+  // philodendron photo: "Philodendron scandens subsp oxycardium2.jpg" by KENPEI, Wikimedia Commons, CC BY-SA 3.0 (cropped/optimized) — replaced the wrong 6/2 photo (archived 6/6)
+  philodendron: { fact:"Those heart-shaped leaves can trail several feet indoors — in the wild it climbs tree trunks toward the light.", photo:"images/philodendron_20260606.jpg" },
   ivy:          { fact:"Ivy clings to almost any surface using tiny root-like 'holdfasts' that secrete a natural glue.", photo:"images/ivy_20260531.jpg" },
   fittonia:     { photo:"images/fittonia_20260531.jpg", fact:"Called the 'nerve plant' for its vein-like patterns — it dramatically faints when thirsty, then perks back up after a drink. In bark mulch, check it every 2 days — it dries faster than soil." },
   croton:       { photo:"images/croton_20260531.jpg", fact:"Croton leaves change color with light: more sun means brighter reds, oranges, and yellows." },
