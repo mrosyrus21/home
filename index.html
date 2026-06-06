@@ -627,7 +627,7 @@ body::after{
 </div>
 
 <script src="./data.js?v=20260606130000"></script>
-<script src="./recipes.js?v=20260606113026"></script>
+<script src="./recipes.js?v=20260606130500"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -638,7 +638,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6 · 12:54 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 6 · 1:03 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2924,6 +2924,14 @@ ST.on('value', snap => {
   if (!flags['jun6-savor-v1']) {
     fin.debt=fin.debt||{}; fin.debt.savor=Object.assign({},fin.debt.savor,{'2026-06-06':0});
     ST.update({ fin: fin, 'flags/jun6-savor-v1': 'done' });
+    return;
+  }
+
+  // One-time: Jun 6 2026 — To Cook swap: pull both seeded items, queue tonight's sausage & squash spaghetti
+  if (!flags['jun6-tocook-v2']) {
+    delete cookQueue['ck-seed-lunch']; delete cookQueue['ck-seed-dinner'];
+    cookQueue['ck-seed-dinner2']={rid:'r_box_sausage_squash_spaghetti',day:'2026-06-06',meal:'dinner',done:false,ts:Date.now()};
+    ST.update({ cookQueue: cookQueue, 'flags/jun6-tocook-v2': 'done' });
     return;
   }
 
