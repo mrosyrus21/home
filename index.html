@@ -620,8 +620,8 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606080139"></script>
-<script src="./recipes.js?v=20260606082530"></script>
+<script src="./data.js?v=20260606094928"></script>
+<script src="./recipes.js?v=20260606094928"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -632,7 +632,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6, 2026 · 2:25 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 6, 2026 · 3:49 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -656,7 +656,7 @@ let inventory = {};
 let grocPurchased = {};
 let recipeServ = {};
 let recipeQuery = "";
-const GROC_BUILTIN=[{id:'groc-alarmclock',label:'⏰ Alarm clock'},{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
+const GROC_BUILTIN=[{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
 let printCustom = {};
 let taskCustom = {};
 let painLog = {};
@@ -701,9 +701,11 @@ function toggleShop(id){ shopping[id]=!shopping[id]; saveShopping(); renderShopp
 function saveFunPrints(){ ST.child('funPrints').set(funPrints); }
 function saveFood(){ try{ ST.update({ inventory: inventory, grocCustom: grocCustom, grocPurchased: grocPurchased }); }catch(e){} }  // atomic: write all food state together so a re-entrant snapshot echo can't see a half-written state and wipe grocPurchased
 function saveGroc(){ saveFood(); }
-function addGroc(){ const el=document.getElementById('grocInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; if(!/\p{Extended_Pictographic}/u.test([...v][0]||'')) v=grocEmoji(v)+' '+v; grocCustom['gc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; saveGroc(); renderGrocery(); }
+const NONFOOD_RX=/(vacuum|alarm|clock|batter(y|ies)|light ?bulb|charger|cable|filament|screwdriver|hammer|drill|printer|extension cord|hdmi|usb)/i;
+function addGroc(){ const el=document.getElementById('grocInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return;
+  if(NONFOOD_RX.test(v)){ taskCustom['ct-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={room:'priority',label:v,level:'easy'}; saveTasksC(); el.value=''; toast('🧺 Grocery is food-only — moved to the ⭐ Priority to-do list'); return; } if(!/\p{Extended_Pictographic}/u.test([...v][0]||'')) v=grocEmoji(v)+' '+v; grocCustom['gc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; saveGroc(); renderGrocery(); }
 function removeGroc(id){ const wasCustom=grocCustom[id]!==undefined; if(wasCustom){ delete grocCustom[id]; } else { grocPurchased[id]=true; } const hadShop=!!shopping[id]; if(hadShop) delete shopping[id]; renderGrocery(); try{ if(wasCustom) saveGroc(); else saveGrocPurchased(); if(hadShop) saveShopping(); }catch(e){} }
-function clearGroc(){ ['groc-alarmclock','groc-greenonion','groc-eggs','groc-croissants'].concat(Object.keys(grocCustom)).forEach(id=>{ shopping[id]=false; }); saveShopping(); renderGrocery(); }
+function clearGroc(){ ['groc-greenonion','groc-eggs','groc-croissants'].concat(Object.keys(grocCustom)).forEach(id=>{ shopping[id]=false; }); saveShopping(); renderGrocery(); }
 function saveInv(){ saveFood(); }
 function saveGrocPurchased(){ saveFood(); }
 function toast(msg){ try{ let t=document.getElementById('hg-toast'); if(!t){ t=document.createElement('div'); t.id='hg-toast'; t.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:rgba(18,26,38,.97);color:#EAF2FB;border:1px solid rgba(74,212,144,.5);border-radius:12px;padding:11px 18px;font-family:Lora,serif;font-size:13.5px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.5);opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:84vw;text-align:center'; document.body.appendChild(t); } t.textContent=msg; requestAnimationFrame(function(){ t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)'; }); clearTimeout(window.__toastT); window.__toastT=setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; },1900); }catch(e){} }
@@ -806,7 +808,7 @@ function toggle(id)  { checked[id]=!checked[id]; save(); renderAll(); }
 function toggleLaundry() { const k=todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function waterPlant(id)  { watered[id]=todayKey(); saveW(); renderAll(); }
 
-const NO_PROGRESS=new Set(["get_alarm_clock","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
+const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -1012,6 +1014,7 @@ const TIME_META={
   leca_prep:{order:436,timeLabel:"Morning",dur:"2–3 hrs"},
   errand1:{order:860,timeLabel:"Afternoon",dur:"30–45 min"},
   errand2:{order:861,timeLabel:"Afternoon",dur:"30–45 min"},
+  vacuum_bags:{order:862,timeLabel:"Afternoon",dur:"15 min"},
   find_drum_spot:{order:840,timeLabel:"Afternoon",dur:"4–6 hrs"},
   b_closet:{order:841,timeLabel:"Afternoon",dur:"3–4 hrs"},
   g1:{order:842,timeLabel:"Afternoon",dur:"3–4 hrs"},
@@ -1823,13 +1826,18 @@ const GROC_EMOJI = {
   "toilet paper":"🧻","paper towel":"🧻","tissue":"🧻","napkin":"🧻","dish soap":"🧼","hand soap":"🧼","soap":"🧼","shampoo":"🧴","conditioner":"🧴","lotion":"🧴","detergent":"🧴","fabric softener":"🧴","bleach":"🧴","cleaner":"🧴","toothpaste":"🪥","toothbrush":"🪥","mouthwash":"🪥","floss":"🦷","deodorant":"🧴","razor":"🪒","sponge":"🧽","trash bag":"🗑️","garbage bag":"🗑️","battery":"🔋","light bulb":"💡","candle":"🕯️","foil":"📦","plastic wrap":"📦","ziploc":"🛍️","bag":"🛍️","vitamin":"💊","supplement":"💊","medicine":"💊","ibuprofen":"💊","dog food":"🐕","cat food":"🐈","pet food":"🐾","treats":"🦴","diaper":"🍼"
 };
 function grocEmoji(t){ t=(t||'').toLowerCase(); const ks=Object.keys(GROC_EMOJI).sort((a,b)=>b.length-a.length); for(const k of ks){ if(t.indexOf(k)!==-1) return GROC_EMOJI[k]; } return '🛒'; }
+const RBOX_GRADS=[['#7A2E2E','#3A1010'],['#7A4A1F','#33200B'],['#2E5E3A','#0E2A18'],['#2E4E6E','#101F33'],['#5E3A6E','#241033'],['#6E5E2E','#2E260E'],['#2E6E62','#0E2E28'],['#6E2E4A','#330E1F']];
+function rboxGrad(id){ let x=0; const s=String(id||''); for(let i=0;i<s.length;i++) x=(x*31+s.charCodeAt(i))>>>0; return RBOX_GRADS[x%RBOX_GRADS.length]; }
+function recipeHero(r, hgt){ const g=rboxGrad(r.id);
+  return '<div style="height:'+hgt+'px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #D9C39A;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.16),transparent 62%),linear-gradient(135deg,'+g[0]+','+g[1]+')"><span style="font-size:'+Math.round(hgt*0.42)+'px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.45))">'+(r.emoji||'\ud83c\udf7d\ufe0f')+'</span></div>';
+}
 function recipeCard(r, featured){
   const ph=r.photo;
   const meta=[(r.dog?'🐕 DOG FOOD':''), r.time, r.difficulty, (r.servings?('🍽 '+r.servings):'')].filter(Boolean);
   const badges=meta.map(m=>'<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(140,59,46,.1);color:#8C3B2E;border:1px solid rgba(140,59,46,.25);font-family:\'Lora\',serif">'+m+'</span>').join('');
   return '<div onclick="openRecipe(\''+r.id+'\')" style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;margin-bottom:14px;overflow:hidden;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35)">'
     +'<div style="height:6px;background:repeating-linear-gradient(45deg,#C44536,#C44536 7px,#F5ECD7 7px,#F5ECD7 14px)"></div>'
-    +(ph?'<div style="height:'+(featured?170:130)+'px;overflow:hidden;border-bottom:1px solid #D9C39A;background:#e8dab9"><img src="'+ph+'" alt="'+r.name+'" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover"></div>':'')
+    +(ph?'<div style="height:'+(featured?170:130)+'px;overflow:hidden;border-bottom:1px solid #D9C39A;background:#e8dab9"><img src="'+ph+'" alt="'+r.name+'" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover"></div>':recipeHero(r,featured?170:130))
     +'<div style="padding:12px 15px 14px">'
     +(featured?'<div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#C44536;font-family:\'Lora\',serif;margin-bottom:4px">★ This week’s pick</div>':'')
     +'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:'+(featured?20:16)+'px;font-weight:700;color:#5a3a2a;line-height:1.25">'+(r.emoji||'🍽️')+' '+r.name+'</div>'
@@ -1886,9 +1894,68 @@ function recipeListHtml(){
   return out;
 }
 function baseServ(r){ const m=String((r&&r.servings)||'').match(/\d+/); return m?Math.max(1,parseInt(m[0],10)):2; }
-function _parseNum(tok){ tok=String(tok).trim(); if(/^\d+\s*\/\s*\d+$/.test(tok)){ const p=tok.split('/'); const n=parseFloat(p[0]),d=parseFloat(p[1]); return d?n/d:NaN; } return parseFloat(tok); }
-function _fmtQty(n){ if(!isFinite(n)||n<0) return null; const map=[[0,''],[0.125,'⅛'],[0.25,'¼'],[1/3,'⅓'],[0.375,'⅜'],[0.5,'½'],[0.625,'⅝'],[2/3,'⅔'],[0.75,'¾'],[0.875,'⅞'],[1,'']]; let whole=Math.floor(n+1e-9), frac=n-whole, best=map[0], bd=2; for(const m of map){ const d=Math.abs(frac-m[0]); if(d<bd){bd=d;best=m;} } if(bd>0.07){ return String(Math.round(n*10)/10); } let w=whole, f=best[1]; if(best[0]===1){ w+=1; f=''; } if(w===0&&f==='') return '0'; if(f==='') return String(w); return (w>0?w+' ':'')+f; }
-function scaleIngredient(line, ratio){ if(!isFinite(ratio)||ratio===1) return line; try{ return String(line).replace(/\d+\s*\/\s*\d+|\d+\.\d+|\d+/g, function(tok){ const v=_parseNum(tok); if(!isFinite(v)) return tok; const out=_fmtQty(v*ratio); return out==null?tok:out; }); }catch(e){ return line; } }
+const _VULG={'¼':[1,4],'½':[1,2],'¾':[3,4],'⅓':[1,3],'⅔':[2,3],'⅛':[1,8],'⅜':[3,8],'⅝':[5,8],'⅞':[7,8],'⅙':[1,6],'⅚':[5,6]};
+const _GLYPH={'1/8':'⅛','1/4':'¼','1/3':'⅓','3/8':'⅜','1/2':'½','5/8':'⅝','2/3':'⅔','3/4':'¾','7/8':'⅞'};
+function _qval(q){ q=String(q).trim();
+  let m=q.match(/^(\d+)\s+(\d+)\/(\d+)$/); if(m) return (+m[1])+(+m[2])/(+m[3]);
+  m=q.match(/^(\d+)\/(\d+)$/); if(m) return (+m[1])/(+m[2]);
+  m=q.match(/^(\d*)\s*([¼½¾⅓⅔⅛⅜⅝⅞⅙⅚])$/);
+  if(m){ const f=_VULG[m[2]]; return (+m[1]||0)+f[0]/f[1]; }
+  return parseFloat(q);
+}
+function _fmtMixed(n,denoms){
+  if(!isFinite(n)||n<0) return null;
+  let whole=Math.floor(n+1e-9), frac=n-whole, best=[0,''], bd=2;
+  const opts=[[0,''],[1,'']];
+  (denoms||[2,3,4,8]).forEach(function(d){ for(let i=1;i<d;i++){ const g=_GLYPH[i+'/'+d]; if(g) opts.push([i/d,g]); } });
+  for(const o of opts){ const dd=Math.abs(frac-o[0]); if(dd<bd){ bd=dd; best=o; } }
+  if(bd>0.07){ const v=Math.round(n*10)/10; return String(v%1?v:Math.round(v)); }
+  let w=whole, f=best[1]; if(best[0]===1){ w+=1; f=''; }
+  if(w===0&&f==='') return '0';
+  if(f==='') return String(w);
+  return (w>0?w:'')+f;
+}
+const _SKIP_UNITS=/^(inch(es)?|in\.|degrees?|percent|min(ute)?s?|hours?|hrs?|days?|weeks?|seconds?|secs?|x|by)$/i;
+function _unitClass(u){
+  u=(u||'').toLowerCase().replace(/\.$/,'');
+  if(/^(cups?|c)$/.test(u)) return 'cup';
+  if(/^(tablespoons?|tbsps?|tbl|tb|t)$/.test(u)&&u!=='t') return 'tbsp';
+  if(u==='tbsp'||u==='tablespoon'||u==='tablespoons') return 'tbsp';
+  if(/^(teaspoons?|tsps?)$/.test(u)) return 'tsp';
+  if(/^(ounces?|oz)$/.test(u)) return 'oz';
+  if(/^(pounds?|lbs?)$/.test(u)) return 'lb';
+  if(/^(grams?|g)$/.test(u)) return 'g';
+  if(/^(milliliters?|ml)$/.test(u)) return 'ml';
+  return 'count';
+}
+function scaleIngredient(line, ratio){
+  if(!isFinite(ratio)||ratio===1) return line; // at the base serving count, always show the original text
+  try{
+    const NUM=/(\d+\s+\d+\/\d+|\d+\/\d+|\d*\.\d+|\d+\s*[¼½¾⅓⅔⅛⅜⅝⅞⅙⅚]|\d+|[¼½¾⅓⅔⅛⅜⅝⅞⅙⅚])(\s*)([A-Za-z][A-Za-z.]*)?/g;
+    return String(line).replace(NUM, function(all, qty, sep, unit, idx, str){
+      const after=str.slice(idx+all.length);
+      // never scale sizes, temps, times, percentages: 9x13, 350 degrees, 400°F, 30 minutes, 75%
+      if(unit&&_SKIP_UNITS.test(unit)) return all;
+      if(/^\s*[°"%×x]/.test((unit?'':sep)+after) && !unit) return all;
+      if(/^[x×]\d/i.test(after.replace(/^\s*/,''))) return all;
+      if(/^\s*-?inch/i.test(after)) return all;
+      const v=_qval(qty); if(!isFinite(v)) return all;
+      let val=v*ratio, u=unit||'', cls=_unitClass(u), out;
+      const paren=str.lastIndexOf('(',idx)>str.lastIndexOf(')',idx);
+      if(cls==='cup'&&val<0.245){ val=val*16; if(val<0.95){ val=val*3; out=_fmtMixed(val,[2,4])+sep+'teaspoon'+(Math.abs(val-1)<0.05?'':'s'); } else { out=_fmtMixed(val,[2,3,4])+sep+'tablespoon'+(Math.abs(val-1)<0.05?'':'s'); } }
+      else if(cls==='cup'){ out=_fmtMixed(val,[2,3,4,8])+sep+u; }
+      else if(cls==='tbsp'&&val<0.95){ val=val*3; out=_fmtMixed(val,[2,4])+sep+'teaspoon'+(Math.abs(val-1)<0.05?'':'s'); }
+      else if(cls==='tbsp'){ out=_fmtMixed(val,[2,3,4])+sep+u; }
+      else if(cls==='tsp'){ val=Math.max(val,0.125); out=_fmtMixed(val,[2,4,8])+sep+u; }
+      else if(cls==='oz'){ out=(val>=3?String(Math.round(val)):_fmtMixed(val,[2]))+sep+u; if(paren) out='about '+out; }
+      else if(cls==='lb'&&val<0.95){ val=val*16; out=String(Math.round(val))+sep+'oz'; if(paren) out='about '+out; }
+      else if(cls==='lb'){ out=_fmtMixed(val,[2,4])+sep+u; if(paren) out='about '+out; }
+      else if(cls==='g'||cls==='ml'){ out=String(Math.round(val))+sep+u; if(paren) out='about '+out; }
+      else { out=_fmtMixed(val,[2,3,4])+sep+u; }
+      return out;
+    });
+  }catch(e){ return line; }
+}
 function setServings(id,delta){ const r=(typeof RECIPES!=='undefined'?RECIPES:[]).find(function(x){return x.id===id;}); if(!r) return; const base=baseServ(r); const cur=recipeServ[id]||base; recipeServ[id]=Math.max(1,cur+delta); openRecipe(id,true); }
 function openRecipe(id, keepScroll){
   const r=(typeof RECIPES!=='undefined'?RECIPES:[]).find(x=>x.id===id); if(!r) return;
@@ -1903,6 +1970,7 @@ function openRecipe(id, keepScroll){
     +'<div style="position:relative;height:240px;border-radius:var(--rad);overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2417,#0f0e14);margin-bottom:16px">'
     +'<div style="font-size:80px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.5))">'+(r.emoji||'🍽️')+'</div>'
     +(r.photo?'<img src="'+r.photo+'" alt="'+r.name+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">':'')+'</div>'
+    +(r.photoCredit?'<div style="font-size:9.5px;color:var(--text3,#5a7a99);font-family:\'Lora\',serif;margin:-12px 0 10px;text-align:right">'+r.photoCredit+'</div>':'')
     +'<h1 style="font-family:\'Playfair Display\',serif;font-size:24px;color:var(--text);margin:0 0 8px">'+r.name+'</h1>'
     +(meta.length?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">'+meta.map(m=>'<span style="font-size:12px;padding:4px 11px;border-radius:20px;background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border)">'+m+'</span>').join('')+'</div>':'')
     +(r.blurb?'<div style="font-size:13.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;margin-bottom:18px">'+r.blurb+'</div>':'')
@@ -1936,7 +2004,7 @@ function renderGrocery() {
     '<div style="text-align:center;margin-bottom:20px;padding-top:4px">'
     + '<div style="font-size:9px;letter-spacing:.2em;color:' + green + ';text-transform:uppercase;font-family:\'Lora\',serif;margin-bottom:4px">🛒 Shopping List</div>'
     + '<div style="font-family:\'Playfair Display\',serif;font-size:24px;font-weight:700;background:linear-gradient(135deg,' + green + ',' + teal + ');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Grocery</div>'
-    + '<div style="font-size:10px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic">Tap an item when you buy it — it moves to your Kitchen Inventory</div></div>'
+    + '<div style="font-size:10px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic">Food only · tap an item when you buy it — it moves to your Kitchen Inventory. Household stuff lives on the ⭐ Priority to-do list.</div></div>'
     + '<div style="display:flex;gap:8px;margin-bottom:14px">'
     + '<input id="grocInput" type="text" placeholder="Add an item…" onkeydown="if(event.key===\'Enter\')addGroc()" style="flex:1;background:#0a1628;border:1px solid rgba(45,184,112,.3);border-radius:10px;padding:11px 13px;color:var(--text);font-family:\'Lora\',serif;font-size:14px;outline:none">'
     + '<div onclick="addGroc()" style="background:rgba(74,212,144,.18);border:1px solid ' + green + ';border-radius:10px;padding:11px 16px;color:' + green + ';font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;white-space:nowrap">+ Add</div>'
@@ -1983,53 +2051,43 @@ function inventoryHtml(){
 
 
 function renderPrint() {
-  const PRINT_SCHEDULE = [
-    { id:'capybara_mini', name:"Capybara Mini", emoji:"🦛", note:"Quick, cute, chunky little guy." },
-    { id:'inverted_oloid', name:"Inverted Oloid", emoji:"🌀", note:"Hypnotic desk toy that rolls funny." },
-    { id:'low_poly_wolf', name:"Low Poly Wolf", emoji:"🐺", note:"Clean geometric display piece." },
-    { id:'crystal_cluster', name:"Crystal Cluster", emoji:"💎", note:"Looks great, needs no supports." },
-    { id:'chess_prestige', name:"Chess Prestige Set", emoji:"♟️", note:"Board + full set — chip away at it." },
-    { id:'death_whistle', name:"Death Whistle", emoji:"💀", note:"Absurdly loud. (Warn the neighbors.)" },
-    { id:'skull_glasses_bowl', name:"Skull Glasses Bowl", emoji:"💀", note:"Edgy catch-all statement piece." },
-    { id:'aztec_cube', name:"Aztec Cube", emoji:"🟫", note:"Satisfying patterned cube." },
-    { id:'heavy_bullet', name:"Inside-Heavy Bullet", emoji:"🔩", note:"Weighty little fidget oddity." },
-    { id:'pentagram_by_jack', name:"Pentagram", emoji:"⛧", note:"Geometric wall/desk accent." },
-    { id:'octopus', name:"Octopus", emoji:"🐙", note:"Print-in-place wiggly arms." },
-    { id:'rabbit', name:"Rabbit", emoji:"🐰", note:"Cute little bunny." },
-    { id:'dog', name:"Dog Figure", emoji:"🐕", note:"A tiny Zoey stand-in." },
-    { id:'lizard_trio', name:"Lizard Trio", emoji:"🦎", note:"Three articulated lizards." },
-    { id:'pumpkin_decoration', name:"Pumpkin Decoration", emoji:"🎃", note:"Save this one for fall." },
-    { id:'michelangelo_david', name:"Michelangelo's David", emoji:"🗿", note:"Classic bust, instant culture." },
-    { id:'palpatine', name:"Palpatine", emoji:"🧙", note:"Unlimited powerrr." },
-    { id:'darth_vader_mini', name:"Darth Vader Mini", emoji:"🦹", note:"Tiny Sith for the shelf." },
-    { id:'darth_vader_ledge', name:"Vader Ledge-Sitter", emoji:"🦹", note:"Perches on a shelf edge." },
-    { id:'batman_dog_mask', name:"Batman Dog Mask", emoji:"🦇", note:"For Zoey. She is now the night." },
-    { id:'manga_girl', name:"Manga Girl", emoji:"🎎", note:"Another figurine to flex your settings." },
-    { id:'goose_monitor_buddy', name:"Goose Monitor Buddy", emoji:"🦢", note:"Perches on your monitor edge." },
-    { id:'trex_monitor_buddy', name:"T-Rex Monitor Buddy", emoji:"🦖", note:"Rawr, on your screen." },
-    { id:'yoshi_monitor_buddy', name:"Yoshi Monitor Buddy", emoji:"🦕", note:"Deck out the monitor." },
-    { id:'noface_monitor_buddy', name:"No-Face Monitor Buddy", emoji:"🎭", note:"Spirited Away vibes." },
-    { id:'krab_pen_holder', name:"Krab Pen Holder", emoji:"🦀", note:"Crabby desk organizer." },
-    { id:'headphone_stand', name:"Headphone Stand", emoji:"🎧", note:"Get the cans off the desk." },
-    { id:'gravity_towel_hook', name:"Gravity Towel Hook", emoji:"🪝", note:"Clever no-screw hook." },
-    { id:'toothpaste_stand', name:"Toothpaste Stand", emoji:"🦷", note:"Tidy the bathroom counter." },
-    { id:'shade_stand', name:"Sunglasses Stand", emoji:"🕶️", note:"Display your shades." },
-    { id:'ps5_controller_holder', name:"PS5 Controller Holder", emoji:"🎮", note:"Wall/desk controller dock." },
-    { id:'monitor_phone_holder', name:"Monitor Phone Holder", emoji:"📱", note:"Clip your phone by the screen." },
-    { id:'under_monitor_pen_holder', name:"Under-Monitor Pen Holder", emoji:"🖊️", note:"Reclaim desk space." },
-    { id:'under_monitor_pen_holder_v2', name:"Pen Holder v2", emoji:"🖊️", note:"The improved version." },
-    { id:'monitor_riser', name:"Monitor Riser", emoji:"🖥️", note:"Lift the screen to eye level." },
-    { id:'gripfix', name:"GripFix", emoji:"🤏", note:"Handy grip helper." },
-    { id:'tweezers', name:"Printed Tweezers", emoji:"🔧", note:"A functional printed tool." },
-    { id:'grease_tool', name:"Grease Tool", emoji:"🛠️", note:"Little shop helper." },
-    { id:'seatbelt_silencer', name:"Seatbelt Silencer", emoji:"🚗", note:"Kill the seatbelt dinging." },
-    { id:'filament_clip', name:"Filament Clip", emoji:"📎", note:"Tame loose filament ends." },
-    { id:'filament_guide_ams', name:"Filament Guide (AMS)", emoji:"🧵", note:"Smoother filament feed." },
-    { id:'filament_guide_cleaner', name:"Filament Dust Cleaner", emoji:"🧽", note:"Wipes dust off the filament." },
-    { id:'filament_runout_sensor', name:"Runout Sensor Mount", emoji:"📟", note:"Never get caught mid-print." },
-    { id:'spool_holder_sv06', name:"SV06 Spool Holder", emoji:"🧶", note:"Printer upgrade for the SV06." },
-    { id:'sv06_cable_chain', name:"SV06 Cable Chain", emoji:"⛓️", note:"Tidy up the printer cables." },
-    { id:'sv06_reverse_bowden_guide', name:"Reverse Bowden Guide", emoji:"🧭", note:"Cleaner filament path." },
+  // Fun print ideas — organized by vibe. diff: Easy/Medium/Spicy · mat: PETG/PLA/TPU (aquarium-safe = PETG ONLY)
+  const PRINT_VIBES = {
+    aqua:    { name:"Aquarium & Water",  emoji:"🐟", color:"#22D3EE", note:"Anything that touches tank water gets printed in PETG — PLA softens and breaks down underwater." },
+    garden:  { name:"Garden Gadgets",    emoji:"🌱", color:"#4AD490", note:"Outdoor parts live happiest in PETG — it shrugs off sun and sprinklers." },
+    bug:     { name:"Bug Resort Gear",   emoji:"🐛", color:"#F5B830", note:"Upgrades for the bioactive tub. The isopods have opinions about amenities." },
+    kitchen: { name:"Kitchen Hacks",     emoji:"🍳", color:"#FB923C", note:"Food-adjacent prints: PETG handles dishwater better than PLA." },
+    toys:    { name:"Toys & Desk Joy",   emoji:"🧸", color:"#c084fc", note:"Zero utility. Maximum delight. Print-in-place favorites for the SV06 Plus." }
+  };
+  const PRINT_IDEAS = [
+    { id:'shrimp_feed_dish', vibe:'aqua', name:"Shrimp Feeding Dish + Tube", emoji:"🦐", diff:"Easy", mat:"PETG", time:"~1 hr", note:"Glass-look dish + drop tube — food lands on the dish, not lost in the gravel. The Blue Dreams line up like it's a diner." },
+    { id:'moss_anchor', vibe:'aqua', name:"Moss Anchor Grid", emoji:"🌿", diff:"Easy", mat:"PETG", time:"~45 min", note:"Pins the incoming moss ball exactly where the carpet should start. Pairs with the Petco moss run." },
+    { id:'shrimp_hide', vibe:'aqua', name:"Shrimp Cave Condo", emoji:"🏠", diff:"Medium", mat:"PETG", time:"~2 hr", note:"Stackable hides with shrimp-sized doorways. Freshly-molted shrimp need a panic room." },
+    { id:'airline_clips', vibe:'aqua', name:"Rim Clips for Airline & Cords", emoji:"📎", diff:"Easy", mat:"PETG", time:"~20 min", note:"Snap over the tank rim so the air line stops flopping into the water." },
+    { id:'test_rack', vibe:'aqua', name:"Water Test Tube Rack", emoji:"🧪", diff:"Easy", mat:"PETG", time:"~1 hr", note:"Every API tube upright and visible on water-change day. Ammonia readings with dignity." },
+    { id:'feeding_ring', vibe:'aqua', name:"Floating Feeding Ring", emoji:"⭕", diff:"Easy", mat:"PETG", time:"~30 min", note:"Corrals flakes in one spot — perfect for the tall TopFin once it passes its leak test." },
+    { id:'water_spike', vibe:'garden', name:"Self-Watering Bottle Spike", emoji:"💧", diff:"Easy", mat:"PETG", time:"~1 hr", note:"Threads onto a soda bottle and drips slowly — insurance for hot weekends away." },
+    { id:'runner_pegs', vibe:'garden', name:"Strawberry Runner Pegs", emoji:"🍓", diff:"Easy", mat:"PLA", time:"~20 min", note:"Pin the daughter runners into their pockets — literally this week's strawberry-pot job." },
+    { id:'plant_labels', vibe:'garden', name:"Write-On Plant Stakes", emoji:"🏷️", diff:"Easy", mat:"PETG", time:"~30 min", note:"Label the greenhouse herbs so the basil twins stop getting mistaken for each other." },
+    { id:'rain_gauge', vibe:'garden', name:"Rain Gauge", emoji:"🌧️", diff:"Medium", mat:"PETG", time:"~2 hr", note:"Know whether Denver actually delivered before you water. The app's forecast gets a fact-checker." },
+    { id:'trellis_clips', vibe:'garden', name:"Tomato Trellis Clips", emoji:"🍅", diff:"Easy", mat:"PLA", time:"~20 min", note:"Clip the heirloom to its stake without strangling it. Print a dozen." },
+    { id:'iso_bowls', vibe:'bug', name:"Isopod Feeding Bowl Set", emoji:"🥣", diff:"Easy", mat:"PLA", time:"~30 min", note:"Tiny ramekins for room service. Veggie scraps served with unreasonable elegance." },
+    { id:'vent_grates', vibe:'bug', name:"Snap-In Vent Grates", emoji:"💨", diff:"Easy", mat:"PLA", time:"~45 min", note:"Upgrade the tub's poked-hole airflow to actual architecture." },
+    { id:'resort_sign', vibe:'bug', name:"Tiny BUG RESORT Sign", emoji:"🪧", diff:"Easy", mat:"PLA", time:"~30 min", note:"Every establishment needs branding. The ladybugs expect signage by now." },
+    { id:'magnifier_frame', vibe:'bug', name:"Pocket Magnifier Frame", emoji:"🔍", diff:"Medium", mat:"PLA", time:"~1 hr", note:"Snap in a cheap lens and springtail-watching becomes a nature documentary." },
+    { id:'bag_clips', vibe:'kitchen', name:"Chip Bag Clips", emoji:"🛍️", diff:"Easy", mat:"PETG", time:"~20 min", note:"Print ten, lose nine, print ten more. The circle of life." },
+    { id:'eggshell_funnel', vibe:'kitchen', name:"Eggshell-Powder Jar Funnel", emoji:"🥚", diff:"Easy", mat:"PETG", time:"~40 min", note:"Wide-mouth funnel for jarring Zoey's eggshell calcium — zero spill, zero drama." },
+    { id:'spoon_rack', vibe:'kitchen', name:"Measuring Spoon Rack", emoji:"🥄", diff:"Easy", mat:"PLA", time:"~1 hr", note:"Every spoon visible, none hiding in the junk drawer. Kitchen campaign synergy." },
+    { id:'taco_stand', vibe:'kitchen', name:"Taco Stand", emoji:"🌮", diff:"Easy", mat:"PLA", time:"~1 hr", note:"Holds three upright. Enchilada night's best supporting actor." },
+    { id:'recipe_stand', vibe:'kitchen', name:"Recipe Phone Stand", emoji:"📱", diff:"Easy", mat:"PETG", time:"~1.5 hr", note:"Angles the Recipe Box at eye level while you cook — splash-side up." },
+    { id:'octopus', vibe:'toys', name:"Articulated Octopus", emoji:"🐙", diff:"Easy", mat:"PLA", time:"~3 hr", note:"Print-in-place wiggly arms. Still the king of first flexi prints." },
+    { id:'flexi_dragon', vibe:'toys', name:"Cute Flexi Dragon", emoji:"🐉", diff:"Medium", mat:"PLA", time:"~4 hr", note:"cinderwing3d print-in-place — killer in Sovol blue." },
+    { id:'capybara_mini', vibe:'toys', name:"Capybara Mini", emoji:"🦛", diff:"Easy", mat:"PLA", time:"~1 hr", note:"Quick, cute, chunky little guy. Radiates calm." },
+    { id:'inverted_oloid', vibe:'toys', name:"Inverted Oloid", emoji:"🌀", diff:"Medium", mat:"PLA", time:"~2 hr", note:"Hypnotic desk toy that rolls in a way that feels illegal." },
+    { id:'crystal_cluster', vibe:'toys', name:"Crystal Cluster", emoji:"💎", diff:"Medium", mat:"PLA", time:"~3 hr", note:"Looks expensive, needs no supports. Translucent filament shines here." },
+    { id:'death_whistle', vibe:'toys', name:"Aztec Death Whistle", emoji:"💀", diff:"Easy", mat:"PLA", time:"~1 hr", note:"Absurdly loud. (Warn the neighbors. Maybe warn Zoey.)" },
+    { id:'dog', vibe:'toys', name:"Tiny Zoey Figure", emoji:"🐕", diff:"Easy", mat:"PLA", time:"~1 hr", note:"A pocket cattle-dog–chihuahua for the desk." },
+    { id:'worm_string', vibe:'toys', name:"Worm on a String", emoji:"🪱", diff:"Easy", mat:"TPU", time:"~1 hr", note:"The TPU spool's destiny. Floppy, pointless, perfect." }
   ];
   const el = document.getElementById("view-print");
   const orange = '#FB923C', amber = '#FBBF24', green = '#4AD490', text2 = 'var(--text2)';
@@ -2071,33 +2129,58 @@ function renderPrint() {
     </div>`;
   }
 
-  const fpPick = PRINT_SCHEDULE[Math.floor(Date.now()/86400000)%PRINT_SCHEDULE.length];
-  const _wish = `
-    <!-- FUN PRINT OF THE DAY -->
-    <div style="margin-bottom:28px">
-      <div style="text-align:center;margin-bottom:14px;padding-top:4px">
-        <div style="font-size:9px;letter-spacing:.25em;color:#c084fc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🎨 Print Something Fun</div>
-        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#c084fc,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">Fun Print Ideas</div>
-        <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">A fresh suggestion each day — no pressure, just for the joy of it</div>
+  const fpPick = PRINT_IDEAS[Math.floor(Date.now()/86400000)%PRINT_IDEAS.length];
+  const chip=(t,c)=>`<span style="font-size:9px;padding:2px 8px;border-radius:10px;background:${c}22;border:1px solid ${c}66;color:${c};font-family:'Lora',serif;font-weight:700;letter-spacing:.04em;white-space:nowrap">${t}</span>`;
+  const DIFF_C={Easy:'#4ADE80',Medium:'#FBBF24',Spicy:'#F87171'};
+  const MAT_C={PETG:'#22D3EE',PLA:'#A78BFA',TPU:'#F472B6'};
+  const ideaChips=p=>chip(p.diff,DIFF_C[p.diff]||'#A78BFA')+' '+chip(p.mat,MAT_C[p.mat]||'#A78BFA')+' '+chip(p.time,'#94A3B8');
+  const ideaRow=p=>{ const on=!!funPrints[p.id]; const vc=PRINT_VIBES[p.vibe].color;
+    return `<div onclick="toggleFunPrint('${p.id}')" style="display:flex;gap:11px;padding:11px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">
+      <div style="font-size:22px;flex-shrink:0;width:28px;text-align:center;filter:drop-shadow(0 2px 5px rgba(0,0,0,.4))">${p.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-size:13.5px;font-weight:700;color:${on?vc:'var(--text)'};${on?'text-decoration:line-through;opacity:.65':''}">${p.name}</span>${ideaChips(p)}</div>
+        <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:3px;line-height:1.45;${on?'opacity:.55':''}">${p.note}</div>
       </div>
-      <div style="background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.3);border-radius:14px;padding:14px 15px">
-        <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#c084fc;font-family:'Lora',serif;margin-bottom:8px">🎲 Today's Fun Print Idea</div>
-        <div style="display:flex;align-items:center;gap:11px">
-          <div style="font-size:30px">${fpPick.emoji}</div>
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-size:16px;font-weight:700;color:var(--text);font-family:'Playfair Display',serif">${fpPick.name}</span>${fpPick.src==='MakerWorld'?`<span style="font-size:8px;padding:2px 6px;border-radius:10px;background:rgba(99,102,241,.2);color:#818CF8;font-family:'Lora',serif;letter-spacing:.05em">MakerWorld</span>`:''}</div>
-            <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">${fpPick.note}</div>
-          </div>
+      <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${on?vc:'rgba(255,255,255,.22)'};background:${on?vc:'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#0d0d1a;font-weight:900;margin-top:2px">${on?'✓':''}</div>
+    </div>`; };
+  const ideasDone=PRINT_IDEAS.filter(p=>funPrints[p.id]).length;
+  const spotV=PRINT_VIBES[fpPick.vibe];
+  const vibeSection=k=>{ const v=PRINT_VIBES[k]; const items=PRINT_IDEAS.filter(p=>p.vibe===k); const done=items.filter(p=>funPrints[p.id]).length;
+    return `<div style="background:#0d0d1a;border:1px solid ${v.color}33;border-radius:14px;padding:13px 15px 4px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:2px">
+        <span style="font-size:20px">${v.emoji}</span>
+        <span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${v.color}">${v.name}</span>
+        <span style="margin-left:auto;font-size:10px;color:var(--text3,#5a7a99);font-family:'Lora',serif">${done}/${items.length}</span>
+      </div>
+      <div style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-bottom:6px;line-height:1.4">${v.note}</div>
+      ${items.map(ideaRow).join('')}
+    </div>`; };
+  const _wish = `
+    <div style="text-align:center;margin-bottom:14px;padding-top:4px">
+      <div style="font-size:9px;letter-spacing:.25em;color:#c084fc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🎨 Print Something Fun · Sovol SV06 Plus</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#c084fc,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">Fun Print Ideas</div>
+      <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">${PRINT_IDEAS.length} ideas across five vibes · ${ideasDone} printed so far</div>
+    </div>
+    <div style="background:radial-gradient(circle at 22% 18%,${spotV.color}33,transparent 55%),linear-gradient(135deg,rgba(192,132,252,.13),rgba(13,13,26,.6));border:1px solid ${spotV.color}55;border-radius:16px;padding:16px;margin-bottom:18px;box-shadow:0 6px 24px rgba(0,0,0,.35)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:${spotV.color};font-family:'Lora',serif">🎲 Print of the Day</span>
+        <span style="margin-left:auto">${chip(spotV.emoji+' '+spotV.name,spotV.color)}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="font-size:46px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))">${fpPick.emoji}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--text);line-height:1.2">${fpPick.name}</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">${ideaChips(fpPick)}</div>
+          <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;margin-top:6px;line-height:1.5">${fpPick.note}</div>
         </div>
-        <div onclick="toggleFunPrint('${fpPick.id}')" style="margin-top:12px;display:flex;align-items:center;gap:9px;cursor:pointer;border-top:1px solid rgba(255,255,255,.06);padding-top:11px">
-          <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints[fpPick.id]?'#c084fc':'rgba(255,255,255,.25)'};background:${funPrints[fpPick.id]?'#c084fc':'transparent'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff">${funPrints[fpPick.id]?'✓':''}</div>
-          <span style="font-size:12px;color:${funPrints[fpPick.id]?'#c084fc':'var(--text2)'};font-family:'Lora',serif">${funPrints[fpPick.id]?'Printed it! 🎉':'Feeling it? Tap when you print it.'}</span>
-        </div>
+      </div>
+      <div onclick="toggleFunPrint('${fpPick.id}')" style="margin-top:13px;display:flex;align-items:center;gap:9px;cursor:pointer;border-top:1px solid rgba(255,255,255,.08);padding-top:11px">
+        <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints[fpPick.id]?spotV.color:'rgba(255,255,255,.25)'};background:${funPrints[fpPick.id]?spotV.color:'transparent'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#0d0d1a">${funPrints[fpPick.id]?'✓':''}</div>
+        <span style="font-size:12px;color:${funPrints[fpPick.id]?spotV.color:'var(--text2)'};font-family:'Lora',serif">${funPrints[fpPick.id]?'Printed it! 🎉 Tomorrow brings a fresh one.':'Feeling it? Tap when it comes off the bed.'}</span>
       </div>
     </div>
-
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);margin-bottom:24px"></div>
-
+    ${Object.keys(PRINT_VIBES).map(vibeSection).join('')}
+    <div style="font-size:11px;color:var(--text3,#5a7a99);font-family:'Lora',serif;font-style:italic;text-align:center;padding:2px 0 10px">Spotlight rotates daily · aquarium parts = PETG only, always</div>
 `;
   const _upg = `
     <!-- UPGRADES -->
@@ -2187,17 +2270,28 @@ function renderPrint() {
       <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">🌱 Desktop Hydroponics</div>
       <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">On the bed now. ✅ Done: 2× Droplet Watering Can.</div>
     </div>
-    <div onclick="toggleFunPrint('buy_blue_filament')" style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:13px 15px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:11px">
-      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['buy_blue_filament']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['buy_blue_filament']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['buy_blue_filament']?'✓':''}</div>
-      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['buy_blue_filament']?'#4AD490':'var(--text)'};${funPrints['buy_blue_filament']?'text-decoration:line-through':''}">🧵 Buy Sovol blue filament</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Tap when it is ordered.</div></div>
+    <div onclick="toggleFunPrint('buy_klipper_kit')" style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:13px 15px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:11px">
+      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['buy_klipper_kit']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['buy_klipper_kit']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['buy_klipper_kit']?'✓':''}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['buy_klipper_kit']?'#4AD490':'var(--text)'};${funPrints['buy_klipper_kit']?'text-decoration:line-through':''}">🫐 Buy a Blueberry Klipper kit</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Klipper for the SV06 Plus — faster, smarter prints. Tap when ordered.</div></div>
     </div>
-    <div onclick="toggleFunPrint('buy_flex_filament')" style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:13px 15px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:11px">
-      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['buy_flex_filament']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['buy_flex_filament']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['buy_flex_filament']?'✓':''}</div>
-      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['buy_flex_filament']?'#4AD490':'var(--text)'};${funPrints['buy_flex_filament']?'text-decoration:line-through':''}">🧵 Buy flexible filament (TPU)</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">For the flexi prints. Tap when ordered.</div></div>
-    </div>
-    <div onclick="toggleFunPrint('buy_sub_pump')" style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:13px 15px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:11px">
-      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['buy_sub_pump']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['buy_sub_pump']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['buy_sub_pump']?'✓':''}</div>
-      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['buy_sub_pump']?'#4AD490':'var(--text)'};${funPrints['buy_sub_pump']?'text-decoration:line-through':''}">💧 Buy a tiny submersible pump</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">For the desktop hydroponics. Tap when ordered.</div></div>
+    <div style="background:linear-gradient(135deg,rgba(245,184,48,.10),rgba(245,184,48,.03));border:1px solid rgba(245,184,48,.35);border-radius:12px;padding:12px 14px 4px;margin-bottom:14px">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;margin-bottom:4px">✨ Just for fun · zero productivity allowed</div>
+      <div onclick="toggleFunPrint('fun_bug_daypass')" style="display:flex;gap:11px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">
+        <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints['fun_bug_daypass']?'#F5B830':'rgba(255,255,255,.2)'};background:${funPrints['fun_bug_daypass']?'#F5B830':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1a1208;font-weight:900;margin-top:1px">${funPrints['fun_bug_daypass']?'✓':''}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:${funPrints['fun_bug_daypass']?'#F5B830':'var(--text)'};${funPrints['fun_bug_daypass']?'text-decoration:line-through;opacity:.7':''}">🦗 Catch a backyard bug — day pass to the bioactive resort</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.4">One lucky guest. The isopods handle housekeeping; checkout is whenever.</div></div>
+      </div>
+      <div onclick="toggleFunPrint('fun_strawberry_rite')" style="display:flex;gap:11px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">
+        <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints['fun_strawberry_rite']?'#F5B830':'rgba(255,255,255,.2)'};background:${funPrints['fun_strawberry_rite']?'#F5B830':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1a1208;font-weight:900;margin-top:1px">${funPrints['fun_strawberry_rite']?'✓':''}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:${funPrints['fun_strawberry_rite']?'#F5B830':'var(--text)'};${funPrints['fun_strawberry_rite']?'text-decoration:line-through;opacity:.7':''}">🍓 Eat the first ripe strawberry standing in the garden</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.4">No plate, no witnesses. This is tradition now.</div></div>
+      </div>
+      <div onclick="toggleFunPrint('fun_shrimp_name')" style="display:flex;gap:11px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">
+        <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints['fun_shrimp_name']?'#F5B830':'rgba(255,255,255,.2)'};background:${funPrints['fun_shrimp_name']?'#F5B830':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1a1208;font-weight:900;margin-top:1px">${funPrints['fun_shrimp_name']?'✓':''}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:${funPrints['fun_shrimp_name']?'#F5B830':'var(--text)'};${funPrints['fun_shrimp_name']?'text-decoration:line-through;opacity:.7':''}">🐚 Name the boldest Blue Dream shrimp</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.4">It keeps making eye contact. It has earned a name and a backstory.</div></div>
+      </div>
+      <div onclick="toggleFunPrint('fun_plant_gnome')" style="display:flex;gap:11px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">
+        <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints['fun_plant_gnome']?'#F5B830':'rgba(255,255,255,.2)'};background:${funPrints['fun_plant_gnome']?'#F5B830':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1a1208;font-weight:900;margin-top:1px">${funPrints['fun_plant_gnome']?'✓':''}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:${funPrints['fun_plant_gnome']?'#F5B830':'var(--text)'};${funPrints['fun_plant_gnome']?'text-decoration:line-through;opacity:.7':''}">🌙 Print something tiny and hide it in a houseplant</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.4">A surprise for future-you watering on a random Tuesday.</div></div>
+      </div>
     </div>
     <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#A78BFA;font-family:'Lora',serif;margin-bottom:8px">👑 Top pick</div>
     <div style="background:linear-gradient(135deg,rgba(192,132,252,.14),rgba(129,140,248,.06));border:1px solid rgba(192,132,252,.4);border-radius:12px;padding:12px 15px;margin-bottom:12px">
@@ -2236,8 +2330,8 @@ function renderPrint() {
 `;
   el.innerHTML = printSub==="wishlist"?_wish:(printSub==="upgrades"?_upg:_todo);
   // Update fun print progress bar
-  const fpDone = PRINT_SCHEDULE.filter(p => funPrints[p.id]).length;
-  const fpEl = document.getElementById('fpPct'); if(fpEl) fpEl.textContent = fpDone+'/14';
+  const fpDone = PRINT_IDEAS.filter(p => funPrints[p.id]).length;
+  const fpEl = document.getElementById('fpPct'); if(fpEl) fpEl.textContent = fpDone+'/'+PRINT_IDEAS.length;
   const fpBarEl = document.getElementById('fpBar'); if(fpBarEl) fpBarEl.style.width = Math.round(fpDone/14*100)+'%';
 }
 
@@ -2396,6 +2490,13 @@ ST.on('value', snap => {
   painLog     = d.painLog     || {};
   litfulo     = d.litfulo     || {};
   zoey        = d.zoey        || {};
+  // one-time idempotent migration: grocery is FOOD-ONLY (Jun 6 2026) — strip non-food strays
+  try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false, ci=false;
+    for(const k in grocCustom){ if(NF.test(String(grocCustom[k]))){ delete grocCustom[k]; ch=true; } }
+    for(const k in inventory){ if(inventory[k]&&NF.test(String(inventory[k].name||''))){ delete inventory[k]; ci=true; } }
+    if(ch){ ST.child('grocCustom').set(grocCustom); }
+    if(ci){ ST.child('inventory').set(inventory); }
+  }catch(e){}
   // one-time idempotent migration of any legacy localStorage pain entries up to Firebase
   try { const legacy = JSON.parse(localStorage.getItem("painlog")||"{}"); let added=false; for(const k in legacy){ if(painLog[k]==null){ painLog[k]=legacy[k]; added=true; } } if(added){ ST.child('painLog').set(painLog); } } catch(e){}
   const flags = d.flags       || {};

@@ -36,6 +36,7 @@ const TASKS = {
   // ── PRIORITY ──────────────────────────────────────────────────────────────
   errand1:        { room:"priority", label:"Go get distilled water", level:"easy" },
   errand2:        { room:"priority", label:"Go get food", level:"easy" },
+  vacuum_bags:    { room:"priority", label:"Buy 8-inch vacuum bags", level:"easy", note:"Moved off the grocery list (grocery is food-only now). Grab them with the next errand run." },
   rx_setup:       { room:"priority", label:"Set up esomeprazole + magnesium at King Soopers (use GoodRx)", level:"easy", note:"Open GoodRx, search esomeprazole (and magnesium if it is a script) for the King Soopers pharmacy, grab the coupon price, and send or transfer the prescription there. Show the GoodRx coupon at the counter on pickup." },
   measure_printer:{ room:"office",   label:"Measure the 3D printer — width, depth, height + room for spools and cables", level:"easy", note:"Do this before buying a desk so you know exactly what fits." },
   find_desk:      { room:"priority", label:"Find a cheap sturdy desk — Marketplace, Craigslist, OfferUp", level:"easy", note:"Must be sturdy — needs to hold the 3D printer. Check FB Marketplace first — people offload office furniture constantly." },
@@ -370,7 +371,7 @@ const HARVEST_INFO = {
    Shape: { id, name, emoji, photo?, time?, difficulty?, servings?, tags?[],
             featured?, blurb?, ingredients?[], steps?[] }                     */
 const RECIPES = [
-  { id:"r_beef_tenderloin", name:"Beef Tenderloin with Mushroom Pan Sauce & Garlicky Spinach", emoji:"🥩", featured:true, photo:"https://commons.wikimedia.org/wiki/Special:FilePath/Filet_mignon_at_Rioz_churrascaria.jpg?width=800",
+  { id:"r_beef_tenderloin", name:"Beef Tenderloin with Mushroom Pan Sauce & Garlicky Spinach", emoji:"🥩", featured:true, photo:"images/recipe_beef_tenderloin.jpg", photoCredit:"Photo: Gerda Arendt · CC BY-SA 4.0 · Wikimedia Commons",
     time:"~45 min", difficulty:"Medium", servings:"2–3", tags:["dinner","garden"],
     blurb:"A restaurant-style seared beef tenderloin with a rich mushroom pan sauce and quick garlicky spinach, plus a crisp romaine side salad. Properly paired — no forcing every vegetable onto the plate.",
     ingredients:[
