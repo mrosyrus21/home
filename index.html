@@ -154,10 +154,10 @@ body::after{
 .tl-pill-row{display:flex;justify-content:flex-end;padding:6px 18px 0;position:relative;z-index:1}
 
 /* Tabs */
-.tabs{display:flex;margin-top:8px;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.04)}
+.tabs{display:flex;flex-wrap:wrap;margin-top:8px;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.04)}
 .tabs-secondary{display:flex;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.03);background:rgba(0,0,0,.12)}
 .tab{
-  flex:1;background:none;border:none;cursor:pointer;
+  flex:1 1 22%;background:none;border:none;cursor:pointer;
   padding:10px 0 9px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
   font-family:'Lora',serif;border-bottom:2px solid transparent;
   transition:all .2s;color:var(--text2);position:relative;
@@ -606,6 +606,8 @@ body::after{
     <button class="tab" onclick="switchTab('garden')" id="tab-garden">🌿 Plants</button>
     <button class="tab" onclick="switchTab('shopping')" id="tab-shopping">🦐 Tank</button>
     <button class="tab" onclick="switchTab('grocery')" id="tab-grocery">🍽️ Food</button>
+    <button class="tab" onclick="switchTab('recipebox')" id="tab-recipebox">📖 Recipes</button>
+    <button class="tab" onclick="switchTab('tocook')" id="tab-tocook">🍳 To Cook</button>
     <button class="tab" onclick="switchTab('print')" id="tab-print">🧊 Print</button>
     <button class="tab" onclick="switchTab('wellness')" id="tab-wellness">💊 Health</button>
     <button class="tab" onclick="switchTab('finance')" id="tab-finance">💰 Finance</button>
@@ -622,12 +624,14 @@ body::after{
   <div id="view-grocery" style="display:none"></div>
   <div id="view-wellness" style="display:none"></div>
   <div id="view-finance" style="display:none"></div>
+  <div id="view-recipebox" style="display:none"></div>
+  <div id="view-tocook" style="display:none"></div>
   <div id="view-print" style="display:none"></div>
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606104302"></script>
-<script src="./recipes.js?v=20260606094928"></script>
+<script src="./data.js?v=20260606113026"></script>
+<script src="./recipes.js?v=20260606113026"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -638,7 +642,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6 · 11:07 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 6 · 11:30 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -668,7 +672,8 @@ let taskCustom = {};
 let painLog = {};
 let litfulo = {};
 let zoey = {};
-let fin = {};   // 💰 finance state: bal/debt history, bills paid, cancels verified, to-dos
+let fin = {};
+let cookQueue = {};  // 🍳 planned recipes: {rid,day,meal,done}   // 💰 finance state: bal/debt history, bills paid, cancels verified, to-dos
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -697,6 +702,7 @@ function savePain(){ ST.child('painLog').set(painLog); }
 function saveLit(){ ST.child('litfulo').set(litfulo); }
 function saveZoey(){ ST.child('zoey').set(zoey); }
 function saveFin(){ ST.child('fin').set(fin); }
+function saveCook(){ ST.child('cookQueue').set(cookQueue); }
 function zoeyStart(){ zoey={startDate:todayKey()}; saveZoey(); laundry['zoey-feed-'+todayKey()]=true; saveLaundry(); renderAll(); }
 function zoeyHold(){ if(!zoey.startDate) return; const d=new Date(zoey.startDate+'T12:00:00'); d.setDate(d.getDate()+1); zoey.startDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); saveZoey(); toast('Holding this mix an extra day. 🐕'); renderAll(); }
 function toggleZoeyFeed(){ const k='zoey-feed-'+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
@@ -843,12 +849,12 @@ let foodSub = "list";
 function switchTab(t) {
   currentTab=t;
   setTabBg(t);
-  ["today","wellness","finance","timeline","rooms","forecast","garden","shopping","grocery","print"].forEach(v=>{
+  ["today","wellness","finance","recipebox","tocook","timeline","rooms","forecast","garden","shopping","grocery","print"].forEach(v=>{
     const el=document.getElementById("view-"+v);
     if(el) { el.style.display=v===t?"block":"none";
       if(v===t){ el.classList.remove("view-animate"); void el.offsetWidth; el.classList.add("view-animate"); } }
   });
-  ["garden","shopping","grocery","print","wellness","finance"].forEach(v=>{
+  ["garden","shopping","grocery","recipebox","tocook","print","wellness","finance"].forEach(v=>{
     const tb=document.getElementById("tab-"+v);
     if(tb) tb.className="tab"+(v===t?" active":"");
   });
@@ -866,7 +872,7 @@ function renderSubtabs(t) {
   if(t==="garden"){ subs=[["watering","💧 Watering"],["harvest","🌾 Harvest"],["care","❤️ Care"]]; cur=gardenSub; fn="switchGardenSub"; }
   else if(t==="shopping"){ subs=[["bluedream","🦐 Blue Dream"],["tall","📏 Tall"],["wide","📐 Wide"],["dry","🏜️ Dry"]]; cur=tankSub; fn="switchTankSub"; }
   else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","🎨 Wishlist"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
-  else if(t==="grocery"){ subs=[["list","🛒 List"],["recipes","🍳 Recipes"],["inventory","🧺 Inventory"]]; cur=foodSub; fn="switchFoodSub"; }
+  else if(t==="grocery"){ subs=[["list","🛒 List"],["inventory","🧺 Inventory"]]; cur=foodSub; fn="switchFoodSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
 }
@@ -1970,8 +1976,7 @@ function recipeListHtml(){
     return out;
   }
   const feat=human.find(r=>r.featured)||human[0];
-  const rest=human.filter(r=>r!==feat);
-  out+=(feat?recipeCard(feat,true):'');
+  const rest=human.filter(r=>r!==feat);   // featured renders in the spotlight at the top of the Recipe Box tab
   if(rest.length) out+=rest.map(r=>recipeCard(r,false)).join('');
   if(dogs.length){
     out+='<div style="display:flex;align-items:center;gap:10px;margin:20px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#E8D2A8">🐕 Zoey\u2019s Kitchen</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
@@ -2072,7 +2077,7 @@ function openRecipe(id, keepScroll){
 function closeRecipe(){ const el=document.getElementById('recipe-page'); if(el) el.style.display='none'; window.scrollTo(0,0); }
 function renderGrocery() {
   const el = document.getElementById("view-grocery");
-  if(foodSub==="recipes"){ el.innerHTML=recipesHtml(); return; }
+  if(foodSub==="recipes") foodSub="list"; // recipes moved to their own 📖 tab
   if(foodSub==="inventory"){ el.innerHTML=inventoryHtml(); return; }
   const green = '#4AD490', teal = '#00e5cc';
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -2354,33 +2359,22 @@ function renderPrint() {
     </div>
     <div style="background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(129,140,248,.08));border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:13px 15px;margin-bottom:12px">
       <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#22D3EE;font-family:'Lora',serif;margin-bottom:4px">🟢 Active Print</div>
-      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">🌱 Desktop Hydroponics</div>
-      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">On the bed now. ✅ Done: 2× Droplet Watering Can.</div>
+      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">🌱 Desktop Hydroponics — pots</div>
+      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">Pots are on the bed RIGHT NOW. ✅ Done: 2× Droplet Watering Can. Next print: TPU grommets, the moment the TPU lands.</div>
+    </div>
+    <div onclick="toggleFunPrint('tpu_arrived')" style="background:#0d0d1a;border:1px solid rgba(34,211,238,.25);border-radius:12px;padding:13px 15px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:11px">
+      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['tpu_arrived']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['tpu_arrived']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['tpu_arrived']?'✓':''}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['tpu_arrived']?'#4AD490':'var(--text)'};${funPrints['tpu_arrived']?'text-decoration:line-through':''}">🧵 TPU filament arrives Jun 7</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Tap when it lands. Flexible filament for the grommets — dry it first if the bag seal looks iffy.</div></div>
+    </div>
+    <div onclick="toggleFunPrint('print_grommets')" style="background:#0d0d1a;border:1px solid rgba(34,211,238,.25);border-radius:12px;padding:13px 15px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:11px">
+      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['print_grommets']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['print_grommets']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['print_grommets']?'✓':''}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['print_grommets']?'#4AD490':'var(--text)'};${funPrints['print_grommets']?'text-decoration:line-through':''}">⭕ Print TPU grommets — desktop hydroponics</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Queued right after the pots finish. TPU likes it slow and cool — 25–30 mm/s.</div></div>
     </div>
     <div onclick="toggleFunPrint('buy_klipper_kit')" style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:13px 15px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:11px">
       <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['buy_klipper_kit']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['buy_klipper_kit']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['buy_klipper_kit']?'✓':''}</div>
       <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['buy_klipper_kit']?'#4AD490':'var(--text)'};${funPrints['buy_klipper_kit']?'text-decoration:line-through':''}">🫐 Buy a Blueberry Klipper kit</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Klipper for the SV06 Plus — faster, smarter prints. Tap when ordered.</div></div>
     </div>
-    <div style="background:linear-gradient(135deg,rgba(245,184,48,.10),rgba(245,184,48,.03));border:1px solid rgba(245,184,48,.35);border-radius:12px;padding:12px 14px 4px;margin-bottom:14px">
-      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;margin-bottom:4px">✨ Just for fun · zero productivity allowed</div>
-      <div onclick="toggleFunPrint('fun_bug_daypass')" style="display:flex;gap:11px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">
-        <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints['fun_bug_daypass']?'#F5B830':'rgba(255,255,255,.2)'};background:${funPrints['fun_bug_daypass']?'#F5B830':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1a1208;font-weight:900;margin-top:1px">${funPrints['fun_bug_daypass']?'✓':''}</div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:${funPrints['fun_bug_daypass']?'#F5B830':'var(--text)'};${funPrints['fun_bug_daypass']?'text-decoration:line-through;opacity:.7':''}">🦗 Catch a backyard bug — day pass to the bioactive resort</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.4">One lucky guest. The isopods handle housekeeping; checkout is whenever.</div></div>
-      </div>
-      <div onclick="toggleFunPrint('fun_strawberry_rite')" style="display:flex;gap:11px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">
-        <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints['fun_strawberry_rite']?'#F5B830':'rgba(255,255,255,.2)'};background:${funPrints['fun_strawberry_rite']?'#F5B830':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1a1208;font-weight:900;margin-top:1px">${funPrints['fun_strawberry_rite']?'✓':''}</div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:${funPrints['fun_strawberry_rite']?'#F5B830':'var(--text)'};${funPrints['fun_strawberry_rite']?'text-decoration:line-through;opacity:.7':''}">🍓 Eat the first ripe strawberry standing in the garden</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.4">No plate, no witnesses. This is tradition now.</div></div>
-      </div>
-      <div onclick="toggleFunPrint('fun_shrimp_name')" style="display:flex;gap:11px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">
-        <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints['fun_shrimp_name']?'#F5B830':'rgba(255,255,255,.2)'};background:${funPrints['fun_shrimp_name']?'#F5B830':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1a1208;font-weight:900;margin-top:1px">${funPrints['fun_shrimp_name']?'✓':''}</div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:${funPrints['fun_shrimp_name']?'#F5B830':'var(--text)'};${funPrints['fun_shrimp_name']?'text-decoration:line-through;opacity:.7':''}">🐚 Name the boldest Blue Dream shrimp</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.4">It keeps making eye contact. It has earned a name and a backstory.</div></div>
-      </div>
-      <div onclick="toggleFunPrint('fun_plant_gnome')" style="display:flex;gap:11px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer">
-        <div style="width:20px;height:20px;border-radius:6px;border:2px solid ${funPrints['fun_plant_gnome']?'#F5B830':'rgba(255,255,255,.2)'};background:${funPrints['fun_plant_gnome']?'#F5B830':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1a1208;font-weight:900;margin-top:1px">${funPrints['fun_plant_gnome']?'✓':''}</div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:${funPrints['fun_plant_gnome']?'#F5B830':'var(--text)'};${funPrints['fun_plant_gnome']?'text-decoration:line-through;opacity:.7':''}">🌙 Print something tiny and hide it in a houseplant</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.4">A surprise for future-you watering on a random Tuesday.</div></div>
-      </div>
-    </div>
-    <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#A78BFA;font-family:'Lora',serif;margin-bottom:8px">👑 Top pick</div>
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#A78BFA;font-family:'Lora',serif;margin-bottom:8px">👑 Top pick</div>
     <div style="background:linear-gradient(135deg,rgba(192,132,252,.14),rgba(129,140,248,.06));border:1px solid rgba(192,132,252,.4);border-radius:12px;padding:12px 15px;margin-bottom:12px">
       <div style="display:flex;align-items:center;gap:12px"><div style="font-size:30px">🐉</div><div style="flex:1"><div style="font-size:15px;font-weight:700;color:var(--text)">Cute Flexi Dragon</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">cinderwing3d · Printables / MakerWorld — print-in-place, no supports, killer in blue.</div></div></div>
     </div>
@@ -2580,7 +2574,7 @@ function renderFinance(){
     +'<div style="font-family:\'Playfair Display\',serif;font-size:38px;font-weight:800;color:'+(pos?G:R)+';line-height:1">'+(pos?'+':'')+finFmt(gap,true)+'<span style="font-size:14px;color:var(--text2);font-weight:400;font-family:\'Lora\',serif"> / month</span></div>'
     +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;margin-top:8px">In ~'+finFmt(FINANCE.incomeMonthly,true)+' · committed out ~'+finFmt(committed,true)+(cancelGot>0?' <span style="color:'+G+'">(already trimmed '+finFmt(cancelGot,true)+' ✂️)</span>':'')+'</div>'
     +(pos?'<div style="font-size:12.5px;color:'+G+';font-family:\'Lora\',serif;font-style:italic;margin-top:8px">You\'re above water — every verified cancellation widens the margin. 🎉</div>'
-        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b><br>✂️ '+finFmt(cancelLeft,true)+'/mo of cancellations left to verify below<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
+        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b>'+(!(fin.cancel||{}).farmersdog?'<br>🐕 Farmer\'s Dog $215/mo — cancel after Zoey\'s Day 12 <b style="color:#4AD490">(the big one)</b>':'')+'<br>✂️ '+finFmt(cancelLeft-((fin.cancel||{}).farmersdog?0:215.05),true)+'/mo of smaller subscriptions left to verify below<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
     +'<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:var(--text)">💰 Next paycheck: <b>'+(left===0?'today! 🎉':pdLabel+' — '+(left===1?'tomorrow':'in '+left+' days'))+'</b> <span style="color:var(--text2)">(~$2,250, every other Thursday)</span></div>'
   +'</div>';
 
@@ -2596,7 +2590,7 @@ function renderFinance(){
       +'<div style="display:flex;align-items:center;gap:12px">'
       +'<div style="font-size:24px;flex-shrink:0">'+a.emoji+'</div>'
       +'<div style="flex:1;min-width:0"><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text)">'+a.name+'</div>'
-      +'<div style="font-size:11px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin-top:2px">'+(a.note||'')+'</div></div>'
+      +'<div style="font-size:11px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin-top:2px">'+(a.note||'')+'</div>'+(a.pending?'<div style="font-size:11px;color:#FBBF24;font-family:\'Lora\',serif;margin-top:3px">⏳ '+a.pending+'</div>':'')+'</div>'
       +(editing?finEditBox('bal',a.id,cur?cur.v:'')
         :'<div onclick="finEditOpen(\'bal\',\''+a.id+'\')" style="text-align:right;cursor:pointer;flex-shrink:0"><div style="font-family:\'Playfair Display\',serif;font-size:19px;font-weight:800;color:'+Y+'">'+finFmt(cur.v)+'</div>'
         +'<div style="font-size:10px;color:var(--text2)">as of '+(cur.d?finNiceDate(cur.d):'?')+' · tap ✏️</div></div>')
@@ -2662,7 +2656,8 @@ function renderFinance(){
   out+='<div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.12);border-radius:var(--rad);padding:12px 16px;margin-bottom:14px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.7">💳 Cards together: <b style="color:var(--text)">'+finFmt(cardCur,true)+'</b> at ~29%. An extra $300/mo on the snowball = debt-free in ~15 months and ~$1,570 of interest saved vs minimums. Family loan is 0% — cards first, but keep family in the loop. Tap any balance to update it after a payment — the bars move.</div>';
 
   // ── 6 · CANCEL LIST ──
-  out+='<div class="section-label">✂️ Cancel list — '+finFmt(cancelGot,true)+' of ~$157/mo verified gone</div>';
+  const cancelAll=FINANCE.cancels.reduce(function(s,c){return s+c.amt;},0);
+  out+='<div class="section-label">✂️ Cancel list — '+finFmt(cancelGot,true)+' of ~'+finFmt(cancelAll,true)+'/mo verified gone</div>';
   out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:6px 14px;margin-bottom:14px">';
   FINANCE.cancels.forEach(function(c){
     const v=!!(fin.cancel||{})[c.id];
@@ -2709,11 +2704,64 @@ function renderFinance(){
   el.innerHTML=out;
 }
 
+
+// ═══ 📖 RECIPE BOX TAB + 🍳 TO COOK QUEUE ═══════════════════════════════════
+function renderRecipeBox(){ const el=document.getElementById('view-recipebox'); if(!el) return;
+  const all=(typeof RECIPES!=='undefined')?RECIPES:[];
+  const feat=all.filter(function(r){return !r.dog;}).find(function(r){return r.featured;})||all.filter(function(r){return !r.dog;})[0];
+  let out='';
+  if(feat) out+='<div class="section-label">⭐ Featured recipe</div>'+recipeCard(feat,true);
+  out+=recipesHtml();
+  el.innerHTML=out;
+}
+const MEAL_META={breakfast:['🥞','Breakfast',0],lunch:['🥗','Lunch',1],dinner:['🍽️','Dinner',2]};
+function cookDayLabel(d){ const t=todayKey(); if(d===t) return 'Today';
+  const dt=new Date(d+'T12:00:00'), now=new Date(t+'T12:00:00');
+  const diff=Math.round((dt-now)/86400000);
+  if(diff===1) return 'Tomorrow'; if(diff===-1) return 'Yesterday';
+  const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return M[dt.getMonth()]+' '+dt.getDate(); }
+function toggleCooked(id){ if(!cookQueue[id]) return; cookQueue[id].done=!cookQueue[id].done; saveCook(); if(cookQueue[id].done){ try{toast('🍳 Cooked — nice work, chef');}catch(e){} } renderToCook(); }
+function removeCook(id){ delete cookQueue[id]; saveCook(); renderToCook(); }
+function addCook(){ const r=document.getElementById('ckRecipe'), d=document.getElementById('ckDay'), m=document.getElementById('ckMeal');
+  if(!r||!r.value||!d||!m) return;
+  cookQueue['ck-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={rid:r.value,day:d.value,meal:m.value,done:false,ts:Date.now()};
+  saveCook(); try{toast('🍳 Planned — it\'s on the To Cook list');}catch(e){} renderToCook(); }
+function renderToCook(){ const el=document.getElementById('view-tocook'); if(!el) return;
+  const all=(typeof RECIPES!=='undefined')?RECIPES:[];
+  const byId=function(id){ return all.find(function(r){return r.id===id;}); };
+  const items=Object.keys(cookQueue).map(function(id){ const x=cookQueue[id]||{}; return {id:id,rid:x.rid,day:x.day,meal:x.meal,done:!!x.done}; }).filter(function(x){return !!byId(x.rid);});
+  items.sort(function(a,b){ return (a.done-b.done) || (a.day<b.day?-1:a.day>b.day?1:0) || ((MEAL_META[a.meal]||[0,0,9])[2]-(MEAL_META[b.meal]||[0,0,9])[2]); });
+  let out='<div class="section-label">🍳 To Cook — the plan</div>';
+  if(!items.length) out+='<div style="background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.15);border-radius:var(--rad);padding:18px;text-align:center;font-size:13px;color:var(--text2);font-family:\'Lora\',serif;margin-bottom:14px">Nothing planned yet — pick a recipe below and give it a day. 🌱</div>';
+  items.forEach(function(x){ const r=byId(x.rid); const mm=MEAL_META[x.meal]||['🍽️',x.meal,9];
+    const isToday=(x.day===todayKey())&&!x.done;
+    out+='<div style="background:'+(isToday?'linear-gradient(135deg,rgba(245,184,48,.1),rgba(255,255,255,.02))':'rgba(255,255,255,.03)')+';border:1px solid '+(isToday?'rgba(245,184,48,.4)':'rgba(255,255,255,.08)')+';border-radius:var(--rad);padding:13px 15px;margin-bottom:10px;display:flex;align-items:center;gap:12px;'+(x.done?'opacity:.55':'')+'">'
+      +'<div onclick="toggleCooked(\''+x.id+'\')" style="width:26px;height:26px;border-radius:50%;border:2px solid '+(x.done?'#10B981':'#F5B830')+';background:'+(x.done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0;cursor:pointer">'+(x.done?'✓':'')+'</div>'
+      +'<div onclick="openRecipe(\''+x.rid+'\')" style="flex:1;min-width:0;cursor:pointer">'
+      +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:'+(x.done?'var(--text3)':'var(--text)')+';'+(x.done?'text-decoration:line-through':'')+'">'+(r.emoji||'🍽️')+' '+r.name+'</div>'
+      +'<div style="font-size:11px;color:var(--text2);margin-top:3px">'+mm[0]+' '+mm[1]+' · '+cookDayLabel(x.day)+(x.done?' · cooked ✓':'')+' · <span style="color:#F5B830">tap for the recipe →</span></div></div>'
+      +'<div onclick="removeCook(\''+x.id+'\')" style="font-size:18px;color:#5a7a99;cursor:pointer;flex-shrink:0;padding:0 2px;line-height:1">×</div></div>';
+  });
+  const opts=all.filter(function(r){return !r.dog;}).slice().sort(function(a,b){return a.name<b.name?-1:1;}).map(function(r){return '<option value="'+r.id+'">'+(r.emoji||'🍽️')+' '+r.name+'</option>';}).join('');
+  let dayOpts=''; for(let i=0;i<7;i++){ const dt=new Date(); dt.setDate(dt.getDate()+i); const k=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'); dayOpts+='<option value="'+k+'">'+(i===0?'Today':(i===1?'Tomorrow':cookDayLabel(k)))+'</option>'; }
+  const selStyle='background:#0a1628;border:1px solid rgba(245,184,48,.3);border-radius:10px;padding:11px 10px;color:var(--text);font-family:\'Lora\',serif;font-size:13.5px;outline:none;margin-bottom:8px';
+  out+='<div class="section-label">➕ Plan a recipe</div>'
+    +'<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:14px 16px;margin-bottom:16px">'
+    +'<select id="ckRecipe" style="width:100%;'+selStyle+'">'+opts+'</select>'
+    +'<div style="display:flex;gap:8px"><select id="ckDay" style="flex:1;min-width:0;'+selStyle+'">'+dayOpts+'</select><select id="ckMeal" style="flex:1;min-width:0;'+selStyle+'"><option value="breakfast">🥞 Breakfast</option><option value="lunch">🥗 Lunch</option><option value="dinner" selected>🍽️ Dinner</option></select></div>'
+    +'<div onclick="addCook()" style="text-align:center;background:rgba(245,184,48,.14);border:1px solid rgba(245,184,48,.5);border-radius:10px;padding:11px;color:#F5B830;font-weight:700;font-size:14px;cursor:pointer">+ Add to the plan</div>'
+    +'<div style="font-size:10.5px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic;margin-top:8px;text-align:center">Pick from the 📖 Recipe Box · tap any planned card to open its recipe</div></div>';
+  el.innerHTML=out;
+}
+
 function renderAll() {
   updateHeader();
   if(currentTab==="today")    renderToday();
   if(currentTab==="wellness") renderWellness();
   if(currentTab==="finance")  renderFinance();
+  if(currentTab==="recipebox") renderRecipeBox();
+  if(currentTab==="tocook")   renderToCook();
   if(currentTab==="timeline") renderTimeline();
   if(currentTab==="rooms")    renderRooms();
   if(currentTab==="garden")   renderGarden();
@@ -2759,6 +2807,7 @@ ST.on('value', snap => {
   litfulo     = d.litfulo     || {};
   zoey        = d.zoey        || {};
   fin         = d.fin         || {};
+  cookQueue   = d.cookQueue   || {};
   // one-time idempotent migration: grocery is FOOD-ONLY (Jun 6 2026) — strip non-food strays
   try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false, ci=false;
     for(const k in grocCustom){ if(NF.test(String(grocCustom[k]))){ delete grocCustom[k]; ch=true; } }
@@ -2803,6 +2852,19 @@ ST.on('value', snap => {
     return;
   }
 
+  // One-time: Jun 6 2026 — finance truth-up (statement screenshot) + To Cook seeds
+  if (!flags['jun6-batch-v1']) {
+    fin.bal=fin.bal||{}; fin.bal.checking=Object.assign({},fin.bal.checking,{'2026-06-05':323.04});
+    fin.bills=Object.assign({},fin.bills,{'rent-2026-06':true,'studentloan-2026-06':true,'xcel-2026-06':true});
+    fin.debt=fin.debt||{}; fin.debt.famloan=Object.assign({},fin.debt.famloan,{'2026-06-06':10000});
+    cookQueue=Object.assign({},cookQueue,{
+      'ck-seed-lunch':{rid:'r_box_breakfast_quesadilla',day:'2026-06-06',meal:'lunch',done:false,ts:Date.now()},
+      'ck-seed-dinner':{rid:'r_box_roasted_garlic_parmesan_zucchini_squash_',day:'2026-06-06',meal:'dinner',done:false,ts:Date.now()}
+    });
+    ST.update({ fin: fin, cookQueue: cookQueue, 'flags/jun6-batch-v1': 'done' });
+    return;
+  }
+
   clearTimeout(fbTimeout);
   showApp();
 });
@@ -2813,7 +2875,7 @@ ST.on('value', () => {}, err => {
   showApp();
 });
 
-const HEADER_NIGHT = "https://commons.wikimedia.org/wiki/Special:FilePath/Milky_Way_Over_Rocky_Mountain_National_Park_(26367177284).jpg?width=1600";
+const HEADER_NIGHT = "images/bg_night_20260606.jpg"; // Milky Way over RMNP — Public Domain (NPS / Jeremy M. White)
 
 const TAB_BG = {
   today:"https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280",
@@ -2825,17 +2887,24 @@ const TAB_BG = {
   rooms:"https://commons.wikimedia.org/wiki/Special:FilePath/IKEA_store%2C_Interior_design%2C_Living_room%2C_Rostov-on-Don%2C_Russia.jpg?width=1280",
   timeline:"https://commons.wikimedia.org/wiki/Special:FilePath/Aurora_Borealis_%28Northern_Light%29_over_Svolv%C3%A6r%2C_Lofoten%2C_Norway2.jpg?width=1280",
 }
+// 🏔️ Time-of-day MOUNTAIN backgrounds — local, license-verified Wikimedia Commons:
+//   dawn:    Maroon Bells at sunrise, Aspen CO — Lorie Shaull, CC BY-SA 2.0
+//   morning: Bear Lake reflection, RMNP — G. Lamar, CC BY 2.0
+//   noon:    Longs Peak with lenticular clouds, RMNP — Anne Dirkse, CC BY-SA 4.0
+//   dusk:    Sunset in Palmer Park, Colorado Springs — Mark Byzewski, CC BY 4.0
+//   night:   Milky Way over RMNP — NPS / Jeremy M. White, Public Domain
 const TODAY_BG = {
-  morning:"https://commons.wikimedia.org/wiki/Special:FilePath/Conical_shadow_of_Mount_Nam_Xay_over_green_trees_at_golden_hour%2C_South-West_view_from_the_top%2C_Vang_Vieng%2C_Laos.jpg?width=1280",
-  midday:"https://commons.wikimedia.org/wiki/Special:FilePath/Looking_south_on_a_sunny_day_at_Stocker_Fields.jpg?width=1280",
-  evening:"https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280",
-  night:"https://commons.wikimedia.org/wiki/Special:FilePath/ALMA_and_a_Starry_Night.jpg?width=1280"
+  dawn:   "images/bg_dawn_20260606.jpg",
+  morning:"images/bg_morning_20260606.jpg",
+  noon:   "images/bg_noon_20260606.jpg",
+  dusk:   "images/bg_dusk_20260606.jpg",
+  night:  "images/bg_night_20260606.jpg"
 };
-function todaySeg(){ const h=new Date().getHours(); return h<11?"morning":h<17?"midday":h<20?"evening":"night"; }
+function todaySeg(){ const h=new Date().getHours(); return h<5?"night":h<8?"dawn":h<11?"morning":h<16?"noon":h<20?"dusk":"night"; }
 function setTabBg(t){
   let u, key;
   if(t==="today"){ const seg=todaySeg(); u=TODAY_BG[seg]; key="today-"+seg; }
-  else { u=TAB_BG[t]||TODAY_BG.evening; key=t; }
+  else { u=TAB_BG[t]||TODAY_BG.dusk; key=t; }
   if(document.body.dataset.tabbg===key) return;
   document.body.dataset.tabbg=key;
   document.body.style.backgroundImage="linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url('"+u+"')";

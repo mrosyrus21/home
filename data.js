@@ -480,13 +480,13 @@ const FINANCE = {
   outflowMonthly: 4827,
   paydayAnchor: "2026-06-04",   // biweekly Thursdays from here
   accounts: [
-    { id:"checking", name:"Capital One 360 Checking", emoji:"🏦", start:1901.08, asOf:"2026-04-30", note:"routinely dips near $0 before payday" },
+    { id:"checking", name:"Capital One 360 Checking", emoji:"🏦", start:1901.08, asOf:"2026-04-30", note:"routinely dips near $0 before payday", pending:"$215.05 Farmer's Dog charge pending → effectively ~$108" },
     { id:"savings",  name:"Capital One 360 Savings",  emoji:"🌱", start:0.16,    asOf:"2026-04-30", note:"this is where the $500 buffer grows" }
   ],
   bills: [
-    { id:"rent",        due:"1st",    sort:1,  label:"🏠 Rent — INCO (Zelle)",       amt:2175.00, note:"grace to the 4th" },
+    { id:"rent",        due:"1st",    sort:1,  label:"🏠 Rent — INCO (Zelle)",       amt:2175.00, note:"grace to the 4th · June: paid Jun 5, 1 day late — late fee TBD ⚠️" },
     { id:"progressive", due:"~2nd",   sort:2,  label:"🚗 Progressive auto insurance", amt:466.82,  note:"recently lowered — new amount TBD" },
-    { id:"xcel",        due:"~6th",   sort:6,  label:"⚡ Xcel Energy",                amt:253,     note:"varies $219–288" },
+    { id:"xcel",        due:"~6th",   sort:6,  label:"⚡ Xcel Energy",                amt:253,     note:"varies $219–288 · June: $133.16 ✓" },
     { id:"water",       due:"~6th",   sort:6,  label:"💧 Denver Water",               amt:40 },
     { id:"studentloan", due:"~6th",   sort:6,  label:"🎓 Student loan — Dept of Ed",  amt:190.54,  note:"ask about income-driven repayment" },
     { id:"smartstart1", due:"7th",    sort:7,  label:"🚙 Smart Start (1 of 2)",       amt:58.69,   note:"temporary — ends within ~a year" },
@@ -507,13 +507,14 @@ const FINANCE = {
     { id:"c4615",    label:"Credit One •4615",          start:1157.83, min:58,     apr:"~30%",   card:true,  note:"over limit — close AFTER payoff" },
     { id:"c1320",    label:"Cap One Quicksilver •1320", start:1522.50, min:130,    apr:"28.99%", card:true,  note:"autopay now on (had a $29 past-due fee)" },
     { id:"merrick",  label:"Merrick Bank •4735",        start:2236.74, min:87,     apr:"~30%",   card:true,  note:"$4/mo fee" },
-    { id:"famloan",  label:"Family loan",               start:9300,    min:400,    apr:"0%",     card:false, note:"0% — cards first, but never go quiet on family" },
+    { id:"famloan",  label:"Family loan",               start:10000,   min:400,    apr:"0%",     card:false, note:"0% — includes +$700 Zelle borrowed Jun 6 for rent; cards first, but never go quiet on family" },
     { id:"nissanL",  label:"Nissan auto loan",          start:null,    min:200,    apr:"?",      card:false, note:"payoff unknown" },
     { id:"lendmarkL",label:"Lendmark Financial",        start:null,    min:177.71, apr:"?",      card:false, note:"balance + APR unknown" },
     { id:"studentL", label:"Student loans",             start:null,    min:190.54, apr:"?",      card:false, note:"total + servicer unknown" },
     { id:"irsL",     label:"IRS payment plan",          start:null,    min:50,     apr:"?",      card:false, note:"total owed unknown" }
   ],
   cancels: [  // pending cancellations — check one off ONLY once it is verified gone on a statement
+    { id:"farmersdog", label:"The Farmer's Dog", amt:215.05, note:"pending Zoey's transition (started) — cancel after Day 12 🐕" },
     { id:"dupclaude", label:"Duplicate Claude charge", amt:21.03, note:"billed 2× in May — one should remain" },
     { id:"chatgpt",   label:"ChatGPT",                 amt:20.00 },
     { id:"gamepass",  label:"Xbox Game Pass",          amt:31.11 },
@@ -527,6 +528,7 @@ const FINANCE = {
   cancelPending: "Also: verify Amazon Fresh (no charge seen Mar–May) · Amazon Prime free trial bills ~Jul 5 — cancel by ~Jul 2.",
   keeping: "Keeping on purpose: Spotify $14.18 · Claude.ai $21.03 (single) · My Healing Space.",
   todosSeed: [
+    { id:"ft_latefee",  label:"📞 Call property management about the rent late fee — retry after the weekend (no answer Fri)" },
     { id:"ft_xfinity",  label:"📞 Xfinity retention call — target $70–90 (leverage: AT&T Internet Air is $47)" },
     { id:"ft_family",   label:"👨‍👩‍👧 Talk to family — drop $400/mo to ~$200 while stabilizing" },
     { id:"ft_verify",   label:"🧾 Verify canceled subs actually stopped (June statements)" },
@@ -537,6 +539,7 @@ const FINANCE = {
     { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
   ],
   advice: [
+    { t:"The Farmer's Dog is the big domino", b:"$215.05 a month. Zoey's 12-day homemade switch is already underway — the day she's fully transitioned, cancelling it flips your gap most of the way to positive all by itself. Staying on her transition IS a money move." },
     { t:"Rent first, every first paycheck", b:"Rent is $2,175 — almost a whole paycheck. The day a check lands, set the rent money aside before anything else touches it. The rest of the month gets simpler instantly." },
     { t:"The $500 buffer comes before extra debt payments", b:"With the cards maxed, any surprise becomes new debt. Even $50 per paycheck builds it in about 5 months — and every dollar in the buffer is a surprise that never reaches a card." },
     { t:"Smallest card first — •6605 is almost gone", b:"It is only about $490. Clear it, then roll its $25 minimum onto the next card. The snowball works because finishing things feels good — use that." },
