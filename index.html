@@ -154,10 +154,10 @@ body::after{
 .tl-pill-row{display:flex;justify-content:flex-end;padding:6px 18px 0;position:relative;z-index:1}
 
 /* Tabs */
-.tabs{display:flex;flex-wrap:wrap;margin-top:8px;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.04)}
+.tabs{display:flex;margin-top:8px;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.04)}
 .tabs-secondary{display:flex;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.03);background:rgba(0,0,0,.12)}
 .tab{
-  flex:1 1 22%;background:none;border:none;cursor:pointer;
+  flex:1;background:none;border:none;cursor:pointer;
   padding:10px 0 9px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
   font-family:'Lora',serif;border-bottom:2px solid transparent;
   transition:all .2s;color:var(--text2);position:relative;
@@ -606,8 +606,6 @@ body::after{
     <button class="tab" onclick="switchTab('garden')" id="tab-garden">🌿 Plants</button>
     <button class="tab" onclick="switchTab('shopping')" id="tab-shopping">🦐 Tank</button>
     <button class="tab" onclick="switchTab('grocery')" id="tab-grocery">🍽️ Food</button>
-    <button class="tab" onclick="switchTab('recipebox')" id="tab-recipebox">📖 Recipes</button>
-    <button class="tab" onclick="switchTab('tocook')" id="tab-tocook">🍳 To Cook</button>
     <button class="tab" onclick="switchTab('print')" id="tab-print">🧊 Print</button>
     <button class="tab" onclick="switchTab('wellness')" id="tab-wellness">💊 Health</button>
     <button class="tab" onclick="switchTab('finance')" id="tab-finance">💰 Finance</button>
@@ -624,13 +622,11 @@ body::after{
   <div id="view-grocery" style="display:none"></div>
   <div id="view-wellness" style="display:none"></div>
   <div id="view-finance" style="display:none"></div>
-  <div id="view-recipebox" style="display:none"></div>
-  <div id="view-tocook" style="display:none"></div>
   <div id="view-print" style="display:none"></div>
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606113026"></script>
+<script src="./data.js?v=20260606114517"></script>
 <script src="./recipes.js?v=20260606113026"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -642,7 +638,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6 · 11:30 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 6 · 11:45 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -673,7 +669,8 @@ let painLog = {};
 let litfulo = {};
 let zoey = {};
 let fin = {};
-let cookQueue = {};  // 🍳 planned recipes: {rid,day,meal,done}   // 💰 finance state: bal/debt history, bills paid, cancels verified, to-dos
+let cookQueue = {};  // 🍳 planned recipes: {rid,day,meal,done}
+let wishCustom = {}; // 💎 big-ticket wishlist: {t,done}   // 💰 finance state: bal/debt history, bills paid, cancels verified, to-dos
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -703,6 +700,10 @@ function saveLit(){ ST.child('litfulo').set(litfulo); }
 function saveZoey(){ ST.child('zoey').set(zoey); }
 function saveFin(){ ST.child('fin').set(fin); }
 function saveCook(){ ST.child('cookQueue').set(cookQueue); }
+function saveWish(){ ST.child('wishCustom').set(wishCustom); }
+function addWish(){ const el=document.getElementById('wishInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; wishCustom['w-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={t:v,done:false}; el.value=''; saveWish(); renderPrint(); }
+function toggleWish(id){ if(!wishCustom[id]) return; wishCustom[id].done=!wishCustom[id].done; saveWish(); renderPrint(); }
+function removeWish(id){ delete wishCustom[id]; saveWish(); renderPrint(); }
 function zoeyStart(){ zoey={startDate:todayKey()}; saveZoey(); laundry['zoey-feed-'+todayKey()]=true; saveLaundry(); renderAll(); }
 function zoeyHold(){ if(!zoey.startDate) return; const d=new Date(zoey.startDate+'T12:00:00'); d.setDate(d.getDate()+1); zoey.startDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); saveZoey(); toast('Holding this mix an extra day. 🐕'); renderAll(); }
 function toggleZoeyFeed(){ const k='zoey-feed-'+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
@@ -849,12 +850,12 @@ let foodSub = "list";
 function switchTab(t) {
   currentTab=t;
   setTabBg(t);
-  ["today","wellness","finance","recipebox","tocook","timeline","rooms","forecast","garden","shopping","grocery","print"].forEach(v=>{
+  ["today","wellness","finance","timeline","rooms","forecast","garden","shopping","grocery","print"].forEach(v=>{
     const el=document.getElementById("view-"+v);
     if(el) { el.style.display=v===t?"block":"none";
       if(v===t){ el.classList.remove("view-animate"); void el.offsetWidth; el.classList.add("view-animate"); } }
   });
-  ["garden","shopping","grocery","recipebox","tocook","print","wellness","finance"].forEach(v=>{
+  ["garden","shopping","grocery","print","wellness","finance"].forEach(v=>{
     const tb=document.getElementById("tab-"+v);
     if(tb) tb.className="tab"+(v===t?" active":"");
   });
@@ -871,8 +872,8 @@ function renderSubtabs(t) {
   let subs=null, cur=null, fn=null;
   if(t==="garden"){ subs=[["watering","💧 Watering"],["harvest","🌾 Harvest"],["care","❤️ Care"]]; cur=gardenSub; fn="switchGardenSub"; }
   else if(t==="shopping"){ subs=[["bluedream","🦐 Blue Dream"],["tall","📏 Tall"],["wide","📐 Wide"],["dry","🏜️ Dry"]]; cur=tankSub; fn="switchTankSub"; }
-  else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","🎨 Wishlist"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
-  else if(t==="grocery"){ subs=[["list","🛒 List"],["inventory","🧺 Inventory"]]; cur=foodSub; fn="switchFoodSub"; }
+  else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","💎 Wishlist"],["ideas","💡 Ideas"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
+  else if(t==="grocery"){ subs=[["list","🛒 List"],["inventory","🧺 Inventory"],["recipebox","📖 Recipes"],["tocook","🍳 To Cook"]]; cur=foodSub; fn="switchFoodSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
 }
@@ -2077,7 +2078,9 @@ function openRecipe(id, keepScroll){
 function closeRecipe(){ const el=document.getElementById('recipe-page'); if(el) el.style.display='none'; window.scrollTo(0,0); }
 function renderGrocery() {
   const el = document.getElementById("view-grocery");
-  if(foodSub==="recipes") foodSub="list"; // recipes moved to their own 📖 tab
+  if(foodSub==="recipes") foodSub="recipebox"; // old sub-tab id self-heals
+  if(foodSub==="recipebox"){ renderRecipeBox(); return; }
+  if(foodSub==="tocook"){ renderToCook(); return; }
   if(foodSub==="inventory"){ el.innerHTML=inventoryHtml(); return; }
   const green = '#4AD490', teal = '#00e5cc';
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -2249,7 +2252,7 @@ function renderPrint() {
     </div>`; };
   const _wish = `
     <div style="text-align:center;margin-bottom:14px;padding-top:4px">
-      <div style="font-size:9px;letter-spacing:.25em;color:#c084fc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🎨 Print Something Fun · Sovol SV06 Plus</div>
+      <div style="font-size:9px;letter-spacing:.25em;color:#c084fc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">💡 Ideas — Print Something Fun · Sovol SV06 Plus</div>
       <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#c084fc,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">Fun Print Ideas</div>
       <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">${PRINT_IDEAS.length} ideas across five vibes · ${ideasDone} printed so far</div>
     </div>
@@ -2409,7 +2412,26 @@ function renderPrint() {
     <div style="font-size:11px;color:var(--text3);font-family:'Lora',serif;font-style:italic;text-align:center;padding:4px 0 8px">Get the right filament sorted first, then queue these up.</div>
   
 `;
-  el.innerHTML = printSub==="wishlist"?_wish:(printSub==="upgrades"?_upg:_todo);
+  const wIds=Object.keys(wishCustom);
+  const wEsc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const wRow=id=>{ const w=wishCustom[id]||{}; const on=!!w.done; return `<div style="display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)">
+    <div onclick="toggleWish('${id}')" style="width:22px;height:22px;border-radius:6px;border:2px solid ${on?'#4AD490':'rgba(255,255,255,.3)'};background:${on?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0;cursor:pointer">${on?'✓':''}</div>
+    <div onclick="toggleWish('${id}')" style="flex:1;font-size:13.5px;color:${on?'var(--text3)':'var(--text)'};font-family:'Lora',serif;${on?'text-decoration:line-through;':''}cursor:pointer">${wEsc(w.t)}</div>
+    <div onclick="removeWish('${id}')" style="font-size:17px;color:#5a7a99;cursor:pointer;padding:0 2px;line-height:1">×</div></div>`; };
+  const _wishlist = `
+    <div style="text-align:center;margin-bottom:14px;padding-top:4px">
+      <div style="font-size:9px;letter-spacing:.25em;color:#F5B830;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">💎 Big-Ticket Only</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#F5B830,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">Wishlist</div>
+      <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">Expensive wants only — the everyday print ideas live in 💡 Ideas now</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input id="wishInput" type="text" placeholder="Add a big-ticket want…" onkeydown="if(event.key==='Enter')addWish()" style="flex:1;background:#0d0d1a;border:1px solid rgba(245,184,48,.3);border-radius:10px;padding:10px 13px;color:var(--text);font-family:'Lora',serif;font-size:14px;outline:none">
+      <div onclick="addWish()" style="background:rgba(245,184,48,.16);border:1px solid #F5B830;border-radius:10px;padding:10px 16px;color:#F5B830;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap">+ Add</div>
+    </div>
+    <div style="background:#0d0d1a;border:1px solid rgba(245,184,48,.18);border-radius:12px;padding:2px 15px 6px;margin-bottom:14px">
+      ${wIds.length?wIds.map(wRow).join(''):`<div style="padding:16px 0;text-align:center;font-size:12.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic">Nothing yet — this is for the big stuff (Klipper kit, a second printer, a resin rig…).</div>`}
+    </div>`;
+  el.innerHTML = printSub==="wishlist"?_wishlist:(printSub==="ideas"?_wish:(printSub==="upgrades"?_upg:_todo));
   // Update fun print progress bar
   const fpDone = PRINT_IDEAS.filter(p => funPrints[p.id]).length;
   const fpEl = document.getElementById('fpPct'); if(fpEl) fpEl.textContent = fpDone+'/'+PRINT_IDEAS.length;
@@ -2636,13 +2658,13 @@ function renderFinance(){
     const ser=finSeries('debt',d.id);
     const base=(d.start!=null)?d.start:(ser.length?ser[0].v:null);
     const cur=ser.length?ser[ser.length-1]:((d.start!=null)?{d:null,v:d.start}:null);
-    const paidOff=!!(cur&&cur.v<=0);
+    const paidOff=!!(cur&&cur.v<=0)&&!d.keepZero;
     const isTarget=(!target)&&d.card&&cur&&cur.v>0; if(isTarget) target=d.id;
     const pct=(cur&&base)?Math.max(0,Math.min(100,Math.round((base-cur.v)/base*100))):0;
     const editing=finEdit==='debt:'+d.id;
     const col=paidOff?G:(isTarget?'#FB923C':Y);
     out+='<div style="background:'+(isTarget?'linear-gradient(135deg,rgba(251,146,60,.12),rgba(255,255,255,.02))':'rgba(255,255,255,.03)')+';border:1px solid '+(isTarget?'rgba(251,146,60,.45)':'rgba(255,255,255,.08)')+';border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">'
-      +(isTarget?'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FB923C;font-family:\'Lora\',serif;margin-bottom:6px">🎯 Current target — every spare dollar goes here</div>':'')
+      +(isTarget?'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FB923C;font-family:\'Lora\',serif;margin-bottom:6px">🎯 Current target — every spare dollar goes here</div>':'')+(d.keepZero&&cur&&cur.v<=0?'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#4AD490;font-family:\'Lora\',serif;margin-bottom:6px">🟢 Open — keep it at $0</div>':'')
       +'<div style="display:flex;align-items:center;gap:10px">'
       +'<div style="font-size:12px;color:var(--text2);font-weight:700;flex-shrink:0">#'+(i+1)+'</div>'
       +'<div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:'+(paidOff?'var(--text3)':'var(--text)')+';'+(paidOff?'text-decoration:line-through;':'')+'font-family:\'Lora\',serif">'+d.label+(paidOff?' — PAID 🎉':'')+'</div>'
@@ -2706,7 +2728,7 @@ function renderFinance(){
 
 
 // ═══ 📖 RECIPE BOX TAB + 🍳 TO COOK QUEUE ═══════════════════════════════════
-function renderRecipeBox(){ const el=document.getElementById('view-recipebox'); if(!el) return;
+function renderRecipeBox(){ const el=document.getElementById('view-grocery'); if(!el||foodSub!=='recipebox') return;
   const all=(typeof RECIPES!=='undefined')?RECIPES:[];
   const feat=all.filter(function(r){return !r.dog;}).find(function(r){return r.featured;})||all.filter(function(r){return !r.dog;})[0];
   let out='';
@@ -2727,7 +2749,7 @@ function addCook(){ const r=document.getElementById('ckRecipe'), d=document.getE
   if(!r||!r.value||!d||!m) return;
   cookQueue['ck-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={rid:r.value,day:d.value,meal:m.value,done:false,ts:Date.now()};
   saveCook(); try{toast('🍳 Planned — it\'s on the To Cook list');}catch(e){} renderToCook(); }
-function renderToCook(){ const el=document.getElementById('view-tocook'); if(!el) return;
+function renderToCook(){ const el=document.getElementById('view-grocery'); if(!el||foodSub!=='tocook') return;
   const all=(typeof RECIPES!=='undefined')?RECIPES:[];
   const byId=function(id){ return all.find(function(r){return r.id===id;}); };
   const items=Object.keys(cookQueue).map(function(id){ const x=cookQueue[id]||{}; return {id:id,rid:x.rid,day:x.day,meal:x.meal,done:!!x.done}; }).filter(function(x){return !!byId(x.rid);});
@@ -2760,8 +2782,6 @@ function renderAll() {
   if(currentTab==="today")    renderToday();
   if(currentTab==="wellness") renderWellness();
   if(currentTab==="finance")  renderFinance();
-  if(currentTab==="recipebox") renderRecipeBox();
-  if(currentTab==="tocook")   renderToCook();
   if(currentTab==="timeline") renderTimeline();
   if(currentTab==="rooms")    renderRooms();
   if(currentTab==="garden")   renderGarden();
@@ -2808,6 +2828,7 @@ ST.on('value', snap => {
   zoey        = d.zoey        || {};
   fin         = d.fin         || {};
   cookQueue   = d.cookQueue   || {};
+  wishCustom  = d.wishCustom  || {};
   // one-time idempotent migration: grocery is FOOD-ONLY (Jun 6 2026) — strip non-food strays
   try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false, ci=false;
     for(const k in grocCustom){ if(NF.test(String(grocCustom[k]))){ delete grocCustom[k]; ch=true; } }
@@ -2862,6 +2883,13 @@ ST.on('value', snap => {
       'ck-seed-dinner':{rid:'r_box_roasted_garlic_parmesan_zucchini_squash_',day:'2026-06-06',meal:'dinner',done:false,ts:Date.now()}
     });
     ST.update({ fin: fin, cookQueue: cookQueue, 'flags/jun6-batch-v1': 'done' });
+    return;
+  }
+
+  // One-time: Jun 6 2026 — new Cap One SAVOR card opened ($500 limit, $0 balance)
+  if (!flags['jun6-savor-v1']) {
+    fin.debt=fin.debt||{}; fin.debt.savor=Object.assign({},fin.debt.savor,{'2026-06-06':0});
+    ST.update({ fin: fin, 'flags/jun6-savor-v1': 'done' });
     return;
   }
 

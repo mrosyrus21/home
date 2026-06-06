@@ -507,6 +507,7 @@ const FINANCE = {
     { id:"c4615",    label:"Credit One •4615",          start:1157.83, min:58,     apr:"~30%",   card:true,  note:"over limit — close AFTER payoff" },
     { id:"c1320",    label:"Cap One Quicksilver •1320", start:1522.50, min:130,    apr:"28.99%", card:true,  note:"autopay now on (had a $29 past-due fee)" },
     { id:"merrick",  label:"Merrick Bank •4735",        start:2236.74, min:87,     apr:"~30%",   card:true,  note:"$4/mo fee" },
+    { id:"savor",    label:"Cap One SAVOR (new)",       start:0,       min:0,      apr:"~30%",   card:true,  keepZero:true, note:"opened Jun 6 — $500 limit; a tool, not spending money" },
     { id:"famloan",  label:"Family loan",               start:10000,   min:400,    apr:"0%",     card:false, note:"0% — includes +$700 Zelle borrowed Jun 6 for rent; cards first, but never go quiet on family" },
     { id:"nissanL",  label:"Nissan auto loan",          start:null,    min:200,    apr:"?",      card:false, note:"payoff unknown" },
     { id:"lendmarkL",label:"Lendmark Financial",        start:null,    min:177.71, apr:"?",      card:false, note:"balance + APR unknown" },
@@ -539,6 +540,7 @@ const FINANCE = {
     { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
   ],
   advice: [
+    { t:"The SAVOR card is a tool, not a balance", b:"Brand-new card, $500 limit, ~30% APR. Used for one small bill and paid in full, it quietly builds credit. Carried, $500 at 30% grows about $12 every month it sits. The win condition is simple — the statement always says $0." },
     { t:"The Farmer's Dog is the big domino", b:"$215.05 a month. Zoey's 12-day homemade switch is already underway — the day she's fully transitioned, cancelling it flips your gap most of the way to positive all by itself. Staying on her transition IS a money move." },
     { t:"Rent first, every first paycheck", b:"Rent is $2,175 — almost a whole paycheck. The day a check lands, set the rent money aside before anything else touches it. The rest of the month gets simpler instantly." },
     { t:"The $500 buffer comes before extra debt payments", b:"With the cards maxed, any surprise becomes new debt. Even $50 per paycheck builds it in about 5 months — and every dollar in the buffer is a surprise that never reaches a card." },
