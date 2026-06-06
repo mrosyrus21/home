@@ -617,7 +617,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606034011"></script>
+<script src="./data.js?v=20260606070549"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -628,7 +628,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 5, 2026 · 9:40 PM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 6, 2026 · 1:05 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -651,7 +651,7 @@ let grocCustom = {};
 let inventory = {};
 let grocPurchased = {};
 let recipeServ = {};
-const GROC_BUILTIN=[{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
+const GROC_BUILTIN=[{id:'groc-alarmclock',label:'⏰ Alarm clock'},{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
 let printCustom = {};
 let taskCustom = {};
 let painLog = {};
@@ -691,7 +691,7 @@ function saveFood(){ try{ ST.update({ inventory: inventory, grocCustom: grocCust
 function saveGroc(){ saveFood(); }
 function addGroc(){ const el=document.getElementById('grocInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; if(!/\p{Extended_Pictographic}/u.test([...v][0]||'')) v=grocEmoji(v)+' '+v; grocCustom['gc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; saveGroc(); renderGrocery(); }
 function removeGroc(id){ const wasCustom=grocCustom[id]!==undefined; if(wasCustom){ delete grocCustom[id]; } else { grocPurchased[id]=true; } const hadShop=!!shopping[id]; if(hadShop) delete shopping[id]; renderGrocery(); try{ if(wasCustom) saveGroc(); else saveGrocPurchased(); if(hadShop) saveShopping(); }catch(e){} }
-function clearGroc(){ ['groc-greenonion','groc-eggs','groc-croissants'].concat(Object.keys(grocCustom)).forEach(id=>{ shopping[id]=false; }); saveShopping(); renderGrocery(); }
+function clearGroc(){ ['groc-alarmclock','groc-greenonion','groc-eggs','groc-croissants'].concat(Object.keys(grocCustom)).forEach(id=>{ shopping[id]=false; }); saveShopping(); renderGrocery(); }
 function saveInv(){ saveFood(); }
 function saveGrocPurchased(){ saveFood(); }
 function toast(msg){ try{ let t=document.getElementById('hg-toast'); if(!t){ t=document.createElement('div'); t.id='hg-toast'; t.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:rgba(18,26,38,.97);color:#EAF2FB;border:1px solid rgba(74,212,144,.5);border-radius:12px;padding:11px 18px;font-family:Lora,serif;font-size:13.5px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.5);opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:84vw;text-align:center'; document.body.appendChild(t); } t.textContent=msg; requestAnimationFrame(function(){ t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)'; }); clearTimeout(window.__toastT); window.__toastT=setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; },1900); }catch(e){} }
@@ -794,7 +794,7 @@ function toggle(id)  { checked[id]=!checked[id]; save(); renderAll(); }
 function toggleLaundry() { const k=todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function waterPlant(id)  { watered[id]=todayKey(); saveW(); renderAll(); }
 
-const NO_PROGRESS=new Set(["proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
+const NO_PROGRESS=new Set(["get_alarm_clock","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -1065,6 +1065,33 @@ function agendaHtml(items){
   });
   return out;
 }
+// ── ONE-TASK-PER-DAY ENGINE (Today rhythm redesign) ──────────────────────────
+// Mon = rest (no house task). Tue–Fri = one EASY task. Sat/Sun = one MEDIUM-to-HARD.
+// Room-by-room toward 100%: kitchen first, then down the list — stay in the first
+// unfinished room. If the day type has no matching level in that room, take the
+// easiest remaining there so progress never stalls. Pure given (dateStr,isDone),
+// so Timeline can project future days with the exact same engine.
+const RHYTHM_ROOM_ORDER=["kitchen","living","bathroom","bedroom","office","garage","backyard"];
+function oneTaskForDate(dateStr,isDone){
+  isDone=isDone||(id=>!!checked[id]);
+  const dow=new Date(dateStr+"T12:00:00").getDay();
+  if(dow===1) return null; // Monday = rest day
+  const wknd=(dow===0||dow===6);
+  const lv={easy:0,moderate:1,hard:2};
+  for(const roomId of RHYTHM_ROOM_ORDER){
+    const rem=roomTaskEntries(roomId).filter(([id])=>!isDone(id)&&!NO_PROGRESS.has(id));
+    if(!rem.length) continue;
+    rem.sort((a,b)=>(lv[a[1].level]??1)-(lv[b[1].level]??1));
+    const pref=wknd?rem.filter(([,t])=>t.level!=="easy"):rem.filter(([,t])=>t.level==="easy");
+    return (pref.length?pref:rem)[0][0];
+  }
+  return null; // whole house is 100%
+}
+function anyHouseTaskLeft(isDone){
+  isDone=isDone||(id=>!!checked[id]);
+  return RHYTHM_ROOM_ORDER.some(roomId=>roomTaskEntries(roomId).some(([id])=>!isDone(id)&&!NO_PROGRESS.has(id)));
+}
+
 function todaysPlan(){
   const order=["kitchen","living","office","bedroom","bathroom","backyard","garage"];
   const lv={easy:0,moderate:1,hard:2};
@@ -1117,14 +1144,31 @@ function dtDateKey(n){ const d=new Date(); d.setDate(d.getDate()-n); return d.ge
 function streakOf(prefix){ let n=0; for(let i=0;i<366;i++){ if(laundry[prefix+dtDateKey(i)]) n++; else if(i===0) continue; else break; } return n; }
 function dtStreak(){ return streakOf("calldt-"); }
 function renderToday() {
-  const el=document.getElementById("view-today"),sched=todaySched(),today=todayKey();
-  const items=[];
-  function hab(order,html,done=false){items.push({order,html,done});}
+  const el=document.getElementById("view-today"), today=todayKey();
+  const dow=new Date().getDay();
+  const RY=(typeof RHYTHM!=="undefined")?RHYTHM:{breakfast:"8:00 AM",lunch:"12:30 PM",dinner:"6:30 PM",dinnerBy:"8:00 PM",windDown:"9:30 PM",reading:"9:30–10:30 PM",lightsOut:"10:30 PM"};
+  let html="";
 
-  // ── CALL DT (pinned top always) ───────────────────────────────────────────────
+  // ── #1 PRIORITY — GET AN ALARM CLOCK (pinned at the very top until checked) ──
+  if(!checked["get_alarm_clock"]){
+    html+=`<div style="background:linear-gradient(135deg,rgba(245,184,48,.16),rgba(245,184,48,.04));border:1px solid rgba(245,184,48,.45);border-left:4px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,184,48,.12)" onclick="toggle('get_alarm_clock')">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,184,48,.5),transparent)"></div>
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#F5B830;margin-bottom:6px;font-family:'Lora',serif">⭐ Priority #1</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="font-size:28px;flex-shrink:0">⏰</div>
+        <div style="flex:1">
+          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#FBE8C0">Get an alarm clock</div>
+          <div style="font-size:12px;color:rgba(245,200,130,.85);font-style:italic;margin-top:3px">It frees your phone to sleep in another room — the key that unlocks the whole wind-down. Also on the grocery list.</div>
+        </div>
+        <div style="width:30px;height:30px;border-radius:50%;border:2px solid #F5B830;background:transparent;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0"></div>
+      </div>
+    </div>`;
+  }
+
+  // ── CALL DT (pinned, every day) ───────────────────────────────────────────────
   const dtDone=!!laundry["calldt-"+today];
   const dtStk=dtStreak();
-  let topHtml=`<div style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.12);position:relative;overflow:hidden;cursor:pointer;" onclick="toggleDT()">
+  html+=`<div style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(220,30,30,.12);position:relative;overflow:hidden;cursor:pointer;" onclick="toggleDT()">
     <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(220,30,30,.5),transparent)"></div>
     <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:6px;font-family:'Lora',serif">🚨 Extreme Priority — Every Day${dtStk>=2?' · 🔥 '+dtStk+'-day streak':''}</div>
     <div style="display:flex;align-items:center;gap:14px">
@@ -1137,228 +1181,109 @@ function renderToday() {
     </div>
   </div>`;
 
+  // ── Weather alerts (only when something genuinely needs attention) ────────────
+  html+=wxAlerts();
 
-
-
-  topHtml += wxAlerts();
-  // ── FIX SMART START (priority, pinned until done) ─────────────────────────────
-  if(!checked["fix_smart_start"]){
-    topHtml+=`<div style="background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.4);border-left:4px solid #F59E0B;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,158,11,.1)" onclick="toggle('fix_smart_start')">
-      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,.5),transparent)"></div>
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#F59E0B;margin-bottom:6px;font-family:'Lora',serif">⚠️ Priority</div>
-      <div style="display:flex;align-items:center;gap:14px">
-        <div style="font-size:28px;flex-shrink:0">🔧</div>
-        <div style="flex:1">
-          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#FCE9C8">Fix Smart Start</div>
-          <div style="font-size:12px;color:rgba(245,200,130,.85);font-style:italic;margin-top:3px">Tap when it is handled.</div>
-        </div>
-        <div style="width:30px;height:30px;border-radius:50%;border:2px solid #F59E0B;background:transparent;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0"></div>
-      </div>
-    </div>`;
-  }
-
-
-  // ── TONIGHT'S PROJECTS (pinned until done) ────────────────────────────────────
-  const NIGHT_PROJECTS=[
-    { id:"proj_greenonion", emoji:"🌿", hex:"#34D399", rgb:"52,211,153",
-      eyebrow:"🌙 Tonight's Project · Regrow",
-      title:"Regrow green onions",
-      tonight:"Stand the white root ends root-down in a glass with about an inch of water on a bright windowsill.",
-      steps:[
-        "Save the white root ends, about 1 to 2 inches long, with the roots still intact.",
-        "Stand them root-down in a glass with about 1 inch of water.",
-        "Put the glass on a bright windowsill — indirect light is fine.",
-        "Change the water every 1 to 2 days.",
-        "New green tops regrow in days — snip what you need and they keep regrowing for weeks.",
-        "Optional: pot them into soil for sturdier, longer-term growth."
-      ]},
-    { id:"proj_romaine", emoji:"🥬", hex:"#4ADE80", rgb:"74,222,128",
-      eyebrow:"🌙 Tonight's Project · Regrow",
-      title:"Regrow a romaine head",
-      tonight:"Cut the base, set it cut-side-up in a shallow water dish, put it on a bright windowsill.",
-      steps:[
-        "Slice the base off the romaine about 1 inch tall and keep the stump.",
-        "Set it cut-side-up in a shallow dish with about half an inch of water, so the base sits submerged.",
-        "Put the dish on a bright windowsill — indirect light is fine.",
-        "Change the water every day to keep it from going rotten.",
-        "New leaves push up from the center in 3 to 5 days.",
-        "After about a week you can optionally pot it into moist soil (bury the base, leaves above the surface) for a longer second harvest.",
-        "Snip baby leaves as they grow. Expect about 2 weeks before it bolts and turns bitter."
-      ]},
+  // ── STILL OPEN — pinned until done, kept compact on purpose ───────────────────
+  const PIN_OPEN=[
+    { id:"fix_smart_start", emoji:"🔧", hex:"#F59E0B", title:"Fix Smart Start", sub:"Tap when it is handled." },
+    { id:"proj_greenonion", emoji:"🌿", hex:"#34D399", title:"Regrow green onions",
+      sub:"Root ends in a glass with an inch of water, bright windowsill.",
+      steps:["Save the white root ends, about 1 to 2 inches long, roots intact.","Stand them root-down in a glass with about 1 inch of water.","Bright windowsill — indirect light is fine.","Change the water every 1 to 2 days.","Snip new green tops as they regrow; they keep going for weeks.","Optional: pot into soil for sturdier growth."] },
+    { id:"proj_romaine", emoji:"🥬", hex:"#4ADE80", title:"Regrow a romaine head",
+      sub:"Base cut-side-up in a shallow water dish, bright windowsill.",
+      steps:["Slice the base off about 1 inch tall and keep the stump.","Set it cut-side-up in a shallow dish with about half an inch of water.","Bright windowsill — indirect light is fine.","Change the water every day.","New leaves push up from the center in 3 to 5 days.","After about a week, optionally pot it into moist soil.","Snip baby leaves as they grow; expect about 2 weeks before it bolts."] },
   ];
-  NIGHT_PROJECTS.forEach(p=>{
-    if(checked[p.id]) return; // pinned until done
-    const open=!!expanded[p.id];
-    const stepsHtml=p.steps.map((s,i)=>`<div style="display:flex;gap:8px;padding:5px 0;font-size:12.5px;color:rgba(232,244,253,.85);font-family:'Lora',serif;line-height:1.5"><span style="color:${p.hex};font-weight:700;flex-shrink:0">${i+1}.</span><span>${s}</span></div>`).join('');
-    topHtml+=`<div style="background:linear-gradient(135deg,rgba(${p.rgb},.14),rgba(${p.rgb},.03));border:1px solid rgba(${p.rgb},.4);border-left:4px solid ${p.hex};border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 0 24px rgba(${p.rgb},.1)">
-      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(${p.rgb},.5),transparent)"></div>
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:${p.hex};margin-bottom:6px;font-family:'Lora',serif">${p.eyebrow}</div>
-      <div style="display:flex;align-items:center;gap:14px;cursor:pointer" onclick="toggle('${p.id}')">
-        <div style="font-size:28px;flex-shrink:0">${p.emoji}</div>
-        <div style="flex:1">
-          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#EAF2FB">${p.title}</div>
-          <div style="font-size:12px;color:rgba(${p.rgb},.95);font-style:italic;margin-top:3px">✅ Tonight: ${p.tonight}</div>
-        </div>
-        <div style="width:30px;height:30px;border-radius:50%;border:2px solid ${p.hex};background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
-      </div>
-      <div onclick="event.stopPropagation();toggleExpand('${p.id}')" style="font-size:11px;margin-top:10px;color:${p.hex};cursor:pointer;font-family:'Lora',serif;font-weight:600">${open?'▲ Hide steps':'▼ Show step-by-step'}</div>
-      ${open?`<div style="margin-top:8px;border-top:1px solid rgba(${p.rgb},.25);padding-top:8px">${stepsHtml}</div>`:''}
-    </div>`;
-  });
-
-  // Freeze watch — active May 18-19
-  if(today>="2026-05-18"&&today<="2026-05-19"){
-    const fzDone=!!checked["freeze_watch_may18"];
-    topHtml+=`<div style="background:linear-gradient(135deg,rgba(96,165,250,.14),rgba(96,165,250,.03));border:1px solid rgba(96,165,250,.4);border-left:4px solid #60A5FA;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(96,165,250,.12)" onclick="toggle('freeze_watch_may18')">
-      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(96,165,250,.5),transparent)"></div>
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#60A5FA;margin-bottom:6px;font-family:'Lora',serif">🧊 Freeze Watch — Until Tue May 19 · 8:00 AM MDT</div>
-      <div style="display:flex;align-items:center;gap:14px">
-        <div style="font-size:28px;flex-shrink:0">${fzDone?"✅":"🥶"}</div>
-        <div style="flex:1">
-          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${fzDone?"var(--text3)":"#BFDBFE"};${fzDone?"text-decoration:line-through":""}">Protect outdoor plants tonight — temps near 32°F</div>
-          <div style="font-size:12px;color:${fzDone?"var(--text3)":"rgba(147,197,253,.7)"};font-style:italic;margin-top:4px">Tomatoes · Strawberries · Jalapeño are vulnerable. Bring pots inside or cover them. Greenhouse should hold but check the flap is closed.</div>
-        </div>
-        <div style="width:30px;height:30px;border-radius:50%;border:2px solid ${fzDone?"#10B981":"#60A5FA"};background:${fzDone?"#10B981":"transparent"};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0;transition:all .25s cubic-bezier(.34,1.56,.64,1);box-shadow:${fzDone?"0 0 10px rgba(16,185,129,.4)":"0 0 8px rgba(96,165,250,.2)"}">${fzDone?"✓":""}</div>
-      </div>
-    </div>`;
-  }
-
-  // ── ALL ITEMS INTO SORTED LIST ────────────────────────────────────────────────
-  // Helper: sort done to top, then by time
-  function doSort(){ items.sort((a,b)=>{ if(a.done&&!b.done) return -1; if(!a.done&&b.done) return 1; return a.order-b.order; }); }
-
-  // Passive strip — no checkbox, no onclick (reminders only)
-  function passive(emoji,label,color,tl,dur,sub){
-    return `<div style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid ${color};border-radius:var(--rad);padding:12px 18px;margin-bottom:10px;opacity:.7">
-      <div style="font-size:20px;flex-shrink:0">${emoji}</div>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap">
-          <div style="font-family:'Playfair Display',serif;font-size:14px;color:var(--text)">${label}</div>
-          ${timePill(tl,dur)}
-        </div>
-        ${sub?`<div class="habit-sub">${sub}</div>`:""}
-      </div>
-    </div>`;
-  }
-
-  // Morning habits
-  if(new Date().getHours()<12) hab(355, passive("🚫","No phone — go outside and stretch under the sun","#6366F1","Morning","15 min","☀️ Touch grass. Breathe air. Be a person. 🌧️ If it's raining, do it anyway and contemplate your decisions in the wet."), false);
-  let d0=!!laundry["morning-bed-"+today];     hab(360, strip("🛏️","Make the bed",           d0,"#A78BFA","toggleMorning('bed')",   "Morning","2 min"),           d0);
-  let dbl=!!laundry["morning-blinds-"+today]; hab(361, strip("☀️","Open blinds — get natural light in",dbl,"#FCD34D","toggleMorning('blinds')","Morning","1 min"), dbl);
-  let d1=!!laundry["morning-water-"+today];   hab(362, strip("💧","Drink 16oz water + take vitamins",d1,"#38BDF8","toggleMorning('water')","Morning","2 min"),d1);
-  let d2=!!laundry["morning-stretch-"+today]; hab(370, strip("🧘","Stretching exercises",    d2,"#FB923C","toggleMorning('stretch')","Morning","15 min"),       d2);
-  let dpu=!!laundry["morning-pushups-"+today]; hab(372, strip("💪","12 pushups",            dpu,"#F87171","toggleMorning('pushups')","Morning","2 min","Right after stretching — knock out a set of 12."), dpu);
-  let d3=!!laundry["morning-walk-"+today];    hab(380, strip("🐕","Morning dog walk / play",   d3,"#4ADE80","toggleMorning('walk')",   "Morning","20–30 min"),      d3);
-  let dz=!!laundry["morning-zoey-"+today];    hab(382, strip("👅","Give Zoey her lick / snuffle mat", dz,"#F472B6","toggleMorning('zoey')",  "Daily","10 min","Enrichment — calms her and burns mental energy"), dz);
-  let dms=!!laundry["morning-shower-"+today]; hab(385, strip("🚿","Morning shower",           dms,"#06B6D4","toggleMorning('shower')","Morning","10 min"),          dms);
-  let d4=!!laundry["teeth-morning-"+today];   hab(390, strip("🪥","Brush teeth — morning",   d4,"#0891B2","toggleTeeth('morning')", "Morning","2 min"),           d4);
-  let d5=!!laundry["meal-breakfast-"+today];  hab(400, strip("🍳","Breakfast",               d5,"#B47C14","toggleMeal('breakfast')","Morning","20 min"),         d5);
-
-  // Garden reminder — single card pointing to Garden tab
-  const waterToday=plantsDueOn(today);
-  const trimToday=plantsTrimDueOn(today);
-  const gardenToday=gardenTasksOn(today);
-  const hasGardenWork=waterToday.length>0||trimToday.length>0||gardenToday.length>0;
-  if(hasGardenWork){
-    const waterAllDone=waterToday.length===0||waterToday.every(p=>watered[p.id]===today);
-    const trimAllDone=trimToday.length===0||trimToday.every(p=>trimmed[p.id]===today);
-    const gardenAllDone=gardenToday.length===0||gardenToday.every(id=>!!checked[id]);
-    const gardenDone=waterAllDone&&trimAllDone&&gardenAllDone;
-    hab(410, strip("🌿","Garden care — head to the Garden tab",gardenDone,"#2DB870","switchTab('garden')","Morning","–"), gardenDone);
-  }
-
-  // Daily life hack / healthy tip
-  const TIPS = [
-    {e:"🥚", tip:"Protein first — eat protein before carbs at every meal to blunt blood sugar spikes and stay fuller longer."},
-    {e:"🧊", tip:"End your shower on cold for 30 seconds — reduces inflammation and sharpens focus better than a second coffee."},
-    {e:"🌞", tip:"Get sunlight in your eyes within 30 minutes of waking — sets your circadian rhythm and improves sleep tonight."},
-    {e:"🫁", tip:"Box breathing: inhale 4s, hold 4s, exhale 4s, hold 4s. Four rounds kills anxiety faster than scrolling ever will."},
-    {e:"🥗", tip:"Add a handful of greens to literally anything — eggs, rice, pasta. You barely taste it and the fiber payoff is huge."},
-    {e:"🚶", tip:"A 10-minute walk after eating blunts blood sugar spikes by up to 30% and aids digestion. Tiny habit, outsized return."},
-    {e:"💤", tip:"Keep your sleep and wake time the same every day — even weekends. Consistency beats sleep duration for energy."},
-    {e:"🧂", tip:"Add a pinch of salt to your morning water. Electrolytes first thing helps your body actually absorb the hydration."},
-    {e:"📵", tip:"No phone for the first 30 minutes after waking — your dopamine baseline stays higher for the whole day."},
-    {e:"🍋", tip:"A glass of water with lemon before coffee primes digestion and gives your liver a gentle head start."},
-    {e:"🏋️", tip:"Two sets of push-ups before breakfast. You don't need a gym — you just need to not talk yourself out of it."},
-    {e:"🧠", tip:"Write down 3 things you need to do today, in order of importance. One list, no apps. Your brain will thank you."},
-    {e:"🍵", tip:"Swap one coffee for green tea — same focus, less crash, and the L-theanine keeps you calm while alert."},
-    {e:"👃", tip:"Breathe through your nose, not your mouth — increases nitric oxide, improves oxygen uptake, reduces cortisol."},
-    {e:"🌿", tip:"Magnesium glycinate before bed — helps muscles relax, improves sleep quality, and most people are deficient."},
-  ];
-  const tipIdx = (new Date(today).getDay() + Math.floor(new Date(today).getDate() / 1)) % TIPS.length;
-  const tip = TIPS[tipIdx];
-  hab(412, passive(tip.e, tip.tip, "#6366F1", "Today's Tip", "–", ""), false);
-
-  // Laundry
-  if(!isMon()){ let dl=!!laundry[today]; hab(425, strip("👕","Laundry — start a load & put away when done",dl,"#8B5CF6","toggleLaundry()","Morning","15 min active","Skips Mondays"), dl); }
-
-  // Midday
-  if(isWeekday()){ let dm=!!laundry["lunch-msg-"+today]; hab(720, strip("💬","Message work — stepping away for lunch",dm,"#22C55E","toggleLunch('msg')","Midday","2 min","Give them a heads up first"), dm); }
-  let dl2=!!laundry["meal-lunch-"+today]; hab(725, strip("🥗","Lunch",dl2,"#B47C14","toggleMeal('lunch')","Midday","30 min",isWeekday()?"Step away from the desk, actually eat":""), dl2);
-
-  // Evening / night
-  if(isMon()){ let dld=!!laundry["evening-league-dinner-"+today]; hab(1060, strip("🎱","Eat dinner before pool league",dld,"#F59E0B","toggleEvening('league-dinner')","Evening","30 min","Don't play on an empty stomach"), dld); }
-  let d6=!!laundry["meal-dinner-"+today]; hab(1080, strip("🍽️","Dinner",d6,"#B47C14","toggleMeal('dinner')","Evening","30 min"), d6);
-  let dse=!!laundry["evening-stop-eating-"+today]; hab(1085, strip("🍽️","Stop eating for the night",dse,"#6366F1","toggleEvening('stop-eating')","Evening","–","Kitchen closes — 2 hrs before bed minimum"), dse);
-  let ddw=!!laundry["evening-dogwalk-"+today]; hab(1090, strip("🐕","Afternoon / evening dog walk + play",ddw,"#4ADE80","toggleEvening('dogwalk')","Afternoon/Eve","20–30 min","Second walk + fetch — wears her out for the night"), ddw);
-  let dti=!!laundry["evening-tidy-"+today]; hab(1200, strip("🧹","Quick tidy",dti,"#4ADE80","toggleEvening('tidy')","Evening","10 min","Reset the space — tomorrow starts clean"), dti);
-  let dbd=!!laundry["evening-journal-"+today]; hab(1240, strip("📓","Brain dump journal",dbd,"#F472B6","toggleEvening('journal')","Night","5 min","Write whatever is in your head — clears it for sleep"), dbd);
-  if(!isWeekday()){ let dvi=!!laundry["evening-vitamins-"+today]; hab(1245, strip("💊","Lay out next week's vitamins",dvi,"#38BDF8","toggleEvening('vitamins')","Night","1 min","Set up the whole week so mornings stay friction-free"), dvi); }
-  let dbs=!!laundry["evening-bedshower-"+today]; hab(1252, strip("🚿","Before bed shower",dbs,"#06B6D4","toggleEvening('bedshower')","Night","10 min"), dbs);
-  let d7=!!laundry["teeth-night-"+today]; hab(1260, strip("🪥","Brush teeth — night",d7,"#0891B2","toggleTeeth('night')","Night","2 min"), d7);
-  if(new Date().getHours()>=16) hab(1270, passive("😴","Bedtime — 11:00 PM","#8B5CF6","Night","–","Consistent sleep time is the single biggest lever for sleep quality"), false);
-  if(new Date().getHours()>=16) hab(1280, passive("🛌","Sleep Position Setup","#8B5CF6","Night","–","For shoulder/arm, wrists, and buttock joint issues — sleep on your back with strategic pillow support.<br><br><strong>BEST — On your back:</strong><br>• Pillow under knees (tilts pelvis, takes pressure off glutes and buttock joint)<br>• Arms at sides, wrists straight — not curled under, not overhead<br>• Pillow that keeps neck level with spine<br><br><strong>ACCEPTABLE — On your side (non-painful side):</strong><br>• Pillow between knees to keep hips stacked<br>• Hug a pillow with top arm so shoulder isn't dragged forward, wrist stays neutral<br>• Never lie on sore shoulder or tuck hand under pillow/head<br><br><strong>AVOID:</strong><br>• Stomach sleeping (cranks neck, strains shoulders/wrists)<br>• Any arm trapped overhead or pinned under body<br>• The couch<br><br><strong>KEY INSIGHT:</strong> Start in a fully supported neutral position so motionless hours don't pinch anything. Set up pillows BEFORE lying down."), false);
-
-  // ── HELPER: push each task as individual strip ────────────────────────────────
-  function pushTaskCards(groupIds,badgeType){
-    const isCarried=badgeType==="carried";
-    groupIds.forEach(id=>{
-      const t=TASKS[id]; if(!t) return;
-      const r=ROOMS[t.room]||ROOMS.kitchen;
-      const tm=getTaskTime(id);
-      const isDone=!!checked[id];
-      const order=isCarried?550:tm.order;
-      const sub=isCarried?"↩ carried over from a previous day":"";
-      if(t.steps){
-        const isOpen=!!expanded[id];
-        const stepsHtml=isOpen?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
-          ${t.steps.map((s,i)=>`<div style="display:flex;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)">
-            <span style="color:${r.color};font-size:11px;font-weight:700;flex-shrink:0;min-width:16px">${i+1}.</span>
-            <span style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5">${s}</span>
-          </div>`).join("")}
-        </div>`:"";
-        items.push({order, done:isDone, html:`<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid ${r.color};border-radius:var(--rad);padding:14px 18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.3)">
-          <div style="display:flex;align-items:center;gap:14px">
-            <div style="font-size:22px;flex-shrink:0">${r.emoji}</div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap">
-                <div style="font-family:'Playfair Display',serif;font-size:15px;color:${isDone?"var(--text3)":"var(--text)"};${isDone?"text-decoration:line-through":""}">${t.label}</div>
-                ${timePill(tm.timeLabel,tm.dur)}
-              </div>
-            </div>
-            <button class="push-btn" onclick="event.stopPropagation();pushTask('${id}')">↷ Push</button>
-            <button onclick="event.stopPropagation();toggleExpand('${id}')" style="font-size:10px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:${r.color};cursor:pointer;font-family:'Lora',serif;flex-shrink:0;font-weight:600">${isOpen?"▲ Hide":"▼ Steps"}</button>
-            <div onclick="event.stopPropagation();toggle('${id}')" style="width:28px;height:28px;border-radius:50%;border:2px solid ${isDone?"#10B981":r.color};background:${isDone?"#10B981":"transparent"};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0;cursor:pointer;transition:all .25s cubic-bezier(.34,1.56,.64,1);box-shadow:${isDone?"0 0 10px rgba(16,185,129,.35)":"none"}">${isDone?"✓":""}</div>
+  const openPins=PIN_OPEN.filter(p=>!checked[p.id]);
+  if(openPins.length){
+    openPins.forEach(p=>{
+      const open=!!expanded[p.id];
+      html+=`<div style="display:flex;flex-direction:column;background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid ${p.hex};border-radius:var(--rad);padding:11px 16px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:18px;flex-shrink:0">${p.emoji}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Playfair Display',serif;font-size:14px;color:var(--text)">${p.title}</div>
+            <div class="habit-sub">${p.sub}</div>
           </div>
-          ${stepsHtml}
-        </div>`});
-      } else {
-        items.push({order, html:strip(r.emoji,t.label,isDone,r.color,`toggle('${id}')`,tm.timeLabel,tm.dur,sub,`pushTask('${id}')`), done:isDone});
-      }
+          ${p.steps?`<button onclick="event.stopPropagation();toggleExpand('${p.id}')" style="font-size:10px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:${p.hex};cursor:pointer;font-family:'Lora',serif;flex-shrink:0;font-weight:600">${open?"▲ Hide":"▼ Steps"}</button>`:""}
+          <div onclick="toggle('${p.id}')" style="width:26px;height:26px;border-radius:50%;border:2px solid ${p.hex};background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer"></div>
+        </div>
+        ${p.steps&&open?`<div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.07);padding-top:8px">${p.steps.map((s,i)=>`<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5"><span style="color:${p.hex};font-weight:700;flex-shrink:0">${i+1}.</span><span>${s}</span></div>`).join("")}</div>`:""}
+      </div>`;
     });
   }
 
-  // ── UNIFIED TIMELINE: house plan tasks woven into the day by time-of-day ───────
-  const plan=todaysPlan();
-  let html=topHtml;
-  if(!plan.ids.length){
+  // ── TODAY'S ONE THING — the whole house plan, one task at a time ─────────────
+  const oneId=(dow===1)?null:oneTaskForDate(today);
+  const houseLeft=anyHouseTaskLeft();
+  html+=`<div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin:18px 2px 8px">🏡 Today's One Thing</div>`;
+  if(dow===1){
+    html+=`<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.03));border:1px solid rgba(139,92,246,.3);border-left:4px solid #8B5CF6;border-radius:var(--rad);padding:18px;margin-bottom:12px;text-align:center">
+      <div style="font-size:30px;margin-bottom:6px">🛋️</div>
+      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#DDD6FE">Monday — rest day</div>
+      <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:5px;font-family:'Lora',serif">No house task today. The house can wait — recharge. Pool league tonight. 🎱</div>
+    </div>`;
+  } else if(oneId){
+    const t=TASKS[oneId]||taskCustom[oneId];
+    const r=ROOMS[t.room]||ROOMS.kitchen;
+    const all=roomTaskEntries(t.room);
+    const rDone=all.filter(([id])=>checked[id]).length, rTotal=all.length;
+    const rPct=rTotal?Math.round(rDone/rTotal*100):0;
+    const wknd=(dow===0||dow===6);
+    html+=`<div class="plan-head" style="border-left:4px solid ${r.color}"><span style="font-size:18px">${r.emoji}</span> ${r.name} — one step at a time<span class="plan-frac" style="color:${r.color}">${rDone}/${rTotal}</span></div>`;
+    html+=`<div class="plan-bar"><div class="plan-fill" style="width:${rPct}%;background:${r.color}"></div></div>`;
+    html+=planCard(oneId);
+    html+=`<div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin:-2px 2px 12px">${checked[oneId]?"That was today's whole plan — done. Anything else is a bonus. ✨":(wknd?"The weekend pick — a bigger one, but it is the only one. 💪":"Just this one thing today. That is the whole plan. 🌱")}</div>`;
+  } else if(!houseLeft){
     html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — maintenance mode. Enjoy it.</div></div>`;
-  } else {
-    html+=`<div class="plan-head" style="border-left:4px solid ${plan.color}"><span style="font-size:18px">${ROOMS[plan.roomId].emoji}</span> ${plan.roomName} — organize to 100%<span class="plan-frac" style="color:${plan.color}">${plan.roomDone}/${plan.roomTotal}</span></div>`;
-    html+=`<div class="plan-bar"><div class="plan-fill" style="width:${plan.roomPct}%;background:${plan.color}"></div></div>`;
-    plan.ids.forEach(id=>{ const tm=getTaskTime(id); items.push({order:tm.order, done:!!checked[id], html:planCard(id)}); });
   }
-  html+=agendaHtml(items);
+
+  // ── DAILY ESSENTIALS ──────────────────────────────────────────────────────────
+  html+=`<div style="font-size:9px;letter-spacing:.25em;color:#38BDF8;text-transform:uppercase;font-family:'Lora',serif;margin:18px 2px 8px">💊 Daily Essentials</div>`;
+  const litDone=!!laundry["well-litfulo-"+today];
+  html+=strip("💊","Litfulo + vitamins",litDone,"#6366F1","toggleWellness('litfulo')","Morning","1 min","With breakfast — logs to the Health tab too");
+  const dogDone=!!laundry["morning-walk-"+today];
+  html+=strip("🐕","Walk + play with Zoey",dogDone,"#4ADE80","toggleMorning('walk')","Daily","20–30 min");
+  const waterToday=plantsDueOn(today), trimToday=plantsTrimDueOn(today), gardenToday=gardenTasksOn(today);
+  if(waterToday.length||trimToday.length||gardenToday.length){
+    const gardenDone=(waterToday.length===0||waterToday.every(p=>watered[p.id]===today))&&(trimToday.length===0||trimToday.every(p=>trimmed[p.id]===today))&&(gardenToday.length===0||gardenToday.every(id=>!!checked[id]));
+    html+=strip("🌿","Garden care — head to the Garden tab",gardenDone,"#2DB870","switchTab('garden')","Daily","–");
+  }
+
+  // ── MEAL RHYTHM — same times every day ────────────────────────────────────────
+  html+=`<div style="font-size:9px;letter-spacing:.25em;color:#B47C14;text-transform:uppercase;font-family:'Lora',serif;margin:18px 2px 8px">🍽️ Meal Rhythm</div>`;
+  const mB=!!laundry["meal-breakfast-"+today], mL=!!laundry["meal-lunch-"+today], mD=!!laundry["meal-dinner-"+today];
+  html+=strip("🍳","Breakfast",mB,"#B47C14","toggleMeal('breakfast')",RY.breakfast,"");
+  html+=strip("🥗","Lunch",mL,"#B47C14","toggleMeal('lunch')",RY.lunch,"",isWeekday()?"Step away from the desk, actually eat":"");
+  html+=strip("🍽️","Dinner",mD,"#B47C14","toggleMeal('dinner')",RY.dinner,"","Eaten by "+RY.dinnerBy+" — house rule"+(dow===1?" · before pool league 🎱":""));
+
+  // ── EVENING WIND-DOWN — the hour before bed ───────────────────────────────────
+  const wPhone=!!laundry["evening-wind-phone-"+today], wRead=!!laundry["evening-wind-read-"+today], wLights=!!laundry["evening-wind-lights-"+today];
+  html+=`<div style="font-size:9px;letter-spacing:.25em;color:#8B5CF6;text-transform:uppercase;font-family:'Lora',serif;margin:18px 2px 8px">🌙 Evening Wind-Down</div>`;
+  html+=`<div style="background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(139,92,246,.02));border:1px solid rgba(139,92,246,.25);border-left:4px solid #8B5CF6;border-radius:var(--rad);padding:14px 16px;margin-bottom:12px">
+    <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-bottom:10px">The hour before bed is yours — no phone, no TV. A real book, then lights out.</div>
+    ${strip("📵","Phone to the other room — screens off",wPhone,"#8B5CF6","toggleEvening('wind-phone')",RY.windDown,"","The alarm clock takes over from here")}
+    ${strip("📖","Reading hour",wRead,"#A78BFA","toggleEvening('wind-read')",RY.reading,"","Whatever book you actually enjoy")}
+    ${strip("🛏️","Lights out",wLights,"#7C3AED","toggleEvening('wind-lights')",RY.lightsOut,"")}
+  </div>`;
+
+  // ── GENTLE PROGRESS ───────────────────────────────────────────────────────────
+  const flow=[dtDone,litDone,dogDone,mB,mL,mD,wPhone,wRead,wLights];
+  if(oneId) flow.push(!!checked[oneId]);
+  const fDone=flow.filter(Boolean).length, fTotal=flow.length;
+  const fPct=Math.round(fDone/fTotal*100);
+  html+=`<div style="margin:16px 2px 8px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:var(--text2);font-family:'Lora',serif">Today's rhythm</span><span style="font-size:11px;color:#F5B830;font-family:'Lora',serif">${fDone} of ${fTotal}</span></div>
+    <div class="plan-bar"><div class="plan-fill" style="width:${fPct}%;background:linear-gradient(90deg,#F5B830,#8B5CF6)"></div></div>
+  </div>`;
+  if(fDone===fTotal){
+    html+=`<div style="background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(16,185,129,.03));border:1px solid rgba(16,185,129,.3);border-radius:var(--rad);padding:16px;margin-bottom:12px;text-align:center">
+      <div style="font-size:26px;margin-bottom:4px">🌙</div>
+      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#A7F3D0">Day complete</div>
+      <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:4px;font-family:'Lora',serif">Everything that mattered today got done. Sleep well.</div>
+    </div>`;
+  }
+
   el.innerHTML=html;
 }
 
@@ -1376,53 +1301,68 @@ function allTimelineDates() {
 
 function renderTimeline() {
   const el=document.getElementById("view-timeline"), today=todayKey();
-  const order=["kitchen","living","office","bedroom","bathroom","backyard","garage"];
   const lv={easy:0,moderate:1,hard:2};
-  const rooms=order.map(roomId=>{
+  let totalH=0, doneH=0;
+  RHYTHM_ROOM_ORDER.forEach(roomId=>{
     const all=roomTaskEntries(roomId);
-    const rem=all.filter(([id])=>!checked[id]).map(([id,t])=>({id,level:t.level}));
-    rem.sort((a,b)=>(lv[a.level]??1)-(lv[b.level]??1));
-    return {roomId, rem, total:all.length, done:all.filter(([id])=>checked[id]).length};
+    totalH+=all.length; doneH+=all.filter(([id])=>checked[id]).length;
   });
-  let totalH=0, doneH=0; rooms.forEach(r=>{ totalH+=r.total; doneH+=r.done; });
   const pctH=totalH?Math.round(doneH/totalH*100):0;
-  // Simulate the daily planner forward: each day = up to 4 from the current room, easy/moderate first
+
+  // Project forward with the SAME one-task-per-day engine the Today tab uses:
+  // Mon = rest, Tue–Fri = one easy, Sat/Sun = one medium-to-hard, kitchen first.
+  const sim=new Set();
+  const isDoneSim=id=>!!checked[id]||sim.has(id);
+  const fmtD=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   const days=[];
-  rooms.forEach(rm=>{
-    let rem=[...rm.rem], any=false;
-    while(rem.length){
-      const easyMod=rem.filter(x=>x.level!=="hard");
-      const pool=easyMod.length?easyMod:rem;
-      const pick=pool.slice(0,4); const ids=new Set(pick.map(x=>x.id));
-      days.push({roomId:rm.roomId, ids:pick.map(x=>x.id), finishesRoom:false});
-      rem=rem.filter(x=>!ids.has(x.id)); any=true;
+  let cur=new Date(today+"T12:00:00"), guard=0;
+  while(guard++<400 && anyHouseTaskLeft(isDoneSim)){
+    const ds=fmtD(cur);
+    if(cur.getDay()===1){
+      days.push({date:ds, rest:true});
+    } else {
+      const id=oneTaskForDate(ds,isDoneSim);
+      if(id){
+        sim.add(id);
+        const t=TASKS[id]||taskCustom[id];
+        const roomLeft=roomTaskEntries(t.room).some(([tid])=>!isDoneSim(tid)&&!NO_PROGRESS.has(tid));
+        days.push({date:ds, id, roomId:t.room, finishesRoom:!roomLeft});
+      }
     }
-    if(any) days[days.length-1].finishesRoom=true;
-  });
+    cur.setDate(cur.getDate()+1);
+  }
+  while(days.length&&days[days.length-1].rest) days.pop();
 
   let html="";
   if(!days.length){
     html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — nothing left to schedule. Maintenance mode from here.</div></div>`;
   } else {
-    const finish=new Date(today+"T12:00:00"); finish.setDate(finish.getDate()+days.length-1);
+    const workDays=days.filter(d=>!d.rest).length;
+    const finish=new Date(days[days.length-1].date+"T12:00:00");
     html+=`<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:var(--rad);padding:13px 16px;margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:'Lora',serif;font-size:12px;color:var(--text2)">Whole-house progress</span><span style="font-family:'Playfair Display',serif;font-weight:700;color:#F5B830">${doneH}/${totalH} · ${pctH}%</span></div>
       <div class="plan-bar"><div class="plan-fill" style="width:${pctH}%;background:linear-gradient(90deg,#F5B830,#818CF8)"></div></div>
-      <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:8px">${days.length} day${days.length>1?"s":""} of work left · finish by ${finish.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} 🏆</div>
+      <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:8px">${workDays} task day${workDays>1?"s":""} · one task a day, Mondays off · finish by ${finish.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} 🏆</div>
     </div>`;
     let lastWeek="";
     days.forEach((dy,idx)=>{
-      const d=new Date(today+"T12:00:00"); d.setDate(d.getDate()+idx);
+      const d=new Date(dy.date+"T12:00:00");
       const ws=new Date(d); ws.setDate(d.getDate()-d.getDay());
       const wk=ws.toISOString().split("T")[0];
       if(wk!==lastWeek){ html+=`<div class="week-label">Week of ${ws.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</div>`; lastWeek=wk; }
-      const r=ROOMS[dy.roomId], isToday=idx===0;
+      const isToday=dy.date===today;
       html+=`<div class="day-row${isToday?" today-row":""}">
         <div class="day-col"><div class="day-name">${d.toLocaleDateString("en-US",{weekday:"short"})}</div><div class="day-num">${d.getDate()}</div></div>
-        <div class="day-tasks-col">
-          <div class="tl-room" style="color:${r.color}">${r.emoji} ${r.name}</div>`;
-      dy.ids.forEach(id=>{ const t=TASKS[id]; if(!t) return; html+=`<div class="tl-task" style="color:${r.color}"><div class="tl-dot" style="background:${r.color}"></div>${t.label}</div>`; });
-      if(dy.finishesRoom) html+=`<div class="tl-note">🎉 ${r.name} done${r.reward?" — "+r.reward:""}.</div>`;
+        <div class="day-tasks-col">`;
+      if(dy.rest){
+        html+=`<div class="tl-room" style="color:#8B5CF6">🛋️ Rest day</div><div class="tl-note" style="margin-top:2px">No house task — recharge.</div>`;
+      } else {
+        const r=ROOMS[dy.roomId]||ROOMS.kitchen;
+        const t=TASKS[dy.id]||taskCustom[dy.id];
+        html+=`<div class="tl-room" style="color:${r.color}">${r.emoji} ${r.name}</div>`;
+        if(t) html+=`<div class="tl-task" style="color:${r.color}"><div class="tl-dot" style="background:${r.color}"></div>${t.label}</div>`;
+        if(dy.finishesRoom) html+=`<div class="tl-note">🎉 ${r.name} done${r.reward?" — "+r.reward:""}.</div>`;
+      }
       html+=`</div>`;
       if(isToday) html+=`<div class="day-badge today-badge">Today</div>`;
       html+=`</div>`;
@@ -1432,7 +1372,7 @@ function renderTimeline() {
   <div style="text-align:center;margin-bottom:16px">
     <div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:5px">☀️ Your Game Plan</div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#F5B830,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Timeline</div>
-    <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">Room by room, easy wins first — all the way to a 100% home 🏆</div>
+    <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">One task a day · Mondays off · weekends for the bigger jobs — all the way to 100% 🏆</div>
   </div>`+html;
 }
 

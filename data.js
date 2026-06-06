@@ -7,6 +7,19 @@
 // Edit plant/task/room data HERE. index.html keeps CONFIG/EYEBROWS/LAST_DEPLOY.
 // ═══════════════════════════════════════════════════════════════
 
+// ── DAILY RHYTHM — EDIT YOUR TIMES HERE ─────────────────────────
+// Drives the Today tab: meal times + the evening wind-down block.
+// Change any value and redeploy (or hand off) — nothing else needed.
+const RHYTHM = {
+  breakfast: "8:00 AM",
+  lunch:     "12:30 PM",
+  dinner:    "6:30 PM",        // aim to sit down here...
+  dinnerBy:  "8:00 PM",        // ...hard rule: eaten BY this time
+  windDown:  "9:30 PM",        // phone goes to the other room, screens off
+  reading:   "9:30–10:30 PM",  // the reading hour fills the no-screen block
+  lightsOut: "10:30 PM",
+};
+
 const ROOMS = {
   priority: { name:"Priority",   emoji:"⭐", color:"#C8860A" },
   kitchen:  { name:"Kitchen",    emoji:"🍳", color:"#EF4444", reward:"Meal prep feels effortless — cooking is actually fun" },
