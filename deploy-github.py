@@ -88,7 +88,7 @@ else:
     run(["git", "remote", "set-url", "origin", REMOTE])
 
 # Stage ALL deployable files (NOT just index.html) — never the secret token.
-for path in ["index.html", "data.js", "images", "archive", ".nojekyll", ".gitignore", "deploy-github.py", "manifest.webmanifest", "sw.js", "icons"]:
+for path in ["index.html", "data.js", "recipes.js", "images", "archive", ".nojekyll", ".gitignore", "deploy-github.py", "manifest.webmanifest", "sw.js", "icons"]:
     if os.path.exists(os.path.join(HOUSE, path)):
         run(["git", "add", path])
 

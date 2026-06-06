@@ -621,6 +621,7 @@ body::after{
 </div>
 
 <script src="./data.js?v=20260606080139"></script>
+<script src="./recipes.js?v=20260606120000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -631,7 +632,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6, 2026 · 2:01 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
+const LAST_DEPLOY = "Jun 6, 2026 · 2:17 AM MT"; // DEPLOY_STAMP — restamp to current time at each deploy/push
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent="Last deployed "+LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -654,6 +655,7 @@ let grocCustom = {};
 let inventory = {};
 let grocPurchased = {};
 let recipeServ = {};
+let recipeQuery = "";
 const GROC_BUILTIN=[{id:'groc-alarmclock',label:'⏰ Alarm clock'},{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
 let printCustom = {};
 let taskCustom = {};
@@ -1841,20 +1843,44 @@ function recipesHtml(){
     +'<div style="height:10px;background:repeating-linear-gradient(45deg,#C44536,#C44536 10px,#F5ECD7 10px,#F5ECD7 20px)"></div>'
     +'<div style="text-align:center;padding:16px 18px 14px">'
     +'<div style="font-size:34px;margin-bottom:2px">📇</div>'
-    +'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:27px;font-weight:700;color:#F5ECD7;text-shadow:0 1px 2px rgba(0,0,0,.4)">Grandma’s Recipe Box</div>'
+    +'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:27px;font-weight:700;color:#F5ECD7;text-shadow:0 1px 2px rgba(0,0,0,.4)">Recipe Box</div>'
     +'<div style="font-size:12px;color:#E8D2A8;font-family:\'Lora\',serif;font-style:italic;margin-top:3px">'+(n?('Tap a card to cook · '+n+' recipe'+(n===1?'':'s')+' in the box'):'The box is warming up — recipes coming soon')+'</div>'
     +'</div></div>';
   if(!has){
     return '<div class="section-label">📇 Recipe Box</div>'+lid+'<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:24px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px;line-height:1.5">No cards yet — the recipes chat is filling the box. They’ll show up here as cute index cards.</div>';
   }
-  const human=RECIPES.filter(r=>!r.dog), dogs=RECIPES.filter(r=>r.dog);
+  return '<div class="section-label">\ud83d\udcc7 Recipe Box</div>'+lid+recipeSearchBox()+'<div id="recipe-list">'+recipeListHtml()+'</div>';
+}
+function recipeSearchBox(){
+  const n=(typeof RECIPES!=='undefined')?RECIPES.length:0;
+  return '<input id="recipe-search" type="search" placeholder="\ud83d\udd0d Search '+n+' recipes\u2026 name or ingredient" value="'+String(recipeQuery).replace(/"/g,'&quot;')+'" oninput="recipeFilter(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;margin:0 0 14px;padding:11px 14px;border-radius:9px;border:1px solid #D9C39A;background:#F5ECD7;color:#5a3a2a;font-family:\'Lora\',serif;font-size:14px;outline:none">';
+}
+function recipeMatch(r,q){
+  const hay=(r.name+' '+(r.tags||[]).join(' ')+' '+(r.ingredients||[]).join(' ')+' '+(r.blurb||'')+' '+(r.source||'')).toLowerCase();
+  return q.split(/\s+/).filter(Boolean).every(function(w){ return hay.indexOf(w)!==-1; });
+}
+function recipeFilter(v){ recipeQuery=String(v||''); const el=document.getElementById('recipe-list'); if(el) el.innerHTML=recipeListHtml(); }
+function recipeListHtml(){
+  const q=String(recipeQuery||'').trim().toLowerCase();
+  const all=(typeof RECIPES!=='undefined')?RECIPES:[];
+  const human=all.filter(r=>!r.dog), dogs=all.filter(r=>r.dog);
+  let out='';
+  if(q){
+    const hits=human.filter(function(r){return recipeMatch(r,q);}), dhits=dogs.filter(function(r){return recipeMatch(r,q);});
+    const total=hits.length+dhits.length;
+    if(!total) return '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:22px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No recipes match \u201c'+q.replace(/</g,'&lt;')+'\u201d \u2014 try a single ingredient or a shorter word.</div>';
+    out+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin:0 0 10px">'+total+' match'+(total===1?'':'es')+'</div>';
+    out+=hits.map(function(r){return recipeCard(r,false);}).join('');
+    out+=dhits.map(function(r){return recipeCard(r,false);}).join('');
+    return out;
+  }
   const feat=human.find(r=>r.featured)||human[0];
   const rest=human.filter(r=>r!==feat);
-  let out='<div class="section-label">📇 Recipe Box</div>'+lid+(feat?recipeCard(feat,true):'');
+  out+=(feat?recipeCard(feat,true):'');
   if(rest.length) out+=rest.map(r=>recipeCard(r,false)).join('');
   if(dogs.length){
     out+='<div style="display:flex;align-items:center;gap:10px;margin:20px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#E8D2A8">🐕 Zoey\u2019s Kitchen</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
-    out+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Rotate the three; supplements go in fresh at serving time.</div>';
+    out+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Rotate the three; eggshell calcium, liver, eggs, and weekly sardines keep it balanced.</div>';
     out+=dogs.map(r=>recipeCard(r,false)).join('');
   }
   return out;
@@ -1871,7 +1897,7 @@ function openRecipe(id, keepScroll){
   const ing=(r.ingredients||[]).map(i=>'<li style="margin-bottom:6px;font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.5">'+scaleIngredient(i,ratio)+'</li>').join('');
   const servCtl='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:10px 14px;background:rgba(212,144,10,.07);border:1px solid var(--aborder,rgba(212,144,10,.3));border-radius:10px"><span style="font-family:\'Lora\',serif;font-size:13px;color:var(--text2)">🍽️ Servings</span><div style="display:flex;align-items:center;gap:14px;margin-left:auto"><button onclick="setServings(\''+r.id+'\',-1)" aria-label="fewer servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">\u2212</button><span style="font-family:\'Playfair Display\',serif;font-size:19px;color:var(--text);min-width:22px;text-align:center">'+serv+'</span><button onclick="setServings(\''+r.id+'\',1)" aria-label="more servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">+</button></div></div>';
   const steps=(r.steps||[]).map((st,i)=>'<div style="display:flex;gap:12px;margin-bottom:12px"><div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(212,144,10,.18);border:1px solid var(--amber);color:var(--amber2);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">'+(i+1)+'</div><div style="font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.55;padding-top:3px">'+st+'</div></div>').join('');
-  const meta=[r.time&&('⏱️ '+r.time), r.difficulty&&('📊 '+r.difficulty)].filter(Boolean);
+  const meta=[r.time&&('⏱️ '+r.time), r.difficulty&&('📊 '+r.difficulty), r.source&&('📖 '+r.source)].filter(Boolean);
   el.innerHTML='<div style="max-width:560px;margin:0 auto">'
     +'<div onclick="closeRecipe()" style="display:inline-flex;align-items:center;gap:6px;padding:10px 4px 14px;color:var(--text2);font-family:\'Lora\',serif;font-size:14px;cursor:pointer">← Back to recipes</div>'
     +'<div style="position:relative;height:240px;border-radius:var(--rad);overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2417,#0f0e14);margin-bottom:16px">'
