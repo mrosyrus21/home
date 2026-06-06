@@ -397,78 +397,51 @@ const RECIPES = [
     note:"Zucchini and yellow squash were intentionally left out — they don't pair as strongly with tenderloin. Save them for another dish." },
 
   // ── 🐕 ZOEY'S HOMEMADE DOG FOOD (not people food) ──────────────────────────
-  { id:"r_zoey_chicken", name:"Zoey's Chicken", emoji:"🐕", dog:true,
-    time:"~1 hr batch", difficulty:"Easy", servings:"10-day batch", tags:["dog"],
-    blurb:"Zoey's everyday chicken bowl — gently cooked thigh with a little liver for organs, soft white rice, and mashed-in vegetables.",
+  { id:"r_zoey_onepot", name:"Zoey's One-Pot — Slow-Cooker Turkey & Sweet Potato", emoji:"🐕", dog:true,
+    time:"15 min prep · 4 hrs slow cooker", difficulty:"Easy", servings:"~10-day batch", tags:["dog"],
+    blurb:"The pattern home-cooking dog owners actually stick with: ONE slow-cooker batch — dump, cook, portion, freeze. Built for Zoey: lean turkey (herding mixes gain weight easily), sardines for 8-year-old joints, whole-foods only.",
     ingredients:[
-      "Chicken thigh, boneless skinless — the bulk of the batch (about 60%)",
-      "Chicken liver — about 5% of the batch",
-      "White rice, cooked soft — about 20%",
-      "Carrots, green beans, and spinach, finely chopped — about 15%",
-      "Eggshell calcium — about 1/2 teaspoon per pound of food (kitchen-made, see steps)",
-      "Canned no-salt sardines in water — swap in for part of the meat 1 to 2 times a week",
-      "Egg — a couple times a week, cooked plain"
+      "3 lb lean ground turkey (93/7) — lean protein, easy on a senior waistline",
+      "1 1/2 cups brown rice, uncooked",
+      "1 lb sweet potato, peeled and diced small",
+      "3 cups frozen peas and carrots",
+      "1 cup green beans or zucchini, chopped — instead of spinach (oxalates are harder on senior kidneys)",
+      "4 cups water",
+      "2 cans no-salt sardines in water — stirred in AFTER cooking (omega-3s for her joints)",
+      "Eggshell calcium — about 1/2 teaspoon per pound of finished food (kitchen-made, see steps)",
+      "2 eggs, cracked in for the last 30 minutes (optional, a couple times a week)"
     ],
     steps:[
-      "Simmer or bake the chicken thighs through with no seasoning at all — no salt, no oil needed.",
-      "Cook the liver gently through (it cooks fast — a few minutes in the same pan).",
-      "Cook the white rice soft, a little wetter than you would for people.",
-      "Steam or simmer the carrots, green beans, and spinach until soft, then chop fine or mash.",
-      "Chop or shred the meats, then mix everything evenly so she cannot pick around the vegetables.",
-      "Cool fully, portion into daily containers (460 to 480 g per day), fridge 3 to 4 days of it, freeze the rest.",
-      "Eggshell calcium: bake clean, dry shells about 10 minutes at 300°F, grind to a fine powder, and stir in about 1/2 teaspoon per pound of food.",
-      "Through the week: swap part of the meat for canned no-salt sardines in water 1 to 2 times, and toss in a plain cooked egg a couple of times.",
-      "At each meal: warm slightly and serve."
+      "Everything except the sardines and eggshell goes straight in the slow cooker: turkey (break it up), rice, sweet potato, vegetables, water. Stir once.",
+      "Cook on HIGH 3 to 4 hours or LOW about 6, until the rice is soft and the turkey is cooked through. Stir halfway if you happen to be around — fine if not.",
+      "Off the heat: stir in the mashed sardines and let the pot cool completely.",
+      "Eggshell calcium: bake clean, dry shells about 10 minutes at 300°F, grind to a fine powder, stir in about 1/2 teaspoon per pound of food.",
+      "Portion 460 to 480 g per day (she eats ~660 kcal/day): fridge 3 to 4 days, freeze the rest flat in daily portions — thaws overnight, keeps up to 6 months.",
+      "Serve slightly warmed. That is the whole job — one pot, about 10 days of food."
     ],
-    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Eggshell calcium, liver, the occasional egg, sardines, and varied vegetables keep this balanced — no store-bought supplements. NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." },
-  { id:"r_zoey_beef", name:"Zoey's Beef", emoji:"🐕", dog:true,
-    time:"~1 hr batch", difficulty:"Easy", servings:"10-day batch", tags:["dog"],
-    blurb:"The beef rotation — lean ground beef with beef liver, sweet potato for the carb, and three soft vegetables.",
+    note:"NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — baseline weight + senior bloodwork. 🔄 THE TRANSITION (slow, ~1 month — no tracker, no pressure): she's sick of Farmer's Dog, especially the CHICKEN packs, so this works topper-style — cook one small batch, stir a spoonful into each FD meal so she finishes it, and let the ratio drift homemade as the FD shipment runs out. Getting the chicken packs down: 1) warm the food slightly — aroma does the selling; 2) mix chicken packs 50/50 with the beef or pork packs she likes; 3) smash in a sardine or add a small sprinkle of parmesan on top; 4) a drizzle of warm low-sodium broth." },
+  { id:"r_zoey_beefpot", name:"Zoey's Beef & Pumpkin Pot (rotation variant)", emoji:"🐕", dog:true,
+    time:"15 min prep · 4 hrs slow cooker", difficulty:"Easy", servings:"~10-day batch", tags:["dog"],
+    blurb:"Same one-pot pattern, different protein for rotation — 90/10 beef with pumpkin or sweet potato. Make this the occasional batch, not the default (beef is the pricey one — see the Finance cost panel).",
     ingredients:[
-      "Ground beef, 90/10 lean — the bulk of the batch (about 60%)",
-      "Beef liver — about 5% of the batch",
-      "Sweet potato, peeled and cooked soft — about 20%",
-      "Green beans, carrots, and zucchini, finely chopped — about 15%",
-      "Eggshell calcium — about 1/2 teaspoon per pound of food (kitchen-made, see steps)",
-      "Canned no-salt sardines in water — swap in for part of the meat 1 to 2 times a week",
-      "Egg — a couple times a week, cooked plain"
+      "3 lb ground beef, 90/10 lean",
+      "1 1/2 cups white rice, uncooked",
+      "1 can (15 oz) plain pumpkin (NOT pie filling) — or 1 lb diced sweet potato",
+      "3 cups frozen green beans and carrots",
+      "4 cups water",
+      "2 cans no-salt sardines in water — stirred in AFTER cooking",
+      "Eggshell calcium — about 1/2 teaspoon per pound of finished food",
+      "2 eggs, cracked in for the last 30 minutes (optional)"
     ],
     steps:[
-      "Brown the ground beef in a dry pan with no seasoning; drain only if there is pooling fat (90/10 keeps it lean).",
-      "Cook the beef liver gently through and chop it fine.",
-      "Boil or bake the sweet potato until completely soft, then peel and mash.",
-      "Steam the green beans, carrots, and zucchini soft; chop small.",
-      "Mix everything evenly, cool fully, and portion into daily containers (460 to 480 g per day).",
-      "Fridge 3 to 4 days of portions, freeze the rest.",
-      "Eggshell calcium: bake clean, dry shells about 10 minutes at 300°F, grind to a fine powder, and stir in about 1/2 teaspoon per pound of food.",
-      "Through the week: swap part of the meat for canned no-salt sardines in water 1 to 2 times, and toss in a plain cooked egg a couple of times.",
-      "At each meal: warm slightly and serve."
+      "Beef (broken up), rice, pumpkin or sweet potato, vegetables, water into the slow cooker. Stir once.",
+      "HIGH 3 to 4 hours or LOW about 6. Skim pooled fat if the batch looks greasy — 90/10 usually doesn't need it.",
+      "Off the heat: stir in the mashed sardines; cool completely.",
+      "Stir in eggshell calcium, about 1/2 teaspoon per pound of food.",
+      "Portion 460 to 480 g per day: fridge 3 to 4 days, freeze the rest in daily portions.",
+      "Serve slightly warmed."
     ],
-    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Eggshell calcium, liver, the occasional egg, sardines, and varied vegetables keep this balanced — no store-bought supplements. NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." },
-  { id:"r_zoey_pork", name:"Zoey's Pork", emoji:"🐕", dog:true,
-    time:"~1 hr batch", difficulty:"Easy", servings:"10-day batch", tags:["dog"],
-    blurb:"The pork rotation — lean pork loin with liver, rice or sweet potato, and green vegetables with a little kale.",
-    ingredients:[
-      "Pork loin, lean, all visible fat trimmed — the bulk of the batch (about 60%)",
-      "Liver (pork or chicken) — about 5% of the batch",
-      "White rice or sweet potato, cooked soft — about 20%",
-      "Green beans, carrots, and kale, finely chopped — about 15%",
-      "Eggshell calcium — about 1/2 teaspoon per pound of food (kitchen-made, see steps)",
-      "Canned no-salt sardines in water — swap in for part of the meat 1 to 2 times a week",
-      "Egg — a couple times a week, cooked plain"
-    ],
-    steps:[
-      "Trim the pork loin well and simmer or bake it fully through — pork must be cooked through, no pink, and never seasoned.",
-      "Cook the liver gently and chop it fine.",
-      "Cook the rice soft (or boil and mash the sweet potato).",
-      "Steam the green beans, carrots, and kale until soft — kale especially needs to be soft and chopped small.",
-      "Chop the pork small, mix everything evenly, and cool fully.",
-      "Portion into daily containers (460 to 480 g per day): fridge 3 to 4 days, freeze the rest.",
-      "Eggshell calcium: bake clean, dry shells about 10 minutes at 300°F, grind to a fine powder, and stir in about 1/2 teaspoon per pound of food.",
-      "Through the week: swap part of the meat for canned no-salt sardines in water 1 to 2 times, and toss in a plain cooked egg a couple of times.",
-      "At each meal: warm slightly and serve."
-    ],
-    note:"Daily total is about 660 kcal: 460 to 480 g split into 2 meals. Makes a 10-day batch — fridge 3 to 4 days, freeze the rest in daily portions. Eggshell calcium, liver, the occasional egg, sardines, and varied vegetables keep this balanced — no store-bought supplements. NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — get a baseline weight and senior bloodwork." }
+    note:"Same rules and transition plan as the One-Pot (see Zoey's One-Pot for the full topper-style transition + picky-chicken-pack tips). Beef batches run ~$66 vs ~$39 — keep this the occasional rotation." }
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -508,7 +481,7 @@ const FINANCE = {
     { id:"c4615",    label:"Credit One •4615",          start:1157.83, min:58,     apr:"~30%",   card:true,  note:"over limit — close AFTER payoff" },
     { id:"c1320",    label:"Cap One Quicksilver •1320", start:1522.50, min:130,    apr:"28.99%", card:true,  note:"autopay now on (had a $29 past-due fee)" },
     { id:"merrick",  label:"Merrick Bank •4735",        start:2236.74, min:87,     apr:"~30%",   card:true,  note:"$4/mo fee" },
-    { id:"savor",    label:"Cap One SAVOR (new)",       start:0,       min:0,      apr:"~30%",   card:true,  keepZero:true, note:"opened Jun 6 — $500 limit; a tool, not spending money" },
+    { id:"savor",    label:"Cap One SAVOR (new)",       start:0,       min:0,      apr:"~30%",   card:true,  keepZero:true, note:"$190 of 3D-print supplies on it (Jun 6) — clear next paycheck, then back to the $0 rule" },
     { id:"famloan",  label:"Family loan",               start:10000,   min:400,    apr:"0%",     card:false, note:"0% — includes +$700 Zelle borrowed Jun 6 for rent; cards first, but never go quiet on family" },
     { id:"nissanL",  label:"Nissan auto loan",          start:null,    min:200,    apr:"?",      card:false, note:"payoff unknown" },
     { id:"lendmarkL",label:"Lendmark Financial",        start:null,    min:177.71, apr:"?",      card:false, note:"balance + APR unknown" },
@@ -542,6 +515,7 @@ const FINANCE = {
     { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
   ],
   advice: [
+    { t:"$190 of filament is inventory, not income", b:"The SAVOR balance is real debt — clear it next paycheck, and no hypothetical print-sale math in the One Number. BUT: the hydro and aquarium prints are exactly the functional niche that sells on Etsy and locally. List 2–3 finished prints (it's on the Print → Ideas list); the day one ships, the $190 starts paying itself back. Until then, it's just spending." },
     { t:"The SAVOR card is a tool, not a balance", b:"Brand-new card, $500 limit, ~30% APR. Used for one small bill and paid in full, it quietly builds credit. Carried, $500 at 30% grows about $12 every month it sits. The win condition is simple — the statement always says $0." },
     { t:"The Farmer's Dog is the big domino", b:"$215.05 a month. The plan: feed through the incoming 1+ month shipment, buy the homemade ingredients, run the 12-day switch — so the cancel lands ~6 weeks out. That's honest, not slow: the shipment is already paid for, so using it up IS the money move." },
     { t:"Rent first, every first paycheck", b:"Rent is $2,175 — almost a whole paycheck. The day a check lands, set the rent money aside before anything else touches it. The rest of the month gets simpler instantly." },

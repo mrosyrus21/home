@@ -626,7 +626,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606130000"></script>
+<script src="./data.js?v=20260606133000"></script>
 <script src="./recipes.js?v=20260606130500"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -638,7 +638,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6 · 1:03 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 6 · 1:14 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -846,6 +846,7 @@ function waterStatus(p) {
 let gardenSub = "watering";
 let tankSub = "bluedream";
 let printSub = "todo";
+let finSub   = "overview";  // 💰 finance sub-tab
 let foodSub = "list";
 function switchTab(t) {
   currentTab=t;
@@ -874,6 +875,7 @@ function renderSubtabs(t) {
   else if(t==="shopping"){ subs=[["bluedream","🦐 Blue Dream"],["tall","📏 Tall"],["wide","📐 Wide"],["dry","🏜️ Dry"]]; cur=tankSub; fn="switchTankSub"; }
   else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","💎 Wishlist"],["ideas","💡 Ideas"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
   else if(t==="grocery"){ subs=[["list","🛒 List"],["inventory","🧺 Inventory"],["recipebox","📖 Recipes"],["tocook","🍳 To Cook"]]; cur=foodSub; fn="switchFoodSub"; }
+  else if(t==="finance"){ subs=[["overview","📊 Overview"],["bills","📅 Bills"],["debts","❄️ Debts"],["todos","✅ To-dos"],["coach","🧠 Coach"]]; cur=finSub; fn="switchFinSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
 }
@@ -881,6 +883,7 @@ function switchGardenSub(x) { gardenSub=x; renderSubtabs("garden"); renderGarden
 function switchTankSub(x) { tankSub=x; renderSubtabs("shopping"); renderShopping(); }
 function switchPrintSub(x) { printSub=x; renderSubtabs("print"); renderPrint(); }
 function switchFoodSub(x) { foodSub=x; renderSubtabs("grocery"); renderGrocery(); }
+function switchFinSub(x)  { finSub=x; renderSubtabs("finance"); renderFinance(); }
 
 function dailyHabits() {
   const today=todayKey();
@@ -1318,38 +1321,7 @@ function renderToday() {
   const mB=!!laundry["meal-breakfast-"+today];
   add("breakfast",320,mB,strip("🍳","Breakfast",mB,"#B47C14","toggleMeal('breakfast')",(today===RESET_DAY?"Right after waking":RY.breakfast),""));
 
-  // Zoey — food transition tracker (near meals; her food spans the day)
-  const zN=zoeyDayN();
-  if(!zoey.startDate){
-    add("zoey",330,false,`<div style="background:linear-gradient(135deg,rgba(244,114,182,.12),rgba(244,114,182,.03));border:1px solid rgba(244,114,182,.35);border-left:4px solid #F472B6;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px">
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#F472B6;margin-bottom:6px;font-family:'Lora',serif">🐕 Zoey — Food Transition · 12 Days</div>
-      <div style="display:flex;align-items:center;gap:13px">
-        <div style="font-size:24px;flex-shrink:0">🥣</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--text)">⏸ Not started — use up the Farmer's Dog shipment + buy ingredients first</div>
-          <div class="habit-sub">A 1+ month shipment is incoming — feed through it first (~4 weeks), buy the homemade ingredients, THEN tap the circle to start Day 1 (25/75 → 50/50 → 75/25 → 100% homemade over 12 days). Recipes are in the Recipe Box (🐕).</div>
-        </div>
-        <div onclick="zoeyStart()" style="width:28px;height:28px;border-radius:50%;border:2px solid #F472B6;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer"></div>
-      </div>
-    </div>`);
-  } else if(zN>=1&&zN<=14){
-    const fedToday=!!laundry["zoey-feed-"+today];
-    const mix=zoeyMix(Math.min(zN,12));
-    const label=zN<=12?("Day "+zN+" of 12 — "+mix.h+"% homemade / "+mix.f+"% Farmer's Dog"):"Transition complete — 100% homemade 🎉";
-    add("zoey",330,fedToday,`<div class="${fedToday?'':''}" style="background:linear-gradient(135deg,rgba(244,114,182,.12),rgba(244,114,182,.03));border:1px solid rgba(244,114,182,.35);border-left:4px solid #F472B6;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;${fedToday?'opacity:.6':''}">
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#F472B6;margin-bottom:6px;font-family:'Lora',serif">🐕 Zoey — Food Transition${zN<=12?' · '+mix.phase:''}</div>
-      <div style="display:flex;align-items:center;gap:13px">
-        <div style="font-size:24px;flex-shrink:0">🥣</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-family:'Playfair Display',serif;font-size:15px;color:${fedToday?'var(--text3)':'var(--text)'};${fedToday?'text-decoration:line-through':''}">${label}</div>
-          <div class="habit-sub">Watch stool, appetite, and energy. Soft stool? Hold this mix 2 to 3 extra days.</div>
-          ${zN<=12?`<div style="margin-top:7px;height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden"><div style="height:100%;width:${Math.round(Math.min(zN,12)/12*100)}%;background:#F472B6"></div></div>`:""}
-        </div>
-        ${zN<=12?`<button onclick="event.stopPropagation();zoeyHold()" title="Soft stool — hold this mix an extra day" style="font-size:10px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#F472B6;cursor:pointer;font-family:'Lora',serif;flex-shrink:0;font-weight:600">⏸ Hold</button>`:""}
-        <div onclick="toggleZoeyFeed()" style="width:28px;height:28px;border-radius:50%;border:2px solid ${fedToday?'#10B981':'#F472B6'};background:${fedToday?'#10B981':'transparent'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0;cursor:pointer">${fedToday?'✓':''}</div>
-      </div>
-    </div>`);
-  }
+  // 🐕 Zoey transition tracker REMOVED Jun 6 — slow topper-style transition now lives on her recipe page (Zoey's Kitchen)
 
   // Morning dog + garden
   const dogDone=!!laundry["morning-walk-"+today];
@@ -2168,6 +2140,7 @@ function renderPrint() {
     toys:    { name:"Toys & Desk Joy",   emoji:"🧸", color:"#c084fc", note:"Zero utility. Maximum delight. Print-in-place favorites for the SV06 Plus." }
   };
   const PRINT_IDEAS = [
+    { id:'print_sidehustle', vibe:'aqua', name:"Print side-hustle?", emoji:"🖨️", diff:"Easy", mat:"any", time:"experiment", note:"Honest framing: your functional niche prints — hydro baskets, aquarium gear — are exactly what sells on Etsy and locally. Listing 2–3 finished prints is a cheap experiment. If it earns, it pays the SAVOR card down; until something ships, the $190 is just spending." },
     { id:'shrimp_feed_dish', vibe:'aqua', name:"Shrimp Feeding Dish + Tube", emoji:"🦐", diff:"Easy", mat:"PETG", time:"~1 hr", note:"Glass-look dish + drop tube — food lands on the dish, not lost in the gravel. The Blue Dreams line up like it's a diner." },
     { id:'moss_anchor', vibe:'aqua', name:"Moss Anchor Grid", emoji:"🌿", diff:"Easy", mat:"PETG", time:"~45 min", note:"Pins the incoming moss ball exactly where the carpet should start. Pairs with the Petco moss run." },
     { id:'shrimp_hide', vibe:'aqua', name:"Shrimp Cave Condo", emoji:"🏠", diff:"Medium", mat:"PETG", time:"~2 hr", note:"Stackable hides with shrimp-sized doorways. Freshly-molted shrimp need a panic room." },
@@ -2601,6 +2574,7 @@ function renderFinance(){
   let out='';
 
   // ── 1 · THE ONE NUMBER ──
+  out+='\u0001overview\u0001';
   const cancelGot=FINANCE.cancels.reduce(function(s,c){return s+(((fin.cancel||{})[c.id])?c.amt:0);},0);
   const cancelLeft=FINANCE.cancels.reduce(function(s,c){return s+(((fin.cancel||{})[c.id])?0:c.amt);},0);
   const committed=FINANCE.outflowMonthly-cancelGot;
@@ -2623,6 +2597,7 @@ function renderFinance(){
   +'</div>';
 
   // ── 2 · ACCOUNTS (tap a balance to update) ──
+  out+='\u0001overview\u0001';
   out+='<div class="section-label">🏦 Accounts — tap a balance to update it</div>';
   FINANCE.accounts.forEach(function(a){
     const cur=finLatest('bal',a.id,a.start,a.asOf);
@@ -2644,6 +2619,7 @@ function renderFinance(){
   });
 
   // ── 3 · GOAL #1 — $500 buffer ──
+  out+='\u0001overview\u0001';
   const sav=finLatest('bal','savings',0.16,'2026-04-30');
   const bufPct=Math.max(0,Math.min(100,Math.round(sav.v/500*100)));
   out+='<div class="section-label">🎯 Goal #1 — the $500 starter buffer</div>';
@@ -2655,6 +2631,7 @@ function renderFinance(){
   +'</div>';
 
   // ── 4 · BILLS — monthly check-offs ──
+  out+='\u0001bills\u0001';
   fin.bills=fin.bills||{};
   const sortedBills=FINANCE.bills.slice().sort(function(a,b){return a.sort-b.sort;});
   const paidCt=sortedBills.filter(function(b){return fin.bills[b.id+'-'+ym];}).length;
@@ -2673,6 +2650,7 @@ function renderFinance(){
   out+='<div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0 9px;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif"><span>Check each off as it\'s paid — fresh boxes every month.</span><b style="color:var(--text);flex-shrink:0">'+finFmt(billTotal,true)+'/mo</b></div></div>';
 
   // ── 5 · DEBT SNOWBALL ──
+  out+='\u0001debts\u0001';
   out+='<div class="section-label">❄️ Debt snowball — smallest card first</div>';
   let target=null;
   const cardCur=FINANCE.debts.filter(function(d){return d.card;}).reduce(function(s,d){ const c=finLatest('debt',d.id,d.start); return s+(c?Math.max(0,c.v):0);},0);
@@ -2700,6 +2678,7 @@ function renderFinance(){
   out+='<div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.12);border-radius:var(--rad);padding:12px 16px;margin-bottom:14px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.7">💳 Cards together: <b style="color:var(--text)">'+finFmt(cardCur,true)+'</b> at ~29%. An extra $300/mo on the snowball = debt-free in ~15 months and ~$1,570 of interest saved vs minimums. Family loan is 0% — cards first, but keep family in the loop. Tap any balance to update it after a payment — the bars move.</div>';
 
   // ── 6 · CANCEL LIST ──
+  out+='\u0001debts\u0001';
   const cancelAll=FINANCE.cancels.reduce(function(s,c){return s+c.amt;},0);
   out+='<div class="section-label">✂️ Cancel list — '+finFmt(cancelGot,true)+' of ~'+finFmt(cancelAll,true)+'/mo verified gone</div>';
   out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:6px 14px;margin-bottom:14px">';
@@ -2714,6 +2693,7 @@ function renderFinance(){
   out+='<div style="padding:10px 0;font-size:11px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;font-style:italic">'+FINANCE.cancelPending+'<br>'+FINANCE.keeping+'</div></div>';
 
   // ── 6b · FARMER'S DOG vs HOMEMADE — cost analysis (computed Jun 6 2026; estimates at Denver King Soopers-ish prices) ──
+  out+='\u0001coach\u0001';
   out+='<div class="section-label">🐕 Farmer\'s Dog vs Homemade — cost analysis</div>';
   out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 16px;margin-bottom:14px">'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">'
@@ -2726,6 +2706,7 @@ function renderFinance(){
     +'</div>';
 
   // ── 7 · MONEY TO-DOS ──
+  out+='\u0001todos\u0001';
   fin.todoDone=fin.todoDone||{}; fin.todoCustom=fin.todoCustom||{};
   const allTodos=FINANCE.todosSeed.map(function(t){return {id:t.id,label:t.label,custom:false};})
     .concat(Object.keys(fin.todoCustom).map(function(id){return {id:id,label:esc(fin.todoCustom[id]),custom:true};}));
@@ -2746,6 +2727,7 @@ function renderFinance(){
   +'</div></div>';
 
   // ── 8 · COACH'S CORNER — rotating advice ──
+  out+='\u0001coach\u0001';
   const tips=FINANCE.advice;
   const dayN=Math.floor(Date.now()/86400000);
   const i0=(((dayN*3+finTipOff)%tips.length)+tips.length)%tips.length;
@@ -2757,7 +2739,9 @@ function renderFinance(){
   [t2,t3].forEach(function(t){ out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 16px;margin-bottom:10px"><div style="font-size:13.5px;font-weight:700;color:var(--text);font-family:\'Lora\',serif;margin-bottom:4px">'+t.t+'</div><div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.65">'+t.b+'</div></div>'; });
   out+='<div onclick="finMoreTips()" style="text-align:center;padding:11px;border:1px dashed rgba(99,102,241,.4);border-radius:var(--rad);color:#A5B4FC;font-size:13px;cursor:pointer;font-family:\'Lora\',serif;margin-bottom:12px">🎲 Show me three more</div>';
   out+='<div style="font-size:10.5px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:20px">Practical budgeting nudges only — never investment advice. Numbers from your statements, Mar–May 2026.</div>';
-  el.innerHTML=out;
+  const _fsegs=out.split('\u0001'); let _fvis='';
+  for(let _i=1;_i<_fsegs.length;_i+=2){ if(_fsegs[_i]===finSub) _fvis+=_fsegs[_i+1]||''; }
+  el.innerHTML=_fvis;
 }
 
 
@@ -2924,6 +2908,28 @@ ST.on('value', snap => {
   if (!flags['jun6-savor-v1']) {
     fin.debt=fin.debt||{}; fin.debt.savor=Object.assign({},fin.debt.savor,{'2026-06-06':0});
     ST.update({ fin: fin, 'flags/jun6-savor-v1': 'done' });
+    return;
+  }
+
+  // One-time: Jun 6 2026 — SAVOR card: $190 of 3D-print supplies put on it (real debt, clear next paycheck)
+  if (!flags['jun6-savor-v2']) {
+    fin.debt=fin.debt||{}; fin.debt.savor=Object.assign({},fin.debt.savor,{'2026-06-06':190});
+    ST.update({ fin: fin, 'flags/jun6-savor-v2': 'done' });
+    return;
+  }
+
+  // One-time: Jun 6 2026 — Zoey one-pot ingredients onto the grocery list (food items only)
+  if (!flags['jun6-zoeygroc-v1']) {
+    grocCustom=Object.assign({},grocCustom,{
+      'gc-zoey1':'🦃 Lean ground turkey 93/7 (3 lb — Zoey batch)',
+      'gc-zoey2':'🍚 Brown rice (Zoey batch)',
+      'gc-zoey3':'🍠 Sweet potatoes (Zoey batch)',
+      'gc-zoey4':'🥕 Frozen peas & carrots (Zoey batch)',
+      'gc-zoey5':'🫛 Frozen green beans (Zoey batch)',
+      'gc-zoey6':'🐟 Canned no-salt sardines in water (Zoey batch)',
+      'gc-zoey7':'🥚 Eggs (Zoey batch + house)'
+    });
+    ST.update({ grocCustom: grocCustom, 'flags/jun6-zoeygroc-v1': 'done' });
     return;
   }
 
