@@ -357,7 +357,7 @@ const HARVEST_INFO = {
    Shape: { id, name, emoji, photo?, time?, difficulty?, servings?, tags?[],
             featured?, blurb?, ingredients?[], steps?[] }                     */
 const RECIPES = [
-  { id:"r_beef_tenderloin", name:"Beef Tenderloin with Mushroom Pan Sauce & Garlicky Spinach", emoji:"🥩", featured:true,
+  { id:"r_beef_tenderloin", name:"Beef Tenderloin with Mushroom Pan Sauce & Garlicky Spinach", emoji:"🥩", featured:true, photo:"https://commons.wikimedia.org/wiki/Special:FilePath/Filet_mignon_at_Rioz_churrascaria.jpg?width=800",
     time:"~45 min", difficulty:"Medium", servings:"2–3", tags:["dinner","garden"],
     blurb:"A restaurant-style seared beef tenderloin with a rich mushroom pan sauce and quick garlicky spinach, plus a crisp romaine side salad. Properly paired — no forcing every vegetable onto the plate.",
     ingredients:[
