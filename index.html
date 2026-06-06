@@ -638,7 +638,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6 · 1:46 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 6 · 2:20 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -730,8 +730,36 @@ function invKey(s){ return String(s||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/
 function splitEmoji(label){ const m=String(label||'').match(/^\s*(\p{Extended_Pictographic}[️‍\p{Extended_Pictographic}]*)\s*(.*)$/u); return m?{emoji:m[1],name:(m[2]||'').trim()||m[1]}:{emoji:'',name:String(label||'').trim()}; }
 function grocLabel(id){ const b=GROC_BUILTIN.find(function(i){return i.id===id;}); if(b) return b.label; if(grocCustom[id]) return grocCustom[id]; return id; }
 function capFirst(s){ s=String(s||''); for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); if(c>=97&&c<=122){ return s.slice(0,i)+s[i].toUpperCase()+s.slice(i+1); } if((c>=65&&c<=90)||(c>=48&&c<=57)){ return s; } } return s; }
-function buyGroc(id){ const sp=splitEmoji(grocLabel(id)); const k=invKey(sp.name); if(!k) return; /* optimistic: update local state + re-render IMMEDIATELY, never gated on Firebase */ inventory[k]={name:sp.name,emoji:sp.emoji||'🛒',inStock:true,ts:Date.now()}; grocPurchased[id]=true; const hadShop=!!shopping[id]; if(hadShop) delete shopping[id]; renderGrocery(); try{ toast('✓ '+capFirst(sp.name)+' → Kitchen Inventory'); }catch(e){} try{ saveInv(); saveGrocPurchased(); if(hadShop) saveShopping(); }catch(e){} }
+function buyGroc(id){ const sp=splitEmoji(grocLabel(id)); sp.name=sp.name.replace(/\s*\(from:[^)]*\)\s*$/,''); const k=invKey(sp.name); if(!k) return; /* optimistic: update local state + re-render IMMEDIATELY, never gated on Firebase */ inventory[k]={name:sp.name,emoji:sp.emoji||'🛒',inStock:true,ts:Date.now()}; grocPurchased[id]=true; const hadShop=!!shopping[id]; if(hadShop) delete shopping[id]; renderGrocery(); try{ toast('✓ '+capFirst(sp.name)+' → Kitchen Inventory'); }catch(e){} try{ saveInv(); saveGrocPurchased(); if(hadShop) saveShopping(); }catch(e){} }
 function addInv(){ const el=document.getElementById('invInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; const sp=splitEmoji(v); const em=sp.emoji||grocEmoji(sp.name); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:em,inStock:true,ts:Date.now()}; saveInv(); renderGrocery(); }
+// ── 🛒 GROCERIES AUTO-BUILD (Jun 6 2026): queueing a recipe ADDS its missing food ingredients to the list. Add-only — never auto-removes, never auto-checks (accountability rule). ──
+const GROC_STAPLE_WORDS=['salt','pepper','black','water','oil','olive','and','optional','taste','a','of','grind','grinds','pinch','few'];  // skip items made ONLY of these words
+function ingFood(i){ let s=String(i||'').toLowerCase();
+  s=s.replace(/\([^)]*\)/g,'');                         // drop parentheticals
+  s=s.split(',')[0];                                     // drop trailing prep ("…, halved and sliced")
+  s=s.replace(/\b\d+[\d\/.\-]*\b/g,' ');               // drop quantities/ranges
+  s=s.replace(/\b(oz|ounce|ounces|lb|lbs|pound|pounds|cup|cups|tbsp|tsp|tablespoon|tablespoons|teaspoon|teaspoons|jar|jars|can|cans|ball|sheet|sheets|clove|cloves|head|heads|heart|hearts|big|small|large|medium|handful|handfuls|bunch|stalk|stalks|slice|slices|piece|pieces|plus|more|to|serve|for|garnish|about|roughly|grated|shredded|chopped|minced|diced|sliced|fresh|frozen)\b/g,' ');
+  return s.replace(/\s+/g,' ').trim(); }
+function grocStockLoose(k){ return Object.keys(inventory).some(function(ik){ return inventory[ik].inStock && (ik===k||k.indexOf(ik)!==-1||ik.indexOf(k)!==-1); }); }
+function grocListLoose(k){
+  const onB=GROC_BUILTIN.find(function(i){ const bk=invKey(splitEmoji(i.label).name); return bk===k||k.indexOf(bk)!==-1||bk.indexOf(k)!==-1; });
+  if(onB) return !grocPurchased[onB.id];
+  const onC=Object.keys(grocCustom).find(function(id){ const ck=invKey(splitEmoji(String(grocCustom[id]).replace(/\s*\(from:[^)]*\)\s*$/,'')).name); return ck===k||k.indexOf(ck)!==-1||ck.indexOf(k)!==-1; });
+  return onC?!grocPurchased[onC]:false; }
+function grocFromRecipe(rid){
+  const r=(typeof RECIPES!=='undefined'?RECIPES:[]).find(function(x){return x.id===rid;}); if(!r||r.dog) return 0;
+  let added=0;
+  (r.ingredients||[]).forEach(function(ing){
+    const name=ingFood(ing); if(!name) return;
+    const k=invKey(name); if(!k) return;
+    if(k.split(' ').every(function(w){return GROC_STAPLE_WORDS.indexOf(w)!==-1;})) return;  // pantry-staple skip-list
+    if(grocStockLoose(k)) return;       // already in Kitchen Inventory
+    if(grocListLoose(k)) return;        // already on the list (de-dupe)
+    grocCustom['gc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)+(added++)]=grocEmoji(name)+' '+capFirst(name)+' (from: '+(r.emoji||'')+' '+r.name+')';
+  });
+  if(added){ try{saveGroc();}catch(e){} }
+  return added; }
+
 function addToGrocery(name,emoji){ const k=invKey(name);
   const bi=GROC_BUILTIN.find(function(i){return invKey(splitEmoji(i.label).name)===k;}); if(bi){ if(grocPurchased[bi.id]){ delete grocPurchased[bi.id]; saveGrocPurchased(); } return; }
   const cu=Object.keys(grocCustom).find(function(id){return invKey(splitEmoji(grocCustom[id]).name)===k;}); if(cu){ if(grocPurchased[cu]){ delete grocPurchased[cu]; saveGrocPurchased(); } return; }
@@ -847,6 +875,8 @@ let gardenSub = "watering";
 let tankSub = "bluedream";
 let printSub = "todo";
 let finSub   = "overview";  // 💰 finance sub-tab
+let sunSkips = [];          // 📅 Sunday dinner proposals — rids swapped away this session (transient)
+let finMonBalIdx = -1;      // 💳 Monday balance fold-in stepper: -1 closed, 0..n step (transient)
 let foodSub = "list";
 function switchTab(t) {
   currentTab=t;
@@ -1339,7 +1369,19 @@ function renderToday() {
           </div>
           <div onclick="finMondayToggle('${fmNext.id}')" style="width:30px;height:30px;border-radius:50%;border:2px solid #FACC15;background:transparent;flex-shrink:0;cursor:pointer"></div>
         </div>
+        ${finMonBalHtml()}
       </div>`);
+    }
+  }
+
+  // 📅 SUNDAY DINNER IDEAS — Sunday evenings only: small pointer card; the full proposal list lives on Food → To Cook (added Jun 6 2026)
+  if(typeof isSundayEve==='function' && isSundayEve()){
+    const sTop=sundayCands().slice(0,2).map(function(c){return (c.r.emoji||'🍽️')+' '+c.r.name;});
+    if(sTop.length){
+      add("sundinner",745,false,`<div onclick="foodSub='tocook';switchTab('grocery')" style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.03));border:1px solid rgba(139,92,246,.4);border-left:4px solid #8B5CF6;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px;cursor:pointer">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#A78BFA;margin-bottom:5px;font-family:'Lora',serif">📅 This week's dinner ideas — ready for a look</div>
+        <div style="font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.55">Top of the list: ${sTop.join(' · ')}. Tap to review &amp; queue the week — nothing is planned until you say so.</div>
+      </div>`,true);
     }
   }
 
@@ -2601,6 +2643,22 @@ function finCancelToggle(id){ fin.cancel=fin.cancel||{}; if(fin.cancel[id]) dele
 function finTodoToggle(id){ fin.todoDone=fin.todoDone||{}; if(fin.todoDone[id]) delete fin.todoDone[id]; else fin.todoDone[id]=true; saveFin(); renderFinance(); }
 function finMondayToggle(id){ fin.monday=fin.monday||{}; if(fin.monday[id]) delete fin.monday[id]; else { fin.monday[id]=todayKey(); try{toast('📞 Handled — the Monday queue advances');}catch(e){} } saveFin(); renderFinance(); renderToday(); }
 function finMondayKey(offset){ const d=new Date(); const shift=(1-d.getDay()+7)%7; d.setDate(d.getDate()+shift+offset*7); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); } // 0 = today if Monday, else next Monday
+const FIN_MON_BAL=[['bal','checking','🏦 Capital One 360 Checking'],['bal','savings','🌱 Capital One 360 Savings'],['debt','savor','💳 SAVOR balance'],['debt','c6605','💳 Quicksilver •6605 balance']];
+function finMonBalStart(){ finMonBalIdx=0; renderToday(); }
+function finMonBalSave(skip){ if(!skip){ const i=document.getElementById('finMonBalInput'); if(!i) return; const v=parseFloat(String(i.value).replace(/[^0-9.\-]/g,'')); if(isNaN(v)){ try{toast('Hmm — that does not look like a number');}catch(e){} return; } const st=FIN_MON_BAL[finMonBalIdx]; finSet(st[0],st[1],v); }
+  finMonBalIdx++; if(finMonBalIdx>=FIN_MON_BAL.length){ try{toast('💾 Balances logged with today\'s date');}catch(e){} } renderToday(); }
+function finMonBalHtml(){
+  if(finMonBalIdx<0) return '<div onclick="finMonBalStart()" style="margin-top:10px;text-align:center;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.4);border-radius:9px;padding:9px;color:#A78BFA;font-weight:700;font-size:12.5px;cursor:pointer">💳 Update balances — 1 minute, 4 numbers</div>';
+  if(finMonBalIdx>=FIN_MON_BAL.length) return '<div style="margin-top:10px;background:rgba(74,212,144,.08);border:1px solid rgba(74,212,144,.3);border-radius:9px;padding:9px 11px;font-size:12px;color:#4AD490;font-family:\'Lora\',serif">✓ Balances logged for today — now the call. (The circle stays yours to tap.)</div>';
+  const st=FIN_MON_BAL[finMonBalIdx];
+  return '<div style="margin-top:10px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.35);border-radius:9px;padding:10px 12px" onclick="event.stopPropagation()">'
+    +'<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#A78BFA;font-family:\'Lora\',serif;margin-bottom:6px">💳 Balance check '+(finMonBalIdx+1)+' of '+FIN_MON_BAL.length+'</div>'
+    +'<div style="font-size:13px;color:var(--text);font-family:\'Lora\',serif;margin-bottom:7px">'+st[2]+'</div>'
+    +'<div style="display:flex;gap:7px">'
+    +'<input id="finMonBalInput" type="text" inputmode="decimal" placeholder="$" onkeydown="if(event.key===\'Enter\')finMonBalSave(false)" style="flex:1;min-width:0;background:#0a1628;border:1px solid rgba(167,139,250,.45);border-radius:9px;padding:9px 11px;color:var(--text);font-size:15px;font-weight:700;outline:none;text-align:right">'
+    +'<div onclick="finMonBalSave(false)" style="background:rgba(167,139,250,.16);border:1px solid rgba(167,139,250,.5);border-radius:9px;padding:9px 13px;color:#A78BFA;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center">Save →</div>'
+    +'<div onclick="finMonBalSave(true)" style="border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:9px 11px;color:var(--text3);font-size:12px;cursor:pointer;display:flex;align-items:center">skip</div>'
+    +'</div></div>'; }
 function finMondayLabel(k){ const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const d=new Date(k+'T12:00:00'); return 'Mon '+M[d.getMonth()]+' '+d.getDate(); }
 function addFinTodo(){ const el=document.getElementById('finTodoInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; fin.todoCustom=fin.todoCustom||{}; fin.todoCustom['ft-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; el.value=''; saveFin(); renderFinance(); }
 function removeFinTodo(id){ if(fin.todoCustom&&fin.todoCustom[id]!=null) delete fin.todoCustom[id]; if(fin.todoDone&&fin.todoDone[id]) delete fin.todoDone[id]; saveFin(); renderFinance(); }
@@ -2834,13 +2892,51 @@ function removeCook(id){ delete cookQueue[id]; saveCook(); renderToCook(); }
 function addCook(){ const r=document.getElementById('ckRecipe'), d=document.getElementById('ckDay'), m=document.getElementById('ckMeal');
   if(!r||!r.value||!d||!m) return;
   cookQueue['ck-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={rid:r.value,day:d.value,meal:m.value,done:false,ts:Date.now()};
-  saveCook(); try{toast('🍳 Planned — it\'s on the To Cook list');}catch(e){} renderToCook(); }
+  saveCook(); let gN=0; try{ gN=grocFromRecipe(r.value); }catch(e){}
+  try{toast('🍳 Planned'+(gN?' · 🛒 '+gN+' missing ingredient'+(gN>1?'s':'')+' → grocery list':' — it\'s on the To Cook list'));}catch(e){} renderToCook(); }
+// ── 📅 SUNDAY DINNER PROPOSALS (Jun 6 2026): pure suggestions ranked by inventory match — NOTHING queues without his tap. ──
+function invMatchOf(r){ let have=0,tot=0;
+  (r.ingredients||[]).forEach(function(ing){ const n=ingFood(ing); if(!n) return; const k=invKey(n); if(!k) return;
+    if(k.split(' ').every(function(w){return GROC_STAPLE_WORDS.indexOf(w)!==-1;})) return;
+    tot++; if(grocStockLoose(k)) have++; });
+  return {have:have,tot:tot,score:tot?have/tot:0}; }
+function sundayCands(){ const all=(typeof RECIPES!=='undefined')?RECIPES:[];
+  const queued={}; Object.keys(cookQueue).forEach(function(id){ const x=cookQueue[id]; if(x&&!x.done) queued[x.rid]=1; });
+  const SKIPTAGS=['side','breakfast','salad','dessert','drink','snack'];
+  return all.filter(function(r){ return !r.dog&&!r.draft&&!queued[r.id]&&sunSkips.indexOf(r.id)===-1&&!(r.tags||[]).some(function(t){return SKIPTAGS.indexOf(t)!==-1;}); })
+    .map(function(r){ const m=invMatchOf(r); return {r:r,m:m}; })
+    .sort(function(a,b){ return (b.m.score-a.m.score)||(a.r.name<b.r.name?-1:1); }); }
+function isSundayEve(){ const d=new Date(); return d.getDay()===0&&d.getHours()>=15; }
+function queueProposal(rid){ const sel=document.getElementById('sunday-'+rid); const day=(sel&&sel.value)?sel.value:todayKey();
+  cookQueue['ck-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={rid:rid,day:day,meal:'dinner',done:false,ts:Date.now()};
+  saveCook(); let gN=0; try{ gN=grocFromRecipe(rid); }catch(e){}
+  try{toast('🍳 Queued for '+cookDayLabel(day)+(gN?' · 🛒 '+gN+' → grocery list':''));}catch(e){} renderToCook(); }
+function swapProposal(rid){ sunSkips.push(rid); renderToCook(); }
+function sundayPropsHtml(){ if(!isSundayEve()) return '';
+  const cands=sundayCands().slice(0,5); if(!cands.length) return '';
+  let dayOpts=''; for(let i=1;i<8;i++){ const dt=new Date(); dt.setDate(dt.getDate()+i); const k=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'); dayOpts+='<option value="'+k+'">'+cookDayLabel(k)+'</option>'; }
+  let out='<div class="section-label">📅 This week\'s dinner ideas — Sunday planning</div>'
+    +'<div style="font-size:11px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin:-4px 0 10px">Ranked by what\'s already in your kitchen. ✓ queues it (and adds what\'s missing to the grocery list) · ↻ shows the next idea. Nothing happens without your tap.</div>';
+  cands.forEach(function(c){ const r=c.r;
+    out+='<div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.3);border-radius:var(--rad);padding:12px 14px;margin-bottom:9px">'
+      +'<div style="display:flex;align-items:center;gap:10px">'
+      +'<div onclick="openRecipe(\''+r.id+'\')" style="flex:1;min-width:0;cursor:pointer">'
+      +'<div style="font-family:\'Playfair Display\',serif;font-size:14.5px;font-weight:700;color:var(--text)">'+(r.emoji||'🍽️')+' '+r.name+'</div>'
+      +'<div style="font-size:10.5px;color:#A78BFA;margin-top:2px">🧺 '+c.m.have+' of '+c.m.tot+' ingredients on hand'+(r.time?' · '+r.time:'')+'</div></div>'
+      +'<div onclick="swapProposal(\''+r.id+'\')" title="Swap for the next idea" style="width:30px;height:30px;border-radius:9px;border:1px solid rgba(167,139,250,.45);color:#A78BFA;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex-shrink:0">↻</div></div>'
+      +'<div style="display:flex;gap:8px;margin-top:9px" onclick="event.stopPropagation()">'
+      +'<select id="sunday-'+r.id+'" style="flex:1;min-width:0;background:#0a1628;border:1px solid rgba(167,139,250,.35);border-radius:9px;padding:8px;color:var(--text);font-family:\'Lora\',serif;font-size:12.5px;outline:none">'+dayOpts+'</select>'
+      +'<div onclick="queueProposal(\''+r.id+'\')" style="background:rgba(74,212,144,.13);border:1px solid rgba(74,212,144,.5);border-radius:9px;padding:8px 16px;color:#4AD490;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center">✓ Queue</div></div></div>';
+  });
+  return out; }
+
 function renderToCook(){ const el=document.getElementById('view-grocery'); if(!el||foodSub!=='tocook') return;
   const all=(typeof RECIPES!=='undefined')?RECIPES:[];
   const byId=function(id){ return all.find(function(r){return r.id===id;}); };
   const items=Object.keys(cookQueue).map(function(id){ const x=cookQueue[id]||{}; return {id:id,rid:x.rid,day:x.day,meal:x.meal,done:!!x.done}; }).filter(function(x){return !!byId(x.rid);});
   items.sort(function(a,b){ return (a.done-b.done) || (a.day<b.day?-1:a.day>b.day?1:0) || ((MEAL_META[a.meal]||[0,0,9])[2]-(MEAL_META[b.meal]||[0,0,9])[2]); });
-  let out='<div class="section-label">🍳 To Cook — the plan</div>';
+  let out=sundayPropsHtml();
+  out+='<div class="section-label">🍳 To Cook — the plan</div>';
   if(!items.length) out+='<div style="background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.15);border-radius:var(--rad);padding:18px;text-align:center;font-size:13px;color:var(--text2);font-family:\'Lora\',serif;margin-bottom:14px">Nothing planned yet — pick a recipe below and give it a day. 🌱</div>';
   items.forEach(function(x){ const r=byId(x.rid); const mm=MEAL_META[x.meal]||['🍽️',x.meal,9];
     const isToday=(x.day===todayKey())&&!x.done;
