@@ -516,7 +516,7 @@ const FINANCE = {
     { id:"irsL",     label:"IRS payment plan",          start:null,    min:50,     apr:"?",      card:false, note:"total owed unknown" }
   ],
   cancels: [  // pending cancellations — check one off ONLY once it is verified gone on a statement
-    { id:"farmersdog", label:"The Farmer's Dog", amt:215.05, note:"pending Zoey's transition (started) — cancel after Day 12 🐕" },
+    { id:"farmersdog", label:"The Farmer's Dog", amt:215.05, note:"cancel after the incoming shipment is used up + the 12-day transition — realistically ~6 weeks out 🐕" },
     { id:"dupclaude", label:"Duplicate Claude charge", amt:21.03, note:"billed 2× in May — one should remain" },
     { id:"chatgpt",   label:"ChatGPT",                 amt:20.00 },
     { id:"gamepass",  label:"Xbox Game Pass",          amt:31.11 },
@@ -531,6 +531,7 @@ const FINANCE = {
   keeping: "Keeping on purpose: Spotify $14.18 · Claude.ai $21.03 (single) · My Healing Space.",
   todosSeed: [
     { id:"ft_latefee",  label:"📞 Call property management about the rent late fee — retry after the weekend (no answer Fri)" },
+    { id:"ft_zoeyfood", label:"🐕 Buy Zoey's homemade-food ingredients (when the Farmer's Dog shipment runs low, ~4 weeks)" },
     { id:"ft_xfinity",  label:"📞 Xfinity retention call — target $70–90 (leverage: AT&T Internet Air is $47)" },
     { id:"ft_family",   label:"👨‍👩‍👧 Talk to family — drop $400/mo to ~$200 while stabilizing" },
     { id:"ft_verify",   label:"🧾 Verify canceled subs actually stopped (June statements)" },
@@ -542,7 +543,7 @@ const FINANCE = {
   ],
   advice: [
     { t:"The SAVOR card is a tool, not a balance", b:"Brand-new card, $500 limit, ~30% APR. Used for one small bill and paid in full, it quietly builds credit. Carried, $500 at 30% grows about $12 every month it sits. The win condition is simple — the statement always says $0." },
-    { t:"The Farmer's Dog is the big domino", b:"$215.05 a month. Zoey's 12-day homemade switch is already underway — the day she's fully transitioned, cancelling it flips your gap most of the way to positive all by itself. Staying on her transition IS a money move." },
+    { t:"The Farmer's Dog is the big domino", b:"$215.05 a month. The plan: feed through the incoming 1+ month shipment, buy the homemade ingredients, run the 12-day switch — so the cancel lands ~6 weeks out. That's honest, not slow: the shipment is already paid for, so using it up IS the money move." },
     { t:"Rent first, every first paycheck", b:"Rent is $2,175 — almost a whole paycheck. The day a check lands, set the rent money aside before anything else touches it. The rest of the month gets simpler instantly." },
     { t:"The $500 buffer comes before extra debt payments", b:"With the cards maxed, any surprise becomes new debt. Even $50 per paycheck builds it in about 5 months — and every dollar in the buffer is a surprise that never reaches a card." },
     { t:"Smallest card first — •6605 is almost gone", b:"It is only about $490. Clear it, then roll its $25 minimum onto the next card. The snowball works because finishing things feels good — use that." },

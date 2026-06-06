@@ -626,7 +626,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606124016"></script>
+<script src="./data.js?v=20260606130000"></script>
 <script src="./recipes.js?v=20260606113026"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -638,7 +638,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6 · 12:40 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 6 · 12:54 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1326,8 +1326,8 @@ function renderToday() {
       <div style="display:flex;align-items:center;gap:13px">
         <div style="font-size:24px;flex-shrink:0">🥣</div>
         <div style="flex:1;min-width:0">
-          <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--text)">Start Day 1 — 25% homemade, 75% Farmer's Dog</div>
-          <div class="habit-sub">Days 1–3: 25/75 · 4–6: 50/50 · 7–9: 75/25 · 10–12: 100% homemade. Recipes are in the Recipe Box (🐕).</div>
+          <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--text)">⏸ Not started — use up the Farmer's Dog shipment + buy ingredients first</div>
+          <div class="habit-sub">A 1+ month shipment is incoming — feed through it first (~4 weeks), buy the homemade ingredients, THEN tap the circle to start Day 1 (25/75 → 50/50 → 75/25 → 100% homemade over 12 days). Recipes are in the Recipe Box (🐕).</div>
         </div>
         <div onclick="zoeyStart()" style="width:28px;height:28px;border-radius:50%;border:2px solid #F472B6;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer"></div>
       </div>
@@ -1831,12 +1831,17 @@ function renderShopping() {
       '<div class="kv"><span>Top</span><span>Open top + 3D-printed escape lid (DAP Rapid Fuse, cured, aquarium-safe)</span></div>'
       +'<div class="kv"><span>Filter</span><span>3-stage internal: carbon · bio media · foam sponge (+ spare seeding sponges)</span></div>'
       +'<div class="kv"><span>Heater</span><span>Target 72–74°F. Held ~74°F during the 6/2 heat spike.</span></div>'
+      +'<div class="kv"><span>Cooling</span><span><b style="color:#4AD490">Clip-on fan added (Jun 6)</b> — evaporative cooling across the surface for heat-spike days; watch evaporation, top off with distilled</span></div>'
       +'<div class="kv"><span>Aeration</span><span>Air pump + airstone — swapped to one smaller airstone (6/2); tube weighted with petrified wood. Run high in the heat.</span></div>'
       +'<div class="kv"><span>Lighting</span><span>Black LED bar across top + blue LED inside</span></div>');
+    html += hero('images/hydro_top_20260606.jpg','Aquarium-top hydroponics, Jun 6 — potatoes in the net baskets: one sprout cluster up, the left one leafing out under the tank light');
     html += panel('🌱 Hydroponics (hang-on baskets)',
-      '<div class="kv"><span>Baskets 1–3</span><span>Sweet potato (established roots) — vines/leaves/roots, <b>no tubers</b></span></div>'
-      +'<div class="kv"><span>Basket 4</span><span>Ristra/Mexican pepper seed (germinating)</span></div>'
+      '<div class="kv"><span>Potatoes</span><span><b style="color:#4AD490">Top growth started (Jun 6)</b> — one sprout cluster up, one leafing out</span></div>'
+      +'<div class="kv"><span>White sweet potato</span><span>Roots now <b>4–8 inches</b> into the water</span></div>'
+      +'<div class="kv"><span>Other baskets</span><span>Sweet potato vines/leaves (<b>no tubers</b>) · Ristra/Mexican pepper seed (germinating)</span></div>'
       +'Roots hang in the tank — absorb nitrates/ammonia and give shrimp biofilm to graze. LECA is the aquarium-safe Aqua Rocks type.');
+    html += panel('🪟 Lid Design Plan — idea, not built',
+      'Sketch for a future build: a <b>transparent lid</b> that keeps the nerite snails IN, with an <b>integrated small light</b> and <b>airflow gaps</b> so the surface still breathes. The hydroponics keep growing on TOP of the lid under the grow lamp; the aquarium lamp then serves <b>only the water column</b>. Pairs with the 🌱 grow-lamp stand project on the Print tab.');
     html += panel('🪨 Hardscape &amp; Decor',
       '<b>Substrate:</b> glow gravel (tested 0 hardness ✅). <b>Decor:</b> glass Japanese lantern · large white/quartz rock · glass shrimp feeding tube · quartz &amp; amethyst crystal beds · decorative hut · petrified wood (weighting the airstone tube). <b style="color:#F5B830">Removed 6/2:</b> fake glowing coral/anemone (stirred up detritus → watch NH3). <b>Plants:</b> Cuba Pearl Weed (5/27; rest added 6/2 in thumb-sized patches) + Indian almond leaves.');
     html += panel('🦐 Livestock',
@@ -2373,6 +2378,15 @@ function renderPrint() {
       <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">🌱 Desktop Hydroponics — pots</div>
       <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">Pots are on the bed RIGHT NOW. ✅ Done: 2× Droplet Watering Can. Next print: TPU grommets, the moment the TPU lands.</div>
     </div>
+    <div style="background:linear-gradient(135deg,rgba(74,222,128,.10),rgba(34,211,238,.05));border:1px solid rgba(74,222,128,.35);border-radius:14px;padding:13px 15px;margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#4ADE80;font-family:'Lora',serif;margin-bottom:4px">🛠️ Project</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--text)">🌱 Grow-lamp anchored stand</div>
+        <span style="font-size:9px;letter-spacing:.08em;padding:2px 8px;border-radius:10px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:#F87171;text-transform:uppercase">Hard</span>
+        <span style="font-size:9px;letter-spacing:.08em;padding:2px 8px;border-radius:10px;background:rgba(245,184,48,.13);border:1px solid rgba(245,184,48,.4);color:#F5B830;text-transform:uppercase">Weekend</span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.55">A stable <b>anchored</b> stand (metal or PLA — <b>not a ceiling mount</b>) to hold the small grow lamp over the aquarium-top hydroponics. Needs: reach OVER the tank, stability against bumps, and cable routing. Candidate approaches: <b>weighted base + vertical arm</b>, or <b>clamp/anchor onto the tank stand</b>.</div>
+    </div>
     <div onclick="toggleFunPrint('tpu_arrived')" style="background:#0d0d1a;border:1px solid rgba(34,211,238,.25);border-radius:12px;padding:13px 15px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:11px">
       <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${funPrints['tpu_arrived']?'#4AD490':'rgba(255,255,255,.3)'};background:${funPrints['tpu_arrived']?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${funPrints['tpu_arrived']?'✓':''}</div>
       <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${funPrints['tpu_arrived']?'#4AD490':'var(--text)'};${funPrints['tpu_arrived']?'text-decoration:line-through':''}">🧵 TPU filament arrives Jun 7</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Tap when it lands. Flexible filament for the grommets — dry it first if the bag seal looks iffy.</div></div>
@@ -2604,7 +2618,7 @@ function renderFinance(){
     +'<div style="font-family:\'Playfair Display\',serif;font-size:38px;font-weight:800;color:'+(pos?G:R)+';line-height:1">'+(pos?'+':'')+finFmt(gap,true)+'<span style="font-size:14px;color:var(--text2);font-weight:400;font-family:\'Lora\',serif"> / month</span></div>'
     +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;margin-top:8px">In ~'+finFmt(FINANCE.incomeMonthly,true)+' · committed out ~'+finFmt(committed,true)+(cancelGot>0?' <span style="color:'+G+'">(already trimmed '+finFmt(cancelGot,true)+' ✂️)</span>':'')+'</div>'
     +(pos?'<div style="font-size:12.5px;color:'+G+';font-family:\'Lora\',serif;font-style:italic;margin-top:8px">You\'re above water — every verified cancellation widens the margin. 🎉</div>'
-        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b>'+(!(fin.cancel||{}).farmersdog?'<br>🐕 Farmer\'s Dog $215/mo — cancel after Zoey\'s Day 12 <b style="color:#4AD490">(the big one)</b>':'')+'<br>✂️ '+finFmt(cancelLeft-((fin.cancel||{}).farmersdog?0:215.05),true)+'/mo of smaller subscriptions left to verify below<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
+        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b>'+(!(fin.cancel||{}).farmersdog?'<br>🐕 Farmer\'s Dog $215/mo — <b>~6 weeks out</b>: use up the shipment, then the 12-day switch <b style="color:#4AD490">(the big one)</b>':'')+'<br>✂️ '+finFmt(cancelLeft-((fin.cancel||{}).farmersdog?0:215.05),true)+'/mo of smaller subscriptions left to verify below<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
     +'<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:var(--text)">💰 Next paycheck: <b>'+(left===0?'today! 🎉':pdLabel+' — '+(left===1?'tomorrow':'in '+left+' days'))+'</b> <span style="color:var(--text2)">(~$2,250, every other Thursday)</span></div>'
   +'</div>';
 
@@ -2698,6 +2712,18 @@ function renderFinance(){
       +'<div style="font-size:13px;font-weight:700;color:'+(v?G:R)+';flex-shrink:0">'+finFmt(c.amt)+'</div></div>';
   });
   out+='<div style="padding:10px 0;font-size:11px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;font-style:italic">'+FINANCE.cancelPending+'<br>'+FINANCE.keeping+'</div></div>';
+
+  // ── 6b · FARMER'S DOG vs HOMEMADE — cost analysis (computed Jun 6 2026; estimates at Denver King Soopers-ish prices) ──
+  out+='<div class="section-label">🐕 Farmer\'s Dog vs Homemade — cost analysis</div>';
+  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 16px;margin-bottom:14px">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">'
+    +'<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:10px;padding:10px;text-align:center"><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#F87171;font-family:\'Lora\',serif;margin-bottom:3px">Farmer\'s Dog</div><div style="font-family:\'Playfair Display\',serif;font-size:19px;font-weight:800;color:#F87171">$215<span style="font-size:11px">/mo</span></div><div style="font-size:10px;color:var(--text2)">$7.07 a day</div></div>'
+    +'<div style="background:rgba(74,212,144,.08);border:1px solid rgba(74,212,144,.3);border-radius:10px;padding:10px;text-align:center"><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#4AD490;font-family:\'Lora\',serif;margin-bottom:3px">Homemade (rotation)</div><div style="font-family:\'Playfair Display\',serif;font-size:19px;font-weight:800;color:#4AD490">~$141<span style="font-size:11px">/mo</span></div><div style="font-size:10px;color:var(--text2)">~$4.63 a day</div></div>'
+    +'</div>'
+    +'<div style="background:rgba(74,212,144,.06);border:1px solid rgba(74,212,144,.2);border-radius:10px;padding:9px 12px;margin-bottom:10px;text-align:center;font-size:12.5px;color:var(--text);font-family:\'Lora\',serif">Saves <b style="color:#4AD490">~$74/mo</b> · <b style="color:#4AD490">~$890/yr</b> — and <b>~$104/mo (~$1,250/yr)</b> if beef is the occasional batch, not an equal third</div>'
+    +'<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.7">Per 10-day batch (660 kcal/day · 460–480 g/day, 28-lb dog): <b style="color:var(--text)">chicken ≈ $39 ($3.89/day)</b> · <b style="color:var(--text)">pork ≈ $34 ($3.39/day)</b> · <b style="color:#F5B830">beef ≈ $66 ($6.61/day)</b> — at current beef prices (USDA avg ~$6.90/lb, Apr 2026) the beef batch nearly matches Farmer\'s Dog, so chicken + pork carry the savings. Includes ~25% meat cooking loss, liver, rice/sweet potato, frozen veg, 2 cans no-salt sardines + 3 eggs per batch; eggshell calcium is free.</div>'
+    +'<div style="font-size:10px;color:var(--text3,#5a7a99);font-family:\'Lora\',serif;font-style:italic;margin-top:7px">Estimates at Denver King Soopers-ish prices, Jun 2026 (chicken thigh b/s $3.49/lb · 90/10 beef $6.49/lb · pork loin $2.79/lb). True-up after the first real ingredient run.</div>'
+    +'</div>';
 
   // ── 7 · MONEY TO-DOS ──
   fin.todoDone=fin.todoDone||{}; fin.todoCustom=fin.todoCustom||{};
