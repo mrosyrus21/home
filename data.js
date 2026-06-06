@@ -37,6 +37,7 @@ const TASKS = {
   errand1:        { room:"priority", label:"Go get distilled water", level:"easy" },
   errand2:        { room:"priority", label:"Go get food", level:"easy" },
   vacuum_bags:    { room:"priority", label:"Buy 8-inch vacuum bags", level:"easy", note:"Moved off the grocery list (grocery is food-only now). Grab them with the next errand run." },
+  auth_lock:      { room:"priority", label:"🔒 Big project: real app lock — Firebase Auth + locked database rules", level:"hard", note:"The password curtain on the app is cosmetic — the page AND the Firebase data are still publicly readable by anyone with the URL. The real fix: Firebase Authentication sign-in + database security rules locked to that account. Curtain password lives in CURTAIN_PASSWORD at the top of index.html." },
   rx_setup:       { room:"priority", label:"Set up esomeprazole at King Soopers (use GoodRx)", level:"easy", note:"Open GoodRx, search esomeprazole for the King Soopers pharmacy, grab the coupon price, and send or transfer the prescription there. Show the GoodRx coupon at the counter on pickup." },
   measure_printer:{ room:"office",   label:"Measure the 3D printer — width, depth, height + room for spools and cables", level:"easy", note:"Do this before buying a desk so you know exactly what fits." },
   find_desk:      { room:"priority", label:"Find a cheap sturdy desk — Marketplace, Craigslist, OfferUp", level:"easy", note:"Must be sturdy — needs to hold the 3D printer. Check FB Marketplace first — people offload office furniture constantly." },

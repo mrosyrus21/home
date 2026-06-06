@@ -540,11 +540,28 @@ body::after{
 @keyframes dtTestPulse{0%,100%{box-shadow:0 0 10px rgba(245,184,48,.25)}50%{box-shadow:0 0 30px rgba(245,184,48,.6)}}
 @keyframes dtCallPulse{0%,100%{box-shadow:0 0 10px rgba(220,30,30,.25)}50%{box-shadow:0 0 32px rgba(220,30,30,.65)}}
 .flow-just-done{animation:sinkIn .5s cubic-bezier(.34,1.56,.64,1),glowPulse 1.2s ease-out;border-radius:var(--rad)}
+/* ── 🔒 PASSWORD CURTAIN (privacy curtain, not security) ── */
+#curtain{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:#060d1c center/cover no-repeat}
+@keyframes curtainShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.curtain-shake{animation:curtainShake .45s ease}
+#curtain-pass{width:100%;box-sizing:border-box;background:rgba(6,13,28,.75);border:1px solid rgba(120,160,210,.35);border-radius:12px;padding:13px 16px;color:#EAF2FB;font-size:17px;letter-spacing:.25em;text-align:center;outline:none;font-family:'Lora',serif}
+#curtain-pass:focus{border-color:rgba(56,189,248,.6);box-shadow:0 0 18px rgba(56,189,248,.15)}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body>
+
+<!-- 🔒 PASSWORD CURTAIN — a privacy curtain, NOT security (see CURTAIN_PASSWORD in the script) -->
+<div id="curtain">
+  <div id="curtain-box" style="width:min(320px,84vw);background:linear-gradient(160deg,rgba(10,22,40,.88),rgba(6,13,28,.92));border:1px solid rgba(120,160,210,.25);border-radius:18px;padding:30px 26px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.55);backdrop-filter:blur(6px)">
+    <div style="font-size:36px;margin-bottom:6px">🏔️</div>
+    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#EAF2FB;margin-bottom:18px">Home &amp; Garden</div>
+    <form onsubmit="return curtainTry(event)" style="margin:0">
+      <input id="curtain-pass" type="password" autocomplete="off" autocapitalize="none" placeholder="password">
+    </form>
+  </div>
+</div>
 
 <div id="fb-loading" style="position:fixed;inset:0;background:#06050A;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px"><div style="font-size:36px">📅</div><div style="font-size:13px;color:#6A6480;font-family:'Lora',serif;letter-spacing:.1em">Syncing your schedule…</div></div>
 <div class="header">
@@ -626,7 +643,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606133530"></script>
+<script src="./data.js?v=20260606145933"></script>
 <script src="./recipes.js?v=20260606134632"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -638,8 +655,32 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 6 · 2:56 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 6 · 3:03 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
+// ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// 🔒 PASSWORD CURTAIN — change the password on the next line.
+// HONEST NOTE: this is a privacy curtain, NOT security. The page, the
+// scripts, and the Firebase data all remain publicly fetchable by anyone
+// with the URL — this only keeps casual eyes off the screen. The real
+// lock is the queued "Firebase Auth + locked database rules" project
+// (Rooms → ⭐ Priority).
+// ═══════════════════════════════════════════════════════════════
+const CURTAIN_PASSWORD = "zoey";              // ← the password (lowercase)
+const CURTAIN_FLAG     = "hg_curtain_ok";     // localStorage key — device remembered after one correct entry
+function curtainUnlocked(){ try{ return localStorage.getItem(CURTAIN_FLAG)===CURTAIN_PASSWORD; }catch(e){ return true; } }
+function curtainOpen(){ const el=document.getElementById('curtain'); if(el) el.style.display='none'; }
+function curtainTry(ev){ if(ev&&ev.preventDefault) ev.preventDefault();
+  const i=document.getElementById('curtain-pass');
+  const v=((i&&i.value)||'').trim().toLowerCase();
+  if(v===CURTAIN_PASSWORD){ try{ localStorage.setItem(CURTAIN_FLAG,CURTAIN_PASSWORD); }catch(e){} curtainOpen(); }
+  else { const b=document.getElementById('curtain-box'); if(b){ b.classList.remove('curtain-shake'); void b.offsetWidth; b.classList.add('curtain-shake'); } if(i){ i.value=''; i.focus(); } }
+  return false; }
+function curtainInit(){ const el=document.getElementById('curtain'); if(!el) return;
+  if(curtainUnlocked()){ el.style.display='none'; return; }
+  try{ el.style.backgroundImage="linear-gradient(rgba(4,10,22,.72),rgba(4,10,22,.84)),url('"+TODAY_BG[todaySeg()]+"')"; }catch(e){}
+  setTimeout(function(){ const i=document.getElementById('curtain-pass'); if(i) i.focus(); },100); }
 // ═══════════════════════════════════════════════════════════════
 
 // ── APP DATA moved to data.js (loaded before this script) ──
@@ -1441,6 +1482,14 @@ function renderToday() {
   // Dinner + evening wind-down
   const mD=!!laundry["meal-dinner-"+today];
   add("dinner",1080,mD,strip("🍽️","Dinner",mD,"#B47C14","toggleMeal('dinner')",RY.dinner,"","Eaten by "+RY.dinnerBy+" — house rule"+(dow===1?" · before pool league 🎱":"")));
+
+  // 💼 ONE-OFF WORK ITEMS (added Jun 6 2026) — ordinary manual checks; both windows auto-expire after Sun Jun 7
+  if(today>="2026-06-06" && today<="2026-06-07"){
+    const wtDone=!!checked["work_training_jun6"];
+    add("worktrain",1090,wtDone,strip("💼","Finish work training",wtDone,"#60A5FA","toggle('work_training_jun6')",(today==="2026-06-06"?"Tonight — or tomorrow":"Today"),"",(today==="2026-06-06"?"Tonight or tomorrow, your call — then it stops following you":"Last call — wrap it up today")));
+    const tcDone=!!checked["timecard_jun8"];
+    add("timecard",1095,tcDone,strip("🕐","Do timecard — ready for Bill by Monday",tcDone,"#FBBF24","toggle('timecard_jun8')",(today==="2026-06-07"?"Today — Bill needs it Monday":"By Sunday night"),"","Deadline: Monday morning, on Bill's desk"));
+  }
   const wPhone=!!laundry["evening-wind-phone-"+today];
   add("windphone",1300,wPhone,strip("📵","Phone to the other room — screens off",wPhone,"#8B5CF6","toggleEvening('wind-phone')",RY.windDown,"","No phone, no TV from here — the alarm clock takes over"));
   const wRead=!!laundry["evening-wind-read-"+today];
@@ -1580,7 +1629,8 @@ function toggleRoom(roomId) {
 
 function renderRooms() {
   const el=document.getElementById("view-rooms");
-  const order=["kitchen","living","office","bedroom","bathroom","backyard","garage"];
+  // "priority" added Jun 6 2026 — the ⭐ Priority to-do list lives here (it was in the data but missing from this render list)
+  const order=["priority","kitchen","living","office","bedroom","bathroom","backyard","garage"];
   let html="";
   order.forEach(roomId=>{
     const r=ROOMS[roomId];
@@ -3370,6 +3420,7 @@ function updateClock(){
 }
 updateClock();
 setInterval(updateClock,30000);
+curtainInit();
 </script>
 <script>if('serviceWorker' in navigator){
   var __hgReloaded=false;
