@@ -526,13 +526,23 @@ body::after{
   .header-row{flex-wrap:wrap;gap:8px}
   .hdr-center{order:-1;flex:1 1 100%;width:100%;align-items:center;padding-top:0}
   .header-eyebrow{margin:0 0 9px;font-size:8px;letter-spacing:.2em;line-height:1.5}
-  .hdr-left{flex:1 1 58%;min-width:150px}
-  .hdr-right{flex:0 0 auto}
+  .hdr-left{flex:1 1 55%;min-width:145px}
+  /* Jun 7 fix: weather card must be allowed to SHRINK (flex 0 1 + min-width:0), not just sit at auto width —
+     with 3-digit temps/long wx rows it overflowed and shoved the greeting column into a wrap/overlap mess */
+  .hdr-right{flex:0 1 auto;min-width:0}
   .hdr-clock{font-size:30px}
-  .hdr-fact{max-width:200px;font-size:10px;margin-top:7px}
-  .hdr-weather{padding:8px 11px}
+  .hdr-fact{max-width:170px;font-size:10px;margin-top:7px}
+  .hdr-weather{padding:7px 10px;max-width:100%}
+  .wx-now{font-size:19px}
+  .wx-row{font-size:10.5px}
+  .wx-tom{font-size:10px}
   .hdr-trackers{gap:10px;margin-top:8px}
-  .navbar .util-row{padding:5px 12px 0}
+  /* Jun 7 fix: the pill row (incl. the live-temp Forecast pill) had no wrap — on ≤400px phones it overflowed
+     the left edge (flex-end + nowrap). Let it wrap, centered; pills keep full tap height */
+  .navbar .util-row{padding:5px 10px 0;flex-wrap:wrap;justify-content:center;gap:6px}
+  .util-pill{font-size:9.5px;padding:5px 11px}
+  /* 6 main tabs since the Finance tab — tighten so they fit a 360px screen without crowding */
+  .tab{font-size:9px;letter-spacing:.06em}
   .navbar{box-shadow:0 4px 14px rgba(0,0,0,.4)}
 }
 @keyframes sinkIn{0%{opacity:0;transform:translateY(-16px) scale(.97)}55%{opacity:1;transform:translateY(3px) scale(1.01)}100%{opacity:1;transform:none}}
@@ -643,7 +653,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260606174945"></script>
+<script src="./data.js?v=20260607140500"></script>
 <script src="./recipes.js?v=20260606134632"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -655,7 +665,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 7 · 7:49 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 7 · 8:13 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1762,6 +1772,9 @@ function renderGarden() {
       +'</div><div style="padding:13px 15px">'+body+'</div></div>';
   }
   const factBox = t => t?'<div style="background:rgba(212,144,10,.08);border:1px solid var(--aborder);border-radius:9px;padding:9px 11px;margin:2px 0 6px;font-size:12px;color:var(--amber2);font-family:\'Lora\',serif;font-style:italic;line-height:1.5">💡 '+t+'</div>':'';
+  // Jun 7 2026 — per-plant frequency chips (display only; data.js `days` stays the engine truth)
+  const chip=(t,c)=>t?'<span style="display:inline-block;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:12px;background:rgba(6,5,10,.45);border:1px solid '+c+'55;color:'+c+';font-family:\'Lora\',serif;line-height:1.4;margin:0 6px 4px 0;max-width:100%;white-space:normal">'+t+'</span>':'';
+  const chipRow=h=>h?'<div style="margin:0 0 7px">'+h+'</div>':"";
   const sect = (label,color,text) => '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:'+color+';font-family:\'Lora\',serif;margin:9px 0 3px">'+label+'</div><div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.55">'+text+'</div>';
   const hdr = (p,right) => '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:24px">'+p.emoji+'</div><div style="flex:1;font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text)">'+p.name+'</div>'+(right?'<div style="font-size:11px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;white-space:nowrap">'+right+'</div>':'')+'</div>';
 
@@ -1784,6 +1797,7 @@ function renderGarden() {
       else if(st==="soon"){bTxt="⚠️ Due soon";bCol="#FBBF24";bl="💧 Water";bc="soon";}
       else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Water";bc="ok";}
       let body=hdr(p, days!==null?days+"d ago":"never");
+      body+=chipRow(chip(p.waterChip,"#7EB8F0"));
       body+=sect("💧 When & how","#7EB8F0",wi.when||p.freq);
       if(wi.thirst) body+=sect("👀 Thirst check","#22D3EE",wi.thirst);
       body+=wxWaterNote(p);
@@ -1809,6 +1823,7 @@ function renderGarden() {
         const bTxt=hDone?"✓ Harvested":ong?"🌿 Pick when ripe":ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
         const bCol=hDone?"#2DB870":(ong||ready)?"#4ADE80":soon?"#FBBF24":"#9bb3c9";
         let body=hdr(p, ong?"when ripe":(ready?"ready":h.date));
+        body+=chipRow(chip(p.harvestChip,"#4ADE80"));
         if(ong&&h.signs) body+=sect("👀 Ready when you see…","#4ADE80",h.signs);
         body+=sect("✂️ How to pick","#4ADE80",h.how);
         body+=sect("🌟 Good to know","#FBBF24",h.fact);
@@ -1817,6 +1832,14 @@ function renderGarden() {
         body+=factBox(dailyFact(p.id));
         html+=pcard(p,bTxt,bCol,body);
       });
+    // display-only outlook for plants without a harvest card (incl. seedlings' "not yet" lines)
+    const hRest=PLANTS.filter(p=>!HARVEST_INFO[p.id]&&p.harvestChip);
+    if(hRest.length){
+      html+=`<div class="section-label">🌱 Harvest outlook — everything else</div>`;
+      html+='<div style="background:linear-gradient(145deg,var(--s2),var(--s1));border:1px solid var(--border);border-radius:var(--rad);padding:6px 14px;margin-bottom:14px;box-shadow:0 4px 20px rgba(0,0,0,.3)">'
+        +hRest.map((p,i)=>'<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;'+(i<hRest.length-1?'border-bottom:1px solid var(--border)':'')+'"><div style="font-size:18px;flex-shrink:0;line-height:1.3">'+p.emoji+'</div><div style="flex:1;min-width:0"><div style="font-family:\'Playfair Display\',serif;font-size:13px;font-weight:700;color:var(--text)">'+p.name+'</div><div style="margin-top:3px">'+chip(p.harvestChip,"#4ADE80")+'</div></div></div>').join("")
+        +'</div>';
+    }
   }
 
   else {
@@ -1875,6 +1898,7 @@ function renderGarden() {
       let bTxt="",bCol="#4AD490";
       if(p.trim){ const dT=daysSinceTrimmed(p.id), doneT=trimmed[p.id]===today; const due=!doneT&&(dT===null||(p.trimDays&&dT>=p.trimDays)); if(doneT){bTxt="✓ Tended";bCol="#4AD490";} else if(due){bTxt="🌿 Needs tending";bCol="#FB923C";} }
       let body=hdr(p,"");
+      body+=chipRow(chip(p.light,"#FBBF24"));
       if(CARE_INFO[p.id]) body+=sect("🌿 Care note","#86C232",CARE_INFO[p.id].fact);
       if(p.trim){
         const dT=daysSinceTrimmed(p.id), doneT=trimmed[p.id]===today;
