@@ -532,8 +532,7 @@ const FINANCE = {
         "Only ONE application at a time — each hard inquiry dings your score",
         "Don't do the card-number reset — it would break the autopays you WANT"
       ]},
-      { id:"ft_po",        label:"🧾 Figure out payments for PO" },
-      { id:"ft_audit",     label:"🧾 Send the Home Depot card + May checking statements to finish the subscription audit", note:"Those accounts aren't in the data yet — any subscriptions on them are still unaudited." }
+      { id:"ft_po",        label:"🧾 Figure out payments for PO" }
     ]},
     { tier:"🟢 Foundation", col:"#4AD490", items:[
       { id:"ft_buffer",   label:"🛟 Build the $500 starter buffer (Goal #1 on 📊 Overview)" },
