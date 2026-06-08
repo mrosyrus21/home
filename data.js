@@ -456,6 +456,7 @@ const RECIPES = [
 // HARD RULE: every money reminder carries an `account` and the app DISPLAYS it. (added Jun 8 2026)
 const REMINDERS = [
   { id:"rem_carwash_crunchy", date:"2026-06-11", emoji:"🔁", text:"Verify Super Star Car Wash ($24) + Crunchyroll ($15.18) didn't recharge", account:"Capital One 360 checking" },
+  { id:"rem_carwash_verify", date:"2026-06-13", emoji:"🫧", text:"Check that Super Star Car Wash actually got cancelled (no $24 charge)", account:"Capital One 360 checking" },
   { id:"rem_gp_play",         date:"2026-06-14", emoji:"🎮", text:"Play Game Pass games before it's gone (cancels Jun 15, renews 16) — Game Pass $31.11", account:"Capital One checking" },
   { id:"rem_gp_cancel",       date:"2026-06-15", emoji:"🎮", text:"Cancel Xbox Game Pass ($31.11)", account:"Capital One checking" },
   { id:"rem_uberone",         date:"2026-06-15", emoji:"🚗", text:"Verify Uber One ($9.99) didn't recharge after cancelling", account:"Capital One checking" },
