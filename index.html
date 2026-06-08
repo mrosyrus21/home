@@ -653,7 +653,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260608180000"></script>
+<script src="./data.js?v=20260608112359"></script>
 <script src="./recipes.js?v=20260606134632"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -665,7 +665,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 8 · 10:09 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 8 · 11:25 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -834,6 +834,31 @@ function saveTrimmed(){ ST.child('trimmed').set(trimmed); }
 function saveHarvested(){ ST.child('harvested').set(harvested); }
 function harvestPlant(id){ if(harvested[id]===todayKey()) delete harvested[id]; else harvested[id]=todayKey(); saveHarvested(); renderAll(); }
 function toggleFunPrint(id){ funPrints[id]=funPrints[id]?null:1; saveFunPrints(); renderAll(); }
+// ── 🔔 in-app reminders: done-state in laundry. dateKeyed=true => per-day key (recurring); else one-shot ──
+function reminderKey(id,dateKeyed){ return dateKeyed?("rem-"+id+"-"+todayKey()):("rem-"+id); }
+function reminderDone(id,dateKeyed){ return !!laundry[reminderKey(id,dateKeyed)]; }
+function toggleReminder(id,dateKeyed){ const k=reminderKey(id,dateKeyed); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
+// 🚙 DMV appointment date (editable); the daily reminder runs through it then retires
+function dmvApptDate(){ return laundry["dmv-appt"] || ((typeof DMV!=="undefined"&&DMV.defaultDate)||"2026-06-25"); }
+function updateDmvAppt(){ const cur=dmvApptDate(); const d=prompt("Got an earlier DMV slot? Enter the new appointment date (YYYY-MM-DD):",cur); if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d)){ laundry["dmv-appt"]=d; saveLaundry(); renderAll(); } else if(d){ try{toast("Use YYYY-MM-DD, e.g. 2026-06-20");}catch(e){} } }
+// 📋 print silica: weekly recurring check
+function isoWeekKey(){ const d=new Date(); const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=dt.getUTCDay()||7; dt.setUTCDate(dt.getUTCDate()+4-day); const ys=new Date(Date.UTC(dt.getUTCFullYear(),0,1)); const wk=Math.ceil((((dt-ys)/86400000)+1)/7); return dt.getUTCFullYear()+"-W"+String(wk).padStart(2,"0"); }
+function togglePrintSilica(){ const k="print-silica-"+isoWeekKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
+// shared reminder card (active) — money reminders DISPLAY their account
+function reminderCardHtml(emoji,text,account,onclick,extra){
+  return '<div style="background:linear-gradient(135deg,rgba(56,189,248,.12),rgba(56,189,248,.03));border:1px solid rgba(56,189,248,.4);border-left:4px solid #38BDF8;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">'
+    +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#38BDF8;margin-bottom:6px;font-family:\'Lora\',serif">🔔 Reminder</div>'
+    +'<div style="display:flex;align-items:center;gap:13px">'
+      +'<div style="font-size:22px;flex-shrink:0">'+emoji+'</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3">'+text+'</div>'
+        +(account?'<div style="display:inline-block;margin-top:6px;font-size:11px;color:#7DD3FC;font-family:\'Lora\',serif;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);border-radius:20px;padding:2px 10px">💳 '+account+'</div>':'')
+        +(extra||'')
+      +'</div>'
+      +'<div onclick="'+onclick+'" style="width:28px;height:28px;border-radius:50%;border:2px solid #38BDF8;background:transparent;flex-shrink:0;cursor:pointer"></div>'
+    +'</div>'
+  +'</div>';
+}
 function trimPlant(id){ trimmed[id]=todayKey(); saveTrimmed(); renderAll(); }
 function daysSinceTrimmed(id){ if(!trimmed[id]) return null; return Math.round((new Date(todayKey()+"T12:00:00")-new Date(trimmed[id]+"T12:00:00"))/86400000); }
 function plantsTrimDueOn(dateStr){ return PLANTS.filter(p=>p.trimDays&&(()=>{ if(!trimmed[p.id]) return true; const d=Math.round((new Date(dateStr+"T12:00:00")-new Date(trimmed[p.id]+"T12:00:00"))/86400000); return d>=p.trimDays; })()); }
@@ -925,7 +950,7 @@ function waterStatus(p) {
 let gardenSub = "watering";
 let tankSub = "bluedream";
 let printSub = "todo";
-let finSub   = "overview";  // 💰 finance sub-tab
+let finSub   = "todos";     // 💰 finance sub-tab — ✅ To-dos leads
 let sunSkips = [];          // 📅 Sunday dinner proposals — rids swapped away this session (transient)
 let finMonBalIdx = -1;      // 💳 Monday balance fold-in stepper: -1 closed, 0..n step (transient)
 let foodSub = "list";
@@ -956,7 +981,7 @@ function renderSubtabs(t) {
   else if(t==="shopping"){ subs=[["bluedream","🦐 Blue Dream"],["tall","📏 Tall"],["wide","📐 Wide"],["dry","🏜️ Dry"]]; cur=tankSub; fn="switchTankSub"; }
   else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","💎 Wishlist"],["ideas","💡 Ideas"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
   else if(t==="grocery"){ subs=[["list","🛒 List"],["inventory","🧺 Inventory"],["recipebox","📖 Recipes"],["tocook","🍳 To Cook"]]; cur=foodSub; fn="switchFoodSub"; }
-  else if(t==="finance"){ subs=[["overview","📊 Overview"],["bills","📅 Bills"],["debts","❄️ Debts"],["mondays","📞 Mondays"],["todos","✅ To-dos"],["coach","🧠 Coach"]]; cur=finSub; fn="switchFinSub"; }
+  else if(t==="finance"){ subs=[["todos","✅ To-dos"],["overview","📊 Overview"],["bills","📅 Bills"],["debts","❄️ Debts"],["mondays","📞 Mondays"],["coach","🧠 Coach"]]; cur=finSub; fn="switchFinSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
 }
@@ -965,6 +990,7 @@ function switchTankSub(x) { tankSub=x; renderSubtabs("shopping"); renderShopping
 function switchPrintSub(x) { printSub=x; renderSubtabs("print"); renderPrint(); }
 function switchFoodSub(x) { foodSub=x; renderSubtabs("grocery"); renderGrocery(); }
 function switchFinSub(x)  { finSub=x; renderSubtabs("finance"); renderFinance(); }
+function goDebtsTab(){ finSub="debts"; switchFinSub("debts"); }
 
 function dailyHabits() {
   const today=todayKey();
@@ -1396,6 +1422,32 @@ function renderToday() {
     add("rnap",760,rNap,strip("🚫","No naps today",rNap,"#FB7185","toggleReset('nonap')","All day","","Desperate? 20 min max, before 3 PM — set a timer"));
   }
 
+  // ── 🔔 IN-APP REMINDERS — money + errands on their date; DMV daily through the appt (added Jun 8 2026) ──
+  // 🚙 DMV daily: shows EVERY day until the appointment date, date-keyed so checking it only clears TODAY (reappears tomorrow).
+  if(typeof DMV!=='undefined'){
+    const dmvAppt=dmvApptDate();
+    if(today<=dmvAppt){
+      const dmvDone=!!laundry["rem-dmv-"+today];
+      const apptD=new Date(dmvAppt+"T12:00:00");
+      const apptLabel=apptD.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+      const extra='<div onclick="event.stopPropagation();updateDmvAppt()" style="margin-top:7px;font-size:11px;color:#FBBF24;font-family:\'Lora\',serif;font-style:italic;cursor:pointer">📅 Appt: '+apptLabel+' · Got an earlier slot? Update the appt →</div>';
+      add("rem-dmv",287,dmvDone, dmvDone
+        ? strip("🚙","DMV — checked for an earlier slot today",true,"#38BDF8","toggleReminder('dmv',true)","","","Reappears tomorrow until the appointment")
+        : reminderCardHtml("🚙",DMV.text,"","toggleReminder('dmv',true)",extra));
+    }
+  }
+  // 🔔 dated + standing reminders
+  if(typeof REMINDERS!=='undefined'){
+    REMINDERS.forEach(function(r,i){
+      const showToday = r.standing ? true : (r.date===today);
+      if(!showToday) return;
+      const dn=reminderDone(r.id,false);  // one-shot done-state
+      add("rem-"+r.id,288+i,dn, dn
+        ? strip(r.emoji,r.text,true,"#38BDF8","toggleReminder('"+r.id+"')","","","")
+        : reminderCardHtml(r.emoji,r.text,r.account||"","toggleReminder('"+r.id+"')",""));
+    });
+  }
+
   // Morning meds + breakfast
   const litDone=!!laundry["well-litfulo-"+today];
   add("lit",310,litDone,strip("💊","Litfulo + vitamins",litDone,"#6366F1","toggleWellness('litfulo')","Morning","1 min","With breakfast — logs to the Health tab too"));
@@ -1587,12 +1639,24 @@ function renderTimeline() {
   }
   while(days.length&&days[days.length-1].rest) days.pop();
 
+  // ── 🔔 REMINDERS + 🚙 DMV appointment on the timeline (on their dates) ──
+  const tlRem={};
+  if(typeof REMINDERS!=='undefined'){
+    REMINDERS.forEach(function(r){ if(r.date && r.date>=today){ (tlRem[r.date]=tlRem[r.date]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } });
+  }
+  if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
+  // make sure any reminder-only date still appears as its own timeline row
+  const _have=new Set(days.map(function(d){return d.date;}));
+  Object.keys(tlRem).forEach(function(ds){ if(!_have.has(ds)){ days.push({date:ds, remOnly:true}); } });
+  days.sort(function(a,b){ return a.date<b.date?-1:(a.date>b.date?1:0); });
+
   let html="";
   if(!days.length){
     html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — nothing left to schedule. Maintenance mode from here.</div></div>`;
   } else {
-    const workDays=days.filter(d=>!d.rest).length;
-    const finish=new Date(days[days.length-1].date+"T12:00:00");
+    const _taskDays=days.filter(d=>d.id);
+    const workDays=_taskDays.length;
+    const finish=new Date((_taskDays.length?_taskDays[_taskDays.length-1].date:days[days.length-1].date)+"T12:00:00");
     html+=`<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:var(--rad);padding:13px 16px;margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:'Lora',serif;font-size:12px;color:var(--text2)">Whole-house progress</span><span style="font-family:'Playfair Display',serif;font-weight:700;color:#F5B830">${doneH}/${totalH} · ${pctH}%</span></div>
       <div class="plan-bar"><div class="plan-fill" style="width:${pctH}%;background:linear-gradient(90deg,#F5B830,#818CF8)"></div></div>
@@ -1610,12 +1674,18 @@ function renderTimeline() {
         <div class="day-tasks-col">`;
       if(dy.rest){
         html+=`<div class="tl-room" style="color:#8B5CF6">🛋️ Rest day</div><div class="tl-note" style="margin-top:2px">No house task — recharge.</div>`;
-      } else {
+      } else if(dy.id){
         const r=ROOMS[dy.roomId]||ROOMS.kitchen;
         const t=TASKS[dy.id]||taskCustom[dy.id];
         html+=`<div class="tl-room" style="color:${r.color}">${r.emoji} ${r.name}</div>`;
         if(t) html+=`<div class="tl-task" style="color:${r.color}"><div class="tl-dot" style="background:${r.color}"></div>${t.label}</div>`;
         if(dy.finishesRoom) html+=`<div class="tl-note">🎉 ${r.name} done${r.reward?" — "+r.reward:""}.</div>`;
+      }
+      if(tlRem[dy.date]){
+        if(dy.remOnly) html+=`<div class="tl-room" style="color:#38BDF8">🔔 Reminder</div>`;
+        tlRem[dy.date].forEach(function(rm){
+          html+=`<div class="tl-task" style="color:#38BDF8"><div class="tl-dot" style="background:#38BDF8"></div>${rm.appt?"📅":"🔔"} ${rm.icon} ${rm.text}${rm.account?` <span style="color:#7DD3FC">· ${rm.account}</span>`:""}</div>`;
+        });
       }
       html+=`</div>`;
       if(isToday) html+=`<div class="day-badge today-badge">Today</div>`;
@@ -2518,10 +2588,20 @@ function renderPrint() {
       <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;line-height:1.6">Print brackets and clips in <strong style="color:var(--text)">PETG or ABS</strong> — not PLA. Enclosure interiors can reach 45°C+ during ABS prints and PLA will warp and fail. PETG handles up to ~80°C and is easy to print on the SV06 Plus.</div>
     </div>
   `;
+  const silDone=!!laundry['print-silica-'+isoWeekKey()];
   const _todo = `    <!-- PRINT TO-DO -->
     <div style="text-align:center;margin-bottom:16px;padding-top:4px">
       <div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🖨️ Print Queue</div>
       <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#c084fc,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">To-Do</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(74,222,128,.14),rgba(34,211,238,.05));border:1px solid rgba(74,222,128,.45);border-radius:14px;padding:13px 15px;margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#4ADE80;font-family:'Lora',serif;margin-bottom:4px">🎉 New gear</div>
+      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">🎉 Got the Sovol filament dryer!</div>
+      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">No more soggy filament — dry the TPU before the grommets, and keep PETG/PLA crisp. Keep an eye on the silica so it stays effective. 👇</div>
+    </div>
+    <div onclick="togglePrintSilica()" style="background:#0d0d1a;border:1px solid rgba(74,222,128,.3);border-radius:12px;padding:13px 15px;margin-bottom:12px;cursor:pointer;display:flex;align-items:center;gap:11px">
+      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${silDone?'#4AD490':'rgba(255,255,255,.3)'};background:${silDone?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${silDone?'✓':''}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${silDone?'#4AD490':'var(--text)'};${silDone?'text-decoration:line-through':''}">💧 Check &amp; recharge the dryer's silica</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Weekly — if the beads turned (pink/clear), recharge or swap them. Resets every week. ${silDone?'Done this week ✔':''}</div></div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(129,140,248,.08));border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:13px 15px;margin-bottom:12px">
       <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#22D3EE;font-family:'Lora',serif;margin-bottom:4px">🟢 Active Print</div>
@@ -2837,7 +2917,7 @@ function renderFinance(){
     +'<div style="font-family:\'Playfair Display\',serif;font-size:38px;font-weight:800;color:'+(pos?G:R)+';line-height:1">'+(pos?'+':'')+finFmt(gap,true)+'<span style="font-size:14px;color:var(--text2);font-weight:400;font-family:\'Lora\',serif"> / month</span></div>'
     +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;margin-top:8px">In ~'+finFmt(FINANCE.incomeMonthly,true)+' · committed out ~'+finFmt(committed,true)+(cancelGot>0?' <span style="color:'+G+'">(already trimmed '+finFmt(cancelGot,true)+' ✂️)</span>':'')+'</div>'
     +(pos?'<div style="font-size:12.5px;color:'+G+';font-family:\'Lora\',serif;font-style:italic;margin-top:8px">You\'re above water — every verified cancellation widens the margin. 🎉</div>'
-        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b>'+(!(fin.cancel||{}).farmersdog?'<br>🐕 Farmer\'s Dog $215/mo — <b>~6 weeks out</b>: use up the shipment, then the 12-day switch <b style="color:#4AD490">(the big one)</b>':'')+'<br>✂️ '+finFmt(cancelLeft-((fin.cancel||{}).farmersdog?0:215.05),true)+'/mo of smaller subscriptions left to verify below<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
+        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b>'+(!(fin.cancel||{}).farmersdog?'<br>🐕 Farmer\'s Dog $215/mo — <b>~6 weeks out</b>: use up the shipment, then the 12-day switch <b style="color:#4AD490">(the big one)</b>':'')+'<br>✂️ '+finFmt(cancelLeft-((fin.cancel||{}).farmersdog?0:215.05),true)+'/mo of smaller subscriptions left to verify (now on ✅ To-dos)<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
     +'<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:var(--text)">💰 Next paycheck: <b>'+(left===0?'today! 🎉':pdLabel+' — '+(left===1?'tomorrow':'in '+left+' days'))+'</b> <span style="color:var(--text2)">(~$2,250, every other Thursday)</span></div>'
   +'</div>';
 
@@ -2879,6 +2959,16 @@ function renderFinance(){
   out+='\u0001bills\u0001';
   fin.bills=fin.bills||{};
   const sortedBills=FINANCE.bills.slice().sort(function(a,b){return a.sort-b.sort;});
+  // 💳 loan bills show TOTAL owed (wired to the matching debt); unknown => tap to set on ❄️ Debts
+  const LOAN_DEBT={studentloan:'studentL',nissan:'nissanL',irs:'irsL',lendmark:'lendmarkL',family:'famloan'};
+  const billTotalHtml=function(b){
+    const did=LOAN_DEBT[b.id]; if(!did) return '';
+    const dt=FINANCE.debts.find(function(d){return d.id===did;});
+    const c=dt?finLatest('debt',dt.id,dt.start):null;
+    const known=!!(c&&c.v!=null);
+    if(known) return '<div style="font-size:10.5px;color:#7DD3FC;font-family:\'Lora\',serif;margin-top:2px">📊 total owed: '+finFmt(c.v,true)+'</div>';
+    return '<div onclick="event.stopPropagation();goDebtsTab()" style="font-size:10.5px;color:#FBBF24;font-family:\'Lora\',serif;margin-top:2px;cursor:pointer">📊 total owed: unknown — tap to set →</div>';
+  };
   const paidCt=sortedBills.filter(function(b){return fin.bills[b.id+'-'+ym];}).length;
   const billTotal=sortedBills.reduce(function(s,b){return s+b.amt;},0);
   out+='<div class="section-label">🧾 Bills — '+monthName+' · '+paidCt+' of '+sortedBills.length+' paid</div>';
@@ -2889,7 +2979,7 @@ function renderFinance(){
       +'<div style="width:22px;height:22px;border-radius:50%;border:2px solid '+(pd?'#10B981':'rgba(250,204,21,.45)')+';background:'+(pd?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0">'+(pd?'✓':'')+'</div>'
       +'<div style="font-size:9.5px;color:var(--text2);width:46px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em">'+b.due+'</div>'
       +'<div style="flex:1;min-width:0"><div style="font-size:13px;color:'+(pd?'var(--text3)':'var(--text)')+';'+(pd?'text-decoration:line-through;':'')+'font-family:\'Lora\',serif">'+b.label+'</div>'
-      +(b.note?'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+b.note+'</div>':'')+'</div>'
+      +(b.note?'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+b.note+'</div>':'')+billTotalHtml(b)+'</div>'
       +'<div style="font-size:13px;font-weight:700;color:'+(pd?'var(--text3)':Y)+';flex-shrink:0">'+finFmt(b.amt,true)+'</div></div>';
   });
   out+='<div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0 9px;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif"><span>Check each off as it\'s paid — fresh boxes every month.</span><b style="color:var(--text);flex-shrink:0">'+finFmt(billTotal,true)+'/mo</b></div></div>';
@@ -2921,21 +3011,6 @@ function renderFinance(){
     +'</div>';
   });
   out+='<div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.12);border-radius:var(--rad);padding:12px 16px;margin-bottom:14px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.7">💳 Cards together: <b style="color:var(--text)">'+finFmt(cardCur,true)+'</b> at ~29%. An extra $300/mo on the snowball = debt-free in ~15 months and ~$1,570 of interest saved vs minimums. Family loan is 0% — cards first, but keep family in the loop. Tap any balance to update it after a payment — the bars move.</div>';
-
-  // ── 6 · CANCEL LIST ──
-  out+='\u0001debts\u0001';
-  const cancelAll=FINANCE.cancels.reduce(function(s,c){return s+c.amt;},0);
-  out+='<div class="section-label">✂️ Cancel list — '+finFmt(cancelGot,true)+' of ~'+finFmt(cancelAll,true)+'/mo verified gone</div>';
-  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:6px 14px;margin-bottom:14px">';
-  FINANCE.cancels.forEach(function(c){
-    const v=!!(fin.cancel||{})[c.id];
-    out+='<div onclick="finCancelToggle(\''+c.id+'\')" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer">'
-      +'<div style="width:22px;height:22px;border-radius:6px;border:1.5px solid '+(v?'#10B981':'rgba(248,113,113,.5)')+';background:'+(v?'rgba(16,185,129,.2)':'transparent')+';display:flex;align-items:center;justify-content:center;color:'+G+';font-weight:900;font-size:11px;flex-shrink:0">'+(v?'✓':'')+'</div>'
-      +'<div style="flex:1;min-width:0"><div style="font-size:13px;color:'+(v?'var(--text3)':'var(--text)')+';font-family:\'Lora\',serif;'+(v?'text-decoration:line-through':'')+'">'+c.label+'</div>'
-      +'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+(v?'verified gone on a statement ✓':(c.note?c.note:'canceled — verify it on the June statement'))+'</div></div>'
-      +(c.amt?'<div style="font-size:13px;font-weight:700;color:'+(v?G:R)+';flex-shrink:0">'+finFmt(c.amt)+'</div>':'<div style="font-size:11px;font-weight:700;color:'+(v?G:R)+';flex-shrink:0">$? — check statement</div>')+'</div>';
-  });
-  out+='<div style="padding:10px 0;font-size:11px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;font-style:italic">'+FINANCE.cancelPending+'<br>'+FINANCE.keeping+'</div></div>';
 
   // ── 6b · FARMER'S DOG vs HOMEMADE — cost analysis (computed Jun 6 2026; estimates at Denver King Soopers-ish prices) ──
   out+='\u0001coach\u0001';

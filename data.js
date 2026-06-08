@@ -451,6 +451,25 @@ const RECIPES = [
 // EDIT amounts / bills / debts HERE. Balance history lives in Firebase (fin.*).
 // Privacy rule: last-4 labels only — never account or routing numbers.
 // ═══════════════════════════════════════════════════════════════
+// ── 🔔 IN-APP REMINDERS — surface on the TODAY tab (date===today) AND on the TIMELINE (on their dates).
+// Done-state lives in `laundry` (NOT here): one-date => "rem-"+id ; standing => "rem-"+id (no date).
+// HARD RULE: every money reminder carries an `account` and the app DISPLAYS it. (added Jun 8 2026)
+const REMINDERS = [
+  { id:"rem_carwash_crunchy", date:"2026-06-11", emoji:"🔁", text:"Verify Super Star Car Wash ($24) + Crunchyroll ($15.18) didn't recharge", account:"Capital One 360 checking" },
+  { id:"rem_gp_play",         date:"2026-06-14", emoji:"🎮", text:"Play Game Pass games before it's gone (cancels Jun 15, renews 16) — Game Pass $31.11", account:"Capital One checking" },
+  { id:"rem_gp_cancel",       date:"2026-06-15", emoji:"🎮", text:"Cancel Xbox Game Pass ($31.11)", account:"Capital One checking" },
+  { id:"rem_uberone",         date:"2026-06-15", emoji:"🚗", text:"Verify Uber One ($9.99) didn't recharge after cancelling", account:"Capital One checking" },
+  { id:"rem_gp_verify",       date:"2026-06-17", emoji:"✅", text:"Verify Game Pass actually cancelled — no $31.11 renewal after Jun 16", account:"Capital One checking" },
+  { id:"rem_disney_cancel",   date:"2026-06-18", emoji:"🏰", text:"Cancel Disney+ ($21.69)", account:"Merrick card •4735" },
+  { id:"rem_disney_verify",   date:"2026-06-19", emoji:"✅", text:"Verify Disney+ cancelled", account:"Merrick •4735" },
+  { id:"rem_petco_ammonia",   standing:true,     emoji:"🦐", text:"Petco: pick up aquarium ammonia tester (Seachem badge or API drops) for the shrimp tank" }
+];
+
+// ── 🚙 DMV — daily reminder to call for an earlier cancellation slot, through the appointment date.
+// Appt defaults to Jun 25, editable in-app via laundry["dmv-appt"]; the daily reminder retires once
+// todayKey() passes the appointment, and the appointment shows on the TIMELINE. (added Jun 8 2026)
+const DMV = { defaultDate:"2026-06-25", text:"Call the DMV to check for an earlier cancellation slot." };
+
 const FINANCE = {
   incomeMonthly: 4503,
   outflowMonthly: 4827,
@@ -465,17 +484,16 @@ const FINANCE = {
     { id:"xcel",        due:"~6th",   sort:6,  label:"⚡ Xcel Energy",                amt:253,     note:"varies $219–288 · June: $133.16 ✓" },
     { id:"water",       due:"~6th",   sort:6,  label:"💧 Denver Water",               amt:40 },
     { id:"studentloan", due:"~6th",   sort:6,  label:"🎓 Student loan — Dept of Ed",  amt:190.54,  note:"ask about income-driven repayment" },
-    { id:"smartstart1", due:"7th",    sort:7,  label:"🚙 Smart Start (1 of 2)",       amt:58.69,   note:"temporary — ends within ~a year" },
+    { id:"smartstart1", due:"7th",    sort:7,  label:"🚙 Smart Start — maintenance",   amt:58.69,   note:"temporary — ends within ~a year" },
     { id:"nissan",      due:"~15th",  sort:15, label:"🚗 Nissan auto loan",           amt:200.00 },
     { id:"irs",         due:"~15th",  sort:15, label:"🏛️ IRS payment plan",          amt:50.00 },
     { id:"lendmark",    due:"~16th",  sort:16, label:"🏦 Lendmark loan",              amt:177.71,  note:"APR unknown — find out" },
-    { id:"smartstart2", due:"21st",   sort:21, label:"🚙 Smart Start (2 of 2)",       amt:58.69 },
+    { id:"smartstart2", due:"21st",   sort:21, label:"🚙 Smart Start — lease",         amt:58.69 },
     { id:"xfinity",     due:"~28th",  sort:28, label:"📡 Xfinity internet",           amt:134.76,  note:"retention call — target $70–90" },
     { id:"healing",     due:"weekly", sort:29, label:"🧠 My Healing Space",           amt:100,     note:"~$25/wk · temporary — ends within ~a year" },
     { id:"cardmins",    due:"spread", sort:30, label:"💳 Card minimums (5 cards)",    amt:351,     note:"autopay every one of them" },
     { id:"family",      due:"spread", sort:31, label:"👨‍👩‍👧 Family repayment",          amt:400,     note:"asking to drop to ~$200/mo" },
-    { id:"mint",        due:"yearly", sort:32, label:"📱 Mint Mobile (annual)",       amt:30,      note:"annual phone plan — confirm amount (not in statements)" },
-    { id:"psn",         due:"yearly", sort:33, label:"🎮 PlayStation Plus (annual)",   amt:15,      note:"$177.18/yr — renews ~early March" }
+    { id:"mint",        due:"yearly", sort:32, label:"📱 Mint Mobile (annual)",       amt:30,      note:"annual phone plan — confirm amount (not in statements)" }
   ],
   debts: [   // snowball order — smallest card first; tap a balance in the app to update it
     { id:"c6605",    label:"Cap One Quicksilver •6605", start:489.59,  min:25,     apr:"28.24%", card:true,  note:"snowball target — pay this one first" },
@@ -507,7 +525,6 @@ const FINANCE = {
   // ── ✅ MASTER MONEY TO-DOS — prioritized tiers (audit finalized Jun 8 2026). Single source of "done": fin.todoDone[id]; 📞 Mondays REFERENCES this via finTaskDone. showFrom = date-gate · steps[] = sub-list · info:true = display-only tier · footer = muted note under a tier. ──
   todosSeed: [
     { tier:"🔴 Do first", col:"#E0506A", items:[
-      { id:"ft_savor",   label:"💳 Set Savor to autopay (at least the minimum) so no bill ever falls behind" },
       { id:"ft_latefee", label:"📞 Property-management late-fee call — Monday (no answer Fri; ask the fee + a first-time waive)" },
       { id:"ft_fresh",   label:"🛒 Cancel Amazon Fresh", note:"No Fresh charge found in your statements — cancel it anyway, per your call." },
       { id:"ft_prime",   label:"📦 Cancel the Amazon Prime trial before it bills ~Jul 5", showFrom:"2026-06-30", deadline:"2026-07-05", note:"Hidden until Jun 30 so it surfaces right when it matters. (Your Jul 2 reminder still fires separately.)" }
@@ -518,7 +535,8 @@ const FINANCE = {
       { id:"ft_disney",    label:"🏰 Cancel Disney+ — $21.69" },
       { id:"ft_crunchy",   label:"🍥 Cancel Crunchyroll — $15.18" },
       { id:"ft_uberone",   label:"🚗 Cancel Uber One — $9.99", note:"DashPass already dropped off — Uber One is the last delivery sub; cut it too unless you actually use delivery (keep at most one)." },
-      { id:"ft_claudepro", label:"💳 Cancel leftover Claude Pro — billed twice ($21.03 ×2), it's the OLD plan still charging on top of Claude Max" }
+      { id:"ft_claudepro", label:"💳 Cancel leftover Claude Pro — billed twice ($21.03 ×2), it's the OLD plan still charging on top of Claude Max" },
+      { id:"ft_psn",       label:"🎮 Cancel PlayStation Plus (annual, ~$177.18)" }
     ]},
     { tier:"🟡 Big structural savers", col:"#FBBF24", items:[
       { id:"ft_xfinity",   label:"📡 Xfinity retention call — target $135 → $70–90 (AT&T Internet Air is $47)" },
@@ -532,7 +550,13 @@ const FINANCE = {
         "Only ONE application at a time — each hard inquiry dings your score",
         "Don't do the card-number reset — it would break the autopays you WANT"
       ]},
-      { id:"ft_po",        label:"🧾 Figure out payments for PO" }
+      { id:"ft_po",        label:"🧾 Figure out payments for PO" },
+      { id:"ft_affirm",    label:"💳 Figure out Affirm (Amazon) payments", note:"Buy-now-pay-later loan, not a card subscription — that's why it slipped past the audit." },
+      { id:"ft_total_nissan",   label:"🔢 Find the total balance owed on the Nissan auto loan" },
+      { id:"ft_total_lendmark", label:"🔢 Find the total balance owed on Lendmark" },
+      { id:"ft_total_student",  label:"🔢 Find the total balance owed on student loans" },
+      { id:"ft_total_irs",      label:"🔢 Find the total balance owed on the IRS payment plan" },
+      { id:"ft_total_family",   label:"🔢 Find the total balance owed on the family loan" }
     ]},
     { tier:"🟢 Foundation", col:"#4AD490", items:[
       { id:"ft_buffer",   label:"🛟 Build the $500 starter buffer (Goal #1 on 📊 Overview)" },
@@ -540,11 +564,9 @@ const FINANCE = {
     ]},
     { tier:"Also open", col:"#7EB8F0", items:[
       { id:"ft_progress", label:"🚗 Get the new (lower) Progressive amount" },
-      { id:"ft_gather",   label:"📋 Gather: Lendmark balance+APR · Nissan payoff · student-loan total · IRS owed · Home Depot card · any Affirm" },
       { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
     ]},
     { tier:"📅 Track — annual renewals", col:"#A78BFA", info:true, items:[
-      { id:"trk_psn",  label:"🎮 PlayStation Plus — $177.18/yr", note:"Annual — renews ~early March. Set aside ~$15/mo so the renewal doesn't sting." },
       { id:"trk_mint", label:"📱 Mint Mobile — annual phone plan (keep)", note:"Confirm the amount — it's not in the statements yet." }
     ]}
   ],
