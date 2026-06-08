@@ -505,17 +505,38 @@ const FINANCE = {
   ],
   cancelPending: "Also: verify Amazon Fresh (no charge seen Mar–May) · Amazon Prime free trial bills ~Jul 5 — cancel by ~Jul 2.",
   keeping: "Keeping on purpose: Spotify $14.18 · Claude.ai $21.03 (single) · My Healing Space.",
+  // ── ✅ MASTER MONEY TO-DOS — prioritized tiers (rebuilt Jun 8 2026). Single source of "done": fin.todoDone[id]; the 📞 Mondays sub-tab REFERENCES this list (finTaskDone) instead of carrying its own checkboxes. Reused ids preserve existing check state. ──
   todosSeed: [
-    { id:"ft_latefee",  label:"📞 Call property management about the rent late fee — retry after the weekend (no answer Fri)" },
-    { id:"ft_zoeyfood", label:"🐕 Buy Zoey's homemade-food ingredients (when the Farmer's Dog shipment runs low, ~4 weeks)" },
-    { id:"ft_xfinity",  label:"📞 Xfinity retention call — target $70–90 (leverage: AT&T Internet Air is $47)" },
-    { id:"ft_family",   label:"👨‍👩‍👧 Talk to family — drop $400/mo to ~$200 while stabilizing" },
-    { id:"ft_verify",   label:"🧾 Verify canceled subs actually stopped (June statements)" },
-    { id:"ft_fresh",    label:"🛒 Cancel Amazon Fresh" },
-    { id:"ft_prime",    label:"📦 Cancel Amazon Prime free trial by ~Jul 2" },
-    { id:"ft_progress", label:"🚗 Get the new (lower) Progressive amount" },
-    { id:"ft_gather",   label:"📋 Gather: Lendmark balance+APR · Nissan payoff · student-loan total · IRS owed · Home Depot card · any Affirm" },
-    { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
+    { tier:"🔴 Do first", col:"#E0506A", items:[
+      { id:"ft_prime",   label:"📦 Cancel the Amazon Prime free trial before Jul 2 — hard deadline, it auto-bills", deadline:"2026-07-02" },
+      { id:"ft_savor",   label:"💳 Pay off the $190 SAVOR charge next paycheck — before interest starts compounding" },
+      { id:"ft_latefee", label:"📞 Property-management late-fee call — Monday (no answer Fri; ask the fee + a first-time waive)" }
+    ]},
+    { tier:"🟠 Subscription purge (~$157/mo)", col:"#FB923C", items:[
+      { id:"ft_statement", label:"🧾 Pull the full statement — list every recurring charge in one place" },
+      { id:"ft_verify",    label:"✅ Verify each canceled sub actually dropped off a statement (ChatGPT, Game Pass, Disney+, etc.)" },
+      { id:"ft_carwash",   label:"🫧 Cancel the car wash subscription" },
+      { id:"ft_dupclaude", label:"💳 Dispute / cancel the duplicate Claude charge — $21.03 billed twice in May" }
+    ]},
+    { tier:"🟡 Big structural savers", col:"#FBBF24", items:[
+      { id:"ft_xfinity",   label:"📡 Xfinity retention call — target $135 → $70–90 (AT&T Internet Air is $47)" },
+      { id:"ft_family",    label:"👨‍👩‍👧 Renegotiate the family loan — $400/mo → ~$200 while stabilizing" },
+      { id:"ft_zoeyfood",  label:"🐕 Buy Zoey's homemade-food ingredients when the Farmer's Dog shipment runs low (~4 wks) — prerequisite for the cancel below" },
+      { id:"ft_farmersdog",label:"🐕 Cancel The Farmer's Dog after Zoey's transition (~$215/mo, ~6 wks out)" },
+      { id:"ft_cardreset", label:"💳 Decide on a card-number reset to kill zombie autopays — a Monday decision" },
+      { id:"ft_po",        label:"🧾 Figure out payments for PO" }
+    ]},
+    { tier:"🟢 Foundation", col:"#4AD490", items:[
+      { id:"ft_buffer",   label:"🛟 Build the $500 starter buffer (Goal #1 on 📊 Overview)" },
+      { id:"ft_kalshi",   label:"🎲 Keep Kalshi at $0" },
+      { id:"ft_snowball", label:"❄️ After the buffer: attack card •6605 ($490) — the snowball target" }
+    ]},
+    { tier:"Also open", col:"#7EB8F0", items:[
+      { id:"ft_fresh",    label:"🛒 Cancel Amazon Fresh" },
+      { id:"ft_progress", label:"🚗 Get the new (lower) Progressive amount" },
+      { id:"ft_gather",   label:"📋 Gather: Lendmark balance+APR · Nissan payoff · student-loan total · IRS owed · Home Depot card · any Affirm" },
+      { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
+    ]}
   ],
   // ── 📞 FINANCIAL MONDAYS — paced queue, ONE item per Monday (added Jun 6 2026). Order: time-sensitive calls first, then cancels/verifications one a week. Dates assign dynamically: first open item = next Monday; checking one off advances the rest. Done state: fin.monday[id]. ──
   mondays: [
