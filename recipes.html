@@ -3,34 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🍴 Recipe Box</title>
+<title>🍴 Cy's Recipe Box</title>
 <meta name="description" content="A public recipe box — search and cook. No login required.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#06050A; --s1:#0F0E14; --s2:#16151C;
-    --border:#242232; --border2:#312F40;
-    --text:#EDE5F8; --text2:#6A6480; --text3:#5a7a99;
-    --amber:#D4900A; --amber2:#F0A820; --aborder:rgba(212,144,10,.25);
+    --bg:#efe1c2; --s1:#f3e7cd; --s2:#ecdcb6;
+    --border:#dcc69a; --border2:#cbb181;
+    --text:#4a3526; --text2:#7c5c39; --text3:#9c7c50;
+    --amber:#a85a23; --amber2:#8c3f17; --aborder:rgba(168,90,35,.30);
     --rad:14px;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
-    background:linear-gradient(rgba(6,5,10,.66),rgba(6,5,10,.88)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280");
-    background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;
+    background-color:#ecdcb6;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(176,72,56,.10) 0 22px, rgba(176,72,56,0) 22px 44px),
+      repeating-linear-gradient(90deg, rgba(176,72,56,.10) 0 22px, rgba(176,72,56,0) 22px 44px);
+    background-attachment:fixed;
     color:var(--text);font-family:'Lora',Georgia,serif;min-height:100vh;padding-bottom:48px;
   }
   .wrap{max-width:620px;margin:0 auto;padding:0 16px}
   .lid{background:linear-gradient(135deg,#8C4A2F,#6E3A24);border:1px solid #5A2E1C;border-radius:16px;margin:18px 0 16px;box-shadow:0 6px 22px rgba(0,0,0,.45);overflow:hidden}
   .lid .tape{height:10px;background:repeating-linear-gradient(45deg,#C44536,#C44536 10px,#F5ECD7 10px,#F5ECD7 20px)}
   .lid .inner{text-align:center;padding:18px 18px 16px}
-  .lid h1{font-family:'Playfair Display',serif;font-style:italic;font-size:30px;font-weight:700;color:#F5ECD7;text-shadow:0 1px 2px rgba(0,0,0,.4);margin:4px 0 2px}
+  .lid h1{font-family:'Caveat',cursive;font-style:normal;font-size:44px;font-weight:700;color:#F7ECD2;text-shadow:0 2px 3px rgba(0,0,0,.45);margin:2px 0 2px;letter-spacing:.5px}
   .lid .sub{font-size:12.5px;color:#E8D2A8;font-family:'Lora',serif;font-style:italic;margin-top:3px}
   #recipe-search{width:100%;margin:0 0 14px;padding:12px 15px;border-radius:10px;border:1px solid #D9C39A;background:#F5ECD7;color:#5a3a2a;font-family:'Lora',serif;font-size:15px;outline:none}
   #recipe-search::placeholder{color:#9a7c52}
-  .countline{font-size:11.5px;color:#E8D2A8;font-family:'Lora',serif;font-style:italic;margin:0 0 12px;text-align:center}
+  .countline{font-size:11.5px;color:#8a5a2a;font-family:'Lora',serif;font-style:italic;margin:0 0 12px;text-align:center}
   a{color:inherit}
   .foot{text-align:center;font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin:26px 0 10px}
 </style>
@@ -40,7 +43,7 @@
     <div id="recipe-list-view">
       <div class="lid"><div class="tape"></div><div class="inner">
         <div style="font-size:34px;margin-bottom:2px">🍴</div>
-        <h1>Recipe Box</h1>
+        <h1>Cy's Recipe Box</h1>
         <div class="sub" id="lid-sub">warming up…</div>
       </div></div>
       <input id="recipe-search" type="search" placeholder="🔍 Search recipes… name or ingredient" autocomplete="off" oninput="recipeFilter(this.value)">
@@ -50,7 +53,7 @@
     <div id="recipe-page" style="display:none"></div>
   </div>
 
-<script src="./recipes.js?v=20260608124848"></script>
+<script src="./recipes.js?v=20260608191500"></script>
 <script>
 "use strict";
 // ── Source: the SAME recipes.js the app loads (RECIPES_BOX). Human recipes only — no dog, no drafts, no personal data. ──

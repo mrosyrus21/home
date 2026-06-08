@@ -10,7 +10,23 @@
 <meta name="apple-mobile-web-app-title" content="Garden">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Schedule 📅</title><!-- TITLE TAG — matches CONFIG.title above -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* 🍴 Cy's Recipe Box — grandma's-kitchen theme (recipe surfaces ONLY) */
+.gk-surface{
+  background-color:#f3e7cd;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(176,72,56,.085) 0 16px, rgba(176,72,56,0) 16px 32px),
+    repeating-linear-gradient(90deg, rgba(176,72,56,.085) 0 16px, rgba(176,72,56,0) 16px 32px);
+  border:1px solid #e2cfa3; border-radius:16px;
+  padding:14px 12px 26px; margin:2px 0 6px;
+  box-shadow:inset 0 0 70px rgba(120,80,30,.07);
+}
+.gk-surface .section-label{ color:#8a5a2a; }
+.gk-surface .section-label::before{ background:linear-gradient(90deg,transparent,rgba(140,74,30,.4)) !important; }
+.gk-surface .section-label::after{ background:linear-gradient(270deg,transparent,rgba(140,74,30,.4)) !important; }
+.gk-title{ font-family:'Caveat',cursive; font-weight:700; letter-spacing:.5px; }
+</style>
 <style>
 :root {
   --bg:       #06050A;
@@ -653,8 +669,8 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260608124027"></script>
-<script src="./recipes.js?v=20260606134632"></script>
+<script src="./data.js?v=20260608191500"></script>
+<script src="./recipes.js?v=20260608191500"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -665,7 +681,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 8 · 12:49 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 8 · 1:23 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2177,13 +2193,13 @@ function recipesHtml(){
     +'<div style="height:10px;background:repeating-linear-gradient(45deg,#C44536,#C44536 10px,#F5ECD7 10px,#F5ECD7 20px)"></div>'
     +'<div style="text-align:center;padding:16px 18px 14px">'
     +'<div style="font-size:34px;margin-bottom:2px">📇</div>'
-    +'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:27px;font-weight:700;color:#F5ECD7;text-shadow:0 1px 2px rgba(0,0,0,.4)">Recipe Box</div>'
+    +'<div class="gk-title" style="font-size:40px;color:#F7ECD2;text-shadow:0 2px 3px rgba(0,0,0,.45);margin:3px 0 1px">Cy\u2019s Recipe Box</div>'
     +'<div style="font-size:12px;color:#E8D2A8;font-family:\'Lora\',serif;font-style:italic;margin-top:3px">'+(n?('Tap a card to cook · '+n+' recipe'+(n===1?'':'s')+' in the box'):'The box is warming up — recipes coming soon')+'</div>'
     +'</div></div>';
   if(!has){
-    return '<div class="section-label">📇 Recipe Box</div>'+lid+'<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:24px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px;line-height:1.5">No cards yet — the recipes chat is filling the box. They’ll show up here as cute index cards.</div>';
+    return '<div class="section-label">📇 Cy\u2019s Recipe Box</div>'+lid+'<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:24px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px;line-height:1.5">No cards yet — the recipes chat is filling the box. They’ll show up here as cute index cards.</div>';
   }
-  return '<div class="section-label">\ud83d\udcc7 Recipe Box</div>'+lid+recipeSearchBox()+'<div id="recipe-list">'+recipeListHtml()+'</div>';
+  return '<div class="section-label">\ud83d\udcc7 Cy\u2019s Recipe Box</div>'+lid+recipeSearchBox()+'<div id="recipe-list">'+recipeListHtml()+'</div>';
 }
 function recipeSearchBox(){
   const n=(typeof RECIPES!=='undefined')?RECIPES.length:0;
@@ -2203,7 +2219,7 @@ function recipeListHtml(){
     const hits=human.filter(function(r){return recipeMatch(r,q);}), dhits=dogs.filter(function(r){return recipeMatch(r,q);});
     const total=hits.length+dhits.length;
     if(!total) return '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:22px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No recipes match \u201c'+q.replace(/</g,'&lt;')+'\u201d \u2014 try a single ingredient or a shorter word.</div>';
-    out+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin:0 0 10px">'+total+' match'+(total===1?'':'es')+'</div>';
+    out+='<div style="font-size:11.5px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;margin:0 0 10px">'+total+' match'+(total===1?'':'es')+'</div>';
     out+=hits.map(function(r){return recipeCard(r,false);}).join('');
     out+=dhits.map(function(r){return recipeCard(r,false);}).join('');
     return out;
@@ -2212,8 +2228,8 @@ function recipeListHtml(){
   const rest=human.filter(r=>r!==feat);   // featured renders in the spotlight at the top of the Recipe Box tab
   if(rest.length) out+=rest.map(r=>recipeCard(r,false)).join('');
   if(dogs.length){
-    out+='<div style="display:flex;align-items:center;gap:10px;margin:20px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#E8D2A8">🐕 Zoey\u2019s Kitchen</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
-    out+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Rotate the three; eggshell calcium, liver, eggs, and weekly sardines keep it balanced.</div>';
+    out+='<div style="display:flex;align-items:center;gap:10px;margin:20px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#8a5a2a">🐕 Zoey\u2019s Kitchen</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
+    out+='<div style="font-size:11.5px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Rotate the three; eggshell calcium, liver, eggs, and weekly sardines keep it balanced.</div>';
     out+=dogs.map(r=>recipeCard(r,false)).join('');
   }
   return out;
@@ -3139,7 +3155,7 @@ function renderRecipeBox(){ const el=document.getElementById('view-grocery'); if
   let out='';
   if(feat) out+='<div class="section-label">⭐ Featured recipe</div>'+recipeCard(feat,true);
   out+=recipesHtml();
-  el.innerHTML=out;
+  el.innerHTML='<div class="gk-surface">'+out+'</div>';
 }
 const MEAL_META={breakfast:['🥞','Breakfast',0],lunch:['🥗','Lunch',1],dinner:['🍽️','Dinner',2]};
 function cookDayLabel(d){ const t=todayKey(); if(d===t) return 'Today';
@@ -3395,6 +3411,14 @@ ST.on('value', snap => {
     return;
   }
 
+  // One-time: Jun 8 2026 — flatbread DROPPED (replaced by authentic Frittata di Zucchine) + roasted-zucchini recipe DELETED. Pull both from To Cook.
+  if (!flags['jun8-flatbread-out-v1']) {
+    delete cookQueue['ck-seed-flat2']; delete cookQueue['ck-seed-dinner'];
+    Object.keys(cookQueue).forEach(function(id){ var x=cookQueue[id]; if(x&&(x.rid==='r_box_sausage_squash_flatbread'||x.rid==='r_box_roasted_garlic_parmesan_zucchini_squash_')) delete cookQueue[id]; });
+    ST.update({ cookQueue: cookQueue, 'flags/jun8-flatbread-out-v1': 'done' });
+    return;
+  }
+
   // One-time: Jun 6 2026 — dry terrarium setup items completed in real life (fake molt plant + almond-leaf base)
   if (!flags['jun6-terrarium-v1']) {
     checked['dry-perches']=true; checked['dry-litterbark']=true;
@@ -3597,6 +3621,6 @@ curtainInit();
     }).catch(function(){});
   });
 }</script>
-<div id="recipe-page" style="display:none;position:fixed;inset:0;z-index:200;overflow-y:auto;background:var(--bg);padding:16px 16px 40px"></div>
+<div id="recipe-page" style="display:none;position:fixed;inset:0;z-index:200;overflow-y:auto;padding:16px 16px 40px;--text:#4a3526;--text2:#7c5c39;--text3:#9c7c50;--border:#dcc69a;--amber:#a85a23;--amber2:#8c3f17;--aborder:rgba(168,90,35,.30);background-color:#efe1c2;background-image:repeating-linear-gradient(0deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px),repeating-linear-gradient(90deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px)"></div>
 </body>
 </html>

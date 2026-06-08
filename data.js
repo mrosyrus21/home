@@ -421,7 +421,7 @@ const RECIPES = [
       "Portion 460 to 480 g per day (she eats ~660 kcal/day): fridge 3 to 4 days, freeze the rest flat in daily portions — thaws overnight, keeps up to 6 months.",
       "Serve slightly warmed. That is the whole job — one pot, about 10 days of food."
     ],
-    note:"NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — baseline weight + senior bloodwork. 🔄 THE TRANSITION (slow, ~1 month — no tracker, no pressure): she's sick of Farmer's Dog, especially the CHICKEN packs, so this works topper-style — cook one small batch, stir a spoonful into each FD meal so she finishes it, and let the ratio drift homemade as the FD shipment runs out. Getting the chicken packs down: 1) warm the food slightly — aroma does the selling; 2) mix chicken packs 50/50 with the beef or pork packs she likes; 3) smash in a sardine or add a small sprinkle of parmesan on top; 4) a drizzle of warm low-sodium broth." },
+    note:"NEVER: onion, garlic, grapes or raisins, xylitol, chocolate, macadamia, avocado, cooked bones, or added salt. Vet note: Zoey is 8 — baseline weight + senior bloodwork. 🔄 THE TRANSITION (slow, ~1 month — no tracker, no pressure): she's sick of Farmer's Dog, especially the CHICKEN packs, so this works topper-style — cook one small batch, stir a spoonful into each FD meal so she finishes it, and let the ratio drift homemade as the FD shipment runs out. Getting the chicken packs down: 1) warm the food slightly — aroma does the selling; 2) mix chicken packs 50/50 with the beef or pork packs she likes; 3) smash in a sardine or add a small sprinkle of parmesan on top; 4) a drizzle of warm low-sodium broth.", photo:"images/recipe_zoey_onepot.jpg", photoCredit:"Photo: Judgefloro · CC0 · Wikimedia Commons" },
   { id:"r_zoey_beefpot", name:"Zoey's Beef & Pumpkin Pot (rotation variant)", emoji:"🐕", dog:true,
     time:"15 min prep · 4 hrs slow cooker", difficulty:"Easy", servings:"~10-day batch", tags:["dog"],
     blurb:"Same one-pot pattern, different protein for rotation — 90/10 beef with pumpkin or sweet potato. Make this the occasional batch, not the default (beef is the pricey one — see the Finance cost panel).",
@@ -443,7 +443,7 @@ const RECIPES = [
       "Portion 460 to 480 g per day: fridge 3 to 4 days, freeze the rest in daily portions.",
       "Serve slightly warmed."
     ],
-    note:"Same rules and transition plan as the One-Pot (see Zoey's One-Pot for the full topper-style transition + picky-chicken-pack tips). Beef batches run ~$66 vs ~$39 — keep this the occasional rotation." }
+    note:"Same rules and transition plan as the One-Pot (see Zoey's One-Pot for the full topper-style transition + picky-chicken-pack tips). Beef batches run ~$66 vs ~$39 — keep this the occasional rotation.", photo:"images/recipe_zoey_beefpot.jpg", photoCredit:"Photo: Judgefloro · CC0 · Wikimedia Commons" }
 ];
 
 // ═══════════════════════════════════════════════════════════════
