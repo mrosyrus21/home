@@ -653,7 +653,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260608120917"></script>
+<script src="./data.js?v=20260608121431"></script>
 <script src="./recipes.js?v=20260606134632"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -665,7 +665,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 8 · 12:09 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 8 · 12:15 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -3359,6 +3359,27 @@ ST.on('value', snap => {
     cookQueue['ck-seed-side1']={rid:'r_box_squash_flatbread',day:'2026-06-06',meal:'dinner',done:false,ts:Date.now()};
     cookQueue['ck-seed-salad1']={rid:'r_box_romaine_spinach_salad',day:'2026-06-06',meal:'dinner',done:false,ts:Date.now()};
     ST.update({ cookQueue: cookQueue, 'flags/jun6-dinner3-v1': 'done' });
+    return;
+  }
+
+  // One-time: Jun 8 2026 — RECIPE SWAP: he actually made Sausage & Squash Flatbread (lunch) + Pasta (dinner) today.
+  // Pull the two replaced planned dishes from To Cook (KEEP the now-approved salad), queue today's two dishes,
+  // add Hot honey to the grocery list, and correct Eggs back to IN-STOCK.
+  if (!flags['jun8-recipeswap-v1']) {
+    // To Cook: remove the spaghetti + the old squash flatbread (salad stays — it's approved/permanent now)
+    delete cookQueue['ck-seed-dinner2']; delete cookQueue['ck-seed-side1'];
+    Object.keys(cookQueue).forEach(function(id){ var x=cookQueue[id]; if(x&&(x.rid==='r_box_sausage_squash_spaghetti'||x.rid==='r_box_squash_flatbread')) delete cookQueue[id]; });
+    // queue today's actual dishes
+    cookQueue['ck-seed-flat2']={rid:'r_box_sausage_squash_flatbread',day:'2026-06-08',meal:'lunch',done:false,ts:Date.now()};
+    cookQueue['ck-seed-pasta2']={rid:'r_box_sausage_squash_pasta',day:'2026-06-08',meal:'dinner',done:false,ts:Date.now()};
+    // grocery: add Hot honey (food item) if not already there
+    var _hadHoney=Object.keys(grocCustom).some(function(k){return /hot honey/i.test(grocCustom[k]||'');});
+    if(!_hadHoney) grocCustom['gc-hothoney1']='🍯 Hot honey';
+    // inventory: correct Eggs back to IN-STOCK
+    var _eggKey=Object.keys(inventory).find(function(k){return /egg/i.test((inventory[k]&&inventory[k].name)||k);});
+    if(_eggKey){ inventory[_eggKey].inStock=true; inventory[_eggKey].ts=Date.now(); }
+    else { inventory[invKey('Eggs')]={name:'Eggs',emoji:'🥚',inStock:true,ts:Date.now()}; }
+    ST.update({ cookQueue: cookQueue, grocCustom: grocCustom, inventory: inventory, 'flags/jun8-recipeswap-v1': 'done' });
     return;
   }
 
