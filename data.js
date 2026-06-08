@@ -474,8 +474,8 @@ const FINANCE = {
     { id:"healing",     due:"weekly", sort:29, label:"🧠 My Healing Space",           amt:100,     note:"~$25/wk · temporary — ends within ~a year" },
     { id:"cardmins",    due:"spread", sort:30, label:"💳 Card minimums (5 cards)",    amt:351,     note:"autopay every one of them" },
     { id:"family",      due:"spread", sort:31, label:"👨‍👩‍👧 Family repayment",          amt:400,     note:"asking to drop to ~$200/mo" },
-    { id:"mint",        due:"yearly", sort:32, label:"📱 Mint Mobile sinking fund",   amt:30,      note:"~$360 billed once a year" },
-    { id:"psn",         due:"yearly", sort:33, label:"🎮 PlayStation sinking fund",   amt:7,       note:"~$86/yr around March" }
+    { id:"mint",        due:"yearly", sort:32, label:"📱 Mint Mobile (annual)",       amt:30,      note:"annual phone plan — confirm amount (not in statements)" },
+    { id:"psn",         due:"yearly", sort:33, label:"🎮 PlayStation Plus (annual)",   amt:15,      note:"$177.18/yr — renews ~early March" }
   ],
   debts: [   // snowball order — smallest card first; tap a balance in the app to update it
     { id:"c6605",    label:"Cap One Quicksilver •6605", start:489.59,  min:25,     apr:"28.24%", card:true,  note:"snowball target — pay this one first" },
@@ -503,8 +503,8 @@ const FINANCE = {
     { id:"carwash",   label:"Super Star Car Wash",      amt:24.00 }
   ],
   cancelPending: "Also: verify Amazon Fresh (no charge seen Mar–May) · Amazon Prime free trial bills ~Jul 5 — cancel by ~Jul 2.",
-  keeping: "Keeping on purpose: Spotify $14.18 · Claude.ai $21.03 (single) · My Healing Space.",
-  // ── ✅ MASTER MONEY TO-DOS — prioritized tiers (reworked Jun 8 2026). Single source of "done": fin.todoDone[id]; 📞 Mondays REFERENCES this list via finTaskDone. Real itemized subscriptions w/ amounts; date-gated items use showFrom; multi-step items use steps[]. ──
+  keeping: "Keeping on purpose: Claude Max $100/mo · Spotify $14.18 · Mint Mobile (annual — confirm amount) · My Healing Space.",
+  // ── ✅ MASTER MONEY TO-DOS — prioritized tiers (audit finalized Jun 8 2026). Single source of "done": fin.todoDone[id]; 📞 Mondays REFERENCES this via finTaskDone. showFrom = date-gate · steps[] = sub-list · info:true = display-only tier · footer = muted note under a tier. ──
   todosSeed: [
     { tier:"🔴 Do first", col:"#E0506A", items:[
       { id:"ft_savor",   label:"💳 Set Savor to autopay (at least the minimum) so no bill ever falls behind" },
@@ -512,17 +512,13 @@ const FINANCE = {
       { id:"ft_fresh",   label:"🛒 Cancel Amazon Fresh", note:"No Fresh charge found in your statements — cancel it anyway, per your call." },
       { id:"ft_prime",   label:"📦 Cancel the Amazon Prime trial before it bills ~Jul 5", showFrom:"2026-06-30", deadline:"2026-07-05", note:"Hidden until Jun 30 so it surfaces right when it matters. (Your Jul 2 reminder still fires separately.)" }
     ]},
-    { tier:"🟠 Subscription purge (~$196/mo)", col:"#FB923C", items:[
-      { id:"ft_gamepass",    label:"🎮 Cancel Xbox Game Pass — $31.11 (biggest)" },
-      { id:"ft_chatgpt",     label:"🤖 Cancel ChatGPT — $20.00 (keeping Claude)" },
-      { id:"ft_disney",      label:"🏰 Cancel Disney+ — $21.69" },
-      { id:"ft_carwash",     label:"🫧 Cancel Super Star Car Wash — $24.00" },
-      { id:"ft_crunchy",     label:"🍥 Cancel Crunchyroll — $15.18" },
-      { id:"ft_epoch",       label:"🌙 Cancel Epoch.com AIPX — $14.95" },
-      { id:"ft_everai",      label:"🤝 Cancel EverAI — $12.99" },
-      { id:"ft_uberone",     label:"🚗 Cancel Uber One — $9.99 (redundant with DashPass)" },
-      { id:"ft_dashpass",    label:"🚪 Cancel DoorDash DashPass — $9.99", note:"Redundant with Uber One — keep at most ONE if you actually use delivery, otherwise cut both." },
-      { id:"ft_earthbreeze", label:"🧺 Cancel the Earth Breeze detergent subscription — buy it as-needed instead" }
+    { tier:"🟠 Cancel list (~$144/mo)", col:"#FB923C", footer:"✅ Confirmed gone — no recent charge: ChatGPT · DoorDash DashPass · EverAI · Epoch.com AIPX · Earth Breeze.", items:[
+      { id:"ft_gamepass",  label:"🎮 Cancel Xbox Game Pass — $31.11" },
+      { id:"ft_carwash",   label:"🫧 Cancel Super Star Car Wash — $24.00" },
+      { id:"ft_disney",    label:"🏰 Cancel Disney+ — $21.69" },
+      { id:"ft_crunchy",   label:"🍥 Cancel Crunchyroll — $15.18" },
+      { id:"ft_uberone",   label:"🚗 Cancel Uber One — $9.99", note:"DashPass already dropped off — Uber One is the last delivery sub; cut it too unless you actually use delivery (keep at most one)." },
+      { id:"ft_claudepro", label:"💳 Cancel leftover Claude Pro — billed twice ($21.03 ×2), it's the OLD plan still charging on top of Claude Max" }
     ]},
     { tier:"🟡 Big structural savers", col:"#FBBF24", items:[
       { id:"ft_xfinity",   label:"📡 Xfinity retention call — target $135 → $70–90 (AT&T Internet Air is $47)" },
@@ -536,7 +532,8 @@ const FINANCE = {
         "Only ONE application at a time — each hard inquiry dings your score",
         "Don't do the card-number reset — it would break the autopays you WANT"
       ]},
-      { id:"ft_po",        label:"🧾 Figure out payments for PO" }
+      { id:"ft_po",        label:"🧾 Figure out payments for PO" },
+      { id:"ft_audit",     label:"🧾 Send the Home Depot card + May checking statements to finish the subscription audit", note:"Those accounts aren't in the data yet — any subscriptions on them are still unaudited." }
     ]},
     { tier:"🟢 Foundation", col:"#4AD490", items:[
       { id:"ft_buffer",   label:"🛟 Build the $500 starter buffer (Goal #1 on 📊 Overview)" },
@@ -546,6 +543,10 @@ const FINANCE = {
       { id:"ft_progress", label:"🚗 Get the new (lower) Progressive amount" },
       { id:"ft_gather",   label:"📋 Gather: Lendmark balance+APR · Nissan payoff · student-loan total · IRS owed · Home Depot card · any Affirm" },
       { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
+    ]},
+    { tier:"📅 Track — annual renewals", col:"#A78BFA", info:true, items:[
+      { id:"trk_psn",  label:"🎮 PlayStation Plus — $177.18/yr", note:"Annual — renews ~early March. Set aside ~$15/mo so the renewal doesn't sting." },
+      { id:"trk_mint", label:"📱 Mint Mobile — annual phone plan (keep)", note:"Confirm the amount — it's not in the statements yet." }
     ]}
   ],
   // ── 📞 FINANCIAL MONDAYS — paced queue, ONE item per Monday (added Jun 6 2026). Order: time-sensitive calls first, then cancels/verifications one a week. Dates assign dynamically: first open item = next Monday; checking one off advances the rest. Done state: fin.monday[id]. ──
@@ -557,11 +558,8 @@ const FINANCE = {
     { id:"mon_gamepass",  label:"🎮 Cancel Xbox Game Pass — $31.11/mo" },
     { id:"mon_farmersdog",label:"🐕 Cancel The Farmer's Dog — $215.05/mo", note:"By now the shipment is nearly used up and Zoey's on the one-pot. The big domino falls. 🎉" },
     { id:"mon_disney",    label:"🏰 Cancel Disney+ — $21.69/mo" },
-    { id:"mon_chatgpt",   label:"🤖 Cancel ChatGPT — $20.00/mo (keeping Claude)" },
     { id:"mon_crunchy",   label:"🍥 Cancel Crunchyroll — $15.18/mo" },
-    { id:"mon_epoch",     label:"🌙 Cancel Epoch.com AIPX — $14.95/mo", note:"While you're in there, confirm EverAI ($12.99) is gone too — last seen Mar 23, likely already dead." },
     { id:"mon_uberone",   label:"🚗 Cancel Uber One — $9.99/mo" },
-    { id:"mon_dashpass",  label:"🚪 Cancel DoorDash DashPass — $9.99/mo" },
     { id:"mon_carwash",   label:"🫧 Cancel Super Star Car Wash — $24.00/mo" },
     { id:"mon_sweep",     label:"🧾 Final sweep — every cancel-list item checked off against a real statement", note:"When this one's done, the gap card on 📊 Overview should be showing the full swing." }
   ],

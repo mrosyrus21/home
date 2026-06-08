@@ -653,7 +653,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260608160000"></script>
+<script src="./data.js?v=20260608170000"></script>
 <script src="./recipes.js?v=20260606134632"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -665,7 +665,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 8 · 9:38 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 8 · 10:01 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2784,7 +2784,7 @@ function finCancelToggle(id){ fin.cancel=fin.cancel||{}; if(fin.cancel[id]) dele
 function finTodoToggle(id){ fin.todoDone=fin.todoDone||{}; if(fin.todoDone[id]) delete fin.todoDone[id]; else fin.todoDone[id]=true; saveFin(); renderFinance(); try{renderToday();}catch(e){} }
 function finMondayToggle(id){ fin.monday=fin.monday||{}; if(fin.monday[id]) delete fin.monday[id]; else { fin.monday[id]=todayKey(); try{toast('📞 Handled — the Monday queue advances');}catch(e){} } saveFin(); renderFinance(); renderToday(); }
 // ── 📞 Mondays ⇄ ✅ To-dos single-source bridge (Jun 8 2026): a Monday card whose task also lives on the master ✅ To-dos list reflects THAT list's done state (finTaskDone) instead of carrying its own independent checkbox. fin.todoDone[ft] is the source of truth; legacy fin.monday[mon] is still honored, and the queue still paces one item a week. ──
-const MON_FT={ mon_latefee:'ft_latefee', mon_xfinity:'ft_xfinity', mon_family:'ft_family', mon_amazon:'ft_prime', mon_farmersdog:'ft_farmersdog', mon_carwash:'ft_carwash', mon_gamepass:'ft_gamepass', mon_disney:'ft_disney', mon_chatgpt:'ft_chatgpt', mon_crunchy:'ft_crunchy', mon_epoch:'ft_epoch', mon_uberone:'ft_uberone', mon_dashpass:'ft_dashpass' };
+const MON_FT={ mon_latefee:'ft_latefee', mon_xfinity:'ft_xfinity', mon_family:'ft_family', mon_amazon:'ft_prime', mon_farmersdog:'ft_farmersdog', mon_carwash:'ft_carwash', mon_gamepass:'ft_gamepass', mon_disney:'ft_disney', mon_crunchy:'ft_crunchy', mon_uberone:'ft_uberone' };
 function finTaskDone(id){ fin.todoDone=fin.todoDone||{}; fin.monday=fin.monday||{}; if(fin.todoDone[id]) return true; if(fin.monday[id]) return true; var ft=MON_FT[id]; if(ft&&fin.todoDone[ft]) return true; for(var mk in MON_FT){ if(MON_FT[mk]===id&&fin.monday[mk]) return true; } return false; }
 function finTaskToggle(id){ var ft=MON_FT[id]; if(ft){ finTodoToggle(ft); } else { finMondayToggle(id); } }
 function finMondayKey(offset){ const d=new Date(); const shift=(1-d.getDay()+7)%7; d.setDate(d.getDate()+shift+offset*7); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); } // 0 = today if Monday, else next Monday
@@ -2984,7 +2984,7 @@ function renderFinance(){
   fin.todoDone=fin.todoDone||{}; fin.todoCustom=fin.todoCustom||{};
   const finTiers=FINANCE.todosSeed||[];
   let finOpenCount=0;
-  finTiers.forEach(function(g){ (g.items||[]).forEach(function(it){ if((!it.showFrom||it.showFrom<=todayKey()) && !finTaskDone(it.id)) finOpenCount++; }); });
+  finTiers.forEach(function(g){ if(g.info) return; (g.items||[]).forEach(function(it){ if((!it.showFrom||it.showFrom<=todayKey()) && !finTaskDone(it.id)) finOpenCount++; }); });
   Object.keys(fin.todoCustom).forEach(function(id){ if(!fin.todoDone[id]) finOpenCount++; });
   out+='<div class="section-label">✅ Money to-dos — '+finOpenCount+' open</div>';
   out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:10px 14px;margin-bottom:6px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">Your whole money list, in priority order — this is the master. The 📞 Mondays tab just paces the calls; check things off <b>here</b>.</div>';
@@ -2998,13 +2998,22 @@ function renderFinance(){
     +(t.custom?'<div onclick="removeFinTodo(\''+t.id+'\')" style="font-size:18px;color:#5a7a99;padding:0 2px 0 8px;cursor:pointer;flex-shrink:0;line-height:1">×</div>':'')
     +'</div>'; };
   finTiers.forEach(function(g){
+    if(g.info){
+      out+='<div style="display:flex;align-items:center;gap:8px;margin:14px 0 6px"><div style="width:4px;align-self:stretch;min-height:15px;border-radius:3px;background:'+g.col+'"></div><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:'+g.col+';font-family:\'Lora\',serif;font-weight:700">'+g.tier+'</div></div>';
+      out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-left:3px solid '+g.col+';border-radius:var(--rad);padding:2px 14px">';
+      (g.items||[]).forEach(function(it){ out+='<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)"><div style="color:'+g.col+';flex-shrink:0;font-size:13px;line-height:1.45">•</div><div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.45">'+it.label+'</div>'+(it.note?'<div style="font-size:11px;color:var(--text2);font-style:italic;font-family:\'Lora\',serif;line-height:1.5;margin-top:3px">'+it.note+'</div>':'')+'</div></div>'; });
+      if(g.footer) out+='<div style="font-size:11px;color:var(--text3);font-family:\'Lora\',serif;line-height:1.5;padding:9px 0 4px">'+g.footer+'</div>';
+      out+='</div>';
+      return;
+    }
     const items=(g.items||[]).filter(function(it){ return !it.showFrom||it.showFrom<=todayKey(); }).map(function(it){ return {id:it.id,label:it.label,deadline:it.deadline||'',note:it.note||'',steps:it.steps||null,custom:false,done:finTaskDone(it.id)}; });
-    if(!items.length) return;
+    if(!items.length && !g.footer) return;
     const op=items.filter(function(t){return !t.done;}), dn=items.filter(function(t){return t.done;});
     out+='<div style="display:flex;align-items:center;gap:8px;margin:14px 0 6px"><div style="width:4px;align-self:stretch;min-height:15px;border-radius:3px;background:'+g.col+'"></div><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:'+g.col+';font-family:\'Lora\',serif;font-weight:700">'+g.tier+'</div></div>';
     out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-left:3px solid '+g.col+';border-radius:var(--rad);padding:2px 14px">';
     op.forEach(function(t){ out+=finTodoRow(t,false,g.col); });
     dn.forEach(function(t){ out+=finTodoRow(t,true,g.col); });
+    if(g.footer) out+='<div style="font-size:11px;color:var(--text3);font-family:\'Lora\',serif;line-height:1.5;padding:9px 0 4px">'+g.footer+'</div>';
     out+='</div>';
   });
   const finCustom=Object.keys(fin.todoCustom).map(function(id){return {id:id,label:esc(fin.todoCustom[id]),custom:true,done:!!fin.todoDone[id]};});
