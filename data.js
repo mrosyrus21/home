@@ -483,7 +483,7 @@ const FINANCE = {
     { id:"c4615",    label:"Credit One •4615",          start:1157.83, min:58,     apr:"~30%",   card:true,  note:"over limit — close AFTER payoff" },
     { id:"c1320",    label:"Cap One Quicksilver •1320", start:1522.50, min:130,    apr:"28.99%", card:true,  note:"autopay now on (had a $29 past-due fee)" },
     { id:"merrick",  label:"Merrick Bank •4735",        start:2236.74, min:87,     apr:"~30%",   card:true,  note:"$4/mo fee" },
-    { id:"savor",    label:"Cap One SAVOR (new)",       start:0,       min:0,      apr:"~30%",   card:true,  keepZero:true, note:"$190 of 3D-print supplies on it (Jun 6) — clear next paycheck, then back to the $0 rule" },
+    { id:"savor",    label:"Cap One SAVOR (new)",       start:0,       min:0,      apr:"",       card:true,  keepZero:true, note:"keep current — autopay on" },
     { id:"famloan",  label:"Family loan",               start:10000,   min:400,    apr:"0%",     card:false, note:"0% — includes +$700 Zelle borrowed Jun 6 for rent; cards first, but never go quiet on family" },
     { id:"nissanL",  label:"Nissan auto loan",          start:null,    min:200,    apr:"?",      card:false, note:"payoff unknown" },
     { id:"lendmarkL",label:"Lendmark Financial",        start:null,    min:177.71, apr:"?",      card:false, note:"balance + APR unknown" },
@@ -492,7 +492,6 @@ const FINANCE = {
   ],
   cancels: [  // pending cancellations — check one off ONLY once it is verified gone on a statement
     { id:"farmersdog", label:"The Farmer's Dog", amt:215.05, note:"cancel after the incoming shipment is used up + the 12-day transition — realistically ~6 weeks out 🐕" },
-    { id:"dupclaude", label:"Duplicate Claude charge", amt:21.03, note:"billed 2× in May — one should remain" },
     { id:"chatgpt",   label:"ChatGPT",                 amt:20.00 },
     { id:"gamepass",  label:"Xbox Game Pass",          amt:31.11 },
     { id:"disney",    label:"Disney+",                 amt:21.69 },
@@ -501,38 +500,49 @@ const FINANCE = {
     { id:"everai",    label:"EverAI",                  amt:12.99, note:"last seen Mar 23 — likely already gone" },
     { id:"uberone",   label:"Uber One",                amt:9.99 },
     { id:"dashpass",  label:"DoorDash DashPass",       amt:9.99 },
-    { id:"carwash",   label:"Car wash subscription",   amt:0, note:"amount unknown — pull it off the statement when you cancel, then update this entry" }
+    { id:"carwash",   label:"Super Star Car Wash",      amt:24.00 }
   ],
   cancelPending: "Also: verify Amazon Fresh (no charge seen Mar–May) · Amazon Prime free trial bills ~Jul 5 — cancel by ~Jul 2.",
   keeping: "Keeping on purpose: Spotify $14.18 · Claude.ai $21.03 (single) · My Healing Space.",
-  // ── ✅ MASTER MONEY TO-DOS — prioritized tiers (rebuilt Jun 8 2026). Single source of "done": fin.todoDone[id]; the 📞 Mondays sub-tab REFERENCES this list (finTaskDone) instead of carrying its own checkboxes. Reused ids preserve existing check state. ──
+  // ── ✅ MASTER MONEY TO-DOS — prioritized tiers (reworked Jun 8 2026). Single source of "done": fin.todoDone[id]; 📞 Mondays REFERENCES this list via finTaskDone. Real itemized subscriptions w/ amounts; date-gated items use showFrom; multi-step items use steps[]. ──
   todosSeed: [
     { tier:"🔴 Do first", col:"#E0506A", items:[
-      { id:"ft_prime",   label:"📦 Cancel the Amazon Prime free trial before Jul 2 — hard deadline, it auto-bills", deadline:"2026-07-02" },
-      { id:"ft_savor",   label:"💳 Pay off the $190 SAVOR charge next paycheck — before interest starts compounding" },
-      { id:"ft_latefee", label:"📞 Property-management late-fee call — Monday (no answer Fri; ask the fee + a first-time waive)" }
+      { id:"ft_savor",   label:"💳 Set Savor to autopay (at least the minimum) so no bill ever falls behind" },
+      { id:"ft_latefee", label:"📞 Property-management late-fee call — Monday (no answer Fri; ask the fee + a first-time waive)" },
+      { id:"ft_fresh",   label:"🛒 Cancel Amazon Fresh", note:"No Fresh charge found in your statements — cancel it anyway, per your call." },
+      { id:"ft_prime",   label:"📦 Cancel the Amazon Prime trial before it bills ~Jul 5", showFrom:"2026-06-30", deadline:"2026-07-05", note:"Hidden until Jun 30 so it surfaces right when it matters. (Your Jul 2 reminder still fires separately.)" }
     ]},
-    { tier:"🟠 Subscription purge (~$157/mo)", col:"#FB923C", items:[
-      { id:"ft_statement", label:"🧾 Pull the full statement — list every recurring charge in one place" },
-      { id:"ft_verify",    label:"✅ Verify each canceled sub actually dropped off a statement (ChatGPT, Game Pass, Disney+, etc.)" },
-      { id:"ft_carwash",   label:"🫧 Cancel the car wash subscription" },
-      { id:"ft_dupclaude", label:"💳 Dispute / cancel the duplicate Claude charge — $21.03 billed twice in May" }
+    { tier:"🟠 Subscription purge (~$196/mo)", col:"#FB923C", items:[
+      { id:"ft_gamepass",    label:"🎮 Cancel Xbox Game Pass — $31.11 (biggest)" },
+      { id:"ft_chatgpt",     label:"🤖 Cancel ChatGPT — $20.00 (keeping Claude)" },
+      { id:"ft_disney",      label:"🏰 Cancel Disney+ — $21.69" },
+      { id:"ft_carwash",     label:"🫧 Cancel Super Star Car Wash — $24.00" },
+      { id:"ft_crunchy",     label:"🍥 Cancel Crunchyroll — $15.18" },
+      { id:"ft_epoch",       label:"🌙 Cancel Epoch.com AIPX — $14.95" },
+      { id:"ft_everai",      label:"🤝 Cancel EverAI — $12.99" },
+      { id:"ft_uberone",     label:"🚗 Cancel Uber One — $9.99 (redundant with DashPass)" },
+      { id:"ft_dashpass",    label:"🚪 Cancel DoorDash DashPass — $9.99", note:"Redundant with Uber One — keep at most ONE if you actually use delivery, otherwise cut both." },
+      { id:"ft_earthbreeze", label:"🧺 Cancel the Earth Breeze detergent subscription — buy it as-needed instead" }
     ]},
     { tier:"🟡 Big structural savers", col:"#FBBF24", items:[
       { id:"ft_xfinity",   label:"📡 Xfinity retention call — target $135 → $70–90 (AT&T Internet Air is $47)" },
       { id:"ft_family",    label:"👨‍👩‍👧 Renegotiate the family loan — $400/mo → ~$200 while stabilizing" },
       { id:"ft_zoeyfood",  label:"🐕 Buy Zoey's homemade-food ingredients when the Farmer's Dog shipment runs low (~4 wks) — prerequisite for the cancel below" },
       { id:"ft_farmersdog",label:"🐕 Cancel The Farmer's Dog after Zoey's transition (~$215/mo, ~6 wks out)" },
-      { id:"ft_cardreset", label:"💳 Decide on a card-number reset to kill zombie autopays — a Monday decision" },
+      { id:"ft_cardreset", label:"💳 Credit-card overhaul plan — ditch the bad cards + get one good one WITHOUT tanking your score", steps:[
+        "Keep the old paid-off cards OPEN — closing them hurts your credit age + utilization, which lowers your score",
+        "Pay balances down first to drop utilization (snowball •6605 $490, then up the list)",
+        "Once utilization falls and your score recovers, apply for ONE good card — a 0% APR balance-transfer card to escape the ~29% interest, or a low-APR / solid-rewards card",
+        "Only ONE application at a time — each hard inquiry dings your score",
+        "Don't do the card-number reset — it would break the autopays you WANT"
+      ]},
       { id:"ft_po",        label:"🧾 Figure out payments for PO" }
     ]},
     { tier:"🟢 Foundation", col:"#4AD490", items:[
       { id:"ft_buffer",   label:"🛟 Build the $500 starter buffer (Goal #1 on 📊 Overview)" },
-      { id:"ft_kalshi",   label:"🎲 Keep Kalshi at $0" },
       { id:"ft_snowball", label:"❄️ After the buffer: attack card •6605 ($490) — the snowball target" }
     ]},
     { tier:"Also open", col:"#7EB8F0", items:[
-      { id:"ft_fresh",    label:"🛒 Cancel Amazon Fresh" },
       { id:"ft_progress", label:"🚗 Get the new (lower) Progressive amount" },
       { id:"ft_gather",   label:"📋 Gather: Lendmark balance+APR · Nissan payoff · student-loan total · IRS owed · Home Depot card · any Affirm" },
       { id:"ft_autopay",  label:"📅 Realign autopay dates so nothing drafts an empty account" }
@@ -543,30 +553,27 @@ const FINANCE = {
     { id:"mon_latefee",   label:"📞 Property management — rent late fee follow-up", note:"No answer Friday — Monday morning is the retry. Ask what the fee is, and whether they'll waive it (first time, rent was paid Jun 5)." },
     { id:"mon_xfinity",   label:"📞 Xfinity retention call — get $135 down to ~$70–90", note:"Say 'cancel service' at the prompts to reach Retention. Leverage: AT&T Internet Air is $47/mo at your address. Full script on the ✅ To-dos sub-tab." },
     { id:"mon_family",    label:"👨‍👩‍👧 Family payment renegotiation — $400/mo → ~$200", note:"One honest conversation: stabilizing now, back up when the gap closes." },
-    { id:"mon_amazon",    label:"📦 Cancel Amazon Prime free trial + Amazon Fresh", note:"One sitting, two cancels — same login. Prime bills ~Jul 5 if you miss it.", deadline:"2026-07-02" },
-    { id:"mon_claude",    label:"💳 Duplicate Claude charge — get the $21.03 back", note:"Billed twice in May; one should remain. Contact support first; dispute with the bank if they stall." },
-    { id:"mon_gamepass",  label:"🎮 Xbox Game Pass — verify the $31.11 is gone on the statement", note:"Check it off the ❄️ Debts cancel list when you SEE it missing." },
+    { id:"mon_amazon",    label:"📦 Cancel the Amazon Prime trial before it bills", note:"Prime bills ~Jul 5 if you miss it. Tracked on your ✅ To-dos list (it surfaces there Jun 30).", deadline:"2026-07-05" },
+    { id:"mon_gamepass",  label:"🎮 Cancel Xbox Game Pass — $31.11/mo" },
     { id:"mon_farmersdog",label:"🐕 Cancel The Farmer's Dog — $215.05/mo", note:"By now the shipment is nearly used up and Zoey's on the one-pot. The big domino falls. 🎉" },
-    { id:"mon_disney",    label:"🏰 Disney+ — verify the $21.69 is gone on the statement" },
-    { id:"mon_chatgpt",   label:"🤖 ChatGPT — verify the $20.00 is gone on the statement" },
-    { id:"mon_crunchy",   label:"🍥 Crunchyroll — verify the $15.18 is gone on the statement" },
-    { id:"mon_epoch",     label:"🌙 Epoch.com ($14.95) — verify gone · same statement: confirm EverAI ($12.99) is gone too", note:"Epoch bills ~the 23rd; EverAI was last seen Mar 23 and is likely already dead." },
-    { id:"mon_uberone",   label:"🚗 Uber One — verify the $9.99 is gone on the statement" },
-    { id:"mon_dashpass",  label:"🚪 DoorDash DashPass — verify the $9.99 is gone on the statement" },
-    { id:"mon_carwash",   label:"🫧 Cancel the car wash subscription", note:"Amount unknown — find it on the statement while you're in there, then update the ✂️ cancel-list entry with the real number." },
-    { id:"mon_cardreset", label:"💳 Decide: card reset to kill small subscriptions?", note:"A decision, not a to-do — no answer pre-picked. FOR: replacing the card number nukes ALL small autopays at once — the fast way to kill zombie charges. AGAINST: it also breaks the autopays you WANT (utilities etc. get re-entered one by one), some subscriptions survive anyway (the card networks auto-update merchants), and it does nothing to the balances. The alternative is already running: this Mondays queue is killing them one a week. Decide on this Monday — either answer is fine." },
-    { id:"mon_sweep",     label:"🧾 Final sweep — every cancel-list item checked off against a real statement", note:"When this one's done, the gap card on 📊 Overview should be showing the full ~$372 swing." }
+    { id:"mon_disney",    label:"🏰 Cancel Disney+ — $21.69/mo" },
+    { id:"mon_chatgpt",   label:"🤖 Cancel ChatGPT — $20.00/mo (keeping Claude)" },
+    { id:"mon_crunchy",   label:"🍥 Cancel Crunchyroll — $15.18/mo" },
+    { id:"mon_epoch",     label:"🌙 Cancel Epoch.com AIPX — $14.95/mo", note:"While you're in there, confirm EverAI ($12.99) is gone too — last seen Mar 23, likely already dead." },
+    { id:"mon_uberone",   label:"🚗 Cancel Uber One — $9.99/mo" },
+    { id:"mon_dashpass",  label:"🚪 Cancel DoorDash DashPass — $9.99/mo" },
+    { id:"mon_carwash",   label:"🫧 Cancel Super Star Car Wash — $24.00/mo" },
+    { id:"mon_sweep",     label:"🧾 Final sweep — every cancel-list item checked off against a real statement", note:"When this one's done, the gap card on 📊 Overview should be showing the full swing." }
   ],
   advice: [
-    { t:"$190 of filament is inventory, not income", b:"The SAVOR balance is real debt — clear it next paycheck, and no hypothetical print-sale math in the One Number. BUT: the hydro and aquarium prints are exactly the functional niche that sells on Etsy and locally. List 2–3 finished prints (it's on the Print → Ideas list); the day one ships, the $190 starts paying itself back. Until then, it's just spending." },
-    { t:"The SAVOR card is a tool, not a balance", b:"Brand-new card, $500 limit, ~30% APR. Used for one small bill and paid in full, it quietly builds credit. Carried, $500 at 30% grows about $12 every month it sits. The win condition is simple — the statement always says $0." },
+    { t:"$190 of filament is inventory, not income", b:"The hydro and aquarium prints are exactly the functional niche that sells on Etsy and locally. List 2–3 finished prints (it's on the Print → Ideas list); the day one ships, those supplies start paying for themselves. The Savor card carried them — keep its autopay on so it never falls behind." },
+    { t:"Savor is the working card — don't let it fall behind", b:"It's your newest card and the one you actually use. The single rule that matters: keep autopay on (at least the minimum) so a payment never slips and dents your history. Used and paid on time, it quietly builds credit." },
     { t:"The Farmer's Dog is the big domino", b:"$215.05 a month. The plan: feed through the incoming 1+ month shipment, buy the homemade ingredients, run the 12-day switch — so the cancel lands ~6 weeks out. That's honest, not slow: the shipment is already paid for, so using it up IS the money move." },
     { t:"Rent first, every first paycheck", b:"Rent is $2,175 — almost a whole paycheck. The day a check lands, set the rent money aside before anything else touches it. The rest of the month gets simpler instantly." },
     { t:"The $500 buffer comes before extra debt payments", b:"With the cards maxed, any surprise becomes new debt. Even $50 per paycheck builds it in about 5 months — and every dollar in the buffer is a surprise that never reaches a card." },
     { t:"Smallest card first — •6605 is almost gone", b:"It is only about $490. Clear it, then roll its $25 minimum onto the next card. The snowball works because finishing things feels good — use that." },
     { t:"Canceled ≠ stopped", b:"Subscriptions love to keep charging after you cancel. Only check one off the Cancel List when you SEE it missing from a statement. That is when the savings become real." },
     { t:"Stress is the trigger, delivery is the outlet", b:"Eating out ran ~$320/mo — your single biggest flexible lever. Feeling the urge? Ten-minute pause, glass of water, then decide. Half the time the urge passes on its own." },
-    { t:"Kalshi stays at $0", b:"That cap is already saving ~$150 a month. It is one of the strongest moves you have made — protect it." },
     { t:"Autopay the minimums — all five cards", b:"One month of fees ($29 late + $28 returned) was $57 of pure waste. Autopay makes that impossible. Set it once and forget it." },
     { t:"Never let an autopay hit an empty account", b:"Move the due date instead — a planned-late bill beats a $35 bounce every time. The ~Jun 6 cluster (Xcel + water + student loan) lands right after payday; keep that money parked until they clear." },
     { t:"Family at 0% waits — but talk to them", b:"The math says cards first (they are at ~29–30%). But never go quiet on family. The $400 → $200 ask is a conversation, not a confession — they would rather hear from you." },
