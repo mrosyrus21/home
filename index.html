@@ -669,8 +669,8 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260608210000"></script>
-<script src="./recipes.js?v=20260608210000"></script>
+<script src="./data.js?v=20260608220000"></script>
+<script src="./recipes.js?v=20260608220000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -681,7 +681,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 8 · 10:03 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 8 · 10:22 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2210,6 +2210,8 @@ function recipeMatch(r,q){
   return q.split(/\s+/).filter(Boolean).every(function(w){ return hay.indexOf(w)!==-1; });
 }
 function recipeFilter(v){ recipeQuery=String(v||''); const el=document.getElementById('recipe-list'); if(el) el.innerHTML=recipeListHtml(); }
+function weekIndex(){ return Math.floor((Math.floor(Date.now()/86400000)-4)/7); } // continuous week counter; advances each Monday (UTC)
+function weeklyFeatured(list){ if(!list||!list.length) return null; var i=((weekIndex()%list.length)+list.length)%list.length; return list[i]; }
 function recipeListHtml(){
   const q=String(recipeQuery||'').trim().toLowerCase();
   const all=(typeof RECIPES!=='undefined')?RECIPES:[];
@@ -2224,7 +2226,7 @@ function recipeListHtml(){
     out+=dhits.map(function(r){return recipeCard(r,false);}).join('');
     return out;
   }
-  const feat=human.find(r=>r.featured)||human[0];
+  const _fpool=(typeof RECIPES_BOX!=='undefined'?RECIPES_BOX:human).filter(function(r){return !r.dog && !r.draft;}); const feat=weeklyFeatured(_fpool)||human[0]; // 🔁 rotates weekly through the box (same pool as recipes.html)
   const rest=human.filter(r=>r!==feat);   // featured renders in the spotlight at the top of the Recipe Box tab
   if(rest.length) out+=rest.map(r=>recipeCard(r,false)).join('');
   if(dogs.length){
@@ -3151,7 +3153,7 @@ function renderFinance(){
 // ═══ 📖 RECIPE BOX TAB + 🍳 TO COOK QUEUE ═══════════════════════════════════
 function renderRecipeBox(){ const el=document.getElementById('view-grocery'); if(!el||foodSub!=='recipebox') return;
   const all=(typeof RECIPES!=='undefined')?RECIPES:[];
-  const feat=all.filter(function(r){return !r.dog;}).find(function(r){return r.featured;})||all.filter(function(r){return !r.dog;})[0];
+  const _fpool=(typeof RECIPES_BOX!=='undefined'?RECIPES_BOX:all).filter(function(r){return !r.dog && !r.draft;}); const feat=weeklyFeatured(_fpool)||all.filter(function(r){return !r.dog;})[0]; // 🔁 same weekly pick as the grid + recipes.html
   let out='';
   if(feat) out+='<div class="section-label">⭐ Featured recipe</div>'+recipeCard(feat,true);
   out+=recipesHtml();

@@ -53,12 +53,15 @@
     <div id="recipe-page" style="display:none"></div>
   </div>
 
-<script src="./recipes.js?v=20260608210000"></script>
+<script src="./recipes.js?v=20260608220000"></script>
 <script>
 "use strict";
 // ── Source: the SAME recipes.js the app loads (RECIPES_BOX). Human recipes only — no dog, no drafts, no personal data. ──
 var SRC = (typeof RECIPES_BOX !== 'undefined') ? RECIPES_BOX : ((typeof RECIPES !== 'undefined') ? RECIPES : []);
 var HUMAN = SRC.filter(function(r){ return r && !r.dog && !r.draft; });
+// 🔁 Weekly auto-rotating featured pick — pure UTC date math, same all week, advances each Monday. Same logic as the in-app Recipe Box.
+function weekIndex(){ return Math.floor((Math.floor(Date.now()/86400000)-4)/7); }
+function weeklyFeatured(list){ if(!list||!list.length) return null; var i=((weekIndex()%list.length)+list.length)%list.length; return list[i]; }
 var recipeQuery = '';
 var SERV = {};
 
@@ -68,15 +71,15 @@ function recipeHero(r){
   return '<div style="height:130px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2417,#0f0e14);border-bottom:1px solid #D9C39A">'
     +'<div style="font-size:54px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))">'+(r.emoji||'🍽️')+'</div></div>';
 }
-function recipeCard(r){
+function recipeCard(r, featured){
   var ph=r.photo;
   var meta=[r.time, r.difficulty, (r.servings?('🍽 '+r.servings):'')].filter(Boolean);
   var badges=meta.map(function(m){return '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(140,59,46,.1);color:#8C3B2E;border:1px solid rgba(140,59,46,.25);font-family:\'Lora\',serif">'+esc(m)+'</span>';}).join('');
   return '<div onclick="openRecipe(\''+r.id+'\')" style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;margin-bottom:14px;overflow:hidden;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35)">'
     +'<div style="height:6px;background:repeating-linear-gradient(45deg,#C44536,#C44536 7px,#F5ECD7 7px,#F5ECD7 14px)"></div>'
-    +(ph?'<div style="height:130px;overflow:hidden;border-bottom:1px solid #D9C39A;background:#e8dab9"><img src="'+esc(ph)+'" alt="'+esc(r.name)+'" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover"></div>':recipeHero(r))
+    +(ph?'<div style="height:'+(featured?170:130)+'px;overflow:hidden;border-bottom:1px solid #D9C39A;background:#e8dab9"><img src="'+esc(ph)+'" alt="'+esc(r.name)+'" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover"></div>':recipeHero(r))
     +'<div style="padding:12px 15px 14px">'
-    +'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:16px;font-weight:700;color:#5a3a2a;line-height:1.25">'+(r.emoji||'🍽️')+' '+esc(r.name)+'</div>'
+    +(featured?'<div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#C44536;font-family:\'Lora\',serif;margin-bottom:4px">★ This week’s pick</div>':'')+'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:'+(featured?20:16)+'px;font-weight:700;color:#5a3a2a;line-height:1.25">'+(r.emoji||'🍽️')+' '+esc(r.name)+'</div>'
     +(badges?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+badges+'</div>':'')
     +(r.blurb?'<div style="font-size:12px;color:#7a5c3a;font-family:\'Lora\',serif;line-height:1.5;margin-top:8px;border-top:1px dashed #C9A86A;padding-top:8px">'+esc(r.blurb)+'</div>':'')
     +'</div></div>';
@@ -87,12 +90,14 @@ function recipeMatch(r,q){
 }
 function recipeListHtml(){
   var q=String(recipeQuery||'').trim().toLowerCase();
-  var list=q?HUMAN.filter(function(r){return recipeMatch(r,q);}):HUMAN.slice();
-  if(!list.length){
+  var matches=q?HUMAN.filter(function(r){return recipeMatch(r,q);}):HUMAN.slice();
+  var feat=q?null:weeklyFeatured(HUMAN);
+  var list=feat?matches.filter(function(r){return r!==feat;}):matches;
+  if(q && !matches.length){
     return '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:22px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No recipes match “'+esc(q)+'” — try a single ingredient or a shorter word.</div>';
   }
-  var head=q?('<div class="countline">'+list.length+' match'+(list.length===1?'':'es')+'</div>'):'';
-  return head+list.map(recipeCard).join('');
+  var head=q?('<div class="countline">'+matches.length+' match'+(matches.length===1?'':'es')+'</div>'):'';
+  return head+(feat?recipeCard(feat,true):'')+list.map(function(r){return recipeCard(r,false);}).join('');
 }
 function recipeFilter(v){ recipeQuery=String(v||''); var el=document.getElementById('recipe-list'); if(el) el.innerHTML=recipeListHtml(); }
 
