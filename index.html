@@ -669,8 +669,8 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260609001127"></script>
-<script src="./recipes.js?v=20260609001127"></script>
+<script src="./data.js?v=20260609005012"></script>
+<script src="./recipes.js?v=20260609005012"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -681,7 +681,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 9 · 12:14 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 9 · 12:51 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -3038,6 +3038,29 @@ function renderFinance(){
   // ── 4 · BILLS — monthly check-offs ──
   out+='\u0001bills\u0001';
   fin.bills=fin.bills||{};
+  // ── 🛟 OVERDRAFT GUARD — payday-relative bill timing (added Jun 9 2026; does NOT touch the One Number math) ──
+  const PD_ANCHOR=new Date(FINANCE.paydayAnchor+'T12:00:00'), PD_MS=86400000;
+  const _pdToday=new Date();
+  function _pdInto(d){ return ((Math.floor((d-PD_ANCHOR)/PD_MS)%14)+14)%14; }
+  function _nextPayday(from){ const left=(14-_pdInto(from))%14; return new Date(from.getTime()+left*PD_MS); }
+  function _lastPaydayOnOrBefore(d){ return new Date(d.getTime()-_pdInto(d)*PD_MS); }
+  const _nextPd=_nextPayday(_pdToday);
+  const _nextPdStr=_nextPd.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  function billDueDay(b){ const m=String(b.due||'').match(/(\d+)/); return m?parseInt(m[1],10):null; }
+  function billPaydayFlag(b){ const day=billDueDay(b); if(!day) return null;
+    const due=new Date(_pdToday.getFullYear(),_pdToday.getMonth(),Math.min(day,28),12,0,0);
+    const daysAfter=Math.round((due-_lastPaydayOnOrBefore(due))/PD_MS);
+    return { risk: daysAfter>=7, daysAfter:daysAfter }; }
+  function billFlagHtml(b){ const f=billPaydayFlag(b); if(!f) return '';
+    return '<div style="font-size:10px;margin-top:4px;display:inline-block;padding:2px 7px;border-radius:5px;font-family:\'Lora\',serif;'
+      +(f.risk?'background:rgba(248,113,113,.13);color:#F87171;border:1px solid rgba(248,113,113,.4)':'background:rgba(45,184,112,.12);color:#34D399;border:1px solid rgba(45,184,112,.35)')+'">'
+      +(f.risk?'⚠️ due before payday — overdraft risk':'✅ covered (after payday)')+'</div>'; }
+  // 🛟 rule card — top of the Bills sub-tab
+  out+='<div style="background:linear-gradient(135deg,rgba(56,189,248,.13),rgba(255,255,255,.02));border:1px solid rgba(56,189,248,.4);border-radius:var(--rad);padding:14px 16px;margin-bottom:14px">'
+    +'<div style="display:flex;align-items:center;gap:9px;margin-bottom:5px"><span style="font-size:20px">🛟</span><span style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text)">Overdraft Guard</span></div>'
+    +'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">Never let an autopay hit an empty account — <b style="color:var(--text)">move the due date</b>. A planned-late bill beats a $35 bounce.</div>'
+    +'<div style="font-size:11px;color:#38BDF8;font-family:\'Lora\',serif;margin-top:9px;line-height:1.6">💵 Next payday: <b>'+_nextPdStr+'</b> &nbsp;·&nbsp; <span style="color:#F87171">⚠️ due before payday</span> &nbsp;·&nbsp; <span style="color:#34D399">✅ covered after payday</span></div>'
+  +'</div>';
   const sortedBills=FINANCE.bills.slice().sort(function(a,b){return a.sort-b.sort;});
   // 💳 loan bills show TOTAL owed (wired to the matching debt); unknown => tap to set on ❄️ Debts
   const LOAN_DEBT={studentloan:'studentL',nissan:'nissanL',irs:'irsL',lendmark:'lendmarkL',family:'famloan'};
@@ -3059,7 +3082,7 @@ function renderFinance(){
       +'<div style="width:22px;height:22px;border-radius:50%;border:2px solid '+(pd?'#10B981':'rgba(250,204,21,.45)')+';background:'+(pd?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0">'+(pd?'✓':'')+'</div>'
       +'<div style="font-size:9.5px;color:var(--text2);width:46px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em">'+b.due+'</div>'
       +'<div style="flex:1;min-width:0"><div style="font-size:13px;color:'+(pd?'var(--text3)':'var(--text)')+';'+(pd?'text-decoration:line-through;':'')+'font-family:\'Lora\',serif">'+b.label+'</div>'
-      +(b.note?'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+b.note+'</div>':'')+billTotalHtml(b)+'</div>'
+      +(b.note?'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+b.note+'</div>':'')+billTotalHtml(b)+billFlagHtml(b)+'</div>'
       +'<div style="font-size:13px;font-weight:700;color:'+(pd?'var(--text3)':Y)+';flex-shrink:0">'+finFmt(b.amt,true)+'</div></div>';
   });
   out+='<div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0 9px;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif"><span>Check each off as it\'s paid — fresh boxes every month.</span><b style="color:var(--text);flex-shrink:0">'+finFmt(billTotal,true)+'/mo</b></div></div>';

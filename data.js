@@ -463,6 +463,7 @@ const REMINDERS = [
   { id:"rem_gp_verify",       date:"2026-06-17", emoji:"✅", text:"Verify Game Pass actually cancelled — no $31.11 renewal after Jun 16", account:"Capital One checking" },
   { id:"rem_disney_cancel",   date:"2026-06-18", emoji:"🏰", text:"Cancel Disney+ ($21.69)", account:"Merrick card •4735" },
   { id:"rem_disney_verify",   date:"2026-06-19", emoji:"✅", text:"Verify Disney+ cancelled", account:"Merrick •4735" },
+  { id:"rem_bill_cluster_park", date:"2026-06-18", emoji:"💧", text:"Park ~$364 for the bill cluster (Xcel ~$133 · Denver Water $40 · Student loan $191) — don't touch until Xcel, water & student loan autopay clear." },
   { id:"rem_petco_ammonia",   standing:true,     emoji:"🦐", text:"Petco: pick up aquarium ammonia tester (Seachem badge or API drops) for the shrimp tank" },
   { id:"rem_thyme_plant",     standing:true,     emoji:"🌿", text:"Get a thyme plant" }
 ];
@@ -559,6 +560,13 @@ const FINANCE = {
       { id:"ft_total_student",  label:"🔢 Find the total balance owed on student loans" },
       { id:"ft_total_irs",      label:"🔢 Find the total balance owed on the IRS payment plan" },
       { id:"ft_total_family",   label:"🔢 Find the total balance owed on the family loan" }
+    ]},
+    { tier:"🛟 Overdraft guard — move these due dates past payday", col:"#FBBF24", footer:"Each of these lands before the covering paycheck — a planned-late date beats a $35 bounce. Next payday: Thu Jun 18.", items:[
+      { id:"ft_move_progressive", label:"📞 Call Progressive to move the due date to just after payday (Thu the 18th / Fri)" },
+      { id:"ft_move_nissan",      label:"📞 Call Nissan auto loan to move the due date to just after payday (Thu the 18th / Fri)" },
+      { id:"ft_move_irs",         label:"📞 Call the IRS payment plan to move the due date to just after payday (Thu the 18th / Fri)" },
+      { id:"ft_move_lendmark",    label:"📞 Call Lendmark to move the due date to just after payday (Thu the 18th / Fri)" },
+      { id:"ft_move_xfinity",     label:"📞 Ask Xfinity to move the due date to just after payday (Thu the 18th / Fri)" }
     ]},
     { tier:"🟢 Foundation", col:"#4AD490", items:[
       { id:"ft_buffer",   label:"🛟 Build the $500 starter buffer (Goal #1 on 📊 Overview)" },
