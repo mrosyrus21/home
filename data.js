@@ -463,7 +463,8 @@ const REMINDERS = [
   { id:"rem_gp_verify",       date:"2026-06-17", emoji:"✅", text:"Verify Game Pass actually cancelled — no $31.11 renewal after Jun 16", account:"Capital One checking" },
   { id:"rem_disney_cancel",   date:"2026-06-18", emoji:"🏰", text:"Cancel Disney+ ($21.69)", account:"Merrick card •4735" },
   { id:"rem_disney_verify",   date:"2026-06-19", emoji:"✅", text:"Verify Disney+ cancelled", account:"Merrick •4735" },
-  { id:"rem_petco_ammonia",   standing:true,     emoji:"🦐", text:"Petco: pick up aquarium ammonia tester (Seachem badge or API drops) for the shrimp tank" }
+  { id:"rem_petco_ammonia",   standing:true,     emoji:"🦐", text:"Petco: pick up aquarium ammonia tester (Seachem badge or API drops) for the shrimp tank" },
+  { id:"rem_thyme_plant",     standing:true,     emoji:"🌿", text:"Get a thyme plant" }
 ];
 
 // ── 🚙 DMV — daily reminder to call for an earlier cancellation slot, through the appointment date.
