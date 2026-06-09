@@ -681,7 +681,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 8 · 10:22 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 8 · 10:28 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -3331,6 +3331,18 @@ ST.on('value', snap => {
     const seed2=[['Worcestershire sauce','🍶'],['Cholula hot sauce','🌶️'],["Nanita's mild green chile (jar)",'🌶️'],["Nanita's enchilada sauce (jar)",'🥫'],['Hot green chile (jar)','🌶️'],['Frozen chicken thighs','🍗'],['Frozen pinto beans (cooked)','🫘'],['Frozen white fish','🐟'],['Frozen turkey pot pies','🥧'],['Frozen pizza','🍕'],['Chocolate ice cream','🍨'],['English toffee sugar crystals','🍬']];
     seed2.forEach(function(p){ const k=invKey(p[0]); if(!inventory[k]) inventory[k]={name:p[0],emoji:p[1],inStock:true,ts:Date.now()}; });
     ST.update({ inventory: inventory, 'flags/inventory-seed-v2': 'done' });
+    return;
+  }
+  // One-time: Jun 8 2026 — seed the 11 Sausage & Pesto Stuffed Shells staples into Kitchen Inventory (in-stock) + clear any matching active grocery-List items
+  if (!flags['inv-seed-shells-jun8-v1']) {
+    const seed3=[['Jumbo pasta shells','🐚'],['Ricotta','🧀'],['Mozzarella','🧀'],['Parmesan','🧀'],['Marinara','🥫'],['Italian sausage','🌭'],['Onion','🧅'],['Garlic','🧄'],['Pesto','🌿'],['Fresh basil','🌿'],['Lemon','🍋']];
+    seed3.forEach(function(p){
+      const k=invKey(p[0]); if(!k) return;
+      if(!inventory[k]) inventory[k]={name:p[0],emoji:p[1],inStock:true,ts:Date.now()}; else inventory[k].inStock=true;
+      const bi=GROC_BUILTIN.find(function(i){return invKey(splitEmoji(i.label).name)===k;}); if(bi) grocPurchased[bi.id]=true;
+      Object.keys(grocCustom).forEach(function(id){ if(invKey(splitEmoji(String(grocCustom[id]).replace(/\s*\(from:[^)]*\)\s*$/,'')).name)===k) grocPurchased[id]=true; });
+    });
+    ST.update({ inventory: inventory, grocPurchased: grocPurchased, 'flags/inv-seed-shells-jun8-v1': 'done' });
     return;
   }
 
