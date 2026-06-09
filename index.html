@@ -681,7 +681,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 8 · 10:28 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 8 · 11:39 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -997,7 +997,7 @@ function renderSubtabs(t) {
   else if(t==="shopping"){ subs=[["bluedream","🦐 Blue Dream"],["tall","📏 Tall"],["wide","📐 Wide"],["dry","🏜️ Dry"]]; cur=tankSub; fn="switchTankSub"; }
   else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","💎 Wishlist"],["ideas","💡 Ideas"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
   else if(t==="grocery"){ subs=[["list","🛒 List"],["inventory","🧺 Inventory"],["recipebox","📖 Recipes"],["tocook","🍳 To Cook"]]; cur=foodSub; fn="switchFoodSub"; }
-  else if(t==="finance"){ subs=[["todos","✅ To-dos"],["overview","📊 Overview"],["bills","📅 Bills"],["debts","❄️ Debts"],["mondays","📞 Mondays"],["coach","🧠 Coach"]]; cur=finSub; fn="switchFinSub"; }
+  else if(t==="finance"){ subs=[["todos","✅ To-dos"],["overview","📊 Overview"],["bills","📅 Bills"],["debts","❄️ Debts"],["mondays","📞 Mondays"],["coach","🧠 Coach"],["sideincome","💸 Side Income"]]; cur=finSub; fn="switchFinSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
 }
@@ -2918,6 +2918,11 @@ function finMondayLabel(k){ const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','
 function addFinTodo(){ const el=document.getElementById('finTodoInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; fin.todoCustom=fin.todoCustom||{}; fin.todoCustom['ft-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; el.value=''; saveFin(); renderFinance(); }
 function removeFinTodo(id){ if(fin.todoCustom&&fin.todoCustom[id]!=null) delete fin.todoCustom[id]; if(fin.todoDone&&fin.todoDone[id]) delete fin.todoDone[id]; saveFin(); renderFinance(); }
 function finMoreTips(){ finTipOff+=3; renderFinance(); }
+// === 💸 SIDE INCOME helpers (Jun 8 2026) — aspirational; NEVER folded into the One Number ===
+function sidePhaseToggle(n){ fin.side=fin.side||{}; fin.side.phase=fin.side.phase||{}; if(fin.side.phase[n]) delete fin.side.phase[n]; else { fin.side.phase[n]=true; try{toast('🚀 Phase '+n+' shipped — next phase unlocked');}catch(e){} } saveFin(); renderFinance(); }
+function sideProdToggle(n){ fin.side=fin.side||{}; fin.side.prod=fin.side.prod||{}; if(fin.side.prod[n]) delete fin.side.prod[n]; else fin.side.prod[n]=true; saveFin(); renderFinance(); }
+function sideEditListings(){ fin.side=fin.side||{}; const cur=fin.side.listings||0; const v=prompt('How many listings are live right now?',cur); if(v===null) return; const n=parseInt(String(v).replace(/[^0-9]/g,''),10); if(isNaN(n)){ try{toast('Hmm — enter a whole number');}catch(e){} return; } fin.side.listings=Math.max(0,n); saveFin(); renderFinance(); }
+function sideEditEarned(){ fin.side=fin.side||{}; const cur=fin.side.earned||0; const v=prompt('Total side income earned to date ($)?',cur); if(v===null) return; const n=parseFloat(String(v).replace(/[^0-9.\-]/g,'')); if(isNaN(n)){ try{toast('Hmm — that does not look like a number');}catch(e){} return; } fin.side.earned=Math.max(0,n); saveFin(); renderFinance(); }
 
 function renderFinance(){
   const el=document.getElementById('view-finance'); if(!el) return;
@@ -3144,6 +3149,78 @@ function renderFinance(){
   [t2,t3].forEach(function(t){ out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 16px;margin-bottom:10px"><div style="font-size:13.5px;font-weight:700;color:var(--text);font-family:\'Lora\',serif;margin-bottom:4px">'+t.t+'</div><div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.65">'+t.b+'</div></div>'; });
   out+='<div onclick="finMoreTips()" style="text-align:center;padding:11px;border:1px dashed rgba(99,102,241,.4);border-radius:var(--rad);color:#A5B4FC;font-size:13px;cursor:pointer;font-family:\'Lora\',serif;margin-bottom:12px">🎲 Show me three more</div>';
   out+='<div style="font-size:10.5px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:20px">Practical budgeting nudges only — never investment advice. Numbers from your statements, Mar–May 2026.</div>';
+
+  // ── 9 · 💸 SIDE INCOME — aspirational, kept SEPARATE from the One Number ──
+  out+='\u0001sideincome\u0001';
+  fin.side=fin.side||{}; fin.side.phase=fin.side.phase||{}; fin.side.prod=fin.side.prod||{};
+  const _sListings=fin.side.listings||0, _sEarned=fin.side.earned||0;
+  const _sGate1=(!!fin.side.phase[1])||_sListings>0;   // Phase 1 ships = listings live
+  const _sGate2=(!!fin.side.phase[2]);                 // Phase 2 ships = one gig landed
+  out+='<div style="background:linear-gradient(135deg,rgba(74,212,144,.16),rgba(74,212,144,.03));border:1px solid rgba(74,212,144,.5);border-left:4px solid '+G+';border-radius:var(--rad);padding:14px 16px;margin-bottom:16px">'
+    +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:'+G+';font-family:\'Lora\',serif;margin-bottom:6px">🟢 Best first move this week</div>'
+    +'<div style="font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text);line-height:1.35">Print, shoot, and list ONE thing — the moss ledge.</div>'
+    +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;margin-top:6px">One photo, one listing. Done beats perfect — momentum is the whole game.</div>'
+  +'</div>';
+  out+='<div class="section-label">🚀 The 3-phase roadmap</div>';
+  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:11px 14px;margin-bottom:11px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">One phase at a time. <b>Don\'t open the next phase until the one before it has shipped</b> — Phase 1 = listings live, Phase 2 = one gig landed. Check a phase off when it ships and the next unlocks.</div>';
+  const _sPhases=[
+    {n:1,clr:G,emoji:'🟢',badge:'NOW · WK 1–2',title:'Sell 3D prints',body:'List 2–3 products on Etsy + local Facebook. This is your active phase — you already own the printer.',gate:'Ships when your listings go live.'},
+    {n:2,clr:Y,emoji:'🟡',badge:'WK 3–6',title:'Freelance writing / admin on Upwork',body:'AI-leveraged gigs for steady cash while the prints trickle in.',gate:'Ships when you land one gig.'},
+    {n:3,clr:'#7EB8F0',emoji:'🔵',badge:'MONTH 2+',title:'Build sites / apps for local businesses',body:'$500–5k per job — the real earner once you have momentum.',gate:''}
+  ];
+  _sPhases.forEach(function(p){
+    const unlocked=(p.n===1)||(p.n===2&&_sGate1)||(p.n===3&&_sGate2);
+    const done=!!fin.side.phase[p.n];
+    const lockMsg=(p.n===2)?'🔒 Locked — get your listings live first':'🔒 Locked — land one freelance gig first';
+    out+='<div style="background:'+(unlocked?'rgba(255,255,255,.03)':'rgba(255,255,255,.015)')+';border:1px solid '+(unlocked?(done?'rgba(74,212,144,.4)':'rgba(255,255,255,.1)'):'rgba(255,255,255,.06)')+';border-left:4px solid '+(unlocked?p.clr:'rgba(255,255,255,.12)')+';border-radius:var(--rad);padding:13px 15px;margin-bottom:9px;display:flex;align-items:flex-start;gap:12px;'+(unlocked?'':'opacity:.5')+'">'
+      +(unlocked
+        ? '<div onclick="sidePhaseToggle('+p.n+')" style="width:24px;height:24px;border-radius:50%;border:2px solid '+(done?'#10B981':p.clr)+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0;cursor:pointer;margin-top:1px">'+(done?'✓':'')+'</div>'
+        : '<div style="width:24px;height:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;margin-top:1px">🔒</div>')
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:'+(unlocked?p.clr:'var(--text3)')+';font-family:\'Lora\',serif;margin-bottom:3px">'+p.emoji+' Phase '+p.n+' · '+(unlocked?p.badge:lockMsg)+'</div>'
+        +'<div style="font-family:\'Playfair Display\',serif;font-size:14.5px;font-weight:700;color:var(--text);line-height:1.3">'+p.title+'</div>'
+        +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;margin-top:4px">'+p.body+'</div>'
+        +((p.gate&&unlocked&&!done)?'<div style="font-size:11px;color:'+p.clr+';font-family:\'Lora\',serif;font-style:italic;margin-top:5px">'+p.gate+'</div>':'')
+      +'</div></div>';
+  });
+  out+='<div class="section-label" style="margin-top:18px">🖨️ First products to list</div>';
+  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:11px 14px;margin-bottom:11px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">All PETG / water-safe. Check each off as you list it.</div>';
+  const _sProds=[
+    {n:1,name:'Magnetic moss / plant ledge',price:'13',note:'⭐ start here'},
+    {n:2,name:'Shrimp / isopod hide',price:'9',note:''},
+    {n:3,name:'Betta floating house',price:'17',note:'costs ~$5.76 to make'},
+    {n:4,name:'Coral frag rack',price:'18',note:''},
+    {n:5,name:'Net-pot / grommet bundle',price:'12',note:''}
+  ];
+  const _sListed=_sProds.filter(function(p){return fin.side.prod[p.n];}).length;
+  _sProds.forEach(function(p){
+    const done=!!fin.side.prod[p.n];
+    out+='<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);margin-bottom:7px">'
+      +'<div onclick="sideProdToggle('+p.n+')" style="width:22px;height:22px;border-radius:50%;border:2px solid '+(done?'#10B981':'rgba(250,204,21,.5)')+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0;cursor:pointer;margin-top:1px">'+(done?'✓':'')+'</div>'
+      +'<div style="flex:1;min-width:0;cursor:pointer" onclick="sideProdToggle('+p.n+')">'
+        +'<div style="font-size:13px;color:'+(done?'var(--text3)':'var(--text)')+';font-family:\'Lora\',serif;line-height:1.4;'+(done?'text-decoration:line-through':'')+'">'+p.name+(p.note?' <span style="font-size:10.5px;color:'+G+';font-style:italic">— '+p.note+'</span>':'')+'</div>'
+      +'</div>'
+      +'<div style="flex-shrink:0;font-family:\'Playfair Display\',serif;font-size:14px;font-weight:700;color:'+G+';margin-left:6px">~$'+p.price+'</div>'
+    +'</div>';
+  });
+  out+='<div style="background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.3);border-radius:var(--rad);padding:12px 15px;margin:4px 0 8px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:'+Y+';font-family:\'Lora\',serif;margin-bottom:5px">💡 The pricing rule</div><div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.65">Full cost (filament + electricity + ~$0.16/hr machine wear + labor + a failure buffer) <b>× 3–4</b>. That multiple covers the fees, the duds, and your time — not greedy, just sustainable.</div></div>';
+  out+='<div class="section-label" style="margin-top:18px">📈 Earnings tracker</div>';
+  out+='<div style="display:flex;gap:9px;margin-bottom:9px">'
+    +'<div onclick="sideEditListings()" style="flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 12px;cursor:pointer;text-align:center">'
+      +'<div style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:700;color:'+Y+';line-height:1">'+_sListings+'</div>'
+      +'<div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px">listings live</div>'
+      +'<div style="font-size:9.5px;color:var(--text3);font-family:\'Lora\',serif;margin-top:3px">tap to update</div>'
+    +'</div>'
+    +'<div onclick="sideEditEarned()" style="flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 12px;cursor:pointer;text-align:center">'
+      +'<div style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:700;color:'+G+';line-height:1">$'+((_sEarned%1===0)?_sEarned:_sEarned.toFixed(2))+'</div>'
+      +'<div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px">earned to date</div>'
+      +'<div style="font-size:9.5px;color:var(--text3);font-family:\'Lora\',serif;margin-top:3px">tap to update</div>'
+    +'</div>'
+  +'</div>';
+  out+='<div style="font-size:11px;color:var(--text2);font-family:\'Lora\',serif;text-align:center;margin-bottom:11px">'+_sListed+' of 5 starter prints listed</div>';
+  out+='<div style="background:linear-gradient(135deg,rgba(74,212,144,.1),rgba(255,255,255,.02));border:1px solid rgba(74,212,144,.3);border-radius:var(--rad);padding:13px 16px;margin-bottom:10px"><div style="font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.6">💪 Every dollar here goes to the <b>$500 buffer first, then the debt snowball</b> (smallest card •6605). Extra firepower — not money you have to count on.</div></div>';
+  out+='<div style="background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.3);border-radius:var(--rad);padding:11px 14px;margin-bottom:18px;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">⚠️ Aspirational income — kept <b>separate from your real cashflow "One Number."</b> Don\'t spend it before it lands.</div>';
+
   const _fsegs=out.split('\u0001'); let _fvis='';
   for(let _i=1;_i<_fsegs.length;_i+=2){ if(_fsegs[_i]===finSub) _fvis+=_fsegs[_i+1]||''; }
   el.innerHTML=_fvis;
