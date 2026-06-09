@@ -565,6 +565,12 @@ body::after{
 @keyframes glowPulse{0%{box-shadow:0 0 0 rgba(16,185,129,0)}40%{box-shadow:0 0 26px rgba(16,185,129,.45)}100%{box-shadow:0 0 0 rgba(16,185,129,0)}}
 @keyframes dtTestPulse{0%,100%{box-shadow:0 0 10px rgba(245,184,48,.25)}50%{box-shadow:0 0 30px rgba(245,184,48,.6)}}
 @keyframes dtCallPulse{0%,100%{box-shadow:0 0 10px rgba(220,30,30,.25)}50%{box-shadow:0 0 32px rgba(220,30,30,.65)}}
+/* ── 💧 HABITS: water fill, tap feedback, ring (added Jun 9 2026) ── */
+@keyframes hgWaterTap{0%{transform:scale(1)}45%{transform:scale(.94)}100%{transform:scale(1)}}
+.hg-water-glass{transition:transform .2s}
+.hg-water-glass:active{animation:hgWaterTap .35s cubic-bezier(.34,1.56,.64,1)}
+.hg-water-fill{transition:height .65s cubic-bezier(.22,1,.36,1)}
+.hg-pill{transition:all .3s ease}
 .flow-just-done{animation:sinkIn .5s cubic-bezier(.34,1.56,.64,1),glowPulse 1.2s ease-out;border-radius:var(--rad)}
 /* ── 🔒 PASSWORD CURTAIN (privacy curtain, not security) ── */
 #curtain{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:#060d1c center/cover no-repeat}
@@ -669,7 +675,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260609133048"></script>
+<script src="./data.js?v=20260609174945"></script>
 <script src="./recipes.js?v=20260609172351"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -681,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 9 · 5:23 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 9 · 5:49 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -738,6 +744,7 @@ let litfulo = {};
 let zoey = {};
 let fin = {};
 let cookQueue = {};  // 🍳 planned recipes: {rid,day,meal,done}
+let habits = {};     // 💧 water + forgiving habit-streak state (water counts/goal/serving, freeze tokens)
 let wishCustom = {}; // 💎 big-ticket wishlist: {t,done}   // 💰 finance state: bal/debt history, bills paid, cancels verified, to-dos
 let trimOpen = {};
 let weedOpen = false;
@@ -768,6 +775,7 @@ function saveLit(){ ST.child('litfulo').set(litfulo); }
 function saveZoey(){ ST.child('zoey').set(zoey); }
 function saveFin(){ ST.child('fin').set(fin); }
 function saveCook(){ ST.child('cookQueue').set(cookQueue); }
+function saveHabits(){ try{ ST.child('habits').set(habits); }catch(e){} }
 function saveWish(){ ST.child('wishCustom').set(wishCustom); }
 function addWish(){ const el=document.getElementById('wishInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; wishCustom['w-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={t:v,done:false}; el.value=''; saveWish(); renderPrint(); }
 function toggleWish(id){ if(!wishCustom[id]) return; wishCustom[id].done=!wishCustom[id].done; saveWish(); renderPrint(); }
@@ -1319,32 +1327,146 @@ function streakOf(prefix){ let n=0; for(let i=0;i<366;i++){ if(laundry[prefix+dt
 function dtStreak(){ return streakOf("calldt-"); }
 // ── 🍽️ MEAL ANCHOR card — supportive nag: upcoming=quiet, due=pinned+loud, overdue(+45m)=gentle escalate. NO guilt language. (added Jun 9 2026) ──
 function mealAnchorHtml(A, done, nowM, dow){
-  const C_OK="#B47C14", C_DUE="#F5B830", C_OVER="#F97316";
+  const C_OK="#B47C14", C_SOON="#F5B830", C_PAST="#9CA3AF";
+  const ws=A.winStart, we=A.winEnd, win=A.win||A.at;
   if(done){
-    return { order:A.upOrder, html:strip(A.emoji,A.label,true,C_OK,"toggleMeal('"+A.id+"')",A.at,"","") };
+    return { order:A.upOrder, html:strip(A.emoji,A.label,true,C_OK,"toggleMeal('"+A.id+"')",A.at,"","logged \u2713") };
   }
-  const due = nowM>=A.min, overdue = nowM>=A.min+45;
-  if(!due){
-    let sub = A.pills ? "With this, take your Litfulo + vitamins \uD83D\uDC8A" : "";
-    if(A.id==='dinner') sub = "Aim to eat by "+(A.by||"8:00 PM")+(dow===1?" \u00b7 before pool league \uD83C\uDFB1":"");
-    return { order:A.upOrder, html:strip(A.emoji,A.label,false,C_OK,"toggleMeal('"+A.id+"')",A.at,"",sub) };
+  if(nowM < ws){
+    let sub = "Window "+win+(A.pills?" \u00b7 \uD83D\uDC8A vitamins + \uD83D\uDCA7 water go with it":"");
+    return { order:A.upOrder, html:strip(A.emoji,A.label,false,C_OK,"toggleMeal('"+A.id+"')",win,"",sub) };
   }
-  const col = overdue ? C_OVER : C_DUE;
-  const tag = overdue ? (A.label+" \u2014 a little late, no worries") : (A.label+" time");
-  let line = overdue ? ("About 45 min past \u2014 even something small counts. "+(A.cue||"")) : (A.cue||"A few minutes to refuel.");
-  if(A.pills) line += " Pills go with it \uD83D\uDC8A.";
-  const html = '<div style="background:linear-gradient(135deg,'+(overdue?'rgba(249,115,22,.16)':'rgba(245,184,48,.15)')+','+(overdue?'rgba(249,115,22,.05)':'rgba(245,184,48,.04)')+');border:1px solid '+col+'88;border-left:4px solid '+col+';border-radius:var(--rad);padding:15px 17px;margin-bottom:12px;box-shadow:0 0 20px '+col+'22">'
-    +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:'+col+';margin-bottom:7px;font-family:\'Lora\',serif">\uD83C\uDF7D\uFE0F '+tag+' \u00b7 '+A.at+'</div>'
-    +'<div style="display:flex;align-items:center;gap:14px">'
-      +'<div style="font-size:28px;flex-shrink:0">'+A.emoji+'</div>'
-      +'<div style="flex:1;min-width:0">'
-        +'<div style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:700;color:var(--text)">'+A.label+' \u2014 grab something quick</div>'
-        +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin-top:3px">'+line+'</div>'
-      +'</div>'
-      +'<div onclick="toggleMeal(\''+A.id+'\')" style="width:32px;height:32px;border-radius:50%;border:2px solid '+col+';background:transparent;flex-shrink:0;cursor:pointer;box-shadow:0 0 8px '+col+'33"></div>'
-    +'</div>'
-  +'</div>';
-  return { order: overdue?4:6, html:html };
+  if(nowM < we-30){
+    let sub = "Window open \u2014 tap \u201cI ate\u201d anytime in "+win+"."+(A.pills?" \uD83D\uDC8A+\uD83D\uDCA7 too.":"");
+    return { order:A.upOrder, html:strip(A.emoji,A.label+" \u2014 window open",false,C_OK,"toggleMeal('"+A.id+"')",win,"",sub) };
+  }
+  if(nowM < we){
+    const mins=Math.max(1, we-nowM);
+    const html='<div style="background:linear-gradient(135deg,rgba(245,184,48,.15),rgba(245,184,48,.04));border:1px solid #F5B83088;border-left:4px solid #F5B830;border-radius:var(--rad);padding:15px 17px;margin-bottom:12px;box-shadow:0 0 20px rgba(245,184,48,.18)">'
+      +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#F5B830;margin-bottom:7px;font-family:\'Lora\',serif">\uD83C\uDF7D\uFE0F '+A.label+' window closes in '+mins+' min</div>'
+      +'<div style="display:flex;align-items:center;gap:14px">'
+        +'<div style="font-size:28px;flex-shrink:0">'+A.emoji+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-family:\'Playfair Display\',serif;font-size:17px;font-weight:700;color:var(--text)">A few minutes left \u2014 grab something</div>'
+        +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin-top:3px">'+(A.cue||"")+(A.pills?" \uD83D\uDC8A vitamins + \uD83D\uDCA7 water count too.":"")+'</div></div>'
+        +'<div onclick="toggleMeal(\''+A.id+'\')" style="width:32px;height:32px;border-radius:50%;border:2px solid #F5B830;background:transparent;flex-shrink:0;cursor:pointer;box-shadow:0 0 8px rgba(245,184,48,.33)"></div>'
+      +'</div></div>';
+    return { order:6, html:html };
+  }
+  return { order:A.upOrder, html:strip(A.emoji,A.label,false,C_PAST,"toggleMeal('"+A.id+"')",win,"","Window passed \u2014 a snack still counts whenever you can. \uD83C\uDF31") };
+}
+
+// ── 💧🍴💊 HABITS ENGINE — water counter, forgiving streak, "Today's 3" (added Jun 9 2026) ──
+function _hd(dt){ return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
+function isoWkH(d){ d=d||new Date(); const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=dt.getUTCDay()||7; dt.setUTCDate(dt.getUTCDate()+4-day); const ys=new Date(Date.UTC(dt.getUTCFullYear(),0,1)); return dt.getUTCFullYear()+"-W"+String(Math.ceil((((dt-ys)/86400000)+1)/7)).padStart(2,"0"); }
+function waterGoal(){ return Math.max(1, habits.waterGoal||8); }
+function waterServing(){ return Math.max(1, habits.waterServing||1); }
+function waterCount(d){ d=d||todayKey(); return (habits.water&&habits.water[d])||0; }
+function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — beautiful 🎉":"💧 "+c+" of "+g); }catch(e){} }
+function waterUndo(){ habits.water=habits.water||{}; const k=todayKey(); habits.water[k]=Math.max(0,(habits.water[k]||0)-waterServing()); saveHabits(); renderAll(); }
+function waterSetGoal(){ const v=prompt("Your daily water goal (cups/servings). It counts ALL fluids — water, tea, coffee, juice. There's no magic number; pick what feels right for you:", waterGoal()); const n=parseInt(v,10); if(n>0){ habits.waterGoal=n; saveHabits(); renderAll(); } }
+function waterSetServing(){ const v=prompt("How much is one tap? (cups per tap)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
+function ensureFreeze(){ const wk=isoWkH(); if(habits.freezeWeek!==wk){ habits.freezeWeek=wk; habits.freezeTokens=2; try{saveHabits();}catch(e){} } }
+function mealsEaten(d){ return ["breakfast","lunch","dinner"].filter(function(m){return !!laundry["meal-"+m+"-"+d];}).length; }
+function habitDone(d){ const water=waterCount(d)>=waterGoal(); const vit=!!laundry["well-litfulo-"+d]; const meals=mealsEaten(d)>=2; return { water:water, vit:vit, meals:meals, mealsN:mealsEaten(d), score:(water?1:0)+(vit?1:0)+(meals?1:0) }; }
+function dayWin(d){ return habitDone(d).score>=2; }  // 2 of 3 = a good day (partial credit, never zero)
+function habitStats(){
+  const today=todayKey();
+  const tokens=(habits.freezeWeek===isoWkH() && habits.freezeTokens!=null) ? Math.max(0,habits.freezeTokens) : 2;
+  // forgiving streak: today counts if already a win; walk back from yesterday, forgiving non-consecutive misses up to `tokens` (never two misses in a row)
+  let streak=0, forgiven=0, prevMiss=false;
+  const tw=dayWin(today); if(tw) streak++;
+  let cur=new Date(today+"T12:00:00"); cur.setDate(cur.getDate()-1);
+  for(let i=0;i<120;i++){ const d=_hd(cur);
+    if(dayWin(d)){ streak++; prevMiss=false; }
+    else { if(forgiven<tokens && !prevMiss){ forgiven++; prevMiss=true; } else break; }
+    cur.setDate(cur.getDate()-1);
+  }
+  let win30=0; let c2=new Date(today+"T12:00:00"); c2.setDate(c2.getDate()-1);
+  for(let i=0;i<30;i++){ if(dayWin(_hd(c2))) win30++; c2.setDate(c2.getDate()-1); }
+  let totalWins=tw?1:0; let c3=new Date(today+"T12:00:00"); c3.setDate(c3.getDate()-1);
+  for(let i=0;i<120;i++){ if(dayWin(_hd(c3))) totalWins++; c3.setDate(c3.getDate()-1); }
+  const yMiss=(function(){ const y=new Date(today+"T12:00:00"); y.setDate(y.getDate()-1); return !dayWin(_hd(y)); })();
+  return { streak:streak, freezesLeft:Math.max(0,tokens-forgiven), consistDays:win30, consistPct:Math.round(win30/30*100), totalWins:totalWins, todayScore:habitDone(today).score, yesterdayMiss:yMiss };
+}
+function habitsTodayHtml(){
+  if(typeof habits==='undefined') return "";
+  ensureFreeze();
+  const today=todayKey();
+  const nowM=new Date().getHours()*60+new Date().getMinutes();
+  const hd=habitDone(today), st=habitStats();
+  const goal=waterGoal(), wc=waterCount(), pct=Math.min(100,Math.round(wc/goal*100));
+  const good=hd.score>=2;
+  // ── streak ring ──
+  const R=26, CIRC=2*Math.PI*R, off=CIRC*(1-st.consistPct/100);
+  const ring=`<svg width="74" height="74" viewBox="0 0 74 74" style="flex-shrink:0">
+    <circle cx="37" cy="37" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
+    <circle cx="37" cy="37" r="${R}" fill="none" stroke="url(#hgring)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${CIRC.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 37 37)" style="transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1)"/>
+    <text x="37" y="35" text-anchor="middle" font-family="'Playfair Display',serif" font-size="21" font-weight="700" fill="#F5B830">${st.streak}</text>
+    <text x="37" y="49" text-anchor="middle" font-size="8" letter-spacing=".05em" fill="#8a8499">DAY${st.streak===1?'':'S'}</text>
+    <defs><linearGradient id="hgring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B830"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs>
+  </svg>`;
+  // ── three habit pills ──
+  function pill(emoji,label,doneB,frac,onclick){
+    const c=doneB?'#34D399':'#6A6480';
+    return `<div onclick="${onclick}" style="flex:1;text-align:center;padding:9px 4px;border-radius:11px;border:1px solid ${doneB?'rgba(52,211,153,.4)':'var(--border)'};background:${doneB?'rgba(52,211,153,.1)':'rgba(255,255,255,.02)'};cursor:pointer" class="hg-pill">
+      <div style="font-size:20px;line-height:1">${emoji}</div>
+      <div style="font-size:10px;color:${c};font-family:'Lora',serif;margin-top:3px;font-weight:600">${label}</div>
+      <div style="font-size:10px;color:${doneB?'#34D399':'var(--text2)'};margin-top:1px">${doneB?'✓':frac}</div>
+    </div>`;
+  }
+  const pills=`<div style="display:flex;gap:8px;margin-top:4px">
+    ${pill('💧','Water',hd.water,wc+'/'+goal,'waterAdd()')}
+    ${pill('💊','Vitamins',hd.vit,'tap','toggleWellness(\'litfulo\')')}
+    ${pill('🍴','Meals',hd.meals,hd.mealsN+'/3','switchTab(\'today\')')}
+  </div>`;
+  // ── compassionate / encouraging copy ──
+  let copy;
+  if(st.yesterdayMiss){ copy="One missed day doesn't slow you down — today's the one that counts. 🌱"; }
+  else if(good && st.streak>0){ copy="That's a good day banked. "+st.streak+"-day rhythm going. ✨"; }
+  else if(hd.score===1){ copy="One down — two of three makes today a win. You're close."; }
+  else { copy="Small steps. Tap one thing to start the day off right. 🌱"; }
+  // ── weekly regularity dots (last 7 days) ──
+  let dots='';
+  for(let i=6;i>=0;i--){ const dt=new Date(today+"T12:00:00"); dt.setDate(dt.getDate()-i); const dd=_hd(dt); const sc=habitDone(dd).score; const isT=(dd===today);
+    const col= sc>=3?'#34D399':(sc===2?'#FBBF24':(sc===1?'#F59E0B':'rgba(255,255,255,.10)'));
+    dots+=`<div style="text-align:center;flex:1"><div style="width:18px;height:18px;border-radius:50%;background:${col};margin:0 auto;${isT?'box-shadow:0 0 0 2px var(--amber2)':''}"></div><div style="font-size:8px;color:var(--text2);margin-top:3px">${dt.toLocaleDateString('en-US',{weekday:'narrow'})}</div></div>`;
+  }
+  const todays3=`<div class="h3-card" style="background:linear-gradient(135deg,${good?'rgba(52,211,153,.10)':'var(--s2)'},var(--s1));border:1px solid ${good?'rgba(52,211,153,.3)':'var(--border2)'};border-radius:var(--rad);padding:15px 16px 13px;margin-bottom:12px;${good?'box-shadow:0 0 22px rgba(52,211,153,.10)':''}">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif">✨ Today's 3</span><span style="font-size:10px;color:var(--text2);font-family:'Lora',serif;margin-left:auto">${st.consistDays} of 30 days · ${st.totalWins} total${st.freezesLeft>0?' · ❄️ '+st.freezesLeft+' freeze'+(st.freezesLeft===1?'':'s'):''}</span></div>
+    <div style="display:flex;align-items:center;gap:14px">
+      ${ring}
+      <div style="flex:1;min-width:0">${pills}</div>
+    </div>
+    <div style="font-size:11.5px;color:${good?'#A7F3D0':'var(--text2)'};font-family:'Lora',serif;font-style:italic;margin-top:11px;line-height:1.5">${copy}</div>
+    <div style="display:flex;gap:5px;margin-top:12px;align-items:flex-end">${dots}</div>
+  </div>`;
+  // ── water tile (fills as he taps) ──
+  let nudge='';
+  if(nowM>=840 && nowM<=1020 && wc < goal*0.5){ nudge=`<div style="font-size:11px;color:#7EB8F0;font-family:'Lora',serif;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:9px;padding:7px 10px;margin-top:10px;line-height:1.45">You're at ${wc} of ${goal} — good window to catch up before dinner. 💧</div>`; }
+  const glass=`<div onclick="waterAdd()" class="hg-water-glass" style="position:relative;width:78px;height:112px;border:3px solid rgba(59,130,246,.55);border-radius:13px 13px 19px 19px;overflow:hidden;background:rgba(59,130,246,.05);cursor:pointer;flex-shrink:0">
+    <div class="hg-water-fill" style="position:absolute;left:0;right:0;bottom:0;height:${pct}%;background:linear-gradient(180deg,#60A5FA,#3B82F6);box-shadow:0 -2px 10px rgba(59,130,246,.5)"></div>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.5)">${wc}</div><div style="font-size:9px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5)">of ${goal}</div></div>
+  </div>`;
+  const waterTile=`<div class="h3-card" style="background:linear-gradient(135deg,rgba(59,130,246,.08),var(--s1));border:1px solid rgba(59,130,246,.25);border-radius:var(--rad);padding:15px 16px;margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7EB8F0;font-family:'Lora',serif">💧 Water</span><span style="font-size:10px;color:var(--text2);font-family:'Lora',serif;margin-left:auto">counts all fluids — no magic number</span></div>
+    <div style="display:flex;align-items:center;gap:16px">
+      ${glass}
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--text)">${wc} of ${goal} ${wc>=goal?'🎉':''}</div>
+        <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.5">${wc>=goal?'Goal met for today — anything more is a bonus.':'Tap the glass to add '+waterServing()+'. Every sip is progress.'}</div>
+        <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
+          <div onclick="waterAdd()" style="flex:1;min-width:90px;text-align:center;padding:10px;border-radius:10px;background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 3px 12px rgba(59,130,246,.3)">+${waterServing()} cup${waterServing()===1?'':'s'}</div>
+          <div onclick="waterUndo()" style="padding:10px 13px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer">↶</div>
+        </div>
+        <div style="display:flex;gap:14px;margin-top:9px">
+          <div onclick="waterSetGoal()" style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;cursor:pointer">⚙️ Goal: ${goal} ✏️</div>
+          <div onclick="waterSetServing()" style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;cursor:pointer">Per tap: ${waterServing()} ✏️</div>
+        </div>
+        ${nudge}
+      </div>
+    </div>
+  </div>`;
+  return todays3+waterTile;
 }
 function renderToday() {
   const el=document.getElementById("view-today"), today=todayKey();
@@ -1369,6 +1491,7 @@ function renderToday() {
     </div>`;
   }
   topHtml+=wxAlerts();
+  topHtml+=habitsTodayHtml();
 
   // ── Still-open one-off pins (compact, until done) ─────────────────────────────
   const PIN_OPEN=[
@@ -1428,6 +1551,27 @@ function renderToday() {
     </div>`);
   } else {
     add("dt",300,true,strip("📞","Call DT",true,"#DC2626","toggleDT()","","",dtStk>=2?("🔥 "+dtStk+"-day streak"):""));
+  }
+
+  // ── 📞 TG MEETING — every Wednesday 6:30 PM; CALL-DT-style loud reminder (added Jun 9 2026) ──
+  if(typeof TG_MEETING!=='undefined' && dow===TG_MEETING.dow){
+    const tgDone=!!laundry["rem-"+TG_MEETING.id+"-"+today];
+    if(!tgDone){
+      add("tgmeeting",302,false,`<div onclick="toggleReminder('${TG_MEETING.id}',true)" style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;animation:dtCallPulse 2s ease-in-out infinite">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(220,30,30,.5),transparent)"></div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:6px;font-family:'Lora',serif">🚨 Every Wednesday · ${TG_MEETING.at}</div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="font-size:30px;flex-shrink:0">📞</div>
+          <div style="flex:1">
+            <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#F5DDD8">${TG_MEETING.label}</div>
+            <div style="font-size:12px;color:rgba(220,100,100,.8);font-style:italic;margin-top:3px">${TG_MEETING.at} — don't miss it. Tap when you're in.</div>
+          </div>
+          <div style="width:32px;height:32px;border-radius:50%;border:2px solid #DC2626;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(220,30,30,.2)"></div>
+        </div>
+      </div>`);
+    } else {
+      add("tgmeeting",302,true,strip("📞",TG_MEETING.label,true,"#DC2626","toggleReminder('"+TG_MEETING.id+"',true)","","","✓ handled this week"));
+    }
   }
 
   // 🧪 Test day — set by the Call DT gate; pinned right under it, loud until done
@@ -1597,6 +1741,13 @@ function renderToday() {
   // Dinner + evening wind-down
   const _dn=MA.find(function(x){return x.id==='dinner';});
   if(_dn){ const _dd=!!laundry["meal-dinner-"+today]; const D=mealAnchorHtml(_dn,_dd,nowM,dow); add("dinner",D.order,_dd,D.html); }
+  // 🌙 gentle late-night-eating cutoff nudge (after ~9:30 PM) — supportive, optional, not a rule
+  if(nowM>=1290){
+    add("latenight",1295,false,`<div style="background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(124,58,237,.03));border:1px solid rgba(124,58,237,.3);border-left:4px solid #7C3AED;border-radius:var(--rad);padding:12px 15px;margin-bottom:10px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#A78BFA;font-family:'Lora',serif;margin-bottom:5px">🌙 Winding down</div>
+      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.55">Kitchen's about closed — eating late can nudge tomorrow's sleep. Water or tea is always fine. No rule, just a gentle heads-up.</div>
+    </div>`,true);
+  }
 
   // 💼 ONE-OFF WORK ITEMS (added Jun 6 2026) — ordinary manual checks; both windows auto-expire after Sun Jun 7
   if(today>="2026-06-06" && today<="2026-06-07"){
@@ -1699,6 +1850,12 @@ function renderTimeline() {
     REMINDERS.forEach(function(r){ if(r.standing && !reminderDone(r.id,false)){ (tlRem[today]=tlRem[today]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } }); // standing errands surface near-term (today)
   }
   if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
+  // 📞 TG Meeting — recurring every Wednesday on the timeline
+  if(typeof TG_MEETING!=='undefined'){
+    const _tgLast=days.length?days[days.length-1].date:today;
+    let _tc=new Date(today+"T12:00:00"); const _te=new Date(_tgLast+"T12:00:00");
+    while(_tc<=_te){ if(_tc.getDay()===TG_MEETING.dow){ const ds=fmtD(_tc); (tlRem[ds]=tlRem[ds]||[]).push({icon:"📞",text:TG_MEETING.label+" · "+TG_MEETING.at,account:""}); } _tc.setDate(_tc.getDate()+1); }
+  }
   // make sure any reminder-only date still appears as its own timeline row
   const _have=new Set(days.map(function(d){return d.date;}));
   Object.keys(tlRem).forEach(function(ds){ if(!_have.has(ds)){ days.push({date:ds, remOnly:true}); } });
@@ -3478,6 +3635,7 @@ ST.on('value', snap => {
   zoey        = d.zoey        || {};
   fin         = d.fin         || {};
   cookQueue   = d.cookQueue   || {};
+  habits      = d.habits      || {};
   wishCustom  = d.wishCustom  || {};
   // one-time idempotent migration: grocery is FOOD-ONLY (Jun 6 2026) — strip non-food strays
   try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false, ci=false;
