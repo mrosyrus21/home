@@ -669,7 +669,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260609094158"></script>
+<script src="./data.js?v=20260609133048"></script>
 <script src="./recipes.js?v=20260609094158"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -681,7 +681,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 9 · 9:41 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 9 · 1:30 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1317,6 +1317,35 @@ function wxAlerts(){
 function dtDateKey(n){ const d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function streakOf(prefix){ let n=0; for(let i=0;i<366;i++){ if(laundry[prefix+dtDateKey(i)]) n++; else if(i===0) continue; else break; } return n; }
 function dtStreak(){ return streakOf("calldt-"); }
+// ── 🍽️ MEAL ANCHOR card — supportive nag: upcoming=quiet, due=pinned+loud, overdue(+45m)=gentle escalate. NO guilt language. (added Jun 9 2026) ──
+function mealAnchorHtml(A, done, nowM, dow){
+  const C_OK="#B47C14", C_DUE="#F5B830", C_OVER="#F97316";
+  if(done){
+    return { order:A.upOrder, html:strip(A.emoji,A.label,true,C_OK,"toggleMeal('"+A.id+"')",A.at,"","") };
+  }
+  const due = nowM>=A.min, overdue = nowM>=A.min+45;
+  if(!due){
+    let sub = A.pills ? "With this, take your Litfulo + vitamins \uD83D\uDC8A" : "";
+    if(A.id==='dinner') sub = "Aim to eat by "+(A.by||"8:00 PM")+(dow===1?" \u00b7 before pool league \uD83C\uDFB1":"");
+    return { order:A.upOrder, html:strip(A.emoji,A.label,false,C_OK,"toggleMeal('"+A.id+"')",A.at,"",sub) };
+  }
+  const col = overdue ? C_OVER : C_DUE;
+  const tag = overdue ? (A.label+" \u2014 a little late, no worries") : (A.label+" time");
+  let line = overdue ? ("About 45 min past \u2014 even something small counts. "+(A.cue||"")) : (A.cue||"A few minutes to refuel.");
+  if(A.pills) line += " Pills go with it \uD83D\uDC8A.";
+  const html = '<div style="background:linear-gradient(135deg,'+(overdue?'rgba(249,115,22,.16)':'rgba(245,184,48,.15)')+','+(overdue?'rgba(249,115,22,.05)':'rgba(245,184,48,.04)')+');border:1px solid '+col+'88;border-left:4px solid '+col+';border-radius:var(--rad);padding:15px 17px;margin-bottom:12px;box-shadow:0 0 20px '+col+'22">'
+    +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:'+col+';margin-bottom:7px;font-family:\'Lora\',serif">\uD83C\uDF7D\uFE0F '+tag+' \u00b7 '+A.at+'</div>'
+    +'<div style="display:flex;align-items:center;gap:14px">'
+      +'<div style="font-size:28px;flex-shrink:0">'+A.emoji+'</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:700;color:var(--text)">'+A.label+' \u2014 grab something quick</div>'
+        +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin-top:3px">'+line+'</div>'
+      +'</div>'
+      +'<div onclick="toggleMeal(\''+A.id+'\')" style="width:32px;height:32px;border-radius:50%;border:2px solid '+col+';background:transparent;flex-shrink:0;cursor:pointer;box-shadow:0 0 8px '+col+'33"></div>'
+    +'</div>'
+  +'</div>';
+  return { order: overdue?4:6, html:html };
+}
 function renderToday() {
   const el=document.getElementById("view-today"), today=todayKey();
   const dow=new Date().getDay();
@@ -1465,11 +1494,18 @@ function renderToday() {
     });
   }
 
-  // Morning meds + breakfast
+  // ── 🍽️ MEAL ANCHORS + 💊 pill bundle — eat on a clock; nag (pin + gentle escalate) until checked (added Jun 9 2026) ──
+  const _now=new Date(); const nowM=_now.getHours()*60+_now.getMinutes();
+  const MA=(typeof MEAL_ANCHORS!=='undefined')?MEAL_ANCHORS:[];
   const litDone=!!laundry["well-litfulo-"+today];
-  add("lit",310,litDone,strip("💊","Litfulo + vitamins",litDone,"#6366F1","toggleWellness('litfulo')","Morning","1 min","With breakfast — logs to the Health tab too"));
-  const mB=!!laundry["meal-breakfast-"+today];
-  add("breakfast",320,mB,strip("🍳","Breakfast",mB,"#B47C14","toggleMeal('breakfast')",(today===RESET_DAY?"Right after waking":RY.breakfast),""));
+  // 💊 pills bundled onto breakfast: when breakfast is due, the pill check sits right under it (one trigger: eat → pills)
+  const _bk=MA.find(function(x){return x.id==='breakfast';});
+  const _pillTop=(_bk && nowM>=_bk.min && !litDone);
+  add("lit",_pillTop?7:311,litDone, litDone
+    ? strip("💊","Litfulo + vitamins",true,"#6366F1","toggleWellness('litfulo')","With breakfast","","")
+    : strip("💊","Litfulo + vitamins — take with breakfast",false,"#6366F1","toggleWellness('litfulo')","With breakfast","","One trigger: eat → pills. Logs to the Health tab too."));
+  // 🍳 breakfast anchor
+  if(_bk){ const _bd=!!laundry["meal-breakfast-"+today]; const b=mealAnchorHtml(_bk,_bd,nowM,dow); add("breakfast",b.order,_bd,b.html); }
 
   // 📞 FINANCIAL MONDAY — Mondays only: the house-rest day gets exactly ONE focused money task (added Jun 6 2026)
   if(dow===1 && typeof FINANCE!=='undefined' && FINANCE.mondays){
@@ -1539,8 +1575,8 @@ function renderToday() {
   }
 
   // Midday
-  const mL=!!laundry["meal-lunch-"+today];
-  add("lunch",700,mL,strip("🥗","Lunch",mL,"#B47C14","toggleMeal('lunch')",RY.lunch,"",isWeekday()?"Step away from the desk, actually eat":""));
+  const _ln=MA.find(function(x){return x.id==='lunch';});
+  if(_ln){ const _ld=!!laundry["meal-lunch-"+today]; const L=mealAnchorHtml(_ln,_ld,nowM,dow); add("lunch",L.order,_ld,L.html); }
 
   // The ONE house task — weekend mornings have energy; weekdays it sits after lunch
   const oneId=(dow===1)?null:oneTaskForDate(today);
@@ -1559,8 +1595,8 @@ function renderToday() {
   }
 
   // Dinner + evening wind-down
-  const mD=!!laundry["meal-dinner-"+today];
-  add("dinner",1080,mD,strip("🍽️","Dinner",mD,"#B47C14","toggleMeal('dinner')",RY.dinner,"","Eaten by "+RY.dinnerBy+" — house rule"+(dow===1?" · before pool league 🎱":"")));
+  const _dn=MA.find(function(x){return x.id==='dinner';});
+  if(_dn){ const _dd=!!laundry["meal-dinner-"+today]; const D=mealAnchorHtml(_dn,_dd,nowM,dow); add("dinner",D.order,_dd,D.html); }
 
   // 💼 ONE-OFF WORK ITEMS (added Jun 6 2026) — ordinary manual checks; both windows auto-expire after Sun Jun 7
   if(today>="2026-06-06" && today<="2026-06-07"){
@@ -1669,6 +1705,14 @@ function renderTimeline() {
   days.sort(function(a,b){ return a.date<b.date?-1:(a.date>b.date?1:0); });
 
   let html="";
+  // 🍽️ daily meal rhythm — eat on a clock (added Jun 9 2026)
+  if(typeof MEAL_ANCHORS!=='undefined' && MEAL_ANCHORS.length){
+    const _by=MEAL_ANCHORS.find(function(x){return x.by;});
+    html+=`<div style="background:linear-gradient(135deg,rgba(180,124,20,.14),rgba(245,184,48,.05));border:1px solid rgba(245,184,48,.3);border-left:4px solid #F5B830;border-radius:var(--rad);padding:12px 15px;margin-bottom:14px">
+      <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;margin-bottom:6px">🍽️ Daily meal rhythm — eat on a clock</div>
+      <div style="font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.6">${MEAL_ANCHORS.map(function(a){return a.emoji+' '+a.label+' '+a.at;}).join(' · ')}${_by?' · by '+_by.by:''} · 💊 pills with breakfast</div>
+    </div>`;
+  }
   if(!days.length){
     html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — nothing left to schedule. Maintenance mode from here.</div></div>`;
   } else {

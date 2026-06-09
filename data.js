@@ -12,14 +12,23 @@
 // Drives the Today tab: meal times + the evening wind-down block.
 // Change any value and redeploy (or hand off) — nothing else needed.
 const RHYTHM = {
-  breakfast: "8:00 AM",
-  lunch:     "12:30 PM",
-  dinner:    "6:30 PM",        // aim to sit down here...
+  breakfast: "8:30 AM",        // anchor just after the 8:00 wake
+  lunch:     "12:00 PM",
+  dinner:    "7:00 PM",        // aim to sit down here...
   dinnerBy:  "8:00 PM",        // ...hard rule: eaten BY this time
   windDown:  "10:00 PM",       // phone goes to the other room, screens off
   reading:   "10:00–11:00 PM", // the reading hour fills the no-screen block
   lightsOut: "11:00 PM",
 };
+
+// ── 🍽️ MEAL ANCHORS — "eat on a clock": three daily anchors that NAG on the Today tab.
+// `min` = minutes-since-midnight the anchor goes "due" (pins to the top); +45 min = "overdue" (gentle escalate).
+// pills:true bundles the Litfulo+vitamins check onto breakfast ("eat → pills" = one trigger). Tone stays supportive. (added Jun 9 2026)
+const MEAL_ANCHORS = [
+  { id:"breakfast", emoji:"🍳", label:"Breakfast", at:"8:30 AM",  min:510,  upOrder:320,  pills:true, cue:"even toast, a banana, or yogurt counts." },
+  { id:"lunch",     emoji:"🥗", label:"Lunch",     at:"12:00 PM", min:720,  upOrder:700,              cue:"step away from the desk — quick is fine." },
+  { id:"dinner",    emoji:"🍽️", label:"Dinner",    at:"7:00 PM",  min:1140, upOrder:1080, by:"8:00 PM", cue:"something warm — you've got time before 8." }
+];
 
 const ROOMS = {
   priority: { name:"Priority",   emoji:"⭐", color:"#C8860A" },
