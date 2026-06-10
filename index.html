@@ -675,7 +675,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260609174945"></script>
+<script src="./data.js?v=20260609192714"></script>
 <script src="./recipes.js?v=20260609172351"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 9 · 5:49 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 9 · 7:27 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1358,13 +1358,13 @@ function mealAnchorHtml(A, done, nowM, dow){
 // ── 💧🍴💊 HABITS ENGINE — water counter, forgiving streak, "Today's 3" (added Jun 9 2026) ──
 function _hd(dt){ return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
 function isoWkH(d){ d=d||new Date(); const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=dt.getUTCDay()||7; dt.setUTCDate(dt.getUTCDate()+4-day); const ys=new Date(Date.UTC(dt.getUTCFullYear(),0,1)); return dt.getUTCFullYear()+"-W"+String(Math.ceil((((dt-ys)/86400000)+1)/7)).padStart(2,"0"); }
-function waterGoal(){ return Math.max(1, habits.waterGoal||8); }
-function waterServing(){ return Math.max(1, habits.waterServing||1); }
+function waterGoal(){ return Math.max(1, habits.waterGoal||3); }  // bottles · default 3 (≈96 oz)
+function waterServing(){ return Math.max(1, habits.waterServing||1); }  // bottles per tap · default 1 (=32 oz)
 function waterCount(d){ d=d||todayKey(); return (habits.water&&habits.water[d])||0; }
-function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — beautiful 🎉":"💧 "+c+" of "+g); }catch(e){} }
+function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
 function waterUndo(){ habits.water=habits.water||{}; const k=todayKey(); habits.water[k]=Math.max(0,(habits.water[k]||0)-waterServing()); saveHabits(); renderAll(); }
-function waterSetGoal(){ const v=prompt("Your daily water goal (cups/servings). It counts ALL fluids — water, tea, coffee, juice. There's no magic number; pick what feels right for you:", waterGoal()); const n=parseInt(v,10); if(n>0){ habits.waterGoal=n; saveHabits(); renderAll(); } }
-function waterSetServing(){ const v=prompt("How much is one tap? (cups per tap)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
+function waterSetGoal(){ const v=prompt("Your daily water goal, in BOTTLES (1 bottle = 32 oz). It counts ALL fluids — water, tea, coffee, juice. No magic number; ~3 bottles (~96 oz) is a solid daily target:", waterGoal()); const n=parseInt(v,10); if(n>0){ habits.waterGoal=n; saveHabits(); renderAll(); } }
+function waterSetServing(){ const v=prompt("How many bottles per tap? (1 bottle = 32 oz)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
 function ensureFreeze(){ const wk=isoWkH(); if(habits.freezeWeek!==wk){ habits.freezeWeek=wk; habits.freezeTokens=2; try{saveHabits();}catch(e){} } }
 function mealsEaten(d){ return ["breakfast","lunch","dinner"].filter(function(m){return !!laundry["meal-"+m+"-"+d];}).length; }
 function habitDone(d){ const water=waterCount(d)>=waterGoal(); const vit=!!laundry["well-litfulo-"+d]; const meals=mealsEaten(d)>=2; return { water:water, vit:vit, meals:meals, mealsN:mealsEaten(d), score:(water?1:0)+(vit?1:0)+(meals?1:0) }; }
@@ -1448,19 +1448,20 @@ function habitsTodayHtml(){
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.5)">${wc}</div><div style="font-size:9px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5)">of ${goal}</div></div>
   </div>`;
   const waterTile=`<div class="h3-card" style="background:linear-gradient(135deg,rgba(59,130,246,.08),var(--s1));border:1px solid rgba(59,130,246,.25);border-radius:var(--rad);padding:15px 16px;margin-bottom:12px">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7EB8F0;font-family:'Lora',serif">💧 Water</span><span style="font-size:10px;color:var(--text2);font-family:'Lora',serif;margin-left:auto">counts all fluids — no magic number</span></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7EB8F0;font-family:'Lora',serif">💧 Water</span><span style="font-size:10px;color:var(--text2);font-family:'Lora',serif;margin-left:auto">1 bottle = 32 oz · counts all fluids</span></div>
     <div style="display:flex;align-items:center;gap:16px">
       ${glass}
       <div style="flex:1;min-width:0">
-        <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--text)">${wc} of ${goal} ${wc>=goal?'🎉':''}</div>
-        <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.5">${wc>=goal?'Goal met for today — anything more is a bonus.':'Tap the glass to add '+waterServing()+'. Every sip is progress.'}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--text)">${wc} of ${goal} bottle${goal===1?'':'s'} ${wc>=goal?'🎉':''}</div>
+        <div style="font-size:10.5px;color:#7EB8F0;font-family:'Lora',serif;margin-top:2px">1 bottle = 32 oz · goal ~${goal*32} oz</div>
+        <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.5">${wc>=goal?'Goal met for today — anything more is a bonus.':'Tap the glass to add '+waterServing()+' bottle'+(waterServing()===1?'':'s')+'. Every sip is progress.'}</div>
         <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
-          <div onclick="waterAdd()" style="flex:1;min-width:90px;text-align:center;padding:10px;border-radius:10px;background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 3px 12px rgba(59,130,246,.3)">+${waterServing()} cup${waterServing()===1?'':'s'}</div>
+          <div onclick="waterAdd()" style="flex:1;min-width:90px;text-align:center;padding:10px;border-radius:10px;background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 3px 12px rgba(59,130,246,.3)">+${waterServing()} bottle${waterServing()===1?'':'s'}</div>
           <div onclick="waterUndo()" style="padding:10px 13px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer">↶</div>
         </div>
         <div style="display:flex;gap:14px;margin-top:9px">
           <div onclick="waterSetGoal()" style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;cursor:pointer">⚙️ Goal: ${goal} ✏️</div>
-          <div onclick="waterSetServing()" style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;cursor:pointer">Per tap: ${waterServing()} ✏️</div>
+          <div onclick="waterSetServing()" style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;cursor:pointer">Per tap: ${waterServing()} bottle${waterServing()===1?'':'s'} ✏️</div>
         </div>
         ${nudge}
       </div>
@@ -3777,6 +3778,15 @@ ST.on('value', snap => {
     delete cookQueue['ck-seed-flat2']; delete cookQueue['ck-seed-dinner'];
     Object.keys(cookQueue).forEach(function(id){ var x=cookQueue[id]; if(x&&(x.rid==='r_box_sausage_squash_flatbread'||x.rid==='r_box_roasted_garlic_parmesan_zucchini_squash_')) delete cookQueue[id]; });
     ST.update({ cookQueue: cookQueue, 'flags/jun8-flatbread-out-v1': 'done' });
+    return;
+  }
+
+  // One-time: Jun 9 2026 — water unit switched cups → BOTTLES (1 bottle = 32 oz). Reset any leftover cups-era
+  // goal/serving to the bottle defaults (goal 3 ≈ 96 oz, 1 bottle per tap). Daily counts reset on their own.
+  if (!flags['water-bottles-v1']) {
+    habits = habits || {};
+    habits.waterGoal = 3; habits.waterServing = 1;
+    ST.update({ habits: habits, 'flags/water-bottles-v1': 'done' });
     return;
   }
 
