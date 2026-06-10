@@ -675,7 +675,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260609192714"></script>
+<script src="./data.js?v=20260609193658"></script>
 <script src="./recipes.js?v=20260609172351"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 9 · 7:27 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 9 · 7:36 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -787,6 +787,9 @@ function zoeyDayN(){ if(!zoey.startDate) return 0; return Math.floor((new Date(t
 function zoeyMix(n){ if(n<=3) return {h:25,f:75,phase:'Days 1–3'}; if(n<=6) return {h:50,f:50,phase:'Days 4–6'}; if(n<=9) return {h:75,f:25,phase:'Days 7–9'}; return {h:100,f:0,phase:'Days 10–12'}; }
 function toggleExpand(id){ expanded[id]=!expanded[id]; ST.child('expanded').set(expanded); renderAll(); }
 function toggleEvening(habit){ const k="evening-"+habit+"-"+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
+// 🌙 Bedtime wind-down — ONE tap locks reading hour + lights out + phone-away together (he taps as he sets the phone down, can't come back to check off) (added Jun 9 2026)
+function windDownDone(){ const k=todayKey(); return !!(laundry["evening-wind-phone-"+k] && laundry["evening-wind-read-"+k] && laundry["evening-wind-lights-"+k]); }
+function toggleWindDown(){ const k=todayKey(); const v=!windDownDone(); ["evening-wind-phone-","evening-wind-read-","evening-wind-lights-"].forEach(function(x){ laundry[x+k]=v; }); saveLaundry(); renderAll(); }
 function toggleReset(k){ const key="reset-"+k+"-"+todayKey(); laundry[key]=!laundry[key]; saveLaundry(); renderAll(); }
 function toggleTankDaily(k){ const key="tankd-"+k+"-"+todayKey(); laundry[key]=!laundry[key]; saveLaundry(); renderAll(); }  // 🪲 dry-terrarium daily care (date-keyed, resets daily)  // 🔄 sleep-reset one-offs (date-keyed, auto-expire)
 function saveShopping(){ ST.child('shopping').set(shopping); }
@@ -1757,12 +1760,24 @@ function renderToday() {
     const tcDone=!!checked["timecard_jun8"];
     add("timecard",1095,tcDone,strip("🕐","Do timecard — ready for Bill by Monday",tcDone,"#FBBF24","toggle('timecard_jun8')",(today==="2026-06-07"?"Today — Bill needs it Monday":"By Sunday night"),"","Deadline: Monday morning, on Bill's desk"));
   }
-  const wPhone=!!laundry["evening-wind-phone-"+today];
-  add("windphone",1300,wPhone,strip("📵","Phone to the other room — screens off",wPhone,"#8B5CF6","toggleEvening('wind-phone')",RY.windDown,"","No phone, no TV from here — the alarm clock takes over"));
-  const wRead=!!laundry["evening-wind-read-"+today];
-  add("windread",1310,wRead,strip("📖","Reading hour",wRead,"#A78BFA","toggleEvening('wind-read')",RY.reading,"","A real book — whatever you actually enjoy"));
-  const wLights=!!laundry["evening-wind-lights-"+today];
-  add("windlights",1320,wLights,strip("🛏️","Lights out",wLights,"#7C3AED","toggleEvening('wind-lights')",RY.lightsOut,""));
+  // ── 🌙 BEDTIME WIND-DOWN — reading hour + lights out + phone-away merged into ONE tap (lock it in AS the phone leaves the room) ──
+  const wdDone=windDownDone();
+  if(!wdDone){
+    add("winddown",1300,false,`<div onclick="toggleWindDown()" style="background:linear-gradient(135deg,rgba(124,58,237,.16),rgba(139,92,246,.05));border:1px solid rgba(124,58,237,.4);border-left:4px solid #7C3AED;border-radius:var(--rad);padding:15px 17px;margin-bottom:12px;cursor:pointer">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#A78BFA;margin-bottom:7px;font-family:'Lora',serif">🌙 Bedtime wind-down · ${RY.lightsOut}</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="font-size:28px;flex-shrink:0">📵</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#DDD6FE">Phone to the other room</div>
+          <div style="font-size:12px;color:rgba(196,181,253,.9);font-family:'Lora',serif;font-style:italic;margin-top:3px;line-height:1.5">Phone's going to the other room — tap to lock in tonight's wind-down. Sleep well. 🌙</div>
+          <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:7px;line-height:1.5">📖 Reading hour (${RY.reading}) → 🛏️ Lights out (${RY.lightsOut}) → 📵 phone away · one tap covers all three, so you don't have to come back.</div>
+        </div>
+        <div style="width:32px;height:32px;border-radius:50%;border:2px solid #7C3AED;background:transparent;flex-shrink:0;box-shadow:0 0 8px rgba(124,58,237,.25)"></div>
+      </div>
+    </div>`);
+  } else {
+    add("winddown",1300,true,strip("🌙","Wind-down done — reading, lights out, phone away",true,"#7C3AED","toggleWindDown()",RY.lightsOut,"","Sleep well 🌙"));
+  }
 
   // ── Sink-to-bottom: unchecked flow first (chronological), done pile at the very bottom ──
   window.__flowPrev=window.__flowPrev||{};
