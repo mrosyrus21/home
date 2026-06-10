@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 9 · 7:36 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 10 · 7:01 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -746,6 +746,7 @@ let fin = {};
 let cookQueue = {};  // 🍳 planned recipes: {rid,day,meal,done}
 let habits = {};     // 💧 water + forgiving habit-streak state (water counts/goal/serving, freeze tokens)
 let wishCustom = {}; // 💎 big-ticket wishlist: {t,done}   // 💰 finance state: bal/debt history, bills paid, cancels verified, to-dos
+let rollovers = {}; // 🔁 user rollover tasks {id:{label,created,done?}} — stay on Today until checked, carry forward daily
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -884,6 +885,38 @@ function reminderCardHtml(emoji,text,account,onclick,extra){
         +(extra||'')
       +'</div>'
       +'<div onclick="'+onclick+'" style="width:28px;height:28px;border-radius:50%;border:2px solid #38BDF8;background:transparent;flex-shrink:0;cursor:pointer"></div>'
+    +'</div>'
+  +'</div>';
+}
+// ── 🔁 ROLLOVER TASKS (added Jun 10 2026) — user-addable tasks that STAY on Today every day until checked off.
+// An unfinished one carries forward day after day (never silently disappears), with a "carried over · day N" badge.
+// State lives in the `rollovers` Firebase node: {id:{label,created,done?}}. `done` holds the date it was completed
+// (it shows in the done pile that day, then it's gone). Tapping a done one again clears `done` and it returns.
+function saveRollovers(){ ST.child('rollovers').set(rollovers); }
+function addRollover(){
+  const v=(prompt("New rollover task — it stays on Today every day until you check it off:")||"").trim();
+  if(!v) return;
+  const id='ro-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  rollovers[id]={label:v,created:todayKey()};
+  saveRollovers(); renderAll();
+  try{ toast("🔁 Added — it'll roll over until you check it off"); }catch(e){}
+}
+function toggleRollover(id){ const ro=rollovers[id]; if(!ro) return; if(ro.done) delete ro.done; else ro.done=todayKey(); saveRollovers(); renderAll(); }
+function removeRollover(id){ if(!rollovers[id]) return; if(!confirm("Remove this rollover task for good?")) return; delete rollovers[id]; saveRollovers(); renderAll(); }
+function rolloverCardHtml(id,label,carried,dayN,createdLabel){
+  const badge=carried
+    ? '<div style="display:inline-block;margin-bottom:7px;font-size:9px;text-transform:uppercase;letter-spacing:.18em;color:#F59E0B;font-family:\'Lora\',serif;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.32);border-radius:20px;padding:2px 10px">🔁 Carried over · day '+dayN+'</div>'
+    : '<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#F59E0B;margin-bottom:6px;font-family:\'Lora\',serif">🔁 Rolls over until done</div>';
+  return '<div style="background:linear-gradient(135deg,rgba(245,158,11,.13),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.4);border-left:4px solid #F59E0B;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">'
+    +badge
+    +'<div style="display:flex;align-items:center;gap:13px">'
+      +'<div style="font-size:22px;flex-shrink:0">🔁</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3">'+label+'</div>'
+        +'<div class="habit-sub">'+(carried?("Still here from "+createdLabel+" — it won't disappear until you check it off."):"Won't disappear until you check it off.")+'</div>'
+      +'</div>'
+      +'<button onclick="removeRollover(\''+id+'\')" title="Remove for good" style="background:none;border:none;color:var(--text3);font-size:18px;line-height:1;cursor:pointer;padding:0 4px;flex-shrink:0">×</button>'
+      +'<div onclick="toggleRollover(\''+id+'\')" style="width:28px;height:28px;border-radius:50%;border:2px solid #F59E0B;background:transparent;flex-shrink:0;cursor:pointer"></div>'
     +'</div>'
   +'</div>';
 }
@@ -1640,6 +1673,47 @@ function renderToday() {
         ? strip(r.emoji,r.text,true,"#38BDF8","toggleReminder('"+r.id+"')","","","")
         : reminderCardHtml(r.emoji,r.text,r.account||"","toggleReminder('"+r.id+"')",""));
     });
+  }
+
+  // ── 🔁 ROLLOVER TASKS — user-addable, stay until checked, carry forward daily (added Jun 10 2026) ──
+  if(rollovers && typeof rollovers==='object'){
+    Object.keys(rollovers).sort().forEach(function(id,i){
+      const ro=rollovers[id]; if(!ro||!ro.label) return;
+      const doneDate=ro.done||null;
+      if(doneDate && doneDate!==today) return;            // finished on a previous day → it's gone
+      const created=ro.created||today;
+      const dayN=Math.floor((new Date(today+"T12:00:00")-new Date(created+"T12:00:00"))/86400000)+1;
+      if(doneDate){
+        add("ro-"+id,309+i,true,strip("🔁",ro.label,true,"#F59E0B","toggleRollover('"+id+"')","","","carried over until done — nice ✓"));
+      }else{
+        const carried=dayN>1;
+        const cl=new Date(created+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
+        add("ro-"+id,309+i,false,rolloverCardHtml(id,ro.label,carried,dayN,cl));
+      }
+    });
+  }
+  // ＋ add-your-own rollover task (passive — doesn't count toward the daily tally)
+  add("ro-add",325,false,`<div onclick="addRollover()" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(245,158,11,.45);border-radius:var(--rad);padding:11px 16px;margin-bottom:10px;cursor:pointer;color:#F59E0B;font-family:'Lora',serif;font-size:13px">＋ Add a task that rolls over until done</div>`,true);
+
+  // ── 🌱 WATER MOM'S PLANTS — every day; date-keyed so checking clears only today (reappears tomorrow) (added Jun 10 2026) ──
+  {
+    const wmpDone=!!laundry["rem-watermom-"+today];
+    add("watermom",352,wmpDone, wmpDone
+      ? strip("🌱","Water Mom's plants",true,"#2DB870","toggleReminder('watermom',true)","Daily","","Reappears tomorrow")
+      : strip("🌱","Water Mom's plants",false,"#2DB870","toggleReminder('watermom',true)","Daily","","Every day — tap once they're watered"));
+  }
+
+  // ── 🗑️ TRASH + RECYCLE — every Tuesday night Trash; alternating Tuesdays (anchor Tue Jun 9 2026) also Recycle (added Jun 10 2026) ──
+  if(dow===2){
+    const _twk=Math.round((new Date(today+"T12:00:00")-new Date("2026-06-09T12:00:00"))/(7*86400000));
+    const _recycle=((((_twk%2)+2)%2)===0);            // even weeks from the Jun 9 anchor = recycle night
+    const _tLabel=_recycle?"Trash + Recycle":"Trash";
+    const _tEmoji=_recycle?"♻️":"🗑️";
+    const _tSub=_recycle?"Both bins to the curb tonight — recycle goes out this week.":"Trash to the curb tonight (recycle is next Tuesday).";
+    const _tDone=!!laundry["rem-trash-"+today];
+    add("trash",1280,_tDone, _tDone
+      ? strip(_tEmoji,_tLabel+" — out for the night",true,"#9CA3AF","toggleReminder('trash',true)","Tuesday night","","")
+      : strip(_tEmoji,_tLabel,false,"#9CA3AF","toggleReminder('trash',true)","Tuesday night","",_tSub));
   }
 
   // ── 🍽️ MEAL ANCHORS + 💊 pill bundle — eat on a clock; nag (pin + gentle escalate) until checked (added Jun 9 2026) ──
@@ -3653,6 +3727,7 @@ ST.on('value', snap => {
   cookQueue   = d.cookQueue   || {};
   habits      = d.habits      || {};
   wishCustom  = d.wishCustom  || {};
+  rollovers   = d.rollovers   || {};
   // one-time idempotent migration: grocery is FOOD-ONLY (Jun 6 2026) — strip non-food strays
   try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false, ci=false;
     for(const k in grocCustom){ if(NF.test(String(grocCustom[k]))){ delete grocCustom[k]; ch=true; } }
@@ -3809,6 +3884,14 @@ ST.on('value', snap => {
   if (!flags['jun6-terrarium-v1']) {
     checked['dry-perches']=true; checked['dry-litterbark']=true;
     ST.update({ checked: checked, 'flags/jun6-terrarium-v1': 'done' });
+    return;
+  }
+
+  // One-time: Jun 10 2026 — seed the "Clean and set up divider tank" rollover task (Part E). Idempotent via flag.
+  if (!flags['rollover-seed-v1']) {
+    rollovers = rollovers || {};
+    if(!rollovers['ro-divider-tank']) rollovers['ro-divider-tank']={ label:"Clean and set up divider tank", created: todayKey() };
+    ST.update({ rollovers: rollovers, 'flags/rollover-seed-v1': 'done' });
     return;
   }
 
