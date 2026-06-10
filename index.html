@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 10 · 10:56 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 10 · 11:09 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2341,6 +2341,9 @@ function renderShopping() {
     html += banner('74,212,144','Status — June 10 ✅ · Always-on monitor','Ammonia 0 ppm · permanent ammonia alert card installed','A <b style="color:#4AD490">permanent Seachem-style always-on ammonia alert card</b> is now installed in the tank (continuous monitor — not a one-off strip test). It currently reads <b style="color:#4AD490">0 ppm ammonia (safe)</b>. The 5/31–6/2 spike (0→0.5→1.0) is fully resolved — 🦐 shrimp active &amp; eating, no losses. Glance at the card any time for a live reading.');
     html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('0','NH3','ok')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('74°','Temp','ok')}</div>`;
     html += panel('⚗️ Right Now (June 10)','<b style="color:#4AD490">Ammonia 0 ppm — safe.</b> A <b style="color:#4AD490">permanent always-on ammonia alert card</b> (Seachem-style continuous monitor) is now installed and reads 0 — no more relying on one-off strips. NO2 0, NO3 5, temp in range, shrimp active and eating. Keep feeding light and just glance at the alert card on water-change day.');
+    html += panel('🧼 Daily care — '+(laundry['tankd-bdamm-'+todayKey()]?1:0)+' of 1 today',
+      tdaily('bdamm',"👀 Glance at the ammonia alert card — confirm it's still showing safe / 0 ppm")
+      + '<div style="font-size:10.5px;color:#5a7a99;font-style:italic;margin-top:6px">Now that the alert card is always-on, this is a 5-second look — not a strip test. Resets every morning, like the daily items on Today.</div>');
     html += panel('🎯 Neocaridina Targets',
       '<div class="kv"><span>Ammonia</span><span>0 ppm <span style="color:#4AD490">(0 ✅ — always-on alert card)</span></span></div>'
       +'<div class="kv"><span>Nitrite</span><span>0 ppm <span style="color:#4AD490">(0 ✅)</span></span></div>'
