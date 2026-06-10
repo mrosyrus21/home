@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 10 · 8:14 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 10 · 10:51 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -3892,6 +3892,14 @@ ST.on('value', snap => {
     rollovers = rollovers || {};
     if(!rollovers['ro-divider-tank']) rollovers['ro-divider-tank']={ label:"Clean and set up divider tank", created: todayKey() };
     ST.update({ rollovers: rollovers, 'flags/rollover-seed-v1': 'done' });
+    return;
+  }
+
+  // One-time: Jun 10 2026 — seed the "headrest cup holder for Zoe" 3D-print idea as a rollover (stays on Today until printed). Idempotent via flag.
+  if (!flags['rollover-seed-headrest-v1']) {
+    rollovers = rollovers || {};
+    if(!rollovers['ro-headrest-cupholder']) rollovers['ro-headrest-cupholder']={ label:"🛠️ 3D print: headrest cup holder for Zoe", created: todayKey() };
+    ST.update({ rollovers: rollovers, 'flags/rollover-seed-headrest-v1': 'done' });
     return;
   }
 
