@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 10 · 10:51 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 10 · 10:56 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2313,7 +2313,8 @@ function renderShopping() {
     ["5/27*","0.25","0","5","7.6","125","60","Post-livestock mini cycle"],
     ["5/30","0","0","5","7.6","—","—","Mini cycle COMPLETE — NH3 back to 0 ✅"],
     ["6/2","1.0","0","5","7.6","125","—","Ammonia spike 0→0.5→1.0 (feeding + 82°F heat + pulled anemone) — WC + Prime + SafeStart, feeding paused"],
-    ["6/4","1.0","0","5","7.6","125","74","Down & holding after a water change — shrimp active & eating, no losses"]
+    ["6/4","1.0","0","5","7.6","125","74","Down & holding after a water change — shrimp active & eating, no losses"],
+    ["6/10","0","0","5","7.6","125","74","Ammonia back to 0 ✅ — permanent always-on ammonia alert card installed (continuous monitor)"]
   ];
   const rows = P.map(r=>`<tr>${r.map((c,i)=>`<td${i===0?' style="color:#7fe9dd;font-weight:700"':(i===7?' style="color:#9bb3c9;white-space:normal;min-width:160px"':'')}>${c}</td>`).join('')}</tr>`).join('');
   const chip=(v,k,cls)=>`<div style="background:#0a1628;border:1px solid #1a3a5c;border-radius:10px;padding:9px 4px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:${cls==='warn'?'#F5B830':cls==='ok'?'#4AD490':'#00e5cc'}">${v}</div><div style="font-size:8px;letter-spacing:.05em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif">${k}</div></div>`;
@@ -2331,17 +2332,17 @@ function renderShopping() {
   <div style="text-align:center;margin-bottom:12px;padding-top:4px">
     <div style="font-size:9px;letter-spacing:.25em;color:#00e5cc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🌊 Cyrus · Tanks · pick a tank above</div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4fc3f7,#00e5cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">${TITLES[tankSub]||'Tanks'}</div>
-    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated June 5, 2026</div>
+    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated June 10, 2026</div>
   </div>`;
 
   if (tankSub === "bluedream") {
     html += hero('images/tank_bluedream_20260604.jpg','Blue Dream cube — LED bar, colorful substrate, hydro baskets + feeding tube');
     html += specs('11.2 × 11.4 × 11.1 in','3.7 gal','💧 Aquatic — Imagitarium PRO Deluxe cube');
-    html += banner('245,184,48','Status — June 4 ⚠️→✅','Recovering from an ammonia spike · 🦐 shrimp active & eating','Ammonia spiked <b style="color:#F5B830">0 → 0.5 → 1.0 (5/31–6/2)</b> from resumed feeding + an 82°F heat spike + pulling the fake anemone. After a water change it is <b style="color:#4AD490">down to 1.0 and holding</b> — no shrimp lost, and they are active and eating again. Keep doing small temp-matched water changes until it reads 0.');
-    html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('1.0','NH3','warn')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('74°','Temp','ok')}</div>`;
-    html += panel('⚗️ Right Now (June 4)','<b style="color:#4AD490">Ammonia down to 1.0 and holding</b> after a water change (NO2 0, NO3 5). Temp under control, no losses, shrimp active and eating. Keep up small temp-matched water changes + Prime until ammonia reads 0, and avoid overfeeding.');
+    html += banner('74,212,144','Status — June 10 ✅ · Always-on monitor','Ammonia 0 ppm · permanent ammonia alert card installed','A <b style="color:#4AD490">permanent Seachem-style always-on ammonia alert card</b> is now installed in the tank (continuous monitor — not a one-off strip test). It currently reads <b style="color:#4AD490">0 ppm ammonia (safe)</b>. The 5/31–6/2 spike (0→0.5→1.0) is fully resolved — 🦐 shrimp active &amp; eating, no losses. Glance at the card any time for a live reading.');
+    html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('0','NH3','ok')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('74°','Temp','ok')}</div>`;
+    html += panel('⚗️ Right Now (June 10)','<b style="color:#4AD490">Ammonia 0 ppm — safe.</b> A <b style="color:#4AD490">permanent always-on ammonia alert card</b> (Seachem-style continuous monitor) is now installed and reads 0 — no more relying on one-off strips. NO2 0, NO3 5, temp in range, shrimp active and eating. Keep feeding light and just glance at the alert card on water-change day.');
     html += panel('🎯 Neocaridina Targets',
-      '<div class="kv"><span>Ammonia</span><span>0 ppm <span style="color:#F5B830">(1.0 — recovering)</span></span></div>'
+      '<div class="kv"><span>Ammonia</span><span>0 ppm <span style="color:#4AD490">(0 ✅ — always-on alert card)</span></span></div>'
       +'<div class="kv"><span>Nitrite</span><span>0 ppm <span style="color:#4AD490">(0 ✅)</span></span></div>'
       +'<div class="kv"><span>Nitrate</span><span>under 20 ppm <span style="color:#4AD490">(5 ✅)</span></span></div>'
       +'<div class="kv"><span>pH</span><span>6.8–7.5 <span style="color:#F5B830">(7.6 — slightly high, fine)</span></span></div>'
@@ -2375,7 +2376,7 @@ function renderShopping() {
       '<div class="kv"><span>Shrimp</span><span>10× Blue Dream Neocaridina, high grade (dark blue) — one-color breeding colony</span></div>'
       +'<div class="kv"><span>Snails</span><span>2× Nerite (Tiger) — glass cleaners; can\'t breed in freshwater</span></div>'
       +'Added 5/27 via ~1.5h drip acclimation, no losses.');
-    html += panel('🧰 Equipment On Hand','<b>Treatment:</b> Seachem Prime · Tetra SafeStart · filter regenerator<br><b>Testing:</b> multi-param strips · ammonia strips · API Master Kit<br><b>Food:</b> Color Studio 40g · Ultra Fresh 53g');
+    html += panel('🧰 Equipment On Hand','<b>Treatment:</b> Seachem Prime · Tetra SafeStart · filter regenerator<br><b>Testing:</b> <b style="color:#4AD490">permanent always-on ammonia alert card (Seachem-style, installed Jun 10)</b> · multi-param strips · ammonia strips · API Master Kit<br><b>Food:</b> Color Studio 40g · Ultra Fresh 53g');
     html += `<div style="height:6px"></div><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif;text-align:center;margin:14px 0 8px">— History &amp; Log —</div>`;
     html += panel('📋 Full Parameter Log',`<div class="tbl"><table><thead><tr><th>Date</th><th>NH3</th><th>NO2</th><th>NO3</th><th>pH</th><th>Hard</th><th>Alk</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></div><div style="font-size:10px;color:#5a7a99;margin-top:4px">* Livestock added 5/27/2026</div>`);
     html += panel('🔄 Cycling History','Fishless cycle, early May (Tetra SafeStart + filter regenerator, no water changes, heater 80°F, bubbler HIGH). Wk 1–2 ammonia stalled at 0.5; 5/22 nitrite spiked (stage-2 on); 5/24 ammonia hit 0; 5/27 both 0/0 — CYCLED ✅.');
