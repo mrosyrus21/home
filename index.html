@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 10 · 11:09 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 10 · 11:50 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -2417,19 +2417,25 @@ function renderShopping() {
   else if (tankSub === "dry") {
     html += hero('images/tank_dry_20260604.jpg','Dry terrarium — rounded face, built-in light; stocked, fed & furnished');
     html += specs('10 × 12 × 7 in','~3.6 gal','🪲 Bioactive — dry / terrestrial');
-    html += banner('167,139,250','Status — Stocked & settled (updated Jun 6)','🪲 Crew fed & furnished — 1 stubborn ladybug left','<b>Ladybugs released to the garden</b> — all except <b>1 stubborn one still inside; relocate it when caught</b>. A <b>fake plant</b> went in as the katydid\'s molting perch, <b>more fruit flies</b> were added, and the base got <b>almond leaves + water</b>. Food in the tank: <b>fresh basil (stems in sugar-water-soaked cotton balls) + soaked raisins</b>. Springtails still hide by day — peek at night for a real headcount.');
+    html += banner('167,139,250','Status — Stocked & settled (updated Jun 10)','🕷️ Jumping spider added · 🐞 ladybugs all gone','<b>All ladybugs are out</b> — every one released to the garden, none left inside. <b>New inhabitant: a small jumping spider</b> 🕷️ (noticeably <b>smaller than the katydid nymph</b>) has joined the crew. Added <b>more fresh basil + more strawberry cuttings</b> to the greens; the <b>fake plant</b> stays as the katydid\'s molting perch, with <b>almond leaves + water</b> in the base. Food in the tank: <b>fresh basil (stems in sugar-water-soaked cotton balls) + soaked raisins</b>. Springtails still hide by day — peek at night for a real headcount.');
+    html += panel('🐾 Current inhabitants &amp; greens (Jun 10)',
+      '<div class="kv"><span>🦗 Katydid nymph</span><span>resident — molts on the fake-plant perch</span></div>'
+      + '<div class="kv"><span>🕷️ Jumping spider</span><span><b>new (Jun 10)</b> — small, <b>smaller than the katydid nymph</b></span></div>'
+      + '<div class="kv"><span>🪲 Cleanup crew</span><span>springtails + isopods (microfauna)</span></div>'
+      + '<div class="kv"><span>🐞 Ladybugs</span><span><b style="color:#8b9bb5">removed — all released to the garden</b></span></div>'
+      + '<div class="kv"><span>🌿 Greens</span><span><b>more basil + more strawberry cuttings</b> added (Jun 10) · almond leaves + water in the base</span></div>');
     const dDaily=['mist','leaves','perch','headcount'];
     const dDone=dDaily.filter(k=>!!laundry['tankd-'+k+'-'+todayKey()]).length;
     html += panel('🧼 Daily care — '+dDone+' of '+dDaily.length+' today',
       tdaily('mist','🌫️ Light mist — damp, not soggy')
-      + tdaily('leaves','🍃 Refresh the food: basil + sugar-water cotton balls + soaked raisins')
+      + tdaily('leaves','🍃 Refresh the greens: basil + strawberry cuttings + sugar-water cotton balls + soaked raisins')
       + tdaily('perch','🪵 Check perches are standing — katydids hang upside-down to molt; vertical twigs are life-or-death')
       + tdaily('headcount','👀 Critter headcount / activity check')
       + '<div style="font-size:10.5px;color:#5a7a99;font-style:italic;margin-top:6px">Resets every morning, like the daily items on Today.</div>');
     html += panel('🛠️ Setup',
       tchk('dry-perches','⬆️ Vertical perches for the katydid — DONE: fake plant in for molting')
       + tchk('dry-litterbark','🍂 Leaf litter for the isopods — DONE: almond leaves + water in the base')
-      + '<div style="font-size:11px;color:rgba(232,244,253,.6);font-style:italic;line-height:1.55;margin-top:7px">🐞 1 stubborn ladybug still inside — relocate to the garden when caught. 🦗 The katydid does best in its own enclosure, away from predators.</div>');
+      + '<div style="font-size:11px;color:rgba(232,244,253,.6);font-style:italic;line-height:1.55;margin-top:7px">🐞 Ladybugs all removed — released to the garden. 🕷️ Small jumping spider added (smaller than the katydid nymph). 🦗 The katydid does best in its own enclosure, away from predators.</div>');
     html += panel('🪲 Bioactive Build — Cleanup Crew',
       '<b>Goal:</b> grow a thriving isopod + springtail colony FIRST, then (much later) add a small animal — a <b>mourning gecko</b> or <b>dart frog</b> — once the microfauna is booming.'
       + sh('Build steps')
