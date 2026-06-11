@@ -675,7 +675,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260609193658"></script>
+<script src="./data.js?v=20260610120000"></script>
 <script src="./recipes.js?v=20260609172351"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 10 · 11:50 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 11 · 3:47 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1663,6 +1663,25 @@ function renderToday() {
         : reminderCardHtml("🚙",DMV.text,"","toggleReminder('dmv',true)",extra));
     }
   }
+  // ── 🔥 BURN CARE — daily nag through the care window (date-keyed → reappears each day), then a one-shot
+  // silicone-gel switch once healed. Config in BURN_CARE (data.js). (added Jun 10 2026) ──
+  if(typeof BURN_CARE!=='undefined'){
+    if(today>=BURN_CARE.start && today<=BURN_CARE.end){
+      const bcDone=!!laundry["rem-burncare-"+today];
+      const inInf=(BURN_CARE.infectionDates||[]).indexOf(today)>=0;
+      const bcSub=inInf
+        ? "👀 Infection check today — spreading redness, thick/cloudy pus, warmth, more pain or fever → urgent care. Otherwise: keep it covered, don't pop it, thin Vaseline under a clean non-stick dressing."
+        : "Keep it covered for sleep, don't pop it, thin Vaseline under a clean non-stick dressing. Clear/yellow seep is normal — sleep on your back.";
+      add("burncare",286,bcDone, bcDone
+        ? strip("🔥","Burn care — done for today",true,"#FB7185","toggleReminder('burncare',true)","Daily","","Reappears tomorrow through "+BURN_CARE.endLabel)
+        : strip("🔥","Burn care — protect the forehead burn",false,"#FB7185","toggleReminder('burncare',true)","Daily","",bcSub));
+    } else if(today>=BURN_CARE.siliconeDate){
+      const siDone=reminderDone('burnsilicone',false);
+      add("burnsilicone",286,siDone, siDone
+        ? strip("🩹","Silicone scar gel — started",true,"#A78BFA","toggleReminder('burnsilicone')","","","Keep it up ~12 hrs/day for 2–3 months + sun protection")
+        : reminderCardHtml("🩹","Burn healed & skin fully closed? Start silicone scar gel (ScarAway or bioCorneum) ~12 hrs/day for 2–3 months, plus sun protection.","","toggleReminder('burnsilicone')",""));
+    }
+  }
   // 🔔 dated + standing reminders
   if(typeof REMINDERS!=='undefined'){
     REMINDERS.forEach(function(r,i){
@@ -1695,12 +1714,12 @@ function renderToday() {
   // ＋ add-your-own rollover task (passive — doesn't count toward the daily tally)
   add("ro-add",325,false,`<div onclick="addRollover()" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(245,158,11,.45);border-radius:var(--rad);padding:11px 16px;margin-bottom:10px;cursor:pointer;color:#F59E0B;font-family:'Lora',serif;font-size:13px">＋ Add a task that rolls over until done</div>`,true);
 
-  // ── 🌱 WATER MOM'S PLANTS — every day; date-keyed so checking clears only today (reappears tomorrow) (added Jun 10 2026) ──
+  // ── 🌱 WATER MOM'S PLANTS — daily EVENING task ~8 PM (after dinner); date-keyed (clears each day, returns next) (added Jun 10 2026; retimed to evening Jun 10 2026) ──
   {
     const wmpDone=!!laundry["rem-watermom-"+today];
-    add("watermom",352,wmpDone, wmpDone
-      ? strip("🌱","Water Mom's plants",true,"#2DB870","toggleReminder('watermom',true)","Daily","","Reappears tomorrow")
-      : strip("🌱","Water Mom's plants",false,"#2DB870","toggleReminder('watermom',true)","Daily","","Every day — tap once they're watered"));
+    add("watermom",1255,wmpDone, wmpDone
+      ? strip("🌱","Water Mom's plants",true,"#2DB870","toggleReminder('watermom',true)","~8:00 PM","","Reappears tomorrow evening")
+      : strip("🌱","Water Mom's plants",false,"#2DB870","toggleReminder('watermom',true)","~8:00 PM","","After dinner — water Mom's plants for the night"));
   }
 
   // ── 🗑️ TRASH + RECYCLE — every Tuesday night Trash; alternating Tuesdays (anchor Tue Jun 9 2026) also Recycle (added Jun 10 2026) ──
