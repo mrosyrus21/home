@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 11 · 7:57 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 11 · 7:58 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1260,6 +1260,32 @@ function strip(emoji,label,done,color,onclick,tl,dur,sub,pushFn){
   </div>`;
 }
 
+// ── 🎨 ADJACENT-COLOR CONTRAST (added Jun 11 2026) ──
+// Reusing an accent color across the app is fine — but two cards with the SAME left-border accent
+// sitting RIGHT NEXT TO each other blend together and get missed. This pass walks a rendered list of
+// {html} items and, wherever an item shares its accent with the item just before it, nudges THIS
+// item's accent to the next palette color that differs from both neighbours (stays in-scheme).
+const _ADJ_PALETTE=["#38BDF8","#F5B830","#34D399","#A78BFA","#FB7185","#FACC15","#F59E0B","#2DB870","#7C3AED","#60A5FA","#9CA3AF"];
+function _accentOf(html){
+  const m=/border-left:\d+px solid (#[0-9A-Fa-f]{3,6}|var\(--[A-Za-z0-9-]+\)|rgba?\([^)]*\))/.exec(html||"");
+  return m?m[1]:null;
+}
+function _dedupeAdjColors(items){
+  let prev=null;
+  for(let i=0;i<items.length;i++){
+    let c=_accentOf(items[i].html);
+    if(c && prev && c===prev){
+      const nextC=(i+1<items.length)?_accentOf(items[i+1].html):null;
+      const pick=_ADJ_PALETTE.find(p=>p!==prev && p!==c && p!==nextC)
+              || _ADJ_PALETTE.find(p=>p!==prev && p!==c)
+              || _ADJ_PALETTE.find(p=>p!==prev);
+      if(pick){ items[i].html=items[i].html.split(c).join(pick); c=pick; }
+    }
+    if(c) prev=c;
+  }
+  return items;
+}
+
 function agendaHtml(items){
   const buckets=[["Morning",0,700],["Midday",700,840],["Afternoon",840,1060],["Evening",1060,1240],["Night",1240,1e9]];
   const bidx=o=>{ const i=buckets.findIndex(x=>o>=x[1]&&o<x[2]); return i<0?buckets.length:i; };
@@ -1745,6 +1771,23 @@ function renderToday() {
   add("lit",_pillTop?7:311,litDone, litDone
     ? strip("💊","Litfulo + vitamins",true,"#6366F1","toggleWellness('litfulo')","With breakfast","","")
     : strip("💊","Litfulo + vitamins — take with breakfast",false,"#6366F1","toggleWellness('litfulo')","With breakfast","","One trigger: eat → pills. Logs to the Health tab too."));
+  // ── 💰 MONEY CHECK — daily morning reminder ~7:45 AM (before breakfast); date-keyed (clears each day, returns) · taps through to 💰 Finance (added Jun 11 2026) ──
+  {
+    const mcDone=!!laundry["rem-moneycheck-"+today];
+    add("moneycheck",285,mcDone, mcDone
+      ? strip("\uD83D\uDCB0","Check money situation",true,"#FACC15","toggleReminder('moneycheck',true)","~7:45 AM","","Reappears tomorrow morning")
+      : `<div onclick="switchTab('finance')" style="background:linear-gradient(135deg,rgba(250,204,21,.13),rgba(250,204,21,.03));border:1px solid rgba(250,204,21,.4);border-left:4px solid #FACC15;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px;cursor:pointer">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FACC15;margin-bottom:6px;font-family:'Lora',serif">\uD83D\uDD14 Reminder \u00b7 ~7:45 AM</div>
+        <div style="display:flex;align-items:center;gap:13px">
+          <div style="font-size:22px;flex-shrink:0">\uD83D\uDCB0</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3">Check money situation</div>
+            <div style="font-size:11.5px;color:rgba(250,220,150,.85);font-style:italic;margin-top:4px;font-family:'Lora',serif">Before 8 AM \u2014 a quick look at balances &amp; spending. Tap \u2192 \uD83D\uDCB0 Finance.</div>
+          </div>
+          <div onclick="event.stopPropagation();toggleReminder('moneycheck',true)" style="width:28px;height:28px;border-radius:50%;border:2px solid #FACC15;background:transparent;flex-shrink:0;cursor:pointer"></div>
+        </div>
+      </div>`);
+  }
   // 🍳 breakfast anchor
   if(_bk){ const _bd=!!laundry["meal-breakfast-"+today]; const b=mealAnchorHtml(_bk,_bd,nowM,dow); add("breakfast",b.order,_bd,b.html); }
 
@@ -1877,8 +1920,8 @@ function renderToday() {
   let justDoneKey=null;
   flow.forEach(it=>{ if(it.done&&window.__flowPrev[it.key]===false) justDoneKey=it.key; });
   const wrap=it=>(it.key===justDoneKey?`<div class="flow-just-done">${it.html}</div>`:it.html);
-  const active=flow.filter(i=>!i.done).sort((a,b)=>a.order-b.order);
-  const pile=flow.filter(i=>i.done).sort((a,b)=>a.order-b.order);
+  const active=_dedupeAdjColors(flow.filter(i=>!i.done).sort((a,b)=>a.order-b.order));
+  const pile=_dedupeAdjColors(flow.filter(i=>i.done).sort((a,b)=>a.order-b.order));
   const checkables=flow.filter(i=>!i.passive);
   const fDone=checkables.filter(i=>i.done).length, fTotal=checkables.length;
 
@@ -1958,6 +2001,8 @@ function renderTimeline() {
     REMINDERS.forEach(function(r){ if(r.date && r.date>=today){ (tlRem[r.date]=tlRem[r.date]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } });
     REMINDERS.forEach(function(r){ if(r.standing && !reminderDone(r.id,false)){ (tlRem[today]=tlRem[today]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } }); // standing errands surface near-term (today)
   }
+  // 💰 daily money check — surface on today's timeline row (date-keyed daily morning reminder)
+  if(typeof reminderDone==='function' && !reminderDone('moneycheck',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"💰",text:"Check money situation · ~7:45 AM",account:""}); }
   if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
   // 📞 TG Meeting — recurring every Wednesday on the timeline
   if(typeof TG_MEETING!=='undefined'){
