@@ -675,7 +675,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260610130000"></script>
+<script src="./data.js?v=20260612153000"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 11 · 7:58 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 12 · 9:37 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1205,6 +1205,9 @@ const TIME_META={
   gnat_tea:{order:414,timeLabel:"Morning",dur:"5 min"},
   gnat_apply:{order:1050,timeLabel:"Evening",dur:"20 min"},
   gnat_buy:{order:862,timeLabel:"Afternoon",dur:"20 min"},
+  gnat_nuke:{order:432,timeLabel:"Morning",dur:"20 min"},
+  gnat_sand:{order:432,timeLabel:"Morning",dur:"20 min"},
+  gnat_check2:{order:432,timeLabel:"Morning",dur:"10 min"},
   leca_measure:{order:437,timeLabel:"Morning",dur:"15 min"},
   meshlab_workflow:{order:438,timeLabel:"Morning",dur:"30–45 min"},
   herb_pinch1:{order:430,timeLabel:"Morning",dur:"20 min"},
@@ -2256,6 +2259,7 @@ function renderGarden() {
   else if (gardenSub === "harvest") {
     const todayDate=new Date(today+"T12:00:00");
     html += `<div class="section-label">🌾 Harvest</div>`;
+    html += `<div style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.55">🍴 <b style="color:#4ADE80">Herbs are pick-when-you-cook now</b> — no calendar harvests. Anything marked REQUIRED is for the plant’s health, not the kitchen (basil pinching, dill flower-bud patrol). Picked more than you need? Every card has a keep-fresh / freeze / dry guide under 🌟.</div>`;
     PLANTS.filter(p=>HARVEST_INFO[p.id]).map(p=>({p,h:HARVEST_INFO[p.id]}))
       .sort((x,y)=>{ const hx=harvested[x.p.id]===today?1:0, hy=harvested[y.p.id]===today?1:0; if(hx!==hy) return hx-hy; const dx=x.h.date?new Date(x.h.date):todayDate, dy=y.h.date?new Date(y.h.date):todayDate; return dx-dy; })
       .forEach(o=>{ const p=o.p, h=o.h;
@@ -2263,11 +2267,11 @@ function renderGarden() {
         const diff=ong?null:Math.ceil((new Date(h.date+"T12:00:00")-todayDate)/86400000);
         const ready=!ong&&diff<=0, soon=!ong&&diff>0&&diff<=14;
         const hDone=harvested[p.id]===today;
-        const bTxt=hDone?"✓ Harvested":ong?"🌿 Pick when ripe":ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
+        const bTxt=hDone?"✓ Harvested":ong?(h.badge||"🌿 Pick when ripe"):ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
         const bCol=hDone?"#2DB870":(ong||ready)?"#4ADE80":soon?"#FBBF24":"#9bb3c9";
-        let body=hdr(p, ong?"when ripe":(ready?"ready":h.date));
+        let body=hdr(p, ong?(h.hdrNote||"when ripe"):(ready?"ready":h.date));
         body+=chipRow(chip(p.harvestChip,"#4ADE80"));
-        if(ong&&h.signs) body+=sect("👀 Ready when you see…","#4ADE80",h.signs);
+        if(ong&&h.signs) body+=sect(h.signsLabel||"👀 Ready when you see…","#4ADE80",h.signs);
         body+=sect("✂️ How to pick","#4ADE80",h.how);
         body+=sect("🌟 Good to know","#FBBF24",h.fact);
         body+=wxHarvestNote(p);
@@ -4114,6 +4118,7 @@ function wxCareBanner(){
   return "";
 }
 const PEST_PLAN=[
+ {e:"🦟",t:"Fungus gnats (indoor) — war plan v2",b:"Why round 1 failed: BTI from Mosquito Bits only stays active ~48 hours and only kills larvae that drink it — a one-off tea cannot outlast the 3–4 week egg→adult cycle, and drying the topsoil just pushes larvae deeper toward the moist core around the roots. The v2 stack, all at once: (1) BTI tea at EVERY watering for 4 straight weeks — no plain water; (2) yellow sticky traps laid FLAT on the soil (they catch far more than upright) and swapped when crowded; (3) a one-time hydrogen-peroxide drench — 1 part 3% peroxide to 4 parts water, poured through when the pot is due for water anyway — kills larvae on contact, fizzing is normal; (4) cap every pot with about half an inch of sand or fine aquarium gravel so adults cannot reach soil to lay eggs; (5) empty saucers within 10 minutes and check nearby sink drains — they breed there too. Any pot still hatching gnats after 4 weeks gets repotted: roots rinsed, fresh bagged mix, gravel cap from day one."},
  {e:"🐦",t:"Birds love your red fruit",b:"Strawberries, cherry tomatoes and raspberries are bird magnets. The most reliable fix is a physical barrier — drape ¼-inch bird netting over a simple frame or stakes so it floats above the fruit without touching it. A small berry cage of PVC or wood works great."},
  {e:"🎨",t:"Red decoy-rock trick",b:"A cheap first layer that genuinely helps with strawberries: paint a handful of rocks strawberry-red and scatter them around the pot 2–3 weeks BEFORE the berries ripen. Birds peck the fakes, learn they are not food, and tend to leave the real berries alone. Pair it with netting — on its own, birds eventually wise up."},
  {e:"✨",t:"Scare tactics",b:"Anything that moves and shines unsettles birds — hang flash tape, old CDs, or foil pie pans near the berries, and shift them every few days so the birds do not get comfortable."},
