@@ -675,7 +675,7 @@ body::after{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260612153000"></script>
+<script src="./data.js?v=20260612190000"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -687,7 +687,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 12 · 9:37 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 12 · 1:23 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -990,7 +990,7 @@ function toggle(id)  { checked[id]=!checked[id]; save(); renderAll(); }
 function toggleLaundry() { const k=todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function waterPlant(id)  { watered[id]=todayKey(); saveW(); renderAll(); }
 
-const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
+const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -1205,8 +1205,8 @@ const TIME_META={
   gnat_tea:{order:414,timeLabel:"Morning",dur:"5 min"},
   gnat_apply:{order:1050,timeLabel:"Evening",dur:"20 min"},
   gnat_buy:{order:862,timeLabel:"Afternoon",dur:"20 min"},
-  gnat_nuke:{order:432,timeLabel:"Morning",dur:"20 min"},
-  gnat_sand:{order:432,timeLabel:"Morning",dur:"20 min"},
+  gnat_nuke:{order:432,timeLabel:"Morning",dur:"1.5–2 hrs"},
+  gnat_sand:{order:432,timeLabel:"Morning",dur:"15 min"},
   gnat_check2:{order:432,timeLabel:"Morning",dur:"10 min"},
   leca_measure:{order:437,timeLabel:"Morning",dur:"15 min"},
   meshlab_workflow:{order:438,timeLabel:"Morning",dur:"30–45 min"},
@@ -1417,7 +1417,7 @@ function mealAnchorHtml(A, done, nowM, dow){
       +'</div></div>';
     return { order:6, html:html };
   }
-  return { order:A.upOrder, html:strip(A.emoji,A.label,false,C_PAST,"toggleMeal('"+A.id+"')",win,"","Window passed \u2014 a snack still counts whenever you can. \uD83C\uDF31") };
+  return { order:A.upOrder, html:strip(A.emoji,A.label,false,C_PAST,"toggleMeal('"+A.id+"')",win,"",(A.passed||"Window passed \u2014 a snack still counts whenever you can. \uD83C\uDF31")) };
 }
 
 // ── 💧🍴💊 HABITS ENGINE — water counter, forgiving streak, "Today's 3" (added Jun 9 2026) ──
@@ -1519,7 +1519,7 @@ function habitsTodayHtml(){
       <div style="flex:1;min-width:0">
         <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--text)">${wc} of ${goal} bottle${goal===1?'':'s'} ${wc>=goal?'🎉':''}</div>
         <div style="font-size:10.5px;color:#7EB8F0;font-family:'Lora',serif;margin-top:2px">1 bottle = 32 oz · goal ~${goal*32} oz</div>
-        <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.5">${wc>=goal?'Goal met for today — anything more is a bonus.':'Tap the glass to add '+waterServing()+' bottle'+(waterServing()===1?'':'s')+'. Every sip is progress.'}</div>
+        <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.5">${wc>=goal?'Goal met for today — anything more is a bonus.':((new Date().getHours()>=18)?(wc===0?'Evening and the glass is still empty — one bottle with dinner still counts. Start the count now. 💧':'Evening top-up — '+(goal-wc)+' to go. Getting close still counts.'):'Tap the glass to add '+waterServing()+' bottle'+(waterServing()===1?'':'s')+'. Every sip is progress.')}</div>
         <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
           <div onclick="waterAdd()" style="flex:1;min-width:90px;text-align:center;padding:10px;border-radius:10px;background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 3px 12px rgba(59,130,246,.3)">+${waterServing()} bottle${waterServing()===1?'':'s'}</div>
           <div onclick="waterUndo()" style="padding:10px 13px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer">↶</div>
@@ -1610,7 +1610,7 @@ function renderToday() {
         <div style="font-size:30px;flex-shrink:0">📞</div>
         <div style="flex:1">
           <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#F5DDD8">Call DT</div>
-          <div style="font-size:12px;color:rgba(220,100,100,.8);font-style:italic;margin-top:3px">Before noon — do not forget.</div>
+          <div style="font-size:12px;color:rgba(220,100,100,.8);font-style:italic;margin-top:3px">${(new Date().getHours()>=12)?"Noon’s passed — call anyway. A late call beats a broken streak.":"Before noon — do not forget."}</div>
         </div>
         <div style="width:32px;height:32px;border-radius:50%;border:2px solid #DC2626;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(220,30,30,.2)"></div>
       </div>
@@ -1711,6 +1711,17 @@ function renderToday() {
         : reminderCardHtml("🩹","Burn healed & skin fully closed? Start silicone scar gel (ScarAway or bioCorneum) ~12 hrs/day for 2–3 months, plus sun protection.","","toggleReminder('burnsilicone')",""));
     }
   }
+  // ── 🔍 FLIP SCAN — daily morning deal-hunt card (date-keyed → reappears each day). Links live in FLIP_SCAN (data.js). (added Jun 12 2026) ──
+  if(typeof FLIP_SCAN!=='undefined'){
+    const fsDone=!!laundry["rem-flipscan-"+today];
+    const fsLinks=FLIP_SCAN.links.map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#7DD3FC;text-decoration:underline;white-space:nowrap">'+l[0]+'</a>';}).join(' · ');
+    const fsExtra='<div style="margin-top:7px;font-size:12px;line-height:1.9;font-family:\'Lora\',serif">'+fsLinks+'</div>'
+      +'<div style="font-size:11px;color:rgba(125,211,252,.8);font-style:italic;margin-top:5px;font-family:\'Lora\',serif">'+FLIP_SCAN.tip+'</div>';
+    add("flipscan",284,fsDone, fsDone
+      ? strip("🔍","Flip scan — done for today",true,"#38BDF8","toggleReminder('flipscan',true)",FLIP_SCAN.at,"","Reappears tomorrow morning")
+      : reminderCardHtml("🔍",FLIP_SCAN.label,"","toggleReminder('flipscan',true)",fsExtra));
+  }
+
   // 🔔 dated + standing reminders
   if(typeof REMINDERS!=='undefined'){
     REMINDERS.forEach(function(r,i){
@@ -1854,11 +1865,15 @@ function renderToday() {
 
   // Morning dog + garden
   const dogDone=!!laundry["morning-walk-"+today];
-  add("walk",340,dogDone,strip("🐕","Walk + play with Zoey",dogDone,"#4ADE80","toggleMorning('walk')","Morning","20–30 min"));
+  add("walk",340,dogDone, (dogDone||nowM<720)
+    ? strip("🐕","Walk + play with Zoey",dogDone,"#4ADE80","toggleMorning('walk')","Morning","20–30 min")
+    : strip("🐕","Walk + play with Zoey",false,"#4ADE80","toggleMorning('walk')","Anytime","20–30 min",(nowM>=1080?"Evening walk = her favorite anyway — cooler pavement, all the day's smells to read. 🐾":"Morning slipped by — an afternoon or evening sniffy walk counts double for her. 🐾")));
   const waterToday=plantsDueOn(today), trimToday=plantsTrimDueOn(today), gardenToday=gardenTasksOn(today);
   if(waterToday.length||trimToday.length||gardenToday.length){
     const gardenDone=(waterToday.length===0||waterToday.every(p=>watered[p.id]===today))&&(trimToday.length===0||trimToday.every(p=>trimmed[p.id]===today))&&(gardenToday.length===0||gardenToday.every(id=>!!checked[id]));
-    add("garden",350,gardenDone,strip("🌿","Garden care — head to the Garden tab",gardenDone,"#2DB870","switchTab('garden')","Morning","–"));
+    add("garden",350,gardenDone, (gardenDone||nowM<720)
+      ? strip("🌿","Garden care — head to the Garden tab",gardenDone,"#2DB870","switchTab('garden')","Morning","–")
+      : strip("🌿","Garden care — head to the Garden tab",false,"#2DB870","switchTab('garden')","Early evening","–","Morning window slipped — early evening (5–7) is the next best slot: leaves dry before dark, no midday scorch."));
   }
 
   // Midday
@@ -2006,6 +2021,7 @@ function renderTimeline() {
   }
   // 💰 daily money check — surface on today's timeline row (date-keyed daily morning reminder)
   if(typeof reminderDone==='function' && !reminderDone('moneycheck',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"💰",text:"Check money situation · ~7:45 AM",account:""}); }
+  if(typeof FLIP_SCAN!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"🔍",text:"Morning flip scan · ~7:15 AM",account:""}); }
   if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
   // 📞 TG Meeting — recurring every Wednesday on the timeline
   if(typeof TG_MEETING!=='undefined'){
@@ -4118,7 +4134,8 @@ function wxCareBanner(){
   return "";
 }
 const PEST_PLAN=[
- {e:"🦟",t:"Fungus gnats (indoor) — war plan v2",b:"Why round 1 failed: BTI from Mosquito Bits only stays active ~48 hours and only kills larvae that drink it — a one-off tea cannot outlast the 3–4 week egg→adult cycle, and drying the topsoil just pushes larvae deeper toward the moist core around the roots. The v2 stack, all at once: (1) BTI tea at EVERY watering for 4 straight weeks — no plain water; (2) yellow sticky traps laid FLAT on the soil (they catch far more than upright) and swapped when crowded; (3) a one-time hydrogen-peroxide drench — 1 part 3% peroxide to 4 parts water, poured through when the pot is due for water anyway — kills larvae on contact, fizzing is normal; (4) cap every pot with about half an inch of sand or fine aquarium gravel so adults cannot reach soil to lay eggs; (5) empty saucers within 10 minutes and check nearby sink drains — they breed there too. Any pot still hatching gnats after 4 weeks gets repotted: roots rinsed, fresh bagged mix, gravel cap from day one."},
+ {e:"🪴",t:"Fungus gnats — REPOT DAY plan (Sun Jun 14, the nuclear option)",b:"One day instead of a 4-week chemical war — the old soil is harboring eggs at every depth, so it ALL goes. The one rule: all 5 plants the SAME day, or survivors just re-colonize the fresh pots. Method, per pot: (1) tip the plant out and knock off as much old soil as possible, then gently rinse the roots bare and trim anything brown or mushy; (2) scrub the pot AND saucer with hot soapy water — eggs cling to pot walls and drainage holes; (3) replant in fresh mix from a SEALED bag (mixes per plant below), same pot size unless root-bound — oversize pots stay wet and invite gnats back; (4) cap the soil with about half an inch of fine aquarium gravel; (5) bag the old soil and trash it OUTSIDE — or solarize it in clear bags in the greenhouse (free sterilizer) and reuse it later. Afterward: keep a couple sticky traps out ~2 weeks (clean traps = war over), make the first 2–3 waterings BTI tea for insurance, empty saucers fast, and check nearby sink drains — they breed there too."},
+ {e:"🌱",t:"Repot mixes — custom soil per plant",b:"🪨 Jade: 1 part cactus mix + 1 part perlite — gritty and fast-draining, nearly gnat-proof (terracotta pot if you have one). 🪴 Philodendron + 🌴 Croton: 2 parts potting mix + 1 perlite + 1 orchid bark — the airy aroid mix their roots love. 🍃 Royal Tea Ivy: 3 parts potting mix + 1 perlite. 🌱 Fittonia: 2 parts potting mix + 1 coco coir + a half-part perlite — holds even moisture so it stops the every-2-day drama; expect ~4–5 days between drinks after the move. Supply run (one bag each, sealed): indoor potting mix · cactus mix · perlite · orchid bark · coco coir. Store leftovers SEALED — open bags are where gnats come from in the first place."},
  {e:"🐦",t:"Birds love your red fruit",b:"Strawberries, cherry tomatoes and raspberries are bird magnets. The most reliable fix is a physical barrier — drape ¼-inch bird netting over a simple frame or stakes so it floats above the fruit without touching it. A small berry cage of PVC or wood works great."},
  {e:"🎨",t:"Red decoy-rock trick",b:"A cheap first layer that genuinely helps with strawberries: paint a handful of rocks strawberry-red and scatter them around the pot 2–3 weeks BEFORE the berries ripen. Birds peck the fakes, learn they are not food, and tend to leave the real berries alone. Pair it with netting — on its own, birds eventually wise up."},
  {e:"✨",t:"Scare tactics",b:"Anything that moves and shines unsettles birds — hang flash tape, old CDs, or foil pie pans near the berries, and shift them every few days so the birds do not get comfortable."},
