@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍴 Cy's Recipe Box</title>
+<meta name="description" content="A public recipe box — search and cook. No login required.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#efe1c2; --s1:#f3e7cd; --s2:#ecdcb6;
+    --border:#dcc69a; --border2:#cbb181;
+    --text:#4a3526; --text2:#7c5c39; --text3:#9c7c50;
+    --amber:#a85a23; --amber2:#8c3f17; --aborder:rgba(168,90,35,.30);
+    --rad:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background-color:#ecdcb6;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(176,72,56,.10) 0 22px, rgba(176,72,56,0) 22px 44px),
+      repeating-linear-gradient(90deg, rgba(176,72,56,.10) 0 22px, rgba(176,72,56,0) 22px 44px);
+    background-attachment:fixed;
+    color:var(--text);font-family:'Lora',Georgia,serif;min-height:100vh;padding-bottom:48px;
+  }
+  .wrap{max-width:620px;margin:0 auto;padding:0 16px}
+  .lid{background:linear-gradient(135deg,#8C4A2F,#6E3A24);border:1px solid #5A2E1C;border-radius:16px;margin:18px 0 16px;box-shadow:0 6px 22px rgba(0,0,0,.45);overflow:hidden}
+  .lid .tape{height:10px;background:repeating-linear-gradient(45deg,#C44536,#C44536 10px,#F5ECD7 10px,#F5ECD7 20px)}
+  .lid .inner{text-align:center;padding:18px 18px 16px}
+  .lid h1{font-family:'Caveat',cursive;font-style:normal;font-size:44px;font-weight:700;color:#F7ECD2;text-shadow:0 2px 3px rgba(0,0,0,.45);margin:2px 0 2px;letter-spacing:.5px}
+  .lid .sub{font-size:12.5px;color:#E8D2A8;font-family:'Lora',serif;font-style:italic;margin-top:3px}
+  #recipe-search{width:100%;margin:0 0 14px;padding:12px 15px;border-radius:10px;border:1px solid #D9C39A;background:#F5ECD7;color:#5a3a2a;font-family:'Lora',serif;font-size:15px;outline:none}
+  #recipe-search::placeholder{color:#9a7c52}
+  .countline{font-size:11.5px;color:#8a5a2a;font-family:'Lora',serif;font-style:italic;margin:0 0 12px;text-align:center}
+  a{color:inherit}
+  .foot{text-align:center;font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin:26px 0 10px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="recipe-list-view">
+      <div class="lid"><div class="tape"></div><div class="inner">
+        <div style="font-size:34px;margin-bottom:2px">🍴</div>
+        <h1>Cy's Recipe Box</h1>
+        <div class="sub" id="lid-sub">warming up…</div>
+      </div></div>
+      <input id="recipe-search" type="search" placeholder="🔍 Search recipes… name or ingredient" autocomplete="off" oninput="recipeFilter(this.value)">
+      <div id="recipe-list"></div>
+      <div class="foot">🍴 A public recipe box · search and cook · no login needed</div>
+    </div>
+    <div id="recipe-page" style="display:none"></div>
+  </div>
+
+<script src="./recipes.js?v=20260611075715"></script>
+<script>
+"use strict";
+// ── Source: the SAME recipes.js the app loads (RECIPES_BOX). Human recipes only — no dog, no drafts, no personal data. ──
+var SRC = (typeof RECIPES_BOX !== 'undefined') ? RECIPES_BOX : ((typeof RECIPES !== 'undefined') ? RECIPES : []);
+var HUMAN = SRC.filter(function(r){ return r && !r.dog && !r.draft; });
+// 🔁 Weekly auto-rotating featured pick — pure UTC date math, same all week, advances each Monday. Same logic as the in-app Recipe Box.
+function weekIndex(){ return Math.floor((Math.floor(Date.now()/86400000)-4)/7); }
+function weeklyFeatured(list){ if(!list||!list.length) return null; var i=((weekIndex()%list.length)+list.length)%list.length; return list[i]; }
+var recipeQuery = '';
+var selCat = null; // 🍴 transient nav: null=tiles, or "cat:<Category>"
+var SERV = {};
+// 🍴 category mapper + landing tiles — same buckets as the in-app Recipe Box (human recipes only here).
+var RECIPE_CATS=[['Italian','🍝'],['French','🥐'],['Mexican','🌮'],['Breakfast','🍳'],['Seafood','🦐'],['Pasta','🍜'],['Sides & Veg','🥗'],['Desserts','🍰'],['American / Mains','🍔']];
+function recipeCategory(r){
+  var t=((r&&r.tags)||[]).map(function(x){return String(x).toLowerCase();}); var nm=String((r&&r.name)||'').toLowerCase();
+  function has(){for(var i=0;i<arguments.length;i++){if(t.indexOf(arguments[i])!==-1)return true;}return false;}
+  if(has('italian')) return 'Italian';
+  if(has('french')) return 'French';
+  if(has('mexican')) return 'Mexican';
+  if(has('breakfast')||/pancake|waffle|omelet|frittata|french toast|breakfast/.test(nm)) return 'Breakfast';
+  if(has('seafood','fish','shrimp','salmon','trout','tuna')) return 'Seafood';
+  if(has('pasta')||/pasta|spaghetti|noodle|lasagna/.test(nm)) return 'Pasta';
+  if(has('side','vegetarian','veg','salad')) return 'Sides & Veg';
+  if(has('dessert','sweet','baking')) return 'Desserts';
+  return 'American / Mains';
+}
+function recipeCatEmoji(c){ for(var i=0;i<RECIPE_CATS.length;i++){ if(RECIPE_CATS[i][0]===c) return RECIPE_CATS[i][1]; } return '🍽️'; }
+function recipeTile(label,emoji,sub,onclick,disabled){
+  return '<div '+(disabled?'':'onclick="'+onclick+'" ')+'style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:10px;padding:15px 12px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.25);'+(disabled?'opacity:.55;cursor:default':'cursor:pointer')+'">'
+    +'<div style="font-size:30px;line-height:1">'+emoji+'</div>'
+    +'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-weight:700;font-size:15px;color:#5a3a2a;margin-top:6px;line-height:1.2">'+esc(label)+'</div>'
+    +'<div style="font-size:11px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;margin-top:3px">'+esc(sub)+'</div></div>';
+}
+function recipeTilesGrid(tiles){ return '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0 0 8px">'+tiles.join('')+'</div>'; }
+function recipeBackBar(){ return '<div onclick="recipeGo(null)" style="display:inline-flex;align-items:center;gap:6px;margin:0 0 14px;padding:7px 14px;border-radius:20px;background:#EFE0BE;border:1px solid #D9C39A;color:#7a5230;cursor:pointer;font-family:\'Lora\',serif;font-size:13px">← All categories</div>'; }
+function recipeGo(c){ selCat=c; var el=document.getElementById('recipe-list'); if(el) el.innerHTML=recipeListHtml(); try{window.scrollTo(0,0);}catch(e){} }
+
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function recipeHero(r){
+  return '<div style="height:130px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2417,#0f0e14);border-bottom:1px solid #D9C39A">'
+    +'<div style="font-size:54px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))">'+(r.emoji||'🍽️')+'</div></div>';
+}
+function recipeCard(r, featured){
+  var ph=r.photo;
+  var meta=[r.time, r.difficulty, (r.servings?('🍽 '+r.servings):'')].filter(Boolean);
+  var badges=meta.map(function(m){return '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(140,59,46,.1);color:#8C3B2E;border:1px solid rgba(140,59,46,.25);font-family:\'Lora\',serif">'+esc(m)+'</span>';}).join('');
+  return '<div onclick="openRecipe(\''+r.id+'\')" style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;margin-bottom:14px;overflow:hidden;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35)">'
+    +'<div style="height:6px;background:repeating-linear-gradient(45deg,#C44536,#C44536 7px,#F5ECD7 7px,#F5ECD7 14px)"></div>'
+    +(ph?'<div style="height:'+(featured?170:130)+'px;overflow:hidden;border-bottom:1px solid #D9C39A;background:#e8dab9"><img src="'+esc(ph)+'" alt="'+esc(r.name)+'" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover"></div>':recipeHero(r))
+    +'<div style="padding:12px 15px 14px">'
+    +(featured?'<div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#C44536;font-family:\'Lora\',serif;margin-bottom:4px">★ This week’s pick</div>':'')+'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:'+(featured?20:16)+'px;font-weight:700;color:#5a3a2a;line-height:1.25">'+(r.emoji||'🍽️')+' '+esc(r.name)+'</div>'
+    +(badges?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+badges+'</div>':'')
+    +(r.blurb?'<div style="font-size:12px;color:#7a5c3a;font-family:\'Lora\',serif;line-height:1.5;margin-top:8px;border-top:1px dashed #C9A86A;padding-top:8px">'+esc(r.blurb)+'</div>':'')
+    +'</div></div>';
+}
+function recipeMatch(r,q){
+  var hay=(r.name+' '+(r.tags||[]).join(' ')+' '+(r.ingredients||[]).join(' ')+' '+(r.blurb||'')+' '+(r.source||'')).toLowerCase();
+  return q.split(/\s+/).filter(Boolean).every(function(w){ return hay.indexOf(w)!==-1; });
+}
+function recipeListHtml(){
+  var q=String(recipeQuery||'').trim().toLowerCase();
+  // ── SEARCH: flat across ALL recipes (ignore selected category) ──
+  if(q){
+    var matches=HUMAN.filter(function(r){return recipeMatch(r,q);});
+    if(!matches.length){
+      return '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:22px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No recipes match “'+esc(q)+'” — try a single ingredient or a shorter word.</div>';
+    }
+    return '<div class="countline">'+matches.length+' match'+(matches.length===1?'':'es')+' across the whole box</div>'+matches.map(function(r){return recipeCard(r,false);}).join('');
+  }
+  var feat=weeklyFeatured(HUMAN);
+  var featHtml=feat?recipeCard(feat,true):'';
+  // ── HOOMAN category drill-in ──
+  if(selCat && selCat.indexOf('cat:')===0){
+    var cn=selCat.slice(4);
+    var items=HUMAN.filter(function(r){return recipeCategory(r)===cn;});
+    var out=featHtml+recipeBackBar();
+    out+='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:18px;font-weight:700;color:#7a5230;margin:0 0 12px">'+recipeCatEmoji(cn)+' '+esc(cn)+' <span style="font-size:12px;color:#8a6a3a;font-style:italic">· '+items.length+' recipe'+(items.length===1?'':'s')+'</span></div>';
+    out+=items.map(function(r){return recipeCard(r,false);}).join('');
+    return out;
+  }
+  // ── LANDING: Hooman category tiles + (disabled) Doggy tile ──
+  var counts={}; HUMAN.forEach(function(r){var c=recipeCategory(r); counts[c]=(counts[c]||0)+1;});
+  var tiles=[];
+  RECIPE_CATS.forEach(function(cm){ var c=cm[0]; if(counts[c]) tiles.push(recipeTile(c,cm[1],counts[c]+' recipe'+(counts[c]===1?'':'s'),"recipeGo('cat:"+c+"')",false)); });
+  var out=featHtml;
+  out+='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:16px;font-weight:700;color:#7a5230;margin:2px 0 10px">🧑 Hooman Food</div>';
+  out+=recipeTilesGrid(tiles);
+  out+='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:16px;font-weight:700;color:#7a5230;margin:16px 0 10px">🐶 Doggy Food</div>';
+  out+=recipeTilesGrid([recipeTile('Zoey’s Kitchen','🐶','in the app',"",true)]);
+  return out;
+}
+function recipeFilter(v){ recipeQuery=String(v||''); if(!String(recipeQuery).trim()) selCat=null; var el=document.getElementById('recipe-list'); if(el) el.innerHTML=recipeListHtml(); }
+
+// ── serving scaler (ported verbatim from the app so quantities scale the same way) ──
+function baseServ(r){ var m=String((r&&r.servings)||'').match(/\d+/); return m?Math.max(1,parseInt(m[0],10)):2; }
+var _VULG={'¼':[1,4],'½':[1,2],'¾':[3,4],'⅓':[1,3],'⅔':[2,3],'⅛':[1,8],'⅜':[3,8],'⅝':[5,8],'⅞':[7,8],'⅙':[1,6],'⅚':[5,6]};
+var _GLYPH={'1/8':'⅛','1/4':'¼','1/3':'⅓','3/8':'⅜','1/2':'½','5/8':'⅝','2/3':'⅔','3/4':'¾','7/8':'⅞'};
+function _qval(q){ q=String(q).trim();
+  var m=q.match(/^(\d+)\s+(\d+)\/(\d+)$/); if(m) return (+m[1])+(+m[2])/(+m[3]);
+  m=q.match(/^(\d+)\/(\d+)$/); if(m) return (+m[1])/(+m[2]);
+  m=q.match(/^(\d*)\s*([¼½¾⅓⅔⅛⅜⅝⅞⅙⅚])$/);
+  if(m){ var f=_VULG[m[2]]; return (+m[1]||0)+f[0]/f[1]; }
+  return parseFloat(q);
+}
+function _fmtMixed(n,denoms){
+  if(!isFinite(n)||n<0) return null;
+  var whole=Math.floor(n+1e-9), frac=n-whole, best=[0,''], bd=2;
+  var opts=[[0,''],[1,'']];
+  (denoms||[2,3,4,8]).forEach(function(d){ for(var i=1;i<d;i++){ var g=_GLYPH[i+'/'+d]; if(g) opts.push([i/d,g]); } });
+  for(var k=0;k<opts.length;k++){ var o=opts[k]; var dd=Math.abs(frac-o[0]); if(dd<bd){ bd=dd; best=o; } }
+  if(bd>0.07){ var v=Math.round(n*10)/10; return String(v%1?v:Math.round(v)); }
+  var w=whole, f=best[1]; if(best[0]===1){ w+=1; f=''; }
+  if(w===0&&f==='') return '0';
+  if(f==='') return String(w);
+  return (w>0?w:'')+f;
+}
+var _SKIP_UNITS=/^(inch(es)?|in\.|degrees?|percent|min(ute)?s?|hours?|hrs?|days?|weeks?|seconds?|secs?|x|by)$/i;
+function _unitClass(u){
+  u=(u||'').toLowerCase().replace(/\.$/,'');
+  if(/^(cups?|c)$/.test(u)) return 'cup';
+  if(/^(tablespoons?|tbsps?|tbl|tb|t)$/.test(u)&&u!=='t') return 'tbsp';
+  if(u==='tbsp'||u==='tablespoon'||u==='tablespoons') return 'tbsp';
+  if(/^(teaspoons?|tsps?)$/.test(u)) return 'tsp';
+  if(/^(ounces?|oz)$/.test(u)) return 'oz';
+  if(/^(pounds?|lbs?)$/.test(u)) return 'lb';
+  if(/^(grams?|g)$/.test(u)) return 'g';
+  if(/^(milliliters?|ml)$/.test(u)) return 'ml';
+  return 'count';
+}
+function scaleIngredient(line, ratio){
+  if(!isFinite(ratio)||ratio===1) return esc(line);
+  try{
+    var NUM=/(\d+\s+\d+\/\d+|\d+\/\d+|\d*\.\d+|\d+\s*[¼½¾⅓⅔⅛⅜⅝⅞⅙⅚]|\d+|[¼½¾⅓⅔⅛⅜⅝⅞⅙⅚])(\s*)([A-Za-z][A-Za-z.]*)?/g;
+    return esc(String(line).replace(NUM, function(all, qty, sep, unit, idx, str){
+      var after=str.slice(idx+all.length);
+      if(unit&&_SKIP_UNITS.test(unit)) return all;
+      if(/^\s*[°"%×x]/.test((unit?'':sep)+after) && !unit) return all;
+      if(/^[x×]\d/i.test(after.replace(/^\s*/,''))) return all;
+      if(/^\s*-?inch/i.test(after)) return all;
+      var v=_qval(qty); if(!isFinite(v)) return all;
+      var val=v*ratio, u=unit||'', cls=_unitClass(u), out;
+      var paren=str.lastIndexOf('(',idx)>str.lastIndexOf(')',idx);
+      if(cls==='cup'&&val<0.245){ val=val*16; if(val<0.95){ val=val*3; out=_fmtMixed(val,[2,4])+sep+'teaspoon'+(Math.abs(val-1)<0.05?'':'s'); } else { out=_fmtMixed(val,[2,3,4])+sep+'tablespoon'+(Math.abs(val-1)<0.05?'':'s'); } }
+      else if(cls==='cup'){ out=_fmtMixed(val,[2,3,4,8])+sep+u; }
+      else if(cls==='tbsp'&&val<0.95){ val=val*3; out=_fmtMixed(val,[2,4])+sep+'teaspoon'+(Math.abs(val-1)<0.05?'':'s'); }
+      else if(cls==='tbsp'){ out=_fmtMixed(val,[2,3,4])+sep+u; }
+      else if(cls==='tsp'){ val=Math.max(val,0.125); out=_fmtMixed(val,[2,4,8])+sep+u; }
+      else if(cls==='oz'){ out=(val>=3?String(Math.round(val)):_fmtMixed(val,[2]))+sep+u; if(paren) out='about '+out; }
+      else if(cls==='lb'&&val<0.95){ val=val*16; out=String(Math.round(val))+sep+'oz'; if(paren) out='about '+out; }
+      else if(cls==='lb'){ out=_fmtMixed(val,[2,4])+sep+u; if(paren) out='about '+out; }
+      else if(cls==='g'||cls==='ml'){ out=String(Math.round(val))+sep+u; if(paren) out='about '+out; }
+      else { out=_fmtMixed(val,[2,3,4])+sep+u; }
+      return out;
+    }));
+  }catch(e){ return esc(line); }
+}
+function setServings(id,delta){ var r=HUMAN.find(function(x){return x.id===id;}); if(!r) return; var base=baseServ(r); var cur=SERV[id]||base; SERV[id]=Math.max(1,cur+delta); openRecipe(id,true); }
+
+function openRecipe(id, keep){
+  var r=HUMAN.find(function(x){return x.id===id;}); if(!r) return;
+  var base=baseServ(r); var serv=SERV[id]||base; var ratio=serv/base;
+  var ing=(r.ingredients||[]).map(function(i){return '<li style="margin-bottom:6px;font-size:14px;color:var(--text);font-family:\'Lora\',serif;line-height:1.5">'+scaleIngredient(i,ratio)+'</li>';}).join('');
+  var servCtl='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:10px 14px;background:rgba(212,144,10,.07);border:1px solid var(--aborder);border-radius:10px"><span style="font-family:\'Lora\',serif;font-size:13px;color:var(--text2)">🍽️ Servings</span><div style="display:flex;align-items:center;gap:14px;margin-left:auto"><button onclick="setServings(\''+r.id+'\',-1)" aria-label="fewer servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1">−</button><span style="font-family:\'Playfair Display\',serif;font-size:19px;color:var(--text);min-width:22px;text-align:center">'+serv+'</span><button onclick="setServings(\''+r.id+'\',1)" aria-label="more servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1">+</button></div></div>';
+  var steps=(r.steps||[]).map(function(st,i){return '<div style="display:flex;gap:12px;margin-bottom:12px"><div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(212,144,10,.18);border:1px solid var(--amber);color:var(--amber2);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">'+(i+1)+'</div><div style="font-size:14px;color:var(--text);font-family:\'Lora\',serif;line-height:1.55;padding-top:3px">'+esc(st)+'</div></div>';}).join('');
+  var meta=[r.time&&('⏱️ '+r.time), r.difficulty&&('📊 '+r.difficulty), r.servings&&('🍽 '+r.servings), r.source&&('📖 '+r.source)].filter(Boolean);
+  var html='<div style="max-width:560px;margin:0 auto;padding-top:14px">'
+    +'<div onclick="closeRecipe()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 4px 14px;color:var(--amber2);font-family:\'Lora\',serif;font-size:14px;cursor:pointer">← Back to recipes</div>'
+    +'<div style="position:relative;height:230px;border-radius:var(--rad);overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2417,#0f0e14);margin-bottom:14px">'
+    +'<div style="font-size:78px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.5))">'+(r.emoji||'🍽️')+'</div>'
+    +(r.photo?'<img src="'+esc(r.photo)+'" alt="'+esc(r.name)+'" referrerpolicy="no-referrer" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">':'')+'</div>'
+    +(r.photoCredit?'<div style="font-size:9.5px;color:var(--text3);font-family:\'Lora\',serif;margin:-10px 0 10px;text-align:right">'+esc(r.photoCredit)+'</div>':'')
+    +'<h1 style="font-family:\'Playfair Display\',serif;font-size:24px;color:var(--text);margin:0 0 8px">'+(r.emoji||'🍽️')+' '+esc(r.name)+'</h1>'
+    +(r.blurb?'<div style="font-size:13.5px;color:var(--text);opacity:.85;font-family:\'Lora\',serif;font-style:italic;line-height:1.55;margin-bottom:12px">'+esc(r.blurb)+'</div>':'')
+    +(meta.length?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">'+meta.map(function(m){return '<span style="font-size:12px;padding:4px 11px;border-radius:20px;background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border)">'+esc(m)+'</span>';}).join('')+'</div>':'')
+    +servCtl
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--amber);margin-bottom:10px;font-family:\'Lora\',serif">🧺 Ingredients</div>'
+    +'<ul style="margin:0 0 20px;padding-left:20px">'+ing+'</ul>'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--amber);margin-bottom:12px;font-family:\'Lora\',serif">👩‍🍳 Steps</div>'
+    +steps
+    +(r.note?'<div style="margin-top:10px;padding:12px 14px;background:rgba(200,134,10,.08);border-radius:10px;border:1px solid var(--aborder);color:var(--amber2);font-size:12.5px;font-style:italic;font-family:\'Lora\',serif;line-height:1.55">'+esc(r.note)+'</div>':'')
+    +'<div onclick="closeRecipe()" style="text-align:center;margin:22px 0 8px;color:var(--amber2);font-family:\'Lora\',serif;font-size:14px;cursor:pointer">← Back to recipes</div>'
+    +'</div>';
+  document.getElementById('recipe-page').innerHTML=html;
+  document.getElementById('recipe-list-view').style.display='none';
+  document.getElementById('recipe-page').style.display='block';
+  if(!keep){ window.scrollTo(0,0); }
+}
+function closeRecipe(){
+  document.getElementById('recipe-page').style.display='none';
+  document.getElementById('recipe-list-view').style.display='block';
+  window.scrollTo(0,0);
+}
+
+// ── init ──
+(function(){
+  var n=HUMAN.length;
+  var sub=document.getElementById('lid-sub');
+  if(sub) sub.textContent = n?('Tap a card to cook · '+n+' recipe'+(n===1?'':'s')+' in the box'):'The box is warming up — recipes coming soon';
+  var srch=document.getElementById('recipe-search');
+  if(srch) srch.setAttribute('placeholder','🔍 Search '+n+' recipes… name or ingredient');
+  document.getElementById('recipe-list').innerHTML=recipeListHtml();
+})();
+</script>
+</body>
+</html>
