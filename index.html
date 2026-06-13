@@ -593,6 +593,9 @@ body.v2-bgphoto{
 .hdr-clock{ white-space:nowrap; }
 
 /* ── Primary nav moves to the bottom bar; top bar keeps only subtab rows ── */
+body.v2-nav-ready{ padding-bottom:150px; }
+body.v2-nav-ready .navbar .util-row, body.v2-nav-ready .navbar .tabs{ display:none; }
+body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
 .tabs-secondary{ background:rgba(9,8,14,.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-top:none; border-bottom:1px solid rgba(255,255,255,.07); }
 .tab-secondary{ font-size:11px; padding:13px 0 12px; opacity:.6; }
 .tab-secondary.active{ opacity:1; }
@@ -764,7 +767,7 @@ body.v2-bgphoto{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260613085728"></script>
+<script src="./data.js?v=20260613091550"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -776,7 +779,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 13 · 8:57 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 13 · 9:15 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1091,7 +1094,8 @@ function nextSched()  { return SCHEDULE.find(s=>s.date>todayKey()&&!s.off&&s.tas
 
 function daysSinceWatered(id) {
   if(!watered[id]) return null;
-  return Math.floor((new Date()-new Date(watered[id]+"T12:00:00"))/86400000);
+  // count calendar days (noon-to-noon) so "Nd ago" matches the due logic in plantsDueOn (was Math.floor from now, which under-counted by a day during the morning)
+  return Math.round((new Date(todayKey()+"T12:00:00")-new Date(watered[id]+"T12:00:00"))/86400000);
 }
 function waterStatus(p) {
   const d=daysSinceWatered(p.id);
@@ -4311,5 +4315,36 @@ curtainInit();
   });
 }</script>
 <div id="recipe-page" style="display:none;position:fixed;inset:0;z-index:200;overflow-y:auto;padding:16px 16px 40px;--text:#4a3526;--text2:#7c5c39;--text3:#9c7c50;--border:#dcc69a;--amber:#a85a23;--amber2:#8c3f17;--aborder:rgba(168,90,35,.30);background-color:#efe1c2;background-image:repeating-linear-gradient(0deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px),repeating-linear-gradient(90deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px)"></div>
+<script>
+/* v2-nav: fancy bottom tab bar (reconstructed Jun 13 2026 — original was lost in a file truncation).
+   Self-protecting: top nav is hidden via body.v2-nav-ready ONLY after this bar renders. */
+(function(){
+  try{
+    if(document.getElementById('v2-nav')) return;
+    var DEST=[
+      ['today','\u2600\ufe0f','Today'],['forecast','\ud83c\udf24\ufe0f','Forecast'],['rooms','\ud83c\udfe0','Rooms'],['timeline','\ud83d\udcc5','Timeline'],['garden','\ud83c\udf3f','Plants'],
+      ['shopping','\ud83e\udd90','Tank'],['grocery','\ud83c\udf7d\ufe0f','Food'],['print','\ud83e\uddca','Print'],['wellness','\ud83d\udc8a','Health'],['finance','\ud83d\udcb0','Finance']
+    ];
+    var nav=document.createElement('div'); nav.id='v2-nav';
+    [DEST.slice(0,5),DEST.slice(5)].forEach(function(row){
+      var rd=document.createElement('div'); rd.className='v2-row';
+      row.forEach(function(d){
+        var b=document.createElement('button'); b.type='button'; b.className='v2-bn'; b.setAttribute('data-tab',d[0]);
+        b.setAttribute('aria-label',d[2]);
+        b.innerHTML='<span class="ic">'+d[1]+'</span><span class="lb">'+d[2]+'</span><span class="dt"></span>';
+        b.addEventListener('click',function(){ try{ switchTab(d[0]); }catch(e){} v2Active(d[0]); });
+        rd.appendChild(b);
+      });
+      nav.appendChild(rd);
+    });
+    document.body.appendChild(nav);
+    function v2Active(t){ var bs=nav.querySelectorAll('.v2-bn'); for(var i=0;i<bs.length;i++){ bs[i].classList.toggle('on', bs[i].getAttribute('data-tab')===t); } }
+    window.__v2Active=v2Active;
+    if(typeof window.switchTab==='function'){ var _o=window.switchTab; window.switchTab=function(t){ var r=_o.apply(this,arguments); try{ v2Active(t); }catch(e){} return r; }; }
+    v2Active((typeof currentTab!=='undefined'&&currentTab)?currentTab:'today');
+    document.body.classList.add('v2-nav-ready');
+  }catch(e){ /* on any error, leave the original top nav visible as fallback */ }
+})();
+</script>
 </body>
 </html>
