@@ -767,7 +767,7 @@ body.v2-bgphoto{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260612225033"></script>
+<script src="./data.js?v=20260613075041"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -779,7 +779,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 12 · 10:50 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 13 · 7:50 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1850,13 +1850,6 @@ function renderToday() {
   // ＋ add-your-own rollover task (passive — doesn't count toward the daily tally)
   add("ro-add",325,false,`<div onclick="addRollover()" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(245,158,11,.45);border-radius:var(--rad);padding:11px 16px;margin-bottom:10px;cursor:pointer;color:#F59E0B;font-family:'Lora',serif;font-size:13px">＋ Add a task that rolls over until done</div>`,true);
 
-  // ── 🌱 WATER MOM'S PLANTS — daily EVENING task ~8 PM (after dinner); date-keyed (clears each day, returns next) (added Jun 10 2026; retimed to evening Jun 10 2026) ──
-  {
-    const wmpDone=!!laundry["rem-watermom-"+today];
-    add("watermom",1255,wmpDone, wmpDone
-      ? strip("🌱","Water Mom's plants",true,"#2DB870","toggleReminder('watermom',true)","~8:00 PM","","Reappears tomorrow evening")
-      : strip("🌱","Water Mom's plants",false,"#2DB870","toggleReminder('watermom',true)","~8:00 PM","","After dinner — water Mom's plants for the night"));
-  }
 
   // ── 🗑️ TRASH + RECYCLE — every Tuesday night Trash; alternating Tuesdays (anchor Tue Jun 9 2026) also Recycle (added Jun 10 2026) ──
   if(dow===2){
@@ -1881,23 +1874,6 @@ function renderToday() {
   add("lit",_pillTop?7:311,litDone, litDone
     ? strip("💊","Litfulo + vitamins",true,"#6366F1","toggleWellness('litfulo')","With breakfast","","")
     : strip("💊","Litfulo + vitamins — take with breakfast",false,"#6366F1","toggleWellness('litfulo')","With breakfast","","One trigger: eat → pills. Logs to the Health tab too."));
-  // ── 💰 MONEY CHECK — daily morning reminder ~7:45 AM (before breakfast); date-keyed (clears each day, returns) · taps through to 💰 Finance (added Jun 11 2026) ──
-  {
-    const mcDone=!!laundry["rem-moneycheck-"+today];
-    add("moneycheck",285,mcDone, mcDone
-      ? strip("\uD83D\uDCB0","Check money situation",true,"#FACC15","toggleReminder('moneycheck',true)","~7:45 AM","","Reappears tomorrow morning")
-      : `<div onclick="switchTab('finance')" style="background:linear-gradient(135deg,rgba(250,204,21,.13),rgba(250,204,21,.03));border:1px solid rgba(250,204,21,.4);border-left:4px solid #FACC15;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px;cursor:pointer">
-        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FACC15;margin-bottom:6px;font-family:'Lora',serif">\uD83D\uDD14 Reminder \u00b7 ~7:45 AM</div>
-        <div style="display:flex;align-items:center;gap:13px">
-          <div style="font-size:22px;flex-shrink:0">\uD83D\uDCB0</div>
-          <div style="flex:1;min-width:0">
-            <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3">Check money situation</div>
-            <div style="font-size:11.5px;color:rgba(250,220,150,.85);font-style:italic;margin-top:4px;font-family:'Lora',serif">Before 8 AM \u2014 a quick look at balances &amp; spending. Tap \u2192 \uD83D\uDCB0 Finance.</div>
-          </div>
-          <div onclick="event.stopPropagation();toggleReminder('moneycheck',true)" style="width:28px;height:28px;border-radius:50%;border:2px solid #FACC15;background:transparent;flex-shrink:0;cursor:pointer"></div>
-        </div>
-      </div>`);
-  }
   // 🍳 breakfast anchor
   if(_bk){ const _bd=!!laundry["meal-breakfast-"+today]; const b=mealAnchorHtml(_bk,_bd,nowM,dow); add("breakfast",b.order,_bd,b.html); }
 
@@ -2115,8 +2091,6 @@ function renderTimeline() {
     REMINDERS.forEach(function(r){ if(r.date && r.date>=today){ (tlRem[r.date]=tlRem[r.date]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } });
     REMINDERS.forEach(function(r){ if(r.standing && !reminderDone(r.id,false)){ (tlRem[today]=tlRem[today]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } }); // standing errands surface near-term (today)
   }
-  // 💰 daily money check — surface on today's timeline row (date-keyed daily morning reminder)
-  if(typeof reminderDone==='function' && !reminderDone('moneycheck',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"💰",text:"Check money situation · ~7:45 AM",account:""}); }
   if(typeof FLIP_SCAN!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"🔍",text:"Morning flip scan · ~7:15 AM",account:""}); }
   if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
   // 📞 TG Meeting — recurring every Wednesday on the timeline
