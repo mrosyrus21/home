@@ -767,7 +767,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260613091550"></script>
+<script src="./data.js?v=20260613105922"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -779,7 +779,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 13 · 9:15 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 13 · 10:59 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1523,7 +1523,25 @@ function isoWkH(d){ d=d||new Date(); const dt=new Date(Date.UTC(d.getFullYear(),
 function waterGoal(){ return Math.max(1, habits.waterGoal||3); }  // bottles · default 3 (≈96 oz)
 function waterServing(){ return Math.max(1, habits.waterServing||1); }  // bottles per tap · default 1 (=32 oz)
 function waterCount(d){ d=d||todayKey(); return (habits.water&&habits.water[d])||0; }
-function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
+// 💧 splash burst — droplets fly out from the tap point when a bottle is added (added Jun 13 2026)
+var __waterPt=null;
+try{ document.addEventListener('pointerdown',function(e){ if(e&&typeof e.clientX==='number') __waterPt={x:e.clientX,y:e.clientY}; },true); }catch(_e){}
+function splashBurst(){
+  try{
+    var p=__waterPt||{x:window.innerWidth/2,y:window.innerHeight*0.4};
+    var drops=['\u{1F4A7}','\u{1F4A6}'];
+    for(var i=0;i<9;i++){ (function(){
+      var el=document.createElement('div');
+      el.textContent=drops[Math.floor(Math.random()*drops.length)];
+      el.style.cssText='position:fixed;left:'+p.x+'px;top:'+p.y+'px;font-size:'+(13+Math.random()*13)+'px;line-height:1;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:transform .75s cubic-bezier(.15,.6,.25,1),opacity .75s ease-out;opacity:1;will-change:transform,opacity';
+      document.body.appendChild(el);
+      var dx=(Math.random()*2-1)*70, dy=-(35+Math.random()*75), rot=Math.random()*60-30;
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.style.transform='translate(-50%,-50%) translate('+dx+'px,'+dy+'px) rotate('+rot+'deg) scale(.5)'; el.style.opacity='0'; }); });
+      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },820);
+    })(); }
+  }catch(_e){}
+}
+function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{splashBurst();}catch(_e){} try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
 function waterUndo(){ habits.water=habits.water||{}; const k=todayKey(); habits.water[k]=Math.max(0,(habits.water[k]||0)-waterServing()); saveHabits(); renderAll(); }
 function waterSetGoal(){ const v=prompt("Your daily water goal, in BOTTLES (1 bottle = 32 oz). It counts ALL fluids — water, tea, coffee, juice. No magic number; ~3 bottles (~96 oz) is a solid daily target:", waterGoal()); const n=parseInt(v,10); if(n>0){ habits.waterGoal=n; saveHabits(); renderAll(); } }
 function waterSetServing(){ const v=prompt("How many bottles per tap? (1 bottle = 32 oz)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
