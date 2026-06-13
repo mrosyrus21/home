@@ -6,10 +6,6 @@ sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 HOUSE = os.path.dirname(os.path.abspath(__file__))
 
 # ── TOKEN RESOLUTION — the value is NEVER printed to stdout/logs ───────────────
-# Order: GH_TOKEN env  ->  GH_TOKEN_FILE env (a path)  ->  .deploy-token files.
-# Create the token file ONCE by double-clicking:
-#     home-and-garden-project\setup-deploy-token.bat
-# .deploy-token is .gitignored and must NEVER be committed or printed.
 def _read_token():
     t = os.environ.get("GH_TOKEN", "").strip()
     if t:
@@ -53,6 +49,15 @@ def run(cmd, **kw):
 
 os.chdir(HOUSE)
 
+# ── FIX 1: clear a stale git lock left behind by an interrupted (Ctrl+C) run ───
+lock = os.path.join(HOUSE, ".git", "index.lock")
+if os.path.isfile(lock):
+    try:
+        os.remove(lock)
+        print("[FIX] Removed stale .git/index.lock from a previous interrupted run.")
+    except OSError as e:
+        print("[WARN] Could not remove index.lock: " + str(e))
+
 # ── Stamp the "Last deployed" time into index.html (best-effort) ──────────────
 try:
     idx = os.path.join(HOUSE, "index.html")
@@ -65,7 +70,7 @@ try:
         mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
         h12 = now.hour % 12 or 12
         ampm = "AM" if now.hour < 12 else "PM"
-        stamp = f"{mons[now.month-1]} {now.day} · {h12}:{now.minute:02d} {ampm}"  # short format, America/Denver (MST/MDT auto via ZoneInfo)
+        stamp = f"{mons[now.month-1]} {now.day} · {h12}:{now.minute:02d} {ampm}"
         html = open(idx, "r", encoding="utf-8").read()
         import time as _t
         html = re.sub(r'data\.js\?v=[0-9]*', "data.js?v="+_t.strftime("%Y%m%d%H%M%S"), html)
@@ -79,13 +84,15 @@ except Exception:
 # Initialize repo if needed
 if not os.path.isdir(os.path.join(HOUSE, ".git")):
     run(["git", "init"])
-    run(["git", "config", "user.email", "mrosyrus@gmail.com"])
-    run(["git", "config", "user.name",  "mrosyrus21"])
     run(["git", "checkout", "-b", "main"])
     run(["git", "remote", "add", "origin", REMOTE])
     print("[INIT] Git repo initialized.")
 else:
     run(["git", "remote", "set-url", "origin", REMOTE])
+
+# Identity (safe to set every time)
+run(["git", "config", "user.email", "mrosyrus@gmail.com"])
+run(["git", "config", "user.name",  "mrosyrus21"])
 
 # Stage ALL deployable files (NOT just index.html) — never the secret token.
 for path in ["index.html", "recipes.html", "data.js", "recipes.js", "v2-features.js", "images", "archive", ".nojekyll", ".gitignore", "deploy-github.py", "manifest.webmanifest", "sw.js", "icons"]:
@@ -96,7 +103,17 @@ status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, t
 if status.stdout.strip():
     run(["git", "commit", "-m", "Deploy update"])
 else:
-    print("[OK] No changes since last deploy.")
+    print("[OK] No local changes to commit.")
+
+# ── FIX 2: integrate the remote's commits BEFORE pushing ──────────────────────
+# The remote (GitHub) had work this folder didn't have, which is why the push was
+# rejected with "fetch first". Pull and merge it in, keeping THIS folder's version
+# of any file that conflicts (-X ours) so the celebrations + your latest edits win.
+print("[SYNC] Pulling remote changes before push (keeping your local version on conflict)...")
+rc_pull = run(["git", "pull", "--no-edit", "-X", "ours",
+               "--allow-unrelated-histories", "origin", "main"])
+if rc_pull != 0:
+    print("[WARN] Pull reported a problem above. Attempting push anyway...")
 
 print("[UP] Pushing to GitHub...")
 rc = run(["git", "push", "-u", "origin", "main"])
@@ -105,7 +122,8 @@ if rc == 0:
     print("\n[DONE] Pushed to GitHub Pages.")
     print("  Live URL : https://mrosyrus21.github.io/home")
     print("  Repo     : https://github.com/mrosyrus21/home")
+    print("\n  Now open the site and hard-refresh (Ctrl+Shift+R, or pull-to-refresh twice on phone).")
 else:
-    print("\n[ERR] Push failed -- see masked output above.")
+    print("\n[ERR] Push still failed -- copy the masked lines above to Claude.")
 
 input("\nPress Enter to close...")

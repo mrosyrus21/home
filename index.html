@@ -586,7 +586,6 @@ body::after{
    a bottom tab bar with EVERY destination visible, a readability/touch
    pass, and perf fixes. Delete this block + the v2-nav markup/script
    at the end of body to fully revert. */
-body{ padding-bottom:150px; } /* room for the two-row bottom bar */
 body.v2-bgphoto{
   background-image:linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280");
 }
@@ -594,8 +593,9 @@ body.v2-bgphoto{
 .hdr-clock{ white-space:nowrap; }
 
 /* ── Primary nav moves to the bottom bar; top bar keeps only subtab rows ── */
-.navbar .util-row, .navbar .tabs{ display:none; }
-.navbar{ background:transparent; border-bottom:none; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
+body.v2-nav-ready{ padding-bottom:150px; }
+body.v2-nav-ready .navbar .util-row, body.v2-nav-ready .navbar .tabs{ display:none; }
+body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
 .tabs-secondary{ background:rgba(9,8,14,.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-top:none; border-bottom:1px solid rgba(255,255,255,.07); }
 .tab-secondary{ font-size:11px; padding:13px 0 12px; opacity:.6; }
 .tab-secondary.active{ opacity:1; }
@@ -767,7 +767,7 @@ body.v2-bgphoto{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260612221957"></script>
+<script src="./data.js?v=20260613123249"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -779,7 +779,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 12 · 10:19 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 13 · 12:32 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1094,7 +1094,8 @@ function nextSched()  { return SCHEDULE.find(s=>s.date>todayKey()&&!s.off&&s.tas
 
 function daysSinceWatered(id) {
   if(!watered[id]) return null;
-  return Math.floor((new Date()-new Date(watered[id]+"T12:00:00"))/86400000);
+  // count calendar days (noon-to-noon) so "Nd ago" matches the due logic in plantsDueOn (was Math.floor from now, which under-counted by a day during the morning)
+  return Math.round((new Date(todayKey()+"T12:00:00")-new Date(watered[id]+"T12:00:00"))/86400000);
 }
 function waterStatus(p) {
   const d=daysSinceWatered(p.id);
@@ -1522,7 +1523,25 @@ function isoWkH(d){ d=d||new Date(); const dt=new Date(Date.UTC(d.getFullYear(),
 function waterGoal(){ return Math.max(1, habits.waterGoal||3); }  // bottles · default 3 (≈96 oz)
 function waterServing(){ return Math.max(1, habits.waterServing||1); }  // bottles per tap · default 1 (=32 oz)
 function waterCount(d){ d=d||todayKey(); return (habits.water&&habits.water[d])||0; }
-function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
+// 💧 splash burst — droplets fly out from the tap point when a bottle is added (added Jun 13 2026)
+var __waterPt=null;
+try{ document.addEventListener('pointerdown',function(e){ if(e&&typeof e.clientX==='number') __waterPt={x:e.clientX,y:e.clientY}; },true); }catch(_e){}
+function splashBurst(){
+  try{
+    var p=__waterPt||{x:window.innerWidth/2,y:window.innerHeight*0.4};
+    var drops=['\u{1F4A7}','\u{1F4A6}'];
+    for(var i=0;i<9;i++){ (function(){
+      var el=document.createElement('div');
+      el.textContent=drops[Math.floor(Math.random()*drops.length)];
+      el.style.cssText='position:fixed;left:'+p.x+'px;top:'+p.y+'px;font-size:'+(13+Math.random()*13)+'px;line-height:1;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:transform .75s cubic-bezier(.15,.6,.25,1),opacity .75s ease-out;opacity:1;will-change:transform,opacity';
+      document.body.appendChild(el);
+      var dx=(Math.random()*2-1)*70, dy=-(35+Math.random()*75), rot=Math.random()*60-30;
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.style.transform='translate(-50%,-50%) translate('+dx+'px,'+dy+'px) rotate('+rot+'deg) scale(.5)'; el.style.opacity='0'; }); });
+      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },820);
+    })(); }
+  }catch(_e){}
+}
+function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{splashBurst();}catch(_e){} try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
 function waterUndo(){ habits.water=habits.water||{}; const k=todayKey(); habits.water[k]=Math.max(0,(habits.water[k]||0)-waterServing()); saveHabits(); renderAll(); }
 function waterSetGoal(){ const v=prompt("Your daily water goal, in BOTTLES (1 bottle = 32 oz). It counts ALL fluids — water, tea, coffee, juice. No magic number; ~3 bottles (~96 oz) is a solid daily target:", waterGoal()); const n=parseInt(v,10); if(n>0){ habits.waterGoal=n; saveHabits(); renderAll(); } }
 function waterSetServing(){ const v=prompt("How many bottles per tap? (1 bottle = 32 oz)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
@@ -1850,13 +1869,6 @@ function renderToday() {
   // ＋ add-your-own rollover task (passive — doesn't count toward the daily tally)
   add("ro-add",325,false,`<div onclick="addRollover()" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(245,158,11,.45);border-radius:var(--rad);padding:11px 16px;margin-bottom:10px;cursor:pointer;color:#F59E0B;font-family:'Lora',serif;font-size:13px">＋ Add a task that rolls over until done</div>`,true);
 
-  // ── 🌱 WATER MOM'S PLANTS — daily EVENING task ~8 PM (after dinner); date-keyed (clears each day, returns next) (added Jun 10 2026; retimed to evening Jun 10 2026) ──
-  {
-    const wmpDone=!!laundry["rem-watermom-"+today];
-    add("watermom",1255,wmpDone, wmpDone
-      ? strip("🌱","Water Mom's plants",true,"#2DB870","toggleReminder('watermom',true)","~8:00 PM","","Reappears tomorrow evening")
-      : strip("🌱","Water Mom's plants",false,"#2DB870","toggleReminder('watermom',true)","~8:00 PM","","After dinner — water Mom's plants for the night"));
-  }
 
   // ── 🗑️ TRASH + RECYCLE — every Tuesday night Trash; alternating Tuesdays (anchor Tue Jun 9 2026) also Recycle (added Jun 10 2026) ──
   if(dow===2){
@@ -1881,23 +1893,6 @@ function renderToday() {
   add("lit",_pillTop?7:311,litDone, litDone
     ? strip("💊","Litfulo + vitamins",true,"#6366F1","toggleWellness('litfulo')","With breakfast","","")
     : strip("💊","Litfulo + vitamins — take with breakfast",false,"#6366F1","toggleWellness('litfulo')","With breakfast","","One trigger: eat → pills. Logs to the Health tab too."));
-  // ── 💰 MONEY CHECK — daily morning reminder ~7:45 AM (before breakfast); date-keyed (clears each day, returns) · taps through to 💰 Finance (added Jun 11 2026) ──
-  {
-    const mcDone=!!laundry["rem-moneycheck-"+today];
-    add("moneycheck",285,mcDone, mcDone
-      ? strip("\uD83D\uDCB0","Check money situation",true,"#FACC15","toggleReminder('moneycheck',true)","~7:45 AM","","Reappears tomorrow morning")
-      : `<div onclick="switchTab('finance')" style="background:linear-gradient(135deg,rgba(250,204,21,.13),rgba(250,204,21,.03));border:1px solid rgba(250,204,21,.4);border-left:4px solid #FACC15;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px;cursor:pointer">
-        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FACC15;margin-bottom:6px;font-family:'Lora',serif">\uD83D\uDD14 Reminder \u00b7 ~7:45 AM</div>
-        <div style="display:flex;align-items:center;gap:13px">
-          <div style="font-size:22px;flex-shrink:0">\uD83D\uDCB0</div>
-          <div style="flex:1;min-width:0">
-            <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3">Check money situation</div>
-            <div style="font-size:11.5px;color:rgba(250,220,150,.85);font-style:italic;margin-top:4px;font-family:'Lora',serif">Before 8 AM \u2014 a quick look at balances &amp; spending. Tap \u2192 \uD83D\uDCB0 Finance.</div>
-          </div>
-          <div onclick="event.stopPropagation();toggleReminder('moneycheck',true)" style="width:28px;height:28px;border-radius:50%;border:2px solid #FACC15;background:transparent;flex-shrink:0;cursor:pointer"></div>
-        </div>
-      </div>`);
-  }
   // 🍳 breakfast anchor
   if(_bk){ const _bd=!!laundry["meal-breakfast-"+today]; const b=mealAnchorHtml(_bk,_bd,nowM,dow); add("breakfast",b.order,_bd,b.html); }
 
@@ -2115,8 +2110,6 @@ function renderTimeline() {
     REMINDERS.forEach(function(r){ if(r.date && r.date>=today){ (tlRem[r.date]=tlRem[r.date]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } });
     REMINDERS.forEach(function(r){ if(r.standing && !reminderDone(r.id,false)){ (tlRem[today]=tlRem[today]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } }); // standing errands surface near-term (today)
   }
-  // 💰 daily money check — surface on today's timeline row (date-keyed daily morning reminder)
-  if(typeof reminderDone==='function' && !reminderDone('moneycheck',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"💰",text:"Check money situation · ~7:45 AM",account:""}); }
   if(typeof FLIP_SCAN!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"🔍",text:"Morning flip scan · ~7:15 AM",account:""}); }
   if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
   // 📞 TG Meeting — recurring every Wednesday on the timeline
@@ -2195,6 +2188,8 @@ function toggleRoom(roomId) {
   renderRooms();
 }
 
+// hgRoomPhotoHtml: design referenced room photos but never defined the helper; safe no-op (no room photos exist). Wire real photos here later.
+function hgRoomPhotoHtml(roomId){ return ''; }
 function renderRooms() {
   const el=document.getElementById("view-rooms");
   // "priority" added Jun 6 2026 — the ⭐ Priority to-do list lives here (it was in the data but missing from this render list)
@@ -4327,7 +4322,7 @@ updateClock();
 setInterval(updateClock,30000);
 curtainInit();
 </script>
-<script>if('serviceWorker' in navigator && /github\.io$/.test(location.hostname)){
+<script>if('serviceWorker' in navigator){
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
@@ -4337,513 +4332,147 @@ curtainInit();
     }).catch(function(){});
   });
 }</script>
-<nav id="v2-nav">
-  <div class="v2-row">
-    <button class="v2-bn on" data-tab="today" onclick="v2Go('today')"><span class="ic">☀️</span><span class="lb">Today</span><span class="dt"></span></button>
-    <button class="v2-bn" data-tab="forecast" onclick="v2Go('forecast')"><span class="ic">🌤️</span><span class="lb">Forecast</span><span class="dt"></span></button>
-    <button class="v2-bn" data-tab="rooms" onclick="v2Go('rooms')"><span class="ic">🏠</span><span class="lb">Rooms</span><span class="dt"></span></button>
-    <button class="v2-bn" data-tab="timeline" onclick="v2Go('timeline')"><span class="ic">📅</span><span class="lb">Timeline</span><span class="dt"></span></button>
-  </div>
-  <div class="v2-row">
-    <button class="v2-bn" data-tab="garden" onclick="v2Go('garden')"><span class="ic">🌿</span><span class="lb">Plants</span><span class="dt"></span></button>
-    <button class="v2-bn" data-tab="shopping" onclick="v2Go('shopping')"><span class="ic">🦐</span><span class="lb">Tank</span><span class="dt"></span></button>
-    <button class="v2-bn" data-tab="grocery" onclick="v2Go('grocery')"><span class="ic">🍽️</span><span class="lb">Food</span><span class="dt"></span></button>
-    <button class="v2-bn" data-tab="print" onclick="v2Go('print')"><span class="ic">🧊</span><span class="lb">Print</span><span class="dt"></span></button>
-    <button class="v2-bn" data-tab="wellness" onclick="v2Go('wellness')"><span class="ic">💊</span><span class="lb">Health</span><span class="dt"></span></button>
-    <button class="v2-bn" data-tab="finance" onclick="v2Go('finance')"><span class="ic">💰</span><span class="lb">Finance</span><span class="dt"></span></button>
-  </div>
-</nav>
-<script>
-/* ===== v2-features.js INLINED so it always ships with index.html ===== */
-/* ═══════════════════════════════════════════════════════════════
-   v2-features.js — ADDITIVE features layer (Jun 12 2026)
-   Loads after the main inline app script; nothing here removes or
-   restyles existing content — it only adds:
-     😴 Sleep — log, 14-night chart, smartwatch CSV import, reminders
-     📜 Weekly recap card on Today (with 7-day sparkbars)
-     💰 Finance charts — debt trend line + bills month timeline
-     📸 Harvest journal with photos (Plants → Harvest)
-     🏠 Room photo headers (shows automatically when images/room_<id>.jpg exists)
-   Deploy note: copy this file alongside index.html (and add it to sw.js SHELL).
-   ═══════════════════════════════════════════════════════════════ */
-
-// ── tiny helpers ──────────────────────────────────────────────────
-function hgEsc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function hgDayKey(offset){ const d=new Date(); d.setDate(d.getDate()+offset); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-function hgNiceDay(k){ const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; const p=String(k).split("-"); return M[+p[1]-1]+" "+(+p[2]); }
-function hgMin2h(m){ if(!m&&m!==0) return "—"; const h=Math.floor(m/60), mm=Math.round(m%60); return h+"h"+(mm?" "+String(mm).padStart(2,"0")+"m":""); }
-function hgSpark(arr,max,color){ // 7 tiny glow bars
-  const m=Math.max(1,max);
-  return '<div style="display:flex;gap:3px;align-items:flex-end;height:22px;flex-shrink:0">'+arr.map(function(v){
-    const h=Math.max(8,Math.round(Math.min(v/m,1)*100));
-    const on=v>0;
-    return '<div style="width:6px;height:'+h+'%;border-radius:2px;background:'+(on?color:'rgba(255,255,255,.10)')+';'+(on?'box-shadow:0 0 6px '+color+'66':'')+'"></div>';
-  }).join("")+'</div>';
-}
-
-// ═══ 😴 SLEEP — the rebuild ═══════════════════════════════════════
-const HG_SLEEP_GOAL = 450; // 7h30 in minutes — the green zone center
-let _hgQ = 3;              // transient quality picker state
-
-function hgSleepPrefs(){ sleep._prefs = sleep._prefs || {}; return sleep._prefs; }
-function hgSleepKeys(){ return Object.keys(sleep).filter(function(k){ return /^\d{4}-/.test(k); }).sort(); }
-function hgSleepCalcMins(bed,wake){ const b=bed.split(":"), w=wake.split(":"); let bm=+b[0]*60+(+b[1]), wm=+w[0]*60+(+w[1]); if(wm<=bm) wm+=1440; return wm-bm; }
-function hgSleepColor(m){ return m<360?"#F87171":m<420?"#FACC15":m<=560?"#4AD490":"#38BDF8"; }
-
-function hgQSet(n){ _hgQ=n; for(let i=1;i<=5;i++){ const e=document.getElementById("hg-moon-"+i); if(e) e.classList.toggle("on", i<=n); } }
-function hgSleepSave(){
-  const b=document.getElementById("hg-bed"), w=document.getElementById("hg-wake");
-  if(!b||!w||!b.value||!w.value){ try{toast("Set both times first");}catch(e){} return; }
-  const t=todayKey(), mins=hgSleepCalcMins(b.value,w.value);
-  sleep[t]={ bed:b.value, wake:w.value, mins:mins, q:_hgQ, src:"m" };
-  saveSleep();
-  try{ toast("😴 "+hgMin2h(mins)+" logged — the picture builds"); }catch(e){}
-  renderWellness();
-}
-function hgSleepDelete(k){ if(!confirm("Remove the "+hgNiceDay(k)+" night?")) return; delete sleep[k]; saveSleep(); renderWellness(); }
-
-function hgSleepStats(){
-  const keys=hgSleepKeys();
-  const last7=[]; for(let i=6;i>=0;i--){ const k=hgDayKey(-i); if(sleep[k]&&sleep[k].mins) last7.push(sleep[k]); }
-  const avg=last7.length? Math.round(last7.reduce(function(s,e){return s+e.mins;},0)/last7.length) : 0;
-  // streak of nights ≥7h, walking back from today (today not yet logged doesn't break it)
-  let streak=0, i0=sleep[todayKey()]?0:1;
-  for(let i=i0;i<60;i++){ const e=sleep[hgDayKey(-i)]; if(e&&e.mins>=420) streak++; else break; }
-  if(sleep[todayKey()]&&sleep[todayKey()].mins>=420) streak=Math.max(streak,1);
-  // bedtime consistency over the last 7 logged nights
-  const beds=last7.filter(function(e){return e.bed;}).map(function(e){ const p=e.bed.split(":"); let m=+p[0]*60+(+p[1]); if(m<720) m+=1440; return m; });
-  const drift=beds.length>1? Math.max.apply(null,beds)-Math.min.apply(null,beds) : null;
-  return { n:keys.length, avg:avg, n7:last7.length, streak:streak, drift:drift };
-}
-
-function hgSleepChartHtml(){
-  let bars="";
-  for(let i=13;i>=0;i--){
-    const k=hgDayKey(-i), e=sleep[k];
-    const m=e?e.mins:0;
-    const h=e? Math.max(6,Math.min(100,Math.round(m/600*100))) : 5;
-    const c=e? hgSleepColor(m) : "rgba(255,255,255,.08)";
-    bars+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0">'
-      +'<div style="width:70%;height:'+h+'%;min-height:4px;border-radius:4px 4px 2px 2px;background:'+c+';'+(e?'box-shadow:0 0 10px '+c+'55;':'')+'margin-top:auto" title="'+hgNiceDay(k)+(e?' · '+hgMin2h(m):' · not logged')+'"></div>'
-      +'<div style="font-size:8.5px;color:var(--text3);font-family:\'Lora\',serif">'+(i%2===0?(+k.slice(8)):'')+'</div>'
-      +'</div>';
-  }
-  return '<div style="position:relative;height:120px;display:flex;align-items:stretch;gap:2px;padding-top:6px">'
-    +'<div style="position:absolute;left:0;right:0;bottom:calc('+Math.round(HG_SLEEP_GOAL/600*100)+'% + 14px);border-top:1px dashed rgba(167,139,250,.5)"><span style="position:absolute;right:0;top:-14px;font-size:9px;color:#A78BFA;font-family:\'Lora\',serif">7h30 goal</span></div>'
-    +bars+'</div>';
-}
-
-function hgSleepSectionHtml(today){
-  const P="#A78BFA";
-  const e=sleep[today];
-  const keys=hgSleepKeys();
-  const last=keys.length?sleep[keys[keys.length-1]]:null;
-  const def=e||last||{bed:"23:00",wake:"07:00",q:3};
-  _hgQ=(e&&e.q)||3;
-  const st=hgSleepStats();
-  const prefs=sleep._prefs||{};
-  let out='<div class="section-label" id="sleep-section">😴 Sleep — the rebuild</div>';
-
-  // ── log card ──
-  out+='<div style="background:linear-gradient(135deg,rgba(167,139,250,.13),rgba(167,139,250,.03));border:1px solid rgba(167,139,250,.4);border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 2px 16px rgba(167,139,250,.1)">'
-    +'<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">'
-    +'<div style="font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text)">'+(e?"Last night — logged ✓":"Log last night")+'</div>'
-    +(e?'<div style="font-size:13px;color:'+hgSleepColor(e.mins)+';font-family:\'Lora\',serif;font-weight:700">'+hgMin2h(e.mins)+'</div>':'')
-    +(st.streak>=2?'<span style="font-size:11px;color:#FB923C;border:1px solid #FB923C55;border-radius:10px;padding:1px 7px">🔥 '+st.streak+' nights ≥7h</span>':'')
-    +'</div>'
-    +'<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:flex-end">'
-    +'<div><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:'+P+';font-family:\'Lora\',serif;margin-bottom:4px">In bed</div><input id="hg-bed" type="time" class="hg-time" value="'+hgEsc((e&&e.bed)||def.bed||"23:00")+'"></div>'
-    +'<div><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:'+P+';font-family:\'Lora\',serif;margin-bottom:4px">Woke up</div><input id="hg-wake" type="time" class="hg-time" value="'+hgEsc((e&&e.wake)||def.wake||"07:00")+'"></div>'
-    +'<div style="flex:1;min-width:120px"><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:'+P+';font-family:\'Lora\',serif;margin-bottom:4px">How did it feel?</div><div style="display:flex;gap:4px">'
-    +[1,2,3,4,5].map(function(i){ return '<span id="hg-moon-'+i+'" class="hg-moon'+(i<=_hgQ?" on":"")+'" onclick="hgQSet('+i+')">🌙</span>'; }).join("")
-    +'</div></div>'
-    +'<button onclick="hgSleepSave()" style="background:rgba(167,139,250,.18);border:1px solid rgba(167,139,250,.55);border-radius:12px;padding:12px 20px;color:#C4B5FD;font-size:14px;font-weight:700;font-family:\'Lora\',serif;cursor:pointer;min-height:44px">'+(e?"Update":"Save")+'</button>'
-    +'</div>'
-    +(e?'<div style="font-size:11px;color:var(--text3);font-family:\'Lora\',serif;font-style:italic;margin-top:8px;cursor:pointer" onclick="hgSleepDelete(\''+today+'\')">✕ remove tonight\'s entry</div>':'')
-    +'</div>';
-
-  // ── chart + stats card ──
-  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:var(--rad);padding:15px 17px;margin-bottom:12px">'
-    +'<div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:'+P+';font-family:\'Lora\',serif;margin-bottom:2px">Last 14 nights</div>'
-    +hgSleepChartHtml()
-    +'<div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.06)">'
-    +'<div><div style="font-family:\'Playfair Display\',serif;font-size:19px;font-weight:700;color:'+(st.avg?hgSleepColor(st.avg):"var(--text3)")+'">'+(st.avg?hgMin2h(st.avg):"—")+'</div><div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif">7-day average'+(st.n7?' · '+st.n7+' logged':'')+'</div></div>'
-    +'<div><div style="font-family:\'Playfair Display\',serif;font-size:19px;font-weight:700;color:#FB923C">'+st.streak+'</div><div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif">nights ≥7h in a row</div></div>'
-    +'<div><div style="font-family:\'Playfair Display\',serif;font-size:19px;font-weight:700;color:'+(st.drift==null?"var(--text3)":(st.drift<=60?"#4AD490":st.drift<=120?"#FACC15":"#F87171"))+'">'+(st.drift==null?"—":"±"+Math.round(st.drift/2)+"m")+'</div><div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif">bedtime drift (7d)</div></div>'
-    +'</div>'
-    +'<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;line-height:1.55;margin-top:10px">The two levers that matter most: a <b style="color:#C4B5FD">consistent bedtime</b> (drift under ±30m) and <b style="color:#C4B5FD">morning sunlight</b> — both already in your routine: 10 PM melatonin + screens-off, and light in your eyes within 30 min of waking.</div>'
-    +'</div>';
-
-  // ── smartwatch card ──
-  out+='<div style="background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.25);border-radius:var(--rad);padding:15px 17px;margin-bottom:12px">'
-    +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:#7DD3FC;margin-bottom:6px">⌚ Galaxy Watch → here</div>'
-    +'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">Samsung keeps Health data on the phone — there\'s no live feed a web app can read. Two ways that work:</div>'
-    +'<div style="display:flex;gap:9px;padding:8px 2px;font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.55"><span style="flex-shrink:0">1.</span><span><b style="color:var(--text)">The morning glance</b> (recommended) — wear the watch to bed, check Samsung Health over coffee, log it above. Ten seconds, and the chart stays alive.</span></div>'
-    +'<div style="display:flex;gap:9px;padding:2px 2px 8px;font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.55"><span style="flex-shrink:0">2.</span><span><b style="color:var(--text)">Bulk import</b> — Samsung Health → ⚙️ Settings → <i>Download personal data</i>. Unzip, find the file starting with <span style="color:#7DD3FC">com.samsung.shealth.sleep</span>, and feed it in here. Watch nights fill in without touching manual logs.</span></div>'
-    +'<label style="display:inline-flex;align-items:center;gap:8px;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.5);border-radius:12px;padding:11px 18px;color:#7DD3FC;font-size:13px;font-weight:700;font-family:\'Lora\',serif;cursor:pointer;min-height:20px">📥 Import sleep CSV<input type="file" accept=".csv,text/csv" style="display:none" onchange="hgSleepImport(this)"></label>'
-    +'</div>';
-
-  // ── reminders card ──
-  const remOn=!!prefs.on;
-  out+='<div style="background:rgba(251,146,60,.05);border:1px solid rgba(251,146,60,.25);border-radius:var(--rad);padding:15px 17px;margin-bottom:14px">'
-    +'<div style="display:flex;align-items:center;gap:12px">'
-    +'<div style="flex:1"><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:#FDBA74">🔔 Wind-down reminder</div>'
-    +'<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:3px;line-height:1.5">A nudge at <input type="time" class="hg-time" style="padding:4px 8px;font-size:13px" value="'+hgEsc(prefs.wind||"22:00")+'" onchange="hgRemindWind(this.value)"> — screens off, melatonin, book. Plus an 8:30 AM "log last night" nudge. Fires while the app is open on any device.</div></div>'
-    +'<button onclick="hgRemindToggle()" style="background:'+(remOn?"rgba(74,212,144,.16)":"rgba(255,255,255,.06)")+';border:1px solid '+(remOn?"rgba(74,212,144,.55)":"rgba(255,255,255,.2)")+';border-radius:12px;padding:11px 16px;color:'+(remOn?"#4AD490":"var(--text2)")+';font-size:13px;font-weight:700;font-family:\'Lora\',serif;cursor:pointer;min-height:44px;flex-shrink:0">'+(remOn?"On ✓":"Turn on")+'</button>'
-    +'</div></div>';
-
-  return out;
-}
-
-// ── smartwatch CSV import (Samsung Health "Download personal data" export) ──
-function hgParseSamsungSleep(txt){
-  const lines=txt.split(/\r?\n/);
-  let hi=-1;
-  for(let i=0;i<Math.min(lines.length,6);i++){ if(/start_time/i.test(lines[i])&&/end_time/i.test(lines[i])){ hi=i; break; } }
-  if(hi<0) throw new Error("no header row");
-  const cols=lines[hi].split(",").map(function(c){return c.trim();});
-  let si=-1, ei=-1;
-  cols.forEach(function(c,i){ if(/(^|\.)start_time$/i.test(c)) si=i; if(/(^|\.)end_time$/i.test(c)) ei=i; });
-  if(si<0||ei<0) throw new Error("no time columns");
-  const parseT=function(v){ v=String(v||"").trim(); if(!v) return null;
-    if(/^\d{12,}$/.test(v)) return new Date(+v);
-    const d=new Date(v.replace(" ","T")); return isNaN(d.getTime())?null:d; };
-  const nights={};
-  for(let i=hi+1;i<lines.length;i++){
-    if(!lines[i]) continue;
-    const cells=lines[i].split(",");
-    const s=parseT(cells[si]), e2=parseT(cells[ei]);
-    if(!s||!e2) continue;
-    const mins=(e2-s)/60000;
-    if(mins<45||mins>20*60) continue;
-    const k=e2.getFullYear()+"-"+String(e2.getMonth()+1).padStart(2,"0")+"-"+String(e2.getDate()).padStart(2,"0");
-    if(!nights[k]) nights[k]={ s:s, e:e2, mins:0 };
-    nights[k].mins+=mins;
-    if(s<nights[k].s) nights[k].s=s;
-    if(e2>nights[k].e) nights[k].e=e2;
-  }
-  return nights;
-}
-function hgSleepImport(inp){
-  const f=inp.files&&inp.files[0]; if(!f) return;
-  const rd=new FileReader();
-  rd.onload=function(){
-    try{
-      const nights=hgParseSamsungSleep(String(rd.result));
-      let added=0, kept=0;
-      Object.keys(nights).forEach(function(k){
-        if(sleep[k]&&sleep[k].src==="m"){ kept++; return; }
-        const n=nights[k];
-        const hm=function(d){ return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
-        sleep[k]={ bed:hm(n.s), wake:hm(n.e), mins:Math.round(n.mins), src:"w" };
-        added++;
-      });
-      if(added){ saveSleep(); }
-      try{ toast("⌚ Imported "+added+" night"+(added===1?"":"s")+(kept?" · kept "+kept+" manual logs":"")); }catch(e){}
-      renderWellness();
-    }catch(err){ try{ toast("⚠️ Couldn't read that file — is it the com.samsung.shealth.sleep CSV?"); }catch(e){} }
-  };
-  rd.readAsText(f);
-  inp.value="";
-}
-
-// ── reminders (fire while the app is open; true push = Firebase upgrade) ──
-function hgRemindToggle(){
-  const p=hgSleepPrefs();
-  if(!p.on && "Notification" in window){
-    Notification.requestPermission().then(function(r){
-      if(r==="granted"){ p.on=true; saveSleep();
-        try{ new Notification("🔔 Reminders on",{ body:"Wind-down nudge at "+(p.wind||"22:00")+" · morning log nudge at 8:30. Works while the app is open." }); }catch(e){}
-      } else { try{ toast("⚠️ Notifications are blocked — allow them in your browser settings"); }catch(e){} }
-      renderWellness();
-    });
-  } else { p.on=!p.on; saveSleep(); renderWellness(); }
-}
-function hgRemindWind(v){ const p=hgSleepPrefs(); p.wind=v; saveSleep(); try{ toast("🌙 Wind-down set to "+v); }catch(e){} }
-setInterval(function(){
-  try{
-    const p=sleep&&sleep._prefs;
-    if(!p||!p.on||!("Notification" in window)||Notification.permission!=="granted") return;
-    const now=new Date(), t=todayKey();
-    const hm=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
-    const fire=function(key,title,body){
-      const lk="hg-rem-"+key+"-"+t;
-      if(localStorage.getItem(lk)) return;
-      localStorage.setItem(lk,"1");
-      try{ new Notification(title,{ body:body }); }catch(e){}
-    };
-    if(hm===(p.wind||"22:00")) fire("wind","🌙 Wind-down time","Screens off, melatonin + L-theanine, book open. Tomorrow-you says thanks.");
-    if(hm==="08:30"&&!sleep[t]) fire("log","😴 Log last night","Two taps in Health → Sleep while it's fresh.");
-  }catch(e){}
-},20000);
-
-// ═══ 📜 WEEKLY RECAP — appended to the end of the Today feed ═══════
-function hgRecapHtml(){
-  const days=[]; for(let i=6;i>=0;i--) days.push(hgDayKey(-i));
-  const water=days.map(function(d){ return (habits.water&&habits.water[d])||0; });
-  const goal=(typeof waterGoal==="function")?waterGoal():3;
-  const meals=days.map(function(d){ return (typeof mealsEaten==="function")?mealsEaten(d):0; });
-  const lit=days.map(function(d){ return laundry["well-litfulo-"+d]?1:0; });
-  const outd=days.map(function(d){ return laundry["well-outside-"+d]?1:0; });
-  const slp=days.map(function(d){ return (sleep[d]&&sleep[d].mins)||0; });
-  const wTot=water.reduce(function(a,b){return a+b;},0), wDays=water.filter(function(v){return v>=goal;}).length;
-  const mTot=meals.reduce(function(a,b){return a+b;},0);
-  const lTot=lit.reduce(function(a,b){return a+b;},0);
-  const oTot=outd.reduce(function(a,b){return a+b;},0);
-  const sN=slp.filter(function(v){return v>0;}).length;
-  const sAvg=sN? Math.round(slp.reduce(function(a,b){return a+b;},0)/sN) : 0;
-  let streak=0; try{ const hs=habitStats(); streak=(hs&&hs.streak)||0; }catch(e){}
-  const row=function(emoji,label,val,spark){
-    return '<div style="display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)">'
-      +'<div style="font-size:17px;flex-shrink:0">'+emoji+'</div>'
-      +'<div style="flex:1;min-width:0"><span style="font-size:13.5px;color:var(--text);font-family:\'Lora\',serif">'+label+'</span> <span style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif">'+val+'</span></div>'
-      +spark+'</div>';
-  };
-  const bestLine = wDays>=5 ? "Hydration carried the week — keep pouring. 💧"
-    : oTot>=4 ? "You kept getting outside — that's the engine for everything else. 🌞"
-    : lTot>=6 ? "Perfect med consistency — exactly what the Litfulo rebuild needs. 💪"
-    : sN>=4 ? "The sleep picture is forming — every logged night sharpens it. 🌙"
-    : "Every row here builds from a single tap a day — small is the system. 🌱";
-  return '<div id="wk-recap" style="margin-top:18px"><div class="section-label">📜 This week — last 7 days</div>'
-    +'<div style="background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(240,168,32,.05));border:1px solid rgba(167,139,250,.35);border-radius:var(--rad);padding:14px 17px;box-shadow:0 2px 18px rgba(167,139,250,.08)">'
-    +row("💧","Water","— "+wTot+" bottle"+(wTot===1?"":"s")+" · goal hit "+wDays+"/7 days",hgSpark(water,Math.max(goal,Math.max.apply(null,water)),"#38BDF8"))
-    +row("🍽️","Meals","— "+mTot+" of 21",hgSpark(meals,3,"#FACC15"))
-    +row("💊","Litfulo","— "+lTot+"/7 days",hgSpark(lit,1,"#818CF8"))
-    +row("🌳","Outside","— "+oTot+"/7 days",hgSpark(outd,1,"#4AD490"))
-    +row("😴","Sleep",sN? "— avg "+hgMin2h(sAvg)+" · "+sN+" logged":"— not logged yet · tonight's the night",hgSpark(slp,600,"#A78BFA"))
-    +'<div style="display:flex;align-items:center;gap:10px;padding-top:10px">'
-    +(streak>=2?'<span style="font-size:11px;color:#FB923C;border:1px solid #FB923C55;border-radius:10px;padding:2px 8px;flex-shrink:0">🔥 '+streak+'-day habit streak</span>':'')
-    +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;line-height:1.5">'+bestLine+'</div>'
-    +'</div></div></div>';
-}
-(function(){
-  if(typeof renderToday!=="function") return;
-  const orig=renderToday;
-  renderToday=function(){
-    orig();
-    try{
-      const el=document.getElementById("view-today");
-      if(el&&!el.querySelector("#wk-recap")) el.insertAdjacentHTML("beforeend",hgRecapHtml());
-    }catch(e){}
-  };
-})();
-
-// ═══ 💰 FINANCE CHARTS ═════════════════════════════════════════════
-function hgDebtChartsHtml(){
-  if(typeof FINANCE==="undefined"||!FINANCE.debts||!FINANCE.debts.length) return "";
-  const debts=FINANCE.debts;
-  const startTotal=debts.reduce(function(s,d){ return s+(+d.start||0); },0);
-  let dateSet={};
-  let anyReal=false;
-  debts.forEach(function(d){ finSeries("debt",d.id).forEach(function(p){ dateSet[p.d]=1; anyReal=true; }); });
-  const dates=Object.keys(dateSet).sort();
-  const t=todayKey();
-  if(dates[dates.length-1]!==t) dates.push(t);
-  const totalAt=function(date){
-    let tot=0;
-    debts.forEach(function(d){
-      const s=finSeries("debt",d.id).filter(function(p){ return p.d<=date; });
-      tot+= s.length? s[s.length-1].v : (+d.start||0);
-    });
-    return tot;
-  };
-  const pts=[{d:null,v:startTotal}].concat(dates.map(function(dd){ return {d:dd,v:totalAt(dd)}; }));
-  const cur=pts[pts.length-1].v, paid=startTotal-cur;
-  const W=320,H=88,Pd=10;
-  const vmax=Math.max.apply(null,pts.map(function(p){return p.v;}));
-  const vmin=Math.min.apply(null,pts.map(function(p){return p.v;}));
-  const span=Math.max(1,vmax-vmin);
-  const xy=pts.map(function(p,i){
-    const x=Pd+i*(W-2*Pd)/Math.max(1,pts.length-1);
-    const y=H-Pd-((p.v-vmin)/span)*(H-2*Pd);
-    return [x,y];
-  });
-  const poly=xy.map(function(p){ return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
-  const area=poly+" "+xy[xy.length-1][0].toFixed(1)+","+(H-2)+" "+xy[0][0].toFixed(1)+","+(H-2);
-  const G2="#4AD490";
-  return '<div style="background:rgba(255,255,255,.03);border:1px solid rgba(251,146,60,.3);border-radius:var(--rad);padding:14px 16px;margin-bottom:14px">'
-    +'<div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#FB923C;font-family:\'Lora\',serif;margin-bottom:8px">📉 Total debt — the line you\'re bending down</div>'
-    +'<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block" preserveAspectRatio="none">'
-    +'<defs><linearGradient id="hgDebtFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(251,146,60,.35)"/><stop offset="100%" stop-color="rgba(251,146,60,0)"/></linearGradient></defs>'
-    +'<polygon points="'+area+'" fill="url(#hgDebtFill)"></polygon>'
-    +'<polyline points="'+poly+'" fill="none" stroke="#FB923C" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" style="filter:drop-shadow(0 0 5px rgba(251,146,60,.7))"></polyline>'
-    +xy.map(function(p,i){ return i===xy.length-1?'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.5" fill="#FB923C" style="filter:drop-shadow(0 0 6px rgba(251,146,60,.9))"></circle>':""; }).join("")
-    +'</svg>'
-    +'<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px">'
-    +'<div><div style="font-family:\'Playfair Display\',serif;font-size:17px;font-weight:700;color:var(--text)">'+finFmt(cur,true)+'</div><div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif">owed today</div></div>'
-    +'<div><div style="font-family:\'Playfair Display\',serif;font-size:17px;font-weight:700;color:'+(paid>0?G2:"var(--text3)")+'">'+(paid>0?"−"+finFmt(paid,true):finFmt(0,true))+'</div><div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif">paid down since the start</div></div>'
-    +'<div><div style="font-family:\'Playfair Display\',serif;font-size:17px;font-weight:700;color:#FB923C">'+(startTotal>0?Math.round(paid/startTotal*100):0)+'%</div><div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif">of the mountain gone</div></div>'
-    +'</div>'
-    +(!anyReal?'<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin-top:8px">Tap any balance below to record today\'s number — the line starts moving with the second point.</div>':"")
-    +'</div>';
-}
-
-function hgBillsTimelineHtml(bills,ym){
-  try{
-    const y=+ym.slice(0,4), m=+ym.slice(5,7);
-    const dim=new Date(y,m,0).getDate();
-    const todayD=(todayKey().slice(0,7)===ym)? +todayKey().slice(8) : null;
-    const pds=[];
-    if(typeof FINANCE!=="undefined"&&FINANCE.paydayAnchor){
-      let d=new Date(FINANCE.paydayAnchor+"T12:00:00");
-      for(let g=0; g<60 && d.getFullYear()<=y+1; g++){
-        if(d.getFullYear()===y&&d.getMonth()===m-1) pds.push(d.getDate());
-        if(d.getFullYear()>y||(d.getFullYear()===y&&d.getMonth()>m-1)) break;
-        d=new Date(d.getTime()+14*86400000);
-      }
-    }
-    const x=function(day){ return ((day-0.5)/dim*100).toFixed(2)+"%"; };
-    let dots="";
-    let lane=0;
-    bills.forEach(function(b){
-      const day=parseInt(String(b.due).replace(/[^0-9]/g,""),10);
-      if(!day||day>dim) return;
-      const pd=!!(fin.bills&&fin.bills[b.id+"-"+ym]);
-      const sz=b.amt>=1000?15:b.amt>=200?11:8;
-      const top=lane%2===0?12:34; lane++;
-      dots+='<div title="'+hgEsc(b.label)+' · '+finFmt(b.amt,true)+' · due '+hgEsc(b.due)+(pd?" · paid ✓":"")+'" style="position:absolute;left:'+x(day)+';top:'+top+'px;width:'+sz+'px;height:'+sz+'px;margin-left:-'+(sz/2)+'px;border-radius:50%;'
-        +(pd?'background:#10B981;box-shadow:0 0 9px rgba(16,185,129,.8)':'background:transparent;border:2px solid rgba(250,204,21,.75);box-shadow:0 0 7px rgba(250,204,21,.35)')+'"></div>';
-    });
-    const pdTicks=pds.map(function(day){
-      return '<div title="payday" style="position:absolute;left:'+x(day)+';top:2px;bottom:14px;width:2px;margin-left:-1px;background:rgba(167,139,250,.65);box-shadow:0 0 7px rgba(167,139,250,.6)"></div>';
-    }).join("");
-    const todayLine=todayD?'<div style="position:absolute;left:'+x(todayD)+';top:0;bottom:12px;width:1.5px;margin-left:-1px;background:rgba(255,255,255,.85)"></div>':"";
-    return '<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:var(--rad);padding:13px 16px 9px;margin-bottom:12px">'
-      +'<div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#FACC15;font-family:\'Lora\',serif;margin-bottom:4px">🗓️ The month at a glance</div>'
-      +'<div style="position:relative;height:58px">'
-      +'<div style="position:absolute;left:0;right:0;top:28px;border-top:1px solid rgba(255,255,255,.1)"></div>'
-      +pdTicks+todayLine+dots
-      +'<div style="position:absolute;left:0;bottom:0;font-size:9px;color:var(--text3);font-family:\'Lora\',serif">1</div>'
-      +'<div style="position:absolute;left:48%;bottom:0;font-size:9px;color:var(--text3);font-family:\'Lora\',serif">15</div>'
-      +'<div style="position:absolute;right:0;bottom:0;font-size:9px;color:var(--text3);font-family:\'Lora\',serif">'+dim+'</div>'
-      +'</div>'
-      +'<div style="font-size:10px;color:var(--text3);font-family:\'Lora\',serif;margin-top:4px">💜 payday · ⚪ today · 🟡 due · 🟢 paid — dot size = bill size · tap a bill below to mark it paid</div>'
-      +'</div>';
-  }catch(e){ return ""; }
-}
-
-// ═══ 📸 HARVEST JOURNAL — Plants → Harvest ═════════════════════════
-function hgJournalHtml(){
-  const ids=Object.keys(harvestLog).sort(function(a,b){ return (harvestLog[b].ts||0)-(harvestLog[a].ts||0); });
-  let out='<div id="hg-journal"><div class="section-label">📸 Harvest journal — proof it\'s working</div>';
-  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(45,184,112,.3);border-radius:var(--rad);padding:13px 15px;margin-bottom:12px">'
-    +'<div style="display:flex;gap:8px;align-items:center">'
-    +'<input id="hg-j-cap" placeholder="First red strawberry… basil haul… aphid victory…" style="flex:1;min-width:0;background:rgba(0,0,0,.25);border:1px solid rgba(45,184,112,.35);border-radius:10px;padding:11px 12px;color:var(--text);font-size:13.5px;font-family:\'Lora\',serif" onkeydown="if(event.key===\'Enter\')hgJournalNote()">'
-    +'<label style="background:rgba(45,184,112,.16);border:1px solid rgba(45,184,112,.55);border-radius:10px;padding:10px 13px;color:#4AD490;font-size:16px;cursor:pointer;flex-shrink:0;min-height:20px" title="Add with a photo">📷<input type="file" accept="image/*" capture="environment" style="display:none" onchange="hgJournalAdd(this)"></label>'
-    +'<button onclick="hgJournalNote()" style="background:rgba(45,184,112,.16);border:1px solid rgba(45,184,112,.55);border-radius:10px;padding:11px 14px;color:#4AD490;font-size:13px;font-weight:700;font-family:\'Lora\',serif;cursor:pointer;flex-shrink:0;min-height:44px">Add</button>'
-    +'</div>'
-    +'<div style="font-size:10.5px;color:var(--text3);font-family:\'Lora\',serif;font-style:italic;margin-top:7px">📷 opens the camera — photos are squeezed down and synced everywhere like everything else.</div>'
-    +'</div>';
-  if(!ids.length){
-    out+='<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;text-align:center;padding:10px 0 16px">Empty so far — the first strawberry deserves a photo. 🍓</div>';
-  } else {
-    out+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
-    ids.forEach(function(id){
-      const e=harvestLog[id];
-      out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden">'
-        +(e.img?'<img src="'+e.img+'" alt="" style="width:100%;height:110px;object-fit:cover;display:block">':"")
-        +'<div style="padding:9px 11px">'
-        +'<div style="font-size:10px;color:#4AD490;font-family:\'Lora\',serif;letter-spacing:.08em">'+hgNiceDay(e.date)+'</div>'
-        +(e.text?'<div style="font-size:12.5px;color:var(--text);font-family:\'Lora\',serif;line-height:1.45;margin-top:2px">'+hgEsc(e.text)+'</div>':"")
-        +'<div onclick="hgJournalDel(\''+id+'\')" style="font-size:10px;color:var(--text3);font-family:\'Lora\',serif;font-style:italic;margin-top:5px;cursor:pointer">✕ remove</div>'
-        +'</div></div>';
-    });
-    out+='</div>';
-  }
-  out+='</div>';
-  return out;
-}
-function hgJournalNote(){
-  const el=document.getElementById("hg-j-cap");
-  const v=(el&&el.value||"").trim();
-  if(!v){ try{ toast("Write a line (or use 📷) first"); }catch(e){} return; }
-  harvestLog["h"+Date.now().toString(36)]={ ts:Date.now(), date:todayKey(), text:v };
-  saveHarvestLog();
-  try{ toast("🌾 Noted in the journal"); }catch(e){}
-  renderGarden();
-}
-function hgJournalAdd(inp){
-  const f=inp.files&&inp.files[0]; if(!f) return;
-  const cap=((document.getElementById("hg-j-cap")||{}).value||"").trim();
-  const rd=new FileReader();
-  rd.onload=function(){
-    const img=new Image();
-    img.onload=function(){
-      const shrink=function(maxW,q){
-        const sc=Math.min(1,maxW/img.width);
-        const c=document.createElement("canvas");
-        c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
-        c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-        return c.toDataURL("image/jpeg",q);
-      };
-      let durl=shrink(900,.72);
-      if(durl.length>220000) durl=shrink(640,.6);
-      if(durl.length>220000) durl=shrink(480,.5);
-      harvestLog["h"+Date.now().toString(36)]={ ts:Date.now(), date:todayKey(), text:cap, img:durl };
-      saveHarvestLog();
-      try{ toast("📸 Saved to the journal"); }catch(e){}
-      renderGarden();
-    };
-    img.onerror=function(){ try{ toast("⚠️ Couldn't read that image"); }catch(e){} };
-    img.src=String(rd.result);
-  };
-  rd.readAsDataURL(f);
-  inp.value="";
-}
-function hgJournalDel(id){ if(!confirm("Remove this entry?")) return; delete harvestLog[id]; saveHarvestLog(); renderGarden(); }
-(function(){
-  if(typeof renderGarden!=="function") return;
-  const orig=renderGarden;
-  renderGarden=function(){
-    orig();
-    try{
-      if(gardenSub==="harvest"){
-        const el=document.getElementById("view-garden");
-        if(el&&!document.getElementById("hg-journal")) el.insertAdjacentHTML("beforeend",hgJournalHtml());
-      }
-    }catch(e){}
-  };
-})();
-
-// ═══ 🏠 ROOM PHOTOS — shows automatically once images/room_<id>.jpg exists ═══
-function hgRoomPhotoHtml(roomId){
-  return '<div class="room-photo" style="display:none;margin:0 0 10px;border-radius:12px;overflow:hidden">'
-    +'<img src="images/room_'+roomId+'.jpg" alt="" loading="lazy" style="width:100%;height:120px;object-fit:cover;display:block" '
-    +'onload="this.parentNode.style.display=\'block\'" onerror="this.parentNode.remove()">'
-    +'</div>';
-}
-
-</script>
-<script>
-/* ═══ V2 wiring: bottom nav active state, deferred background photo, sync failsafe ═══ */
-(function(){
-  function mark(t){
-    document.querySelectorAll('#v2-nav .v2-bn').forEach(function(b){
-      b.classList.toggle('on', b.dataset.tab===t);
-    });
-  }
-  window.v2Go=function(t){ switchTab(t); window.scrollTo(0,0); };
-  var _v2OrigSwitch=switchTab;
-  switchTab=function(t){ _v2OrigSwitch(t); mark(t); };
-  mark(typeof currentTab!=='undefined'?currentTab:'today');
-
-  /* the SAME dusk photo as before — just layered in right after load instead of blocking first paint */
-  window.addEventListener('load',function(){
-    var im=new Image();
-    im.onload=function(){ document.body.classList.add('v2-bgphoto'); };
-    im.src="https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280";
-  });
-
-  /* never hang on "Syncing your schedule…" if Firebase is unreachable */
-  setTimeout(function(){
-    var f=document.getElementById('fb-loading');
-    if(f && f.style.display!=='none' && f.offsetParent!==null){
-      f.style.display='none';
-      try{ toast('⚠️ Working offline — changes may not sync'); }catch(e){}
-    }
-  },8000);
-})();
-</script>
 <div id="recipe-page" style="display:none;position:fixed;inset:0;z-index:200;overflow-y:auto;padding:16px 16px 40px;--text:#4a3526;--text2:#7c5c39;--text3:#9c7c50;--border:#dcc69a;--amber:#a85a23;--amber2:#8c3f17;--aborder:rgba(168,90,35,.30);background-color:#efe1c2;background-image:repeating-linear-gradient(0deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px),repeating-linear-gradient(90deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px)"></div>
+<script>
+/* v2-nav: fancy bottom tab bar (reconstructed Jun 13 2026 — original was lost in a file truncation).
+   Self-protecting: top nav is hidden via body.v2-nav-ready ONLY after this bar renders. */
+(function(){
+  try{
+    if(document.getElementById('v2-nav')) return;
+    var DEST=[
+      ['today','\u2600\ufe0f','Today'],['forecast','\ud83c\udf24\ufe0f','Forecast'],['rooms','\ud83c\udfe0','Rooms'],['timeline','\ud83d\udcc5','Timeline'],['garden','\ud83c\udf3f','Plants'],
+      ['shopping','\ud83e\udd90','Tank'],['grocery','\ud83c\udf7d\ufe0f','Food'],['print','\ud83e\uddca','Print'],['wellness','\ud83d\udc8a','Health'],['finance','\ud83d\udcb0','Finance']
+    ];
+    var nav=document.createElement('div'); nav.id='v2-nav';
+    [DEST.slice(0,5),DEST.slice(5)].forEach(function(row){
+      var rd=document.createElement('div'); rd.className='v2-row';
+      row.forEach(function(d){
+        var b=document.createElement('button'); b.type='button'; b.className='v2-bn'; b.setAttribute('data-tab',d[0]);
+        b.setAttribute('aria-label',d[2]);
+        b.innerHTML='<span class="ic">'+d[1]+'</span><span class="lb">'+d[2]+'</span><span class="dt"></span>';
+        b.addEventListener('click',function(){ try{ switchTab(d[0]); }catch(e){} v2Active(d[0]); });
+        rd.appendChild(b);
+      });
+      nav.appendChild(rd);
+    });
+    document.body.appendChild(nav);
+    function v2Active(t){ var bs=nav.querySelectorAll('.v2-bn'); for(var i=0;i<bs.length;i++){ bs[i].classList.toggle('on', bs[i].getAttribute('data-tab')===t); } }
+    window.__v2Active=v2Active;
+    if(typeof window.switchTab==='function'){ var _o=window.switchTab; window.switchTab=function(t){ var r=_o.apply(this,arguments); try{ v2Active(t); }catch(e){} return r; }; }
+    v2Active((typeof currentTab!=='undefined'&&currentTab)?currentTab:'today');
+    document.body.classList.add('v2-nav-ready');
+  }catch(e){ /* on any error, leave the original top nav visible as fallback */ }
+})();
+</script>
+
+<!-- 🎉 celebrations -->
+<script>
+// ═══ 🎉 CELEBRATIONS — a moment of delight for the healthy thing ══════════════
+// Version-agnostic, idempotent. Wraps whatever logging functions exist:
+//   💧 water · 🍽️ meals · 🌿 plant watering · 🍅 harvest · ✅ tasks · 💊 meds · 🔥 streaks
+// Honors prefers-reduced-motion (keeps the kind message, drops particles).
+(function(){
+  if (window.__hgCheerInstalled) return;
+  window.__hgCheerInstalled = true;
+  var RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function rec(e){ var p=(e.touches&&e.touches[0])||e; if(p&&p.clientX!=null) window.__hgTap={x:p.clientX,y:p.clientY,t:Date.now()}; }
+  document.addEventListener("pointerdown",rec,true);
+  document.addEventListener("touchstart",rec,true);
+  function buzz(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||12); }catch(e){} }
+
+  function style(){
+    if(document.getElementById("hg-cheer-style")) return;
+    var s=document.createElement("style"); s.id="hg-cheer-style";
+    s.textContent=
+      "#hg-cheer{position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:hidden}"
+     +".hg-pt{position:absolute;will-change:transform,opacity;line-height:1;opacity:0;transform:translate(-50%,-50%)}"
+     +"@keyframes hg-rise{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% - 58px)) scale(1)}}"
+     +"@keyframes hg-fly{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}12%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,0px))) scale(var(--s,1)) rotate(var(--r,0deg))}}"
+     +"@keyframes hg-ring{0%{opacity:.6;transform:translate(-50%,-50%) scale(.25)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.9)}}"
+     +"@keyframes hg-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}32%{opacity:1;transform:translate(-50%,-50%) scale(1.28)}68%{transform:translate(-50%,-50%) scale(.94)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.06)}}";
+    document.head.appendChild(s);
+  }
+  function layer(){ var el=document.getElementById("hg-cheer"); if(!el){ el=document.createElement("div"); el.id="hg-cheer"; document.body.appendChild(el); } return el; }
+  function spawn(x,y,cfg){
+    if(RM) return; style(); var L=layer();
+    if(cfg.ring){ var r=document.createElement("div"); var d=cfg.ringSize||96;
+      r.style.cssText="position:absolute;border-radius:50%;left:"+x+"px;top:"+y+"px;width:"+d+"px;height:"+d+"px;border:2px solid "+cfg.color+";box-shadow:0 0 18px "+cfg.color+"88;animation:hg-ring .72s ease-out forwards";
+      L.appendChild(r); setTimeout(function(){ r.remove(); },800); }
+    if(cfg.pop){ var p=document.createElement("div"); p.className="hg-pt"; p.textContent=cfg.pop;
+      p.style.cssText="left:"+x+"px;top:"+y+"px;font-size:"+(cfg.popSize||34)+"px;filter:drop-shadow(0 0 9px "+cfg.color+"aa);animation:hg-pop .8s ease-out forwards";
+      L.appendChild(p); setTimeout(function(){ p.remove(); },840); }
+    var n=cfg.count||6;
+    for(var i=0;i<n;i++){
+      var pt=document.createElement("div"); pt.className="hg-pt"; pt.textContent=cfg.glyphs[i%cfg.glyphs.length];
+      var sz=(cfg.size||15)+Math.random()*(cfg.sizeVar||9), dur=(cfg.dur||0.85)+Math.random()*0.45;
+      var st="left:"+x+"px;top:"+y+"px;font-size:"+sz.toFixed(0)+"px;";
+      if(cfg.rise){ var dx=(Math.random()-0.5)*(cfg.spread||56);
+        st+="--dx:"+dx.toFixed(0)+"px;animation:hg-rise "+dur.toFixed(2)+"s ease-out forwards;animation-delay:"+(i*0.045).toFixed(2)+"s";
+      } else { var ang=Math.random()*Math.PI*2, rad=(cfg.spread||72)*(0.45+Math.random()*0.55), fx=Math.cos(ang)*rad, fy=Math.sin(ang)*rad-(cfg.up||0);
+        st+="--dx:"+fx.toFixed(0)+"px;--dy:"+fy.toFixed(0)+"px;--r:"+((Math.random()-0.5)*120).toFixed(0)+"deg;--s:"+(0.7+Math.random()*0.5).toFixed(2)+";animation:hg-fly "+dur.toFixed(2)+"s cubic-bezier(.2,.7,.3,1) forwards;animation-delay:"+(i*0.025).toFixed(2)+"s"; }
+      pt.style.cssText+=st; L.appendChild(pt);
+      (function(el,life){ setTimeout(function(){ el.remove(); },life); })(pt,(dur+0.35)*1000+i*45);
+    }
+  }
+  function at(){ var t=window.__hgTap; if(t && (Date.now()-t.t)<4000) return {x:t.x,y:t.y}; return {x:window.innerWidth/2, y:Math.round(window.innerHeight*0.42)}; }
+  function say(m){ try{ if(typeof toast==="function") toast(m); }catch(e){} }
+
+  window.hgCheer = function(kind,o){
+    o=o||{}; var c=at(), x=c.x, y=c.y, me=o.emoji;
+    buzz(kind==="meal-complete"||kind==="water-goal"||kind==="streak" ? [10,40,18] : 12);
+    if(kind==="water")          spawn(x,y,{glyphs:["💧","💧","💦"],count:5,rise:true,spread:54,color:"#38BDF8"});
+    else if(kind==="water-goal"){ spawn(x,y,{glyphs:["💧","💦","✨","💧"],count:14,spread:98,up:30,color:"#38BDF8",ring:true,ringSize:92,pop:"💧",popSize:40}); say("💧 Water goal met — nicely hydrated"); }
+    else if(kind==="meal-ontime"){ spawn(x,y,{glyphs:["✨","🌟",me||"🍽️","✨"],count:11,spread:90,up:24,color:"#F5B830",ring:true,ringSize:86,pop:me||"🍽️",popSize:34}); say("🍽️ Right on time — that's the rhythm"); }
+    else if(kind==="meal-late"){ spawn(x,y,{glyphs:["✨","🌱"],count:5,rise:true,spread:50,color:"#B47C14"}); say("🌱 Logged — every meal counts"); }
+    else if(kind==="meal-complete"){ spawn(x,y,{glyphs:["🎉","✨","🌟",me||"🍽️","💛"],count:18,spread:122,up:42,color:"#F5B830",ring:true,ringSize:112,pop:"🎉",popSize:42}); say("🎉 All three meals today — beautifully done"); }
+    else if(kind==="plant")     spawn(x,y,{glyphs:["🌿","🌱","💧","✨"],count:8,spread:74,up:18,color:"#4ADE80",ring:true,ringSize:78});
+    else if(kind==="plant-all"){ spawn(x,y,{glyphs:["🌿","🌱","💧","✨","🍃"],count:16,spread:116,up:34,color:"#4ADE80",ring:true,ringSize:104,pop:"🌿",popSize:38}); say("🌿 Whole bunch watered — they'll love you"); }
+    else if(kind==="harvest"){ spawn(x,y,{glyphs:["🍅","🥬","🌶️","🫑","✨"],count:13,spread:104,up:30,color:"#F97316",ring:true,ringSize:94,pop:me||"🧺",popSize:38}); say("🧺 Harvested — fruits of your patience"); }
+    else if(kind==="task")      spawn(x,y,{glyphs:["✨","✅"],count:4,spread:46,up:14,color:"#A3E635"});
+    else if(kind==="med")       spawn(x,y,{glyphs:["✨","💊","✅"],count:5,spread:52,up:16,color:"#818CF8"});
+    else if(kind==="streak"){ spawn(x,y,{glyphs:["🔥","✨","🔥","⭐"],count:16,spread:118,up:40,color:"#FB923C",ring:true,ringSize:108,pop:"🔥",popSize:44}); say("🔥 "+(o.days||"")+"-day streak — you're on fire"); }
+  };
+
+  function wrap(name, before, after){
+    var fn = window[name]; if(typeof fn!=="function") return;
+    window[name] = function(){ var ctx={args:arguments}; try{ if(before) before(ctx); }catch(e){}
+      var r = fn.apply(this, arguments); try{ if(after) after(ctx); }catch(e){} return r; };
+  }
+  function key(){ try{ return todayKey(); }catch(e){ return ""; } }
+  function milestone(n){ return n===7||n===14||n===30||n===50||n===100; }
+
+  wrap("waterAdd",
+    function(c){ try{ c.before=waterCount(); }catch(e){ c.before=0; } },
+    function(c){ try{ var a=waterCount(), g=waterGoal(); if(a>c.before) hgCheer(a===g?"water-goal":"water"); }catch(e){} });
+
+  wrap("toggleMeal",
+    function(c){ var m=c.args[0]; c.k="meal-"+m+"-"+key(); c.was=!!laundry[c.k]; c.meal=m; },
+    function(c){ if(!laundry[c.k]||c.was) return;
+      var A=(typeof MEAL_ANCHORS!=="undefined")?MEAL_ANCHORS.find(function(z){return z.id===c.meal;}):null;
+      var now=new Date(), mins=now.getHours()*60+now.getMinutes();
+      var on=(A&&A.winStart!=null&&A.winEnd!=null)?(mins>=A.winStart&&mins<=A.winEnd):true;
+      var done=0; try{ done=mealsEaten(key()); }catch(e){}
+      if(done>=3) hgCheer("meal-complete",{emoji:A&&A.emoji});
+      else if(on) hgCheer("meal-ontime",{emoji:A&&A.emoji});
+      else        hgCheer("meal-late",{emoji:A&&A.emoji}); });
+
+  wrap("waterPlant",
+    function(c){ var id=c.args[0]; c.fresh = !(typeof watered!=="undefined" && watered[id]===key()); },
+    function(c){ if(c.fresh) hgCheer("plant"); });
+  wrap("waterPlantGroup", null, function(){ hgCheer("plant-all"); });
+  wrap("harvestPlant",
+    function(c){ var id=c.args[0]; c.on = !(typeof harvested!=="undefined" && harvested[id]===key()); },
+    function(c){ if(c.on) hgCheer("harvest"); });
+  wrap("toggle",
+    function(c){ var id=c.args[0]; c.willOn = !(typeof checked!=="undefined" && checked[id]); },
+    function(c){ if(c.willOn) hgCheer("task"); });
+  wrap("toggleWellness",
+    function(c){ c.id=c.args[0]; c.k="well-"+c.id+"-"+key(); c.was=!!laundry[c.k]; },
+    function(c){ if(!laundry[c.k]||c.was) return;
+      var st=0; try{ st=streakOf("well-"+c.id+"-"); }catch(e){}
+      if(milestone(st)) hgCheer("streak",{days:st}); else hgCheer("med"); });
+})();
+</script>
 </body>
 </html>
