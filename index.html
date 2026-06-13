@@ -586,7 +586,6 @@ body::after{
    a bottom tab bar with EVERY destination visible, a readability/touch
    pass, and perf fixes. Delete this block + the v2-nav markup/script
    at the end of body to fully revert. */
-body{ padding-bottom:150px; } /* room for the two-row bottom bar */
 body.v2-bgphoto{
   background-image:linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280");
 }
@@ -594,8 +593,6 @@ body.v2-bgphoto{
 .hdr-clock{ white-space:nowrap; }
 
 /* ── Primary nav moves to the bottom bar; top bar keeps only subtab rows ── */
-.navbar .util-row, .navbar .tabs{ display:none; }
-.navbar{ background:transparent; border-bottom:none; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
 .tabs-secondary{ background:rgba(9,8,14,.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-top:none; border-bottom:1px solid rgba(255,255,255,.07); }
 .tab-secondary{ font-size:11px; padding:13px 0 12px; opacity:.6; }
 .tab-secondary.active{ opacity:1; }
@@ -767,7 +764,7 @@ body.v2-bgphoto{
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260613075041"></script>
+<script src="./data.js?v=20260613085728"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -779,7 +776,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 13 · 7:50 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 13 · 8:57 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
