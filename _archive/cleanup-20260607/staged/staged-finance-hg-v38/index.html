@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v2: original header kept · two-row bottom tab bar (all destinations) · bigger type · instant-load background -->
+<!DOCTYPE html><!-- v2 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,23 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Garden">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Schedule 📅</title><!-- TITLE TAG — matches CONFIG.title above -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-<style>
-/* 🍴 Cy's Recipe Box — grandma's-kitchen theme (recipe surfaces ONLY) */
-.gk-surface{
-  background-color:#f3e7cd;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(176,72,56,.085) 0 16px, rgba(176,72,56,0) 16px 32px),
-    repeating-linear-gradient(90deg, rgba(176,72,56,.085) 0 16px, rgba(176,72,56,0) 16px 32px);
-  border:1px solid #e2cfa3; border-radius:16px;
-  padding:14px 12px 26px; margin:2px 0 6px;
-  box-shadow:inset 0 0 70px rgba(120,80,30,.07);
-}
-.gk-surface .section-label{ color:#8a5a2a; }
-.gk-surface .section-label::before{ background:linear-gradient(90deg,transparent,rgba(140,74,30,.4)) !important; }
-.gk-surface .section-label::after{ background:linear-gradient(270deg,transparent,rgba(140,74,30,.4)) !important; }
-.gk-title{ font-family:'Caveat',cursive; font-weight:700; letter-spacing:.5px; }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:       #06050A;
@@ -52,8 +36,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 
 body{
-  /* v2 perf: base color paints instantly — the SAME dusk photo is layered back in by JS right after load (see v2 script at end of body) */
-  background:#06050A;
+  background:linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280");
   background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;
   color:var(--text);
   font-family:'Lora',Georgia,serif;
@@ -543,35 +526,19 @@ body::after{
   .header-row{flex-wrap:wrap;gap:8px}
   .hdr-center{order:-1;flex:1 1 100%;width:100%;align-items:center;padding-top:0}
   .header-eyebrow{margin:0 0 9px;font-size:8px;letter-spacing:.2em;line-height:1.5}
-  .hdr-left{flex:1 1 55%;min-width:145px}
-  /* Jun 7 fix: weather card must be allowed to SHRINK (flex 0 1 + min-width:0), not just sit at auto width —
-     with 3-digit temps/long wx rows it overflowed and shoved the greeting column into a wrap/overlap mess */
-  .hdr-right{flex:0 1 auto;min-width:0}
+  .hdr-left{flex:1 1 58%;min-width:150px}
+  .hdr-right{flex:0 0 auto}
   .hdr-clock{font-size:30px}
-  .hdr-fact{max-width:170px;font-size:10px;margin-top:7px}
-  .hdr-weather{padding:7px 10px;max-width:100%}
-  .wx-now{font-size:19px}
-  .wx-row{font-size:10.5px}
-  .wx-tom{font-size:10px}
+  .hdr-fact{max-width:200px;font-size:10px;margin-top:7px}
+  .hdr-weather{padding:8px 11px}
   .hdr-trackers{gap:10px;margin-top:8px}
-  /* Jun 7 fix: the pill row (incl. the live-temp Forecast pill) had no wrap — on ≤400px phones it overflowed
-     the left edge (flex-end + nowrap). Let it wrap, centered; pills keep full tap height */
-  .navbar .util-row{padding:5px 10px 0;flex-wrap:wrap;justify-content:center;gap:6px}
-  .util-pill{font-size:9.5px;padding:5px 11px}
-  /* 6 main tabs since the Finance tab — tighten so they fit a 360px screen without crowding */
-  .tab{font-size:9px;letter-spacing:.06em}
+  .navbar .util-row{padding:5px 12px 0}
   .navbar{box-shadow:0 4px 14px rgba(0,0,0,.4)}
 }
 @keyframes sinkIn{0%{opacity:0;transform:translateY(-16px) scale(.97)}55%{opacity:1;transform:translateY(3px) scale(1.01)}100%{opacity:1;transform:none}}
 @keyframes glowPulse{0%{box-shadow:0 0 0 rgba(16,185,129,0)}40%{box-shadow:0 0 26px rgba(16,185,129,.45)}100%{box-shadow:0 0 0 rgba(16,185,129,0)}}
 @keyframes dtTestPulse{0%,100%{box-shadow:0 0 10px rgba(245,184,48,.25)}50%{box-shadow:0 0 30px rgba(245,184,48,.6)}}
 @keyframes dtCallPulse{0%,100%{box-shadow:0 0 10px rgba(220,30,30,.25)}50%{box-shadow:0 0 32px rgba(220,30,30,.65)}}
-/* ── 💧 HABITS: water fill, tap feedback, ring (added Jun 9 2026) ── */
-@keyframes hgWaterTap{0%{transform:scale(1)}45%{transform:scale(.94)}100%{transform:scale(1)}}
-.hg-water-glass{transition:transform .2s}
-.hg-water-glass:active{animation:hgWaterTap .35s cubic-bezier(.34,1.56,.64,1)}
-.hg-water-fill{transition:height .65s cubic-bezier(.22,1,.36,1)}
-.hg-pill{transition:all .3s ease}
 .flow-just-done{animation:sinkIn .5s cubic-bezier(.34,1.56,.64,1),glowPulse 1.2s ease-out;border-radius:var(--rad)}
 /* ── 🔒 PASSWORD CURTAIN (privacy curtain, not security) ── */
 #curtain{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:#060d1c center/cover no-repeat}
@@ -580,84 +547,8 @@ body::after{
 #curtain-pass{width:100%;box-sizing:border-box;background:rgba(6,13,28,.75);border:1px solid rgba(120,160,210,.35);border-radius:12px;padding:13px 16px;color:#EAF2FB;font-size:17px;letter-spacing:.25em;text-align:center;outline:none;font-family:'Lora',serif}
 #curtain-pass:focus{border-color:rgba(56,189,248,.6);box-shadow:0 0 18px rgba(56,189,248,.15)}
 </style>
-<style id="v2-overrides">
-/* ═══════════════ V2 OVERRIDES ═══════════════
-   Original header/atmosphere untouched. This layer only adds:
-   a bottom tab bar with EVERY destination visible, a readability/touch
-   pass, and perf fixes. Delete this block + the v2-nav markup/script
-   at the end of body to fully revert. */
-body.v2-bgphoto{
-  background-image:linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280");
-}
-/* small v1 bug fix: never let the clock wrap "PM" onto the date line */
-.hdr-clock{ white-space:nowrap; }
-
-/* ── Primary nav moves to the bottom bar; top bar keeps only subtab rows ── */
-body.v2-nav-ready{ padding-bottom:150px; }
-body.v2-nav-ready .navbar .util-row, body.v2-nav-ready .navbar .tabs{ display:none; }
-body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
-.tabs-secondary{ background:rgba(9,8,14,.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-top:none; border-bottom:1px solid rgba(255,255,255,.07); }
-.tab-secondary{ font-size:11px; padding:13px 0 12px; opacity:.6; }
-.tab-secondary.active{ opacity:1; }
-#v2-nav{ position:fixed; left:0; right:0; bottom:0; z-index:300;
-  background:rgba(9,8,14,.96); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border-top:1px solid rgba(255,255,255,.09);
-  box-shadow:0 -8px 30px rgba(0,0,0,.5);
-  padding:5px 4px calc(7px + env(safe-area-inset-bottom,0px)); }
-#v2-nav .v2-row{ display:flex; }
-#v2-nav .v2-row + .v2-row{ border-top:1px solid rgba(255,255,255,.045); margin-top:2px; padding-top:2px; }
-.v2-bn{ flex:1; background:none; border:none; cursor:pointer; min-height:46px; padding:0;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
-  font-family:'Lora',serif; color:var(--text2); -webkit-tap-highlight-color:transparent; }
-.v2-bn .ic{ font-size:17px; line-height:1; opacity:.55; filter:grayscale(.45); transition:opacity .15s,filter .15s; }
-.v2-bn .lb{ font-size:9.5px; letter-spacing:.04em; white-space:nowrap; }
-.v2-bn .dt{ width:4px; height:4px; border-radius:50%; background:transparent; }
-.v2-bn.on{ color:var(--amber2); text-shadow:0 0 12px rgba(240,168,32,.45); }
-.v2-bn.on .ic{ opacity:1; filter:none; }
-.v2-bn.on .dt{ background:var(--amber2); box-shadow:0 0 10px var(--amber2); }
-
-/* ── Readability & touch pass (sizes only — all the glow stays) ── */
-.task-text{ font-size:15.5px; line-height:1.5; }
-.alert-title{ font-size:16px; }
-.alert-sub{ font-size:12.5px; }
-.habit-label{ font-size:15.5px; }
-.habit-sub{ font-size:12px; }
-.checkbox{ width:27px; height:27px; border-radius:9px; }
-.habit-check, .alert-check{ width:30px; height:30px; }
-.task-item{ padding:13px 0; }
-.task-detail{ font-size:13.5px; }
-.detail-toggle{ font-size:12px; padding:6px 0; display:inline-block; }
-.trim-toggle{ font-size:12px; }
-.tl-task{ font-size:14px; }
-.room-name-txt{ font-size:17px; }
-.room-sub-txt{ font-size:12.5px; }
-.plant-name{ font-size:16px; }
-.plant-freq{ font-size:12.5px; }
-.water-btn{ font-size:12.5px; padding:9px 15px; }
-.push-btn{ font-size:11px; padding:7px 12px; }
-.print-step-label{ font-size:14px; }
-.print-step-sub{ font-size:12px; }
-/* floor for the tiniest inline-styled labels generated by JS */
-.content [style*="font-size:9px"], .content [style*="font-size:9.5px"]{ font-size:10.5px !important; }
-.content [style*="font-size:10px"]{ font-size:11px !important; }
-
-/* — v2 feature styles: sleep inputs + quality moons — */
-.hg-time{ background:rgba(0,0,0,.3); border:1px solid rgba(167,139,250,.4); border-radius:10px;
-  padding:10px 12px; color:var(--text); font-size:16px; font-family:'Lora',serif; color-scheme:dark; }
-.hg-moon{ font-size:22px; cursor:pointer; opacity:.22; transition:opacity .15s, transform .15s;
-  filter:drop-shadow(0 0 6px rgba(167,139,250,.7)); -webkit-tap-highlight-color:transparent; }
-.hg-moon.on{ opacity:1; transform:scale(1.12); }
-
-@media (prefers-reduced-motion:reduce){ .view-animate{ animation:none; } }
-@media (max-width:560px){
-  .tab-secondary{ font-size:10px; letter-spacing:.05em; }
-  .v2-bn .lb{ font-size:9px; }
-  .v2-bn .ic{ font-size:16px; }
-}
-</style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -669,21 +560,6 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
     <form onsubmit="return curtainTry(event)" style="margin:0">
       <input id="curtain-pass" type="password" autocomplete="off" autocapitalize="none" placeholder="password">
     </form>
-  </div>
-</div>
-
-<!-- 🔒 SIGN-IN — appears only once the Firebase rules are locked (see FIREBASE_SECURITY_SETUP.md) -->
-<div id="hg-login" style="display:none;position:fixed;inset:0;z-index:10001;align-items:center;justify-content:center;background:linear-gradient(rgba(4,10,22,.8),rgba(4,10,22,.9)),#060d1c">
-  <div id="hg-login-box" style="width:min(330px,86vw);background:linear-gradient(160deg,rgba(10,22,40,.92),rgba(6,13,28,.95));border:1px solid rgba(120,160,210,.25);border-radius:18px;padding:30px 26px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.55)">
-    <div style="font-size:36px;margin-bottom:6px">🏔️</div>
-    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#EAF2FB;margin-bottom:5px">Home &amp; Garden</div>
-    <div style="font-size:11.5px;color:#8fb6da;font-family:'Lora',serif;font-style:italic;margin-bottom:16px">Locked &amp; synced — sign in once per device</div>
-    <form onsubmit="return hgLoginTry(event)" style="margin:0;display:flex;flex-direction:column;gap:10px">
-      <input id="hg-login-email" type="email" autocomplete="username" autocapitalize="none" placeholder="email" style="width:100%;box-sizing:border-box;background:rgba(6,13,28,.75);border:1px solid rgba(120,160,210,.35);border-radius:12px;padding:13px 16px;color:#EAF2FB;font-size:15px;text-align:center;outline:none;font-family:'Lora',serif">
-      <input id="hg-login-pass" type="password" autocomplete="current-password" placeholder="password" style="width:100%;box-sizing:border-box;background:rgba(6,13,28,.75);border:1px solid rgba(120,160,210,.35);border-radius:12px;padding:13px 16px;color:#EAF2FB;font-size:15px;letter-spacing:.15em;text-align:center;outline:none;font-family:'Lora',serif">
-      <button type="submit" style="background:rgba(56,189,248,.16);border:1px solid rgba(56,189,248,.5);border-radius:12px;padding:13px;color:#7DD3FC;font-size:14px;font-weight:700;font-family:'Lora',serif;cursor:pointer;min-height:46px">Unlock</button>
-    </form>
-    <div id="hg-login-msg" style="font-size:11.5px;color:#fda4af;margin-top:10px;font-family:'Lora',serif;min-height:14px"></div>
   </div>
 </div>
 
@@ -767,8 +643,8 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260613124106"></script>
-<script src="./recipes.js?v=20260611075715"></script>
+<script src="./data.js?v=20260606174945"></script>
+<script src="./recipes.js?v=20260606134632"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -779,7 +655,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 13 · 12:41 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 6 · 5:50 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -827,7 +703,6 @@ let inventory = {};
 let grocPurchased = {};
 let recipeServ = {};
 let recipeQuery = "";
-let recipeCat = null; // 🍴 transient Recipe Box nav: null=tiles, "__doggy", or "cat:<Category>"
 const GROC_BUILTIN=[{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
 let printCustom = {};
 let taskCustom = {};
@@ -836,11 +711,7 @@ let litfulo = {};
 let zoey = {};
 let fin = {};
 let cookQueue = {};  // 🍳 planned recipes: {rid,day,meal,done}
-let habits = {};     // 💧 water + forgiving habit-streak state (water counts/goal/serving, freeze tokens)
 let wishCustom = {}; // 💎 big-ticket wishlist: {t,done}   // 💰 finance state: bal/debt history, bills paid, cancels verified, to-dos
-let rollovers = {}; // 🔁 user rollover tasks {id:{label,created,done?}} — stay on Today until checked, carry forward daily
-let sleep = {};      // 😴 sleep log {YYYY-MM-DD(wake date):{bed,wake,mins,q,src}} + _prefs (reminders) — see v2-features.js
-let harvestLog = {}; // 📸 harvest journal {id:{ts,date,text,img?}} — see v2-features.js
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -870,9 +741,6 @@ function saveLit(){ ST.child('litfulo').set(litfulo); }
 function saveZoey(){ ST.child('zoey').set(zoey); }
 function saveFin(){ ST.child('fin').set(fin); }
 function saveCook(){ ST.child('cookQueue').set(cookQueue); }
-function saveHabits(){ try{ ST.child('habits').set(habits); }catch(e){} }
-function saveSleep(){ try{ ST.child('sleep').set(sleep); }catch(e){} }
-function saveHarvestLog(){ try{ ST.child('harvestLog').set(harvestLog); }catch(e){} }
 function saveWish(){ ST.child('wishCustom').set(wishCustom); }
 function addWish(){ const el=document.getElementById('wishInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; wishCustom['w-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={t:v,done:false}; el.value=''; saveWish(); renderPrint(); }
 function toggleWish(id){ if(!wishCustom[id]) return; wishCustom[id].done=!wishCustom[id].done; saveWish(); renderPrint(); }
@@ -884,9 +752,6 @@ function zoeyDayN(){ if(!zoey.startDate) return 0; return Math.floor((new Date(t
 function zoeyMix(n){ if(n<=3) return {h:25,f:75,phase:'Days 1–3'}; if(n<=6) return {h:50,f:50,phase:'Days 4–6'}; if(n<=9) return {h:75,f:25,phase:'Days 7–9'}; return {h:100,f:0,phase:'Days 10–12'}; }
 function toggleExpand(id){ expanded[id]=!expanded[id]; ST.child('expanded').set(expanded); renderAll(); }
 function toggleEvening(habit){ const k="evening-"+habit+"-"+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
-// 🌙 Bedtime wind-down — ONE tap locks reading hour + lights out + phone-away together (he taps as he sets the phone down, can't come back to check off) (added Jun 9 2026)
-function windDownDone(){ const k=todayKey(); return !!(laundry["evening-wind-phone-"+k] && laundry["evening-wind-read-"+k] && laundry["evening-wind-lights-"+k]); }
-function toggleWindDown(){ const k=todayKey(); const v=!windDownDone(); ["evening-wind-phone-","evening-wind-read-","evening-wind-lights-"].forEach(function(x){ laundry[x+k]=v; }); saveLaundry(); renderAll(); }
 function toggleReset(k){ const key="reset-"+k+"-"+todayKey(); laundry[key]=!laundry[key]; saveLaundry(); renderAll(); }
 function toggleTankDaily(k){ const key="tankd-"+k+"-"+todayKey(); laundry[key]=!laundry[key]; saveLaundry(); renderAll(); }  // 🪲 dry-terrarium daily care (date-keyed, resets daily)  // 🔄 sleep-reset one-offs (date-keyed, auto-expire)
 function saveShopping(){ ST.child('shopping').set(shopping); }
@@ -959,63 +824,6 @@ function saveTrimmed(){ ST.child('trimmed').set(trimmed); }
 function saveHarvested(){ ST.child('harvested').set(harvested); }
 function harvestPlant(id){ if(harvested[id]===todayKey()) delete harvested[id]; else harvested[id]=todayKey(); saveHarvested(); renderAll(); }
 function toggleFunPrint(id){ funPrints[id]=funPrints[id]?null:1; saveFunPrints(); renderAll(); }
-// ── 🔔 in-app reminders: done-state in laundry. dateKeyed=true => per-day key (recurring); else one-shot ──
-function reminderKey(id,dateKeyed){ return dateKeyed?("rem-"+id+"-"+todayKey()):("rem-"+id); }
-function reminderDone(id,dateKeyed){ return !!laundry[reminderKey(id,dateKeyed)]; }
-function toggleReminder(id,dateKeyed){ const k=reminderKey(id,dateKeyed); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
-// 🚙 DMV appointment date (editable); the daily reminder runs through it then retires
-function dmvApptDate(){ return laundry["dmv-appt"] || ((typeof DMV!=="undefined"&&DMV.defaultDate)||"2026-06-25"); }
-function updateDmvAppt(){ const cur=dmvApptDate(); const d=prompt("Got an earlier DMV slot? Enter the new appointment date (YYYY-MM-DD):",cur); if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d)){ laundry["dmv-appt"]=d; saveLaundry(); renderAll(); } else if(d){ try{toast("Use YYYY-MM-DD, e.g. 2026-06-20");}catch(e){} } }
-// 📋 print silica: weekly recurring check
-function isoWeekKey(){ const d=new Date(); const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=dt.getUTCDay()||7; dt.setUTCDate(dt.getUTCDate()+4-day); const ys=new Date(Date.UTC(dt.getUTCFullYear(),0,1)); const wk=Math.ceil((((dt-ys)/86400000)+1)/7); return dt.getUTCFullYear()+"-W"+String(wk).padStart(2,"0"); }
-function togglePrintSilica(){ const k="print-silica-"+isoWeekKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
-// shared reminder card (active) — money reminders DISPLAY their account
-function reminderCardHtml(emoji,text,account,onclick,extra){
-  return '<div style="background:linear-gradient(135deg,rgba(56,189,248,.12),rgba(56,189,248,.03));border:1px solid rgba(56,189,248,.4);border-left:4px solid #38BDF8;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">'
-    +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#38BDF8;margin-bottom:6px;font-family:\'Lora\',serif">🔔 Reminder</div>'
-    +'<div style="display:flex;align-items:center;gap:13px">'
-      +'<div style="font-size:22px;flex-shrink:0">'+emoji+'</div>'
-      +'<div style="flex:1;min-width:0">'
-        +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3">'+text+'</div>'
-        +(account?'<div style="display:inline-block;margin-top:6px;font-size:11px;color:#7DD3FC;font-family:\'Lora\',serif;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);border-radius:20px;padding:2px 10px">💳 '+account+'</div>':'')
-        +(extra||'')
-      +'</div>'
-      +'<div onclick="'+onclick+'" style="width:28px;height:28px;border-radius:50%;border:2px solid #38BDF8;background:transparent;flex-shrink:0;cursor:pointer"></div>'
-    +'</div>'
-  +'</div>';
-}
-// ── 🔁 ROLLOVER TASKS (added Jun 10 2026) — user-addable tasks that STAY on Today every day until checked off.
-// An unfinished one carries forward day after day (never silently disappears), with a "carried over · day N" badge.
-// State lives in the `rollovers` Firebase node: {id:{label,created,done?}}. `done` holds the date it was completed
-// (it shows in the done pile that day, then it's gone). Tapping a done one again clears `done` and it returns.
-function saveRollovers(){ ST.child('rollovers').set(rollovers); }
-function addRollover(){
-  const v=(prompt("New rollover task — it stays on Today every day until you check it off:")||"").trim();
-  if(!v) return;
-  const id='ro-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-  rollovers[id]={label:v,created:todayKey()};
-  saveRollovers(); renderAll();
-  try{ toast("🔁 Added — it'll roll over until you check it off"); }catch(e){}
-}
-function toggleRollover(id){ const ro=rollovers[id]; if(!ro) return; if(ro.done) delete ro.done; else ro.done=todayKey(); saveRollovers(); renderAll(); }
-function removeRollover(id){ if(!rollovers[id]) return; if(!confirm("Remove this rollover task for good?")) return; delete rollovers[id]; saveRollovers(); renderAll(); }
-function rolloverCardHtml(id,label,carried,dayN,createdLabel){
-  const badge=carried
-    ? '<div style="display:inline-block;margin-bottom:7px;font-size:9px;text-transform:uppercase;letter-spacing:.18em;color:#F59E0B;font-family:\'Lora\',serif;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.32);border-radius:20px;padding:2px 10px">🔁 Carried over · day '+dayN+'</div>'
-    : '<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#F59E0B;margin-bottom:6px;font-family:\'Lora\',serif">🔁 Rolls over until done</div>';
-  return '<div style="background:linear-gradient(135deg,rgba(245,158,11,.13),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.4);border-left:4px solid #F59E0B;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">'
-    +badge
-    +'<div style="display:flex;align-items:center;gap:13px">'
-      +'<div style="font-size:22px;flex-shrink:0">🔁</div>'
-      +'<div style="flex:1;min-width:0">'
-        +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3">'+label+'</div>'
-        +'<div class="habit-sub">'+(carried?("Still here from "+createdLabel+" — it won't disappear until you check it off."):"Won't disappear until you check it off.")+'</div>'
-      +'</div>'
-      +'<button onclick="removeRollover(\''+id+'\')" title="Remove for good" style="background:none;border:none;color:var(--text3);font-size:18px;line-height:1;cursor:pointer;padding:0 4px;flex-shrink:0">×</button>'
-      +'<div onclick="toggleRollover(\''+id+'\')" style="width:28px;height:28px;border-radius:50%;border:2px solid #F59E0B;background:transparent;flex-shrink:0;cursor:pointer"></div>'
-    +'</div>'
-  +'</div>';
-}
 function trimPlant(id){ trimmed[id]=todayKey(); saveTrimmed(); renderAll(); }
 function daysSinceTrimmed(id){ if(!trimmed[id]) return null; return Math.round((new Date(todayKey()+"T12:00:00")-new Date(trimmed[id]+"T12:00:00"))/86400000); }
 function plantsTrimDueOn(dateStr){ return PLANTS.filter(p=>p.trimDays&&(()=>{ if(!trimmed[p.id]) return true; const d=Math.round((new Date(dateStr+"T12:00:00")-new Date(trimmed[p.id]+"T12:00:00"))/86400000); return d>=p.trimDays; })()); }
@@ -1086,7 +894,7 @@ function toggle(id)  { checked[id]=!checked[id]; save(); renderAll(); }
 function toggleLaundry() { const k=todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
 function waterPlant(id)  { watered[id]=todayKey(); saveW(); renderAll(); }
 
-const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
+const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -1094,8 +902,7 @@ function nextSched()  { return SCHEDULE.find(s=>s.date>todayKey()&&!s.off&&s.tas
 
 function daysSinceWatered(id) {
   if(!watered[id]) return null;
-  // count calendar days (noon-to-noon) so "Nd ago" matches the due logic in plantsDueOn (was Math.floor from now, which under-counted by a day during the morning)
-  return Math.round((new Date(todayKey()+"T12:00:00")-new Date(watered[id]+"T12:00:00"))/86400000);
+  return Math.floor((new Date()-new Date(watered[id]+"T12:00:00"))/86400000);
 }
 function waterStatus(p) {
   const d=daysSinceWatered(p.id);
@@ -1108,7 +915,7 @@ function waterStatus(p) {
 let gardenSub = "watering";
 let tankSub = "bluedream";
 let printSub = "todo";
-let finSub   = "todos";     // 💰 finance sub-tab — ✅ To-dos leads
+let finSub   = "overview";  // 💰 finance sub-tab
 let sunSkips = [];          // 📅 Sunday dinner proposals — rids swapped away this session (transient)
 let finMonBalIdx = -1;      // 💳 Monday balance fold-in stepper: -1 closed, 0..n step (transient)
 let foodSub = "list";
@@ -1139,7 +946,7 @@ function renderSubtabs(t) {
   else if(t==="shopping"){ subs=[["bluedream","🦐 Blue Dream"],["tall","📏 Tall"],["wide","📐 Wide"],["dry","🏜️ Dry"]]; cur=tankSub; fn="switchTankSub"; }
   else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","💎 Wishlist"],["ideas","💡 Ideas"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
   else if(t==="grocery"){ subs=[["list","🛒 List"],["inventory","🧺 Inventory"],["recipebox","📖 Recipes"],["tocook","🍳 To Cook"]]; cur=foodSub; fn="switchFoodSub"; }
-  else if(t==="finance"){ subs=[["todos","✅ To-dos"],["overview","📊 Overview"],["bills","📅 Bills"],["debts","❄️ Debts"],["mondays","📞 Mondays"],["coach","🧠 Coach"],["sideincome","💸 Side Income"]]; cur=finSub; fn="switchFinSub"; }
+  else if(t==="finance"){ subs=[["overview","📊 Overview"],["bills","📅 Bills"],["debts","❄️ Debts"],["mondays","📞 Mondays"],["todos","✅ To-dos"],["coach","🧠 Coach"]]; cur=finSub; fn="switchFinSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
 }
@@ -1148,7 +955,6 @@ function switchTankSub(x) { tankSub=x; renderSubtabs("shopping"); renderShopping
 function switchPrintSub(x) { printSub=x; renderSubtabs("print"); renderPrint(); }
 function switchFoodSub(x) { foodSub=x; renderSubtabs("grocery"); renderGrocery(); }
 function switchFinSub(x)  { finSub=x; renderSubtabs("finance"); renderFinance(); }
-function goDebtsTab(){ finSub="debts"; switchFinSub("debts"); }
 
 function dailyHabits() {
   const today=todayKey();
@@ -1302,9 +1108,6 @@ const TIME_META={
   gnat_tea:{order:414,timeLabel:"Morning",dur:"5 min"},
   gnat_apply:{order:1050,timeLabel:"Evening",dur:"20 min"},
   gnat_buy:{order:862,timeLabel:"Afternoon",dur:"20 min"},
-  gnat_nuke:{order:432,timeLabel:"Morning",dur:"1.5–2 hrs"},
-  gnat_sand:{order:432,timeLabel:"Morning",dur:"15 min"},
-  gnat_check2:{order:432,timeLabel:"Morning",dur:"10 min"},
   leca_measure:{order:437,timeLabel:"Morning",dur:"15 min"},
   meshlab_workflow:{order:438,timeLabel:"Morning",dur:"30–45 min"},
   herb_pinch1:{order:430,timeLabel:"Morning",dur:"20 min"},
@@ -1358,32 +1161,6 @@ function strip(emoji,label,done,color,onclick,tl,dur,sub,pushFn){
     ${btn}
     <div style="width:28px;height:28px;border-radius:50%;border:2px solid ${color};background:transparent;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0;transition:all .25s cubic-bezier(.34,1.56,.64,1)"></div>
   </div>`;
-}
-
-// ── 🎨 ADJACENT-COLOR CONTRAST (added Jun 11 2026) ──
-// Reusing an accent color across the app is fine — but two cards with the SAME left-border accent
-// sitting RIGHT NEXT TO each other blend together and get missed. This pass walks a rendered list of
-// {html} items and, wherever an item shares its accent with the item just before it, nudges THIS
-// item's accent to the next palette color that differs from both neighbours (stays in-scheme).
-const _ADJ_PALETTE=["#38BDF8","#F5B830","#34D399","#A78BFA","#FB7185","#FACC15","#F59E0B","#2DB870","#7C3AED","#60A5FA","#9CA3AF"];
-function _accentOf(html){
-  const m=/border-left:\d+px solid (#[0-9A-Fa-f]{3,6}|var\(--[A-Za-z0-9-]+\)|rgba?\([^)]*\))/.exec(html||"");
-  return m?m[1]:null;
-}
-function _dedupeAdjColors(items){
-  let prev=null;
-  for(let i=0;i<items.length;i++){
-    let c=_accentOf(items[i].html);
-    if(c && prev && c===prev){
-      const nextC=(i+1<items.length)?_accentOf(items[i+1].html):null;
-      const pick=_ADJ_PALETTE.find(p=>p!==prev && p!==c && p!==nextC)
-              || _ADJ_PALETTE.find(p=>p!==prev && p!==c)
-              || _ADJ_PALETTE.find(p=>p!==prev);
-      if(pick){ items[i].html=items[i].html.split(c).join(pick); c=pick; }
-    }
-    if(c) prev=c;
-  }
-  return items;
 }
 
 function agendaHtml(items){
@@ -1487,168 +1264,6 @@ function wxAlerts(){
 function dtDateKey(n){ const d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function streakOf(prefix){ let n=0; for(let i=0;i<366;i++){ if(laundry[prefix+dtDateKey(i)]) n++; else if(i===0) continue; else break; } return n; }
 function dtStreak(){ return streakOf("calldt-"); }
-// ── 🍽️ MEAL ANCHOR card — supportive nag: upcoming=quiet, due=pinned+loud, overdue(+45m)=gentle escalate. NO guilt language. (added Jun 9 2026) ──
-function mealAnchorHtml(A, done, nowM, dow){
-  const C_OK="#B47C14", C_SOON="#F5B830", C_PAST="#9CA3AF";
-  const ws=A.winStart, we=A.winEnd, win=A.win||A.at;
-  if(done){
-    return { order:A.upOrder, html:strip(A.emoji,A.label,true,C_OK,"toggleMeal('"+A.id+"')",A.at,"","logged \u2713") };
-  }
-  if(nowM < ws){
-    let sub = "Window "+win+(A.pills?" \u00b7 \uD83D\uDC8A vitamins + \uD83D\uDCA7 water go with it":"");
-    return { order:A.upOrder, html:strip(A.emoji,A.label,false,C_OK,"toggleMeal('"+A.id+"')",win,"",sub) };
-  }
-  if(nowM < we-30){
-    let sub = "Window open \u2014 tap \u201cI ate\u201d anytime in "+win+"."+(A.pills?" \uD83D\uDC8A+\uD83D\uDCA7 too.":"");
-    return { order:A.upOrder, html:strip(A.emoji,A.label+" \u2014 window open",false,C_OK,"toggleMeal('"+A.id+"')",win,"",sub) };
-  }
-  if(nowM < we){
-    const mins=Math.max(1, we-nowM);
-    const html='<div style="background:linear-gradient(135deg,rgba(245,184,48,.15),rgba(245,184,48,.04));border:1px solid #F5B83088;border-left:4px solid #F5B830;border-radius:var(--rad);padding:15px 17px;margin-bottom:12px;box-shadow:0 0 20px rgba(245,184,48,.18)">'
-      +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#F5B830;margin-bottom:7px;font-family:\'Lora\',serif">\uD83C\uDF7D\uFE0F '+A.label+' window closes in '+mins+' min</div>'
-      +'<div style="display:flex;align-items:center;gap:14px">'
-        +'<div style="font-size:28px;flex-shrink:0">'+A.emoji+'</div>'
-        +'<div style="flex:1;min-width:0"><div style="font-family:\'Playfair Display\',serif;font-size:17px;font-weight:700;color:var(--text)">A few minutes left \u2014 grab something</div>'
-        +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin-top:3px">'+(A.cue||"")+(A.pills?" \uD83D\uDC8A vitamins + \uD83D\uDCA7 water count too.":"")+'</div></div>'
-        +'<div onclick="toggleMeal(\''+A.id+'\')" style="width:32px;height:32px;border-radius:50%;border:2px solid #F5B830;background:transparent;flex-shrink:0;cursor:pointer;box-shadow:0 0 8px rgba(245,184,48,.33)"></div>'
-      +'</div></div>';
-    return { order:6, html:html };
-  }
-  return { order:A.upOrder, html:strip(A.emoji,A.label,false,C_PAST,"toggleMeal('"+A.id+"')",win,"",(A.passed||"Window passed \u2014 a snack still counts whenever you can. \uD83C\uDF31")) };
-}
-
-// ── 💧🍴💊 HABITS ENGINE — water counter, forgiving streak, "Today's 3" (added Jun 9 2026) ──
-function _hd(dt){ return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
-function isoWkH(d){ d=d||new Date(); const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=dt.getUTCDay()||7; dt.setUTCDate(dt.getUTCDate()+4-day); const ys=new Date(Date.UTC(dt.getUTCFullYear(),0,1)); return dt.getUTCFullYear()+"-W"+String(Math.ceil((((dt-ys)/86400000)+1)/7)).padStart(2,"0"); }
-function waterGoal(){ return Math.max(1, habits.waterGoal||3); }  // bottles · default 3 (≈96 oz)
-function waterServing(){ return Math.max(1, habits.waterServing||1); }  // bottles per tap · default 1 (=32 oz)
-function waterCount(d){ d=d||todayKey(); return (habits.water&&habits.water[d])||0; }
-// 💧 splash burst — droplets fly out from the tap point when a bottle is added (added Jun 13 2026)
-var __waterPt=null;
-try{ document.addEventListener('pointerdown',function(e){ if(e&&typeof e.clientX==='number') __waterPt={x:e.clientX,y:e.clientY}; },true); }catch(_e){}
-function splashBurst(){
-  try{
-    var p=__waterPt||{x:window.innerWidth/2,y:window.innerHeight*0.4};
-    var drops=['\u{1F4A7}','\u{1F4A6}'];
-    for(var i=0;i<9;i++){ (function(){
-      var el=document.createElement('div');
-      el.textContent=drops[Math.floor(Math.random()*drops.length)];
-      el.style.cssText='position:fixed;left:'+p.x+'px;top:'+p.y+'px;font-size:'+(13+Math.random()*13)+'px;line-height:1;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:transform .75s cubic-bezier(.15,.6,.25,1),opacity .75s ease-out;opacity:1;will-change:transform,opacity';
-      document.body.appendChild(el);
-      var dx=(Math.random()*2-1)*70, dy=-(35+Math.random()*75), rot=Math.random()*60-30;
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.style.transform='translate(-50%,-50%) translate('+dx+'px,'+dy+'px) rotate('+rot+'deg) scale(.5)'; el.style.opacity='0'; }); });
-      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },820);
-    })(); }
-  }catch(_e){}
-}
-function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{splashBurst();}catch(_e){} try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
-function waterUndo(){ habits.water=habits.water||{}; const k=todayKey(); habits.water[k]=Math.max(0,(habits.water[k]||0)-waterServing()); saveHabits(); renderAll(); }
-function waterSetGoal(){ const v=prompt("Your daily water goal, in BOTTLES (1 bottle = 32 oz). It counts ALL fluids — water, tea, coffee, juice. No magic number; ~3 bottles (~96 oz) is a solid daily target:", waterGoal()); const n=parseInt(v,10); if(n>0){ habits.waterGoal=n; saveHabits(); renderAll(); } }
-function waterSetServing(){ const v=prompt("How many bottles per tap? (1 bottle = 32 oz)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
-function ensureFreeze(){ const wk=isoWkH(); if(habits.freezeWeek!==wk){ habits.freezeWeek=wk; habits.freezeTokens=2; try{saveHabits();}catch(e){} } }
-function mealsEaten(d){ return ["breakfast","lunch","dinner"].filter(function(m){return !!laundry["meal-"+m+"-"+d];}).length; }
-function habitDone(d){ const water=waterCount(d)>=waterGoal(); const vit=!!laundry["well-litfulo-"+d]; const meals=mealsEaten(d)>=2; return { water:water, vit:vit, meals:meals, mealsN:mealsEaten(d), score:(water?1:0)+(vit?1:0)+(meals?1:0) }; }
-function dayWin(d){ return habitDone(d).score>=2; }  // 2 of 3 = a good day (partial credit, never zero)
-function habitStats(){
-  const today=todayKey();
-  const tokens=(habits.freezeWeek===isoWkH() && habits.freezeTokens!=null) ? Math.max(0,habits.freezeTokens) : 2;
-  // forgiving streak: today counts if already a win; walk back from yesterday, forgiving non-consecutive misses up to `tokens` (never two misses in a row)
-  let streak=0, forgiven=0, prevMiss=false;
-  const tw=dayWin(today); if(tw) streak++;
-  let cur=new Date(today+"T12:00:00"); cur.setDate(cur.getDate()-1);
-  for(let i=0;i<120;i++){ const d=_hd(cur);
-    if(dayWin(d)){ streak++; prevMiss=false; }
-    else { if(forgiven<tokens && !prevMiss){ forgiven++; prevMiss=true; } else break; }
-    cur.setDate(cur.getDate()-1);
-  }
-  let win30=0; let c2=new Date(today+"T12:00:00"); c2.setDate(c2.getDate()-1);
-  for(let i=0;i<30;i++){ if(dayWin(_hd(c2))) win30++; c2.setDate(c2.getDate()-1); }
-  let totalWins=tw?1:0; let c3=new Date(today+"T12:00:00"); c3.setDate(c3.getDate()-1);
-  for(let i=0;i<120;i++){ if(dayWin(_hd(c3))) totalWins++; c3.setDate(c3.getDate()-1); }
-  const yMiss=(function(){ const y=new Date(today+"T12:00:00"); y.setDate(y.getDate()-1); return !dayWin(_hd(y)); })();
-  return { streak:streak, freezesLeft:Math.max(0,tokens-forgiven), consistDays:win30, consistPct:Math.round(win30/30*100), totalWins:totalWins, todayScore:habitDone(today).score, yesterdayMiss:yMiss };
-}
-function habitsTodayHtml(){
-  if(typeof habits==='undefined') return "";
-  ensureFreeze();
-  const today=todayKey();
-  const nowM=new Date().getHours()*60+new Date().getMinutes();
-  const hd=habitDone(today), st=habitStats();
-  const goal=waterGoal(), wc=waterCount(), pct=Math.min(100,Math.round(wc/goal*100));
-  const good=hd.score>=2;
-  // ── streak ring ──
-  const R=26, CIRC=2*Math.PI*R, off=CIRC*(1-st.consistPct/100);
-  const ring=`<svg width="74" height="74" viewBox="0 0 74 74" style="flex-shrink:0">
-    <circle cx="37" cy="37" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
-    <circle cx="37" cy="37" r="${R}" fill="none" stroke="url(#hgring)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${CIRC.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 37 37)" style="transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1)"/>
-    <text x="37" y="35" text-anchor="middle" font-family="'Playfair Display',serif" font-size="21" font-weight="700" fill="#F5B830">${st.streak}</text>
-    <text x="37" y="49" text-anchor="middle" font-size="8" letter-spacing=".05em" fill="#8a8499">DAY${st.streak===1?'':'S'}</text>
-    <defs><linearGradient id="hgring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B830"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs>
-  </svg>`;
-  // ── three habit pills ──
-  function pill(emoji,label,doneB,frac,onclick){
-    const c=doneB?'#34D399':'#6A6480';
-    return `<div onclick="${onclick}" style="flex:1;text-align:center;padding:9px 4px;border-radius:11px;border:1px solid ${doneB?'rgba(52,211,153,.4)':'var(--border)'};background:${doneB?'rgba(52,211,153,.1)':'rgba(255,255,255,.02)'};cursor:pointer" class="hg-pill">
-      <div style="font-size:20px;line-height:1">${emoji}</div>
-      <div style="font-size:10px;color:${c};font-family:'Lora',serif;margin-top:3px;font-weight:600">${label}</div>
-      <div style="font-size:10px;color:${doneB?'#34D399':'var(--text2)'};margin-top:1px">${doneB?'✓':frac}</div>
-    </div>`;
-  }
-  const pills=`<div style="display:flex;gap:8px;margin-top:4px">
-    ${pill('💧','Water',hd.water,wc+'/'+goal,'waterAdd()')}
-    ${pill('💊','Vitamins',hd.vit,'tap','toggleWellness(\'litfulo\')')}
-    ${pill('🍴','Meals',hd.meals,hd.mealsN+'/3','switchTab(\'today\')')}
-  </div>`;
-  // ── compassionate / encouraging copy ──
-  let copy;
-  if(st.yesterdayMiss){ copy="One missed day doesn't slow you down — today's the one that counts. 🌱"; }
-  else if(good && st.streak>0){ copy="That's a good day banked. "+st.streak+"-day rhythm going. ✨"; }
-  else if(hd.score===1){ copy="One down — two of three makes today a win. You're close."; }
-  else { copy="Small steps. Tap one thing to start the day off right. 🌱"; }
-  // ── weekly regularity dots (last 7 days) ──
-  let dots='';
-  for(let i=6;i>=0;i--){ const dt=new Date(today+"T12:00:00"); dt.setDate(dt.getDate()-i); const dd=_hd(dt); const sc=habitDone(dd).score; const isT=(dd===today);
-    const col= sc>=3?'#34D399':(sc===2?'#FBBF24':(sc===1?'#F59E0B':'rgba(255,255,255,.10)'));
-    dots+=`<div style="text-align:center;flex:1"><div style="width:18px;height:18px;border-radius:50%;background:${col};margin:0 auto;${isT?'box-shadow:0 0 0 2px var(--amber2)':''}"></div><div style="font-size:8px;color:var(--text2);margin-top:3px">${dt.toLocaleDateString('en-US',{weekday:'narrow'})}</div></div>`;
-  }
-  const todays3=`<div class="h3-card" style="background:linear-gradient(135deg,${good?'rgba(52,211,153,.10)':'var(--s2)'},var(--s1));border:1px solid ${good?'rgba(52,211,153,.3)':'var(--border2)'};border-radius:var(--rad);padding:15px 16px 13px;margin-bottom:12px;${good?'box-shadow:0 0 22px rgba(52,211,153,.10)':''}">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif">✨ Today's 3</span><span style="font-size:10px;color:var(--text2);font-family:'Lora',serif;margin-left:auto">${st.consistDays} of 30 days · ${st.totalWins} total${st.freezesLeft>0?' · ❄️ '+st.freezesLeft+' freeze'+(st.freezesLeft===1?'':'s'):''}</span></div>
-    <div style="display:flex;align-items:center;gap:14px">
-      ${ring}
-      <div style="flex:1;min-width:0">${pills}</div>
-    </div>
-    <div style="font-size:11.5px;color:${good?'#A7F3D0':'var(--text2)'};font-family:'Lora',serif;font-style:italic;margin-top:11px;line-height:1.5">${copy}</div>
-    <div style="display:flex;gap:5px;margin-top:12px;align-items:flex-end">${dots}</div>
-  </div>`;
-  // ── water tile (fills as he taps) ──
-  let nudge='';
-  if(nowM>=840 && nowM<=1020 && wc < goal*0.5){ nudge=`<div style="font-size:11px;color:#7EB8F0;font-family:'Lora',serif;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:9px;padding:7px 10px;margin-top:10px;line-height:1.45">You're at ${wc} of ${goal} — good window to catch up before dinner. 💧</div>`; }
-  const glass=`<div onclick="waterAdd()" class="hg-water-glass" style="position:relative;width:78px;height:112px;border:3px solid rgba(59,130,246,.55);border-radius:13px 13px 19px 19px;overflow:hidden;background:rgba(59,130,246,.05);cursor:pointer;flex-shrink:0">
-    <div class="hg-water-fill" style="position:absolute;left:0;right:0;bottom:0;height:${pct}%;background:linear-gradient(180deg,#60A5FA,#3B82F6);box-shadow:0 -2px 10px rgba(59,130,246,.5)"></div>
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.5)">${wc}</div><div style="font-size:9px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5)">of ${goal}</div></div>
-  </div>`;
-  const waterTile=`<div class="h3-card" style="background:linear-gradient(135deg,rgba(59,130,246,.08),var(--s1));border:1px solid rgba(59,130,246,.25);border-radius:var(--rad);padding:15px 16px;margin-bottom:12px">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7EB8F0;font-family:'Lora',serif">💧 Water</span><span style="font-size:10px;color:var(--text2);font-family:'Lora',serif;margin-left:auto">1 bottle = 32 oz · counts all fluids</span></div>
-    <div style="display:flex;align-items:center;gap:16px">
-      ${glass}
-      <div style="flex:1;min-width:0">
-        <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--text)">${wc} of ${goal} bottle${goal===1?'':'s'} ${wc>=goal?'🎉':''}</div>
-        <div style="font-size:10.5px;color:#7EB8F0;font-family:'Lora',serif;margin-top:2px">1 bottle = 32 oz · goal ~${goal*32} oz</div>
-        <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.5">${wc>=goal?'Goal met for today — anything more is a bonus.':((new Date().getHours()>=18)?(wc===0?'Evening and the glass is still empty — one bottle with dinner still counts. Start the count now. 💧':'Evening top-up — '+(goal-wc)+' to go. Getting close still counts.'):'Tap the glass to add '+waterServing()+' bottle'+(waterServing()===1?'':'s')+'. Every sip is progress.')}</div>
-        <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
-          <div onclick="waterAdd()" style="flex:1;min-width:90px;text-align:center;padding:10px;border-radius:10px;background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 3px 12px rgba(59,130,246,.3)">+${waterServing()} bottle${waterServing()===1?'':'s'}</div>
-          <div onclick="waterUndo()" style="padding:10px 13px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer">↶</div>
-        </div>
-        <div style="display:flex;gap:14px;margin-top:9px">
-          <div onclick="waterSetGoal()" style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;cursor:pointer">⚙️ Goal: ${goal} ✏️</div>
-          <div onclick="waterSetServing()" style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;cursor:pointer">Per tap: ${waterServing()} bottle${waterServing()===1?'':'s'} ✏️</div>
-        </div>
-        ${nudge}
-      </div>
-    </div>
-  </div>`;
-  return todays3+waterTile;
-}
 function renderToday() {
   const el=document.getElementById("view-today"), today=todayKey();
   const dow=new Date().getDay();
@@ -1672,7 +1287,6 @@ function renderToday() {
     </div>`;
   }
   topHtml+=wxAlerts();
-  topHtml+=habitsTodayHtml();
 
   // ── Still-open one-off pins (compact, until done) ─────────────────────────────
   const PIN_OPEN=[
@@ -1725,34 +1339,13 @@ function renderToday() {
         <div style="font-size:30px;flex-shrink:0">📞</div>
         <div style="flex:1">
           <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#F5DDD8">Call DT</div>
-          <div style="font-size:12px;color:rgba(220,100,100,.8);font-style:italic;margin-top:3px">${(new Date().getHours()>=12)?"Noon’s passed — call anyway. A late call beats a broken streak.":"Before noon — do not forget."}</div>
+          <div style="font-size:12px;color:rgba(220,100,100,.8);font-style:italic;margin-top:3px">Before noon — do not forget.</div>
         </div>
         <div style="width:32px;height:32px;border-radius:50%;border:2px solid #DC2626;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(220,30,30,.2)"></div>
       </div>
     </div>`);
   } else {
     add("dt",300,true,strip("📞","Call DT",true,"#DC2626","toggleDT()","","",dtStk>=2?("🔥 "+dtStk+"-day streak"):""));
-  }
-
-  // ── 📞 TG MEETING — every Wednesday 6:30 PM; CALL-DT-style loud reminder (added Jun 9 2026) ──
-  if(typeof TG_MEETING!=='undefined' && dow===TG_MEETING.dow){
-    const tgDone=!!laundry["rem-"+TG_MEETING.id+"-"+today];
-    if(!tgDone){
-      add("tgmeeting",302,false,`<div onclick="toggleReminder('${TG_MEETING.id}',true)" style="background:linear-gradient(135deg,rgba(220,30,30,.15),rgba(220,30,30,.05));border:1px solid rgba(220,30,30,.35);border-left:4px solid #DC2626;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;animation:dtCallPulse 2s ease-in-out infinite">
-        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(220,30,30,.5),transparent)"></div>
-        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#DC2626;margin-bottom:6px;font-family:'Lora',serif">🚨 Every Wednesday · ${TG_MEETING.at}</div>
-        <div style="display:flex;align-items:center;gap:14px">
-          <div style="font-size:30px;flex-shrink:0">📞</div>
-          <div style="flex:1">
-            <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#F5DDD8">${TG_MEETING.label}</div>
-            <div style="font-size:12px;color:rgba(220,100,100,.8);font-style:italic;margin-top:3px">${TG_MEETING.at} — don't miss it. Tap when you're in.</div>
-          </div>
-          <div style="width:32px;height:32px;border-radius:50%;border:2px solid #DC2626;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(220,30,30,.2)"></div>
-        </div>
-      </div>`);
-    } else {
-      add("tgmeeting",302,true,strip("📞",TG_MEETING.label,true,"#DC2626","toggleReminder('"+TG_MEETING.id+"',true)","","","✓ handled this week"));
-    }
   }
 
   // 🧪 Test day — set by the Call DT gate; pinned right under it, loud until done
@@ -1793,114 +1386,17 @@ function renderToday() {
     add("rnap",760,rNap,strip("🚫","No naps today",rNap,"#FB7185","toggleReset('nonap')","All day","","Desperate? 20 min max, before 3 PM — set a timer"));
   }
 
-  // ── 🔔 IN-APP REMINDERS — money + errands on their date; DMV daily through the appt (added Jun 8 2026) ──
-  // 🚙 DMV daily: shows EVERY day until the appointment date, date-keyed so checking it only clears TODAY (reappears tomorrow).
-  if(typeof DMV!=='undefined'){
-    const dmvAppt=dmvApptDate();
-    if(today<=dmvAppt){
-      const dmvDone=!!laundry["rem-dmv-"+today];
-      const apptD=new Date(dmvAppt+"T12:00:00");
-      const apptLabel=apptD.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-      const extra='<div onclick="event.stopPropagation();updateDmvAppt()" style="margin-top:7px;font-size:11px;color:#FBBF24;font-family:\'Lora\',serif;font-style:italic;cursor:pointer">📅 Appt: '+apptLabel+' · Got an earlier slot? Update the appt →</div>';
-      add("rem-dmv",287,dmvDone, dmvDone
-        ? strip("🚙","DMV — checked for an earlier slot today",true,"#38BDF8","toggleReminder('dmv',true)","","","Reappears tomorrow until the appointment")
-        : reminderCardHtml("🚙",DMV.text,"","toggleReminder('dmv',true)",extra));
-    }
-  }
-  // ── 🔥 BURN CARE — daily nag through the care window (date-keyed → reappears each day), then a one-shot
-  // silicone-gel switch once healed. Config in BURN_CARE (data.js). (added Jun 10 2026) ──
-  if(typeof BURN_CARE!=='undefined'){
-    if(today>=BURN_CARE.start && today<=BURN_CARE.end){
-      const bcDone=!!laundry["rem-burncare-"+today];
-      const inInf=(BURN_CARE.infectionDates||[]).indexOf(today)>=0;
-      const bcSub=inInf
-        ? "👀 Infection check today — spreading redness, thick/cloudy pus, warmth, more pain or fever → urgent care. Otherwise: keep it covered, don't pop it, thin Vaseline under a clean non-stick dressing."
-        : "Keep it covered for sleep, don't pop it, thin Vaseline under a clean non-stick dressing. Clear/yellow seep is normal — sleep on your back.";
-      add("burncare",286,bcDone, bcDone
-        ? strip("🔥","Burn care — done for today",true,"#FB7185","toggleReminder('burncare',true)","Daily","","Reappears tomorrow through "+BURN_CARE.endLabel)
-        : strip("🔥","Burn care — protect the forehead burn",false,"#FB7185","toggleReminder('burncare',true)","Daily","",bcSub));
-    } else if(today>=BURN_CARE.siliconeDate){
-      const siDone=reminderDone('burnsilicone',false);
-      add("burnsilicone",286,siDone, siDone
-        ? strip("🩹","Silicone scar gel — started",true,"#A78BFA","toggleReminder('burnsilicone')","","","Keep it up ~12 hrs/day for 2–3 months + sun protection")
-        : reminderCardHtml("🩹","Burn healed & skin fully closed? Start silicone scar gel (ScarAway or bioCorneum) ~12 hrs/day for 2–3 months, plus sun protection.","","toggleReminder('burnsilicone')",""));
-    }
-  }
-  // ── 🔍 FLIP SCAN — daily morning deal-hunt card (date-keyed → reappears each day). Links live in FLIP_SCAN (data.js). (added Jun 12 2026) ──
-  if(typeof FLIP_SCAN!=='undefined'){
-    const fsDone=!!laundry["rem-flipscan-"+today];
-    const fsLinks=FLIP_SCAN.links.map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#7DD3FC;text-decoration:underline;white-space:nowrap">'+l[0]+'</a>';}).join(' · ');
-    const fsExtra='<div style="margin-top:7px;font-size:12px;line-height:1.9;font-family:\'Lora\',serif">'+fsLinks+'</div>'
-      +'<div style="font-size:11px;color:rgba(125,211,252,.8);font-style:italic;margin-top:5px;font-family:\'Lora\',serif">'+FLIP_SCAN.tip+'</div>';
-    add("flipscan",284,fsDone, fsDone
-      ? strip("🔍","Flip scan — done for today",true,"#38BDF8","toggleReminder('flipscan',true)",FLIP_SCAN.at,"","Reappears tomorrow morning")
-      : reminderCardHtml("🔍",FLIP_SCAN.label,"","toggleReminder('flipscan',true)",fsExtra));
-  }
-
-  // 🔔 dated + standing reminders
-  if(typeof REMINDERS!=='undefined'){
-    REMINDERS.forEach(function(r,i){
-      const showToday = r.standing ? true : (r.date===today);
-      if(!showToday) return;
-      const dn=reminderDone(r.id,false);  // one-shot done-state
-      add("rem-"+r.id,288+i,dn, dn
-        ? strip(r.emoji,r.text,true,"#38BDF8","toggleReminder('"+r.id+"')","","","")
-        : reminderCardHtml(r.emoji,r.text,r.account||"","toggleReminder('"+r.id+"')",""));
-    });
-  }
-
-  // ── 🔁 ROLLOVER TASKS — user-addable, stay until checked, carry forward daily (added Jun 10 2026) ──
-  if(rollovers && typeof rollovers==='object'){
-    Object.keys(rollovers).sort().forEach(function(id,i){
-      const ro=rollovers[id]; if(!ro||!ro.label) return;
-      const doneDate=ro.done||null;
-      if(doneDate && doneDate!==today) return;            // finished on a previous day → it's gone
-      const created=ro.created||today;
-      const dayN=Math.floor((new Date(today+"T12:00:00")-new Date(created+"T12:00:00"))/86400000)+1;
-      if(doneDate){
-        add("ro-"+id,309+i,true,strip("🔁",ro.label,true,"#F59E0B","toggleRollover('"+id+"')","","","carried over until done — nice ✓"));
-      }else{
-        const carried=dayN>1;
-        const cl=new Date(created+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
-        add("ro-"+id,309+i,false,rolloverCardHtml(id,ro.label,carried,dayN,cl));
-      }
-    });
-  }
-  // ＋ add-your-own rollover task (passive — doesn't count toward the daily tally)
-  add("ro-add",325,false,`<div onclick="addRollover()" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(245,158,11,.45);border-radius:var(--rad);padding:11px 16px;margin-bottom:10px;cursor:pointer;color:#F59E0B;font-family:'Lora',serif;font-size:13px">＋ Add a task that rolls over until done</div>`,true);
-
-
-  // ── 🗑️ TRASH + RECYCLE — every Tuesday night Trash; alternating Tuesdays (anchor Tue Jun 9 2026) also Recycle (added Jun 10 2026) ──
-  if(dow===2){
-    const _twk=Math.round((new Date(today+"T12:00:00")-new Date("2026-06-09T12:00:00"))/(7*86400000));
-    const _recycle=((((_twk%2)+2)%2)===0);            // even weeks from the Jun 9 anchor = recycle night
-    const _tLabel=_recycle?"Trash + Recycle":"Trash";
-    const _tEmoji=_recycle?"♻️":"🗑️";
-    const _tSub=_recycle?"Both bins to the curb tonight — recycle goes out this week.":"Trash to the curb tonight (recycle is next Tuesday).";
-    const _tDone=!!laundry["rem-trash-"+today];
-    add("trash",1280,_tDone, _tDone
-      ? strip(_tEmoji,_tLabel+" — out for the night",true,"#9CA3AF","toggleReminder('trash',true)","Tuesday night","","")
-      : strip(_tEmoji,_tLabel,false,"#9CA3AF","toggleReminder('trash',true)","Tuesday night","",_tSub));
-  }
-
-  // ── 🍽️ MEAL ANCHORS + 💊 pill bundle — eat on a clock; nag (pin + gentle escalate) until checked (added Jun 9 2026) ──
-  const _now=new Date(); const nowM=_now.getHours()*60+_now.getMinutes();
-  const MA=(typeof MEAL_ANCHORS!=='undefined')?MEAL_ANCHORS:[];
+  // Morning meds + breakfast
   const litDone=!!laundry["well-litfulo-"+today];
-  // 💊 pills bundled onto breakfast: when breakfast is due, the pill check sits right under it (one trigger: eat → pills)
-  const _bk=MA.find(function(x){return x.id==='breakfast';});
-  const _pillTop=(_bk && nowM>=_bk.min && !litDone);
-  add("lit",_pillTop?7:311,litDone, litDone
-    ? strip("💊","Litfulo + vitamins",true,"#6366F1","toggleWellness('litfulo')","With breakfast","","")
-    : strip("💊","Litfulo + vitamins — take with breakfast",false,"#6366F1","toggleWellness('litfulo')","With breakfast","","One trigger: eat → pills. Logs to the Health tab too."));
-  // 🍳 breakfast anchor
-  if(_bk){ const _bd=!!laundry["meal-breakfast-"+today]; const b=mealAnchorHtml(_bk,_bd,nowM,dow); add("breakfast",b.order,_bd,b.html); }
+  add("lit",310,litDone,strip("💊","Litfulo + vitamins",litDone,"#6366F1","toggleWellness('litfulo')","Morning","1 min","With breakfast — logs to the Health tab too"));
+  const mB=!!laundry["meal-breakfast-"+today];
+  add("breakfast",320,mB,strip("🍳","Breakfast",mB,"#B47C14","toggleMeal('breakfast')",(today===RESET_DAY?"Right after waking":RY.breakfast),""));
 
   // 📞 FINANCIAL MONDAY — Mondays only: the house-rest day gets exactly ONE focused money task (added Jun 6 2026)
   if(dow===1 && typeof FINANCE!=='undefined' && FINANCE.mondays){
     fin.monday=fin.monday||{};
     const fmDoneToday=FINANCE.mondays.find(m=>fin.monday[m.id]===today);
-    const fmNext=FINANCE.mondays.find(m=>!finTaskDone(m.id));
+    const fmNext=FINANCE.mondays.find(m=>!fin.monday[m.id]);
     if(fmDoneToday){
       add("finmon",330,true,strip("📞","Financial Monday — handled, pool league is guilt-free 🎱",true,"#FACC15","finMondayToggle('"+fmDoneToday.id+"')","","",""));
     } else if(fmNext){
@@ -1912,7 +1408,7 @@ function renderToday() {
             ${fmNext.note?`<div style="font-size:11.5px;color:rgba(250,220,150,.8);font-style:italic;margin-top:4px;line-height:1.5">${fmNext.note}</div>`:""}
             <div style="font-size:10.5px;color:var(--text3);font-family:'Lora',serif;margin-top:5px">Rest day for the house — this is the whole list today. Queue lives in 💰 Finance → 📞 Mondays.</div>
           </div>
-          <div onclick="finTaskToggle('${fmNext.id}')" style="width:30px;height:30px;border-radius:50%;border:2px solid #FACC15;background:transparent;flex-shrink:0;cursor:pointer"></div>
+          <div onclick="finMondayToggle('${fmNext.id}')" style="width:30px;height:30px;border-radius:50%;border:2px solid #FACC15;background:transparent;flex-shrink:0;cursor:pointer"></div>
         </div>
         ${finMonBalHtml()}
       </div>`);
@@ -1956,20 +1452,16 @@ function renderToday() {
 
   // Morning dog + garden
   const dogDone=!!laundry["morning-walk-"+today];
-  add("walk",340,dogDone, (dogDone||nowM<720)
-    ? strip("🐕","Walk + play with Zoey",dogDone,"#4ADE80","toggleMorning('walk')","Morning","20–30 min")
-    : strip("🐕","Walk + play with Zoey",false,"#4ADE80","toggleMorning('walk')","Anytime","20–30 min",(nowM>=1080?"Evening walk = her favorite anyway — cooler pavement, all the day's smells to read. 🐾":"Morning slipped by — an afternoon or evening sniffy walk counts double for her. 🐾")));
+  add("walk",340,dogDone,strip("🐕","Walk + play with Zoey",dogDone,"#4ADE80","toggleMorning('walk')","Morning","20–30 min"));
   const waterToday=plantsDueOn(today), trimToday=plantsTrimDueOn(today), gardenToday=gardenTasksOn(today);
   if(waterToday.length||trimToday.length||gardenToday.length){
     const gardenDone=(waterToday.length===0||waterToday.every(p=>watered[p.id]===today))&&(trimToday.length===0||trimToday.every(p=>trimmed[p.id]===today))&&(gardenToday.length===0||gardenToday.every(id=>!!checked[id]));
-    add("garden",350,gardenDone, (gardenDone||nowM<720)
-      ? strip("🌿","Garden care — head to the Garden tab",gardenDone,"#2DB870","switchTab('garden')","Morning","–")
-      : strip("🌿","Garden care — head to the Garden tab",false,"#2DB870","switchTab('garden')","Early evening","–","Morning window slipped — early evening (5–7) is the next best slot: leaves dry before dark, no midday scorch."));
+    add("garden",350,gardenDone,strip("🌿","Garden care — head to the Garden tab",gardenDone,"#2DB870","switchTab('garden')","Morning","–"));
   }
 
   // Midday
-  const _ln=MA.find(function(x){return x.id==='lunch';});
-  if(_ln){ const _ld=!!laundry["meal-lunch-"+today]; const L=mealAnchorHtml(_ln,_ld,nowM,dow); add("lunch",L.order,_ld,L.html); }
+  const mL=!!laundry["meal-lunch-"+today];
+  add("lunch",700,mL,strip("🥗","Lunch",mL,"#B47C14","toggleMeal('lunch')",RY.lunch,"",isWeekday()?"Step away from the desk, actually eat":""));
 
   // The ONE house task — weekend mornings have energy; weekdays it sits after lunch
   const oneId=(dow===1)?null:oneTaskForDate(today);
@@ -1988,15 +1480,8 @@ function renderToday() {
   }
 
   // Dinner + evening wind-down
-  const _dn=MA.find(function(x){return x.id==='dinner';});
-  if(_dn){ const _dd=!!laundry["meal-dinner-"+today]; const D=mealAnchorHtml(_dn,_dd,nowM,dow); add("dinner",D.order,_dd,D.html); }
-  // 🌙 gentle late-night-eating cutoff nudge (after ~9:30 PM) — supportive, optional, not a rule
-  if(nowM>=1290){
-    add("latenight",1295,false,`<div style="background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(124,58,237,.03));border:1px solid rgba(124,58,237,.3);border-left:4px solid #7C3AED;border-radius:var(--rad);padding:12px 15px;margin-bottom:10px">
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#A78BFA;font-family:'Lora',serif;margin-bottom:5px">🌙 Winding down</div>
-      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.55">Kitchen's about closed — eating late can nudge tomorrow's sleep. Water or tea is always fine. No rule, just a gentle heads-up.</div>
-    </div>`,true);
-  }
+  const mD=!!laundry["meal-dinner-"+today];
+  add("dinner",1080,mD,strip("🍽️","Dinner",mD,"#B47C14","toggleMeal('dinner')",RY.dinner,"","Eaten by "+RY.dinnerBy+" — house rule"+(dow===1?" · before pool league 🎱":"")));
 
   // 💼 ONE-OFF WORK ITEMS (added Jun 6 2026) — ordinary manual checks; both windows auto-expire after Sun Jun 7
   if(today>="2026-06-06" && today<="2026-06-07"){
@@ -2005,32 +1490,20 @@ function renderToday() {
     const tcDone=!!checked["timecard_jun8"];
     add("timecard",1095,tcDone,strip("🕐","Do timecard — ready for Bill by Monday",tcDone,"#FBBF24","toggle('timecard_jun8')",(today==="2026-06-07"?"Today — Bill needs it Monday":"By Sunday night"),"","Deadline: Monday morning, on Bill's desk"));
   }
-  // ── 🌙 BEDTIME WIND-DOWN — reading hour + lights out + phone-away merged into ONE tap (lock it in AS the phone leaves the room) ──
-  const wdDone=windDownDone();
-  if(!wdDone){
-    add("winddown",1300,false,`<div onclick="toggleWindDown()" style="background:linear-gradient(135deg,rgba(124,58,237,.16),rgba(139,92,246,.05));border:1px solid rgba(124,58,237,.4);border-left:4px solid #7C3AED;border-radius:var(--rad);padding:15px 17px;margin-bottom:12px;cursor:pointer">
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#A78BFA;margin-bottom:7px;font-family:'Lora',serif">🌙 Bedtime wind-down · ${RY.lightsOut}</div>
-      <div style="display:flex;align-items:center;gap:14px">
-        <div style="font-size:28px;flex-shrink:0">📵</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#DDD6FE">Phone to the other room</div>
-          <div style="font-size:12px;color:rgba(196,181,253,.9);font-family:'Lora',serif;font-style:italic;margin-top:3px;line-height:1.5">Phone's going to the other room — tap to lock in tonight's wind-down. Sleep well. 🌙</div>
-          <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:7px;line-height:1.5">📖 Reading hour (${RY.reading}) → 🛏️ Lights out (${RY.lightsOut}) → 📵 phone away · one tap covers all three, so you don't have to come back.</div>
-        </div>
-        <div style="width:32px;height:32px;border-radius:50%;border:2px solid #7C3AED;background:transparent;flex-shrink:0;box-shadow:0 0 8px rgba(124,58,237,.25)"></div>
-      </div>
-    </div>`);
-  } else {
-    add("winddown",1300,true,strip("🌙","Wind-down done — reading, lights out, phone away",true,"#7C3AED","toggleWindDown()",RY.lightsOut,"","Sleep well 🌙"));
-  }
+  const wPhone=!!laundry["evening-wind-phone-"+today];
+  add("windphone",1300,wPhone,strip("📵","Phone to the other room — screens off",wPhone,"#8B5CF6","toggleEvening('wind-phone')",RY.windDown,"","No phone, no TV from here — the alarm clock takes over"));
+  const wRead=!!laundry["evening-wind-read-"+today];
+  add("windread",1310,wRead,strip("📖","Reading hour",wRead,"#A78BFA","toggleEvening('wind-read')",RY.reading,"","A real book — whatever you actually enjoy"));
+  const wLights=!!laundry["evening-wind-lights-"+today];
+  add("windlights",1320,wLights,strip("🛏️","Lights out",wLights,"#7C3AED","toggleEvening('wind-lights')",RY.lightsOut,""));
 
   // ── Sink-to-bottom: unchecked flow first (chronological), done pile at the very bottom ──
   window.__flowPrev=window.__flowPrev||{};
   let justDoneKey=null;
   flow.forEach(it=>{ if(it.done&&window.__flowPrev[it.key]===false) justDoneKey=it.key; });
   const wrap=it=>(it.key===justDoneKey?`<div class="flow-just-done">${it.html}</div>`:it.html);
-  const active=_dedupeAdjColors(flow.filter(i=>!i.done).sort((a,b)=>a.order-b.order));
-  const pile=_dedupeAdjColors(flow.filter(i=>i.done).sort((a,b)=>a.order-b.order));
+  const active=flow.filter(i=>!i.done).sort((a,b)=>a.order-b.order);
+  const pile=flow.filter(i=>i.done).sort((a,b)=>a.order-b.order);
   const checkables=flow.filter(i=>!i.passive);
   const fDone=checkables.filter(i=>i.done).length, fTotal=checkables.length;
 
@@ -2104,40 +1577,12 @@ function renderTimeline() {
   }
   while(days.length&&days[days.length-1].rest) days.pop();
 
-  // ── 🔔 REMINDERS + 🚙 DMV appointment on the timeline (on their dates) ──
-  const tlRem={};
-  if(typeof REMINDERS!=='undefined'){
-    REMINDERS.forEach(function(r){ if(r.date && r.date>=today){ (tlRem[r.date]=tlRem[r.date]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } });
-    REMINDERS.forEach(function(r){ if(r.standing && !reminderDone(r.id,false)){ (tlRem[today]=tlRem[today]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } }); // standing errands surface near-term (today)
-  }
-  if(typeof FLIP_SCAN!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"🔍",text:"Morning flip scan · ~7:15 AM",account:""}); }
-  if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
-  // 📞 TG Meeting — recurring every Wednesday on the timeline
-  if(typeof TG_MEETING!=='undefined'){
-    const _tgLast=days.length?days[days.length-1].date:today;
-    let _tc=new Date(today+"T12:00:00"); const _te=new Date(_tgLast+"T12:00:00");
-    while(_tc<=_te){ if(_tc.getDay()===TG_MEETING.dow){ const ds=fmtD(_tc); (tlRem[ds]=tlRem[ds]||[]).push({icon:"📞",text:TG_MEETING.label+" · "+TG_MEETING.at,account:""}); } _tc.setDate(_tc.getDate()+1); }
-  }
-  // make sure any reminder-only date still appears as its own timeline row
-  const _have=new Set(days.map(function(d){return d.date;}));
-  Object.keys(tlRem).forEach(function(ds){ if(!_have.has(ds)){ days.push({date:ds, remOnly:true}); } });
-  days.sort(function(a,b){ return a.date<b.date?-1:(a.date>b.date?1:0); });
-
   let html="";
-  // 🍽️ daily meal rhythm — eat on a clock (added Jun 9 2026)
-  if(typeof MEAL_ANCHORS!=='undefined' && MEAL_ANCHORS.length){
-    const _by=MEAL_ANCHORS.find(function(x){return x.by;});
-    html+=`<div style="background:linear-gradient(135deg,rgba(180,124,20,.14),rgba(245,184,48,.05));border:1px solid rgba(245,184,48,.3);border-left:4px solid #F5B830;border-radius:var(--rad);padding:12px 15px;margin-bottom:14px">
-      <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;margin-bottom:6px">🍽️ Daily meal rhythm — eat on a clock</div>
-      <div style="font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.6">${MEAL_ANCHORS.map(function(a){return a.emoji+' '+a.label+' '+a.at;}).join(' · ')}${_by?' · by '+_by.by:''} · 💊 pills with breakfast</div>
-    </div>`;
-  }
   if(!days.length){
     html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — nothing left to schedule. Maintenance mode from here.</div></div>`;
   } else {
-    const _taskDays=days.filter(d=>d.id);
-    const workDays=_taskDays.length;
-    const finish=new Date((_taskDays.length?_taskDays[_taskDays.length-1].date:days[days.length-1].date)+"T12:00:00");
+    const workDays=days.filter(d=>!d.rest).length;
+    const finish=new Date(days[days.length-1].date+"T12:00:00");
     html+=`<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:var(--rad);padding:13px 16px;margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:'Lora',serif;font-size:12px;color:var(--text2)">Whole-house progress</span><span style="font-family:'Playfair Display',serif;font-weight:700;color:#F5B830">${doneH}/${totalH} · ${pctH}%</span></div>
       <div class="plan-bar"><div class="plan-fill" style="width:${pctH}%;background:linear-gradient(90deg,#F5B830,#818CF8)"></div></div>
@@ -2155,18 +1600,12 @@ function renderTimeline() {
         <div class="day-tasks-col">`;
       if(dy.rest){
         html+=`<div class="tl-room" style="color:#8B5CF6">🛋️ Rest day</div><div class="tl-note" style="margin-top:2px">No house task — recharge.</div>`;
-      } else if(dy.id){
+      } else {
         const r=ROOMS[dy.roomId]||ROOMS.kitchen;
         const t=TASKS[dy.id]||taskCustom[dy.id];
         html+=`<div class="tl-room" style="color:${r.color}">${r.emoji} ${r.name}</div>`;
         if(t) html+=`<div class="tl-task" style="color:${r.color}"><div class="tl-dot" style="background:${r.color}"></div>${t.label}</div>`;
         if(dy.finishesRoom) html+=`<div class="tl-note">🎉 ${r.name} done${r.reward?" — "+r.reward:""}.</div>`;
-      }
-      if(tlRem[dy.date]){
-        if(dy.remOnly) html+=`<div class="tl-room" style="color:#38BDF8">🔔 Reminder</div>`;
-        tlRem[dy.date].forEach(function(rm){
-          html+=`<div class="tl-task" style="color:#38BDF8"><div class="tl-dot" style="background:#38BDF8"></div>${rm.appt?"📅":"🔔"} ${rm.icon} ${rm.text}${rm.account?` <span style="color:#7DD3FC">· ${rm.account}</span>`:""}</div>`;
-        });
       }
       html+=`</div>`;
       if(isToday) html+=`<div class="day-badge today-badge">Today</div>`;
@@ -2188,8 +1627,6 @@ function toggleRoom(roomId) {
   renderRooms();
 }
 
-// hgRoomPhotoHtml: design referenced room photos but never defined the helper; safe no-op (no room photos exist). Wire real photos here later.
-function hgRoomPhotoHtml(roomId){ return ''; }
 function renderRooms() {
   const el=document.getElementById("view-rooms");
   // "priority" added Jun 6 2026 — the ⭐ Priority to-do list lives here (it was in the data but missing from this render list)
@@ -2203,7 +1640,7 @@ function renderRooms() {
     const isComplete=total>0&&done===total;
     const isOpen=expandedRoom===roomId;
 
-    html+=`<div class="room-card" style="${isComplete?`border-color:${r.color}66;box-shadow:0 0 22px ${r.color}22`:(isOpen?`border-color:${r.color}33;box-shadow:0 0 20px ${r.color}10`:"")};transition:all .2s">${hgRoomPhotoHtml(roomId)}
+    html+=`<div class="room-card" style="${isComplete?`border-color:${r.color}66;box-shadow:0 0 22px ${r.color}22`:(isOpen?`border-color:${r.color}33;box-shadow:0 0 20px ${r.color}10`:"")};transition:all .2s">
       <div class="room-top" onclick="toggleRoom('${roomId}')" style="cursor:pointer">
         <div class="room-emoji">${r.emoji}</div>
         <div style="flex:1">
@@ -2325,9 +1762,6 @@ function renderGarden() {
       +'</div><div style="padding:13px 15px">'+body+'</div></div>';
   }
   const factBox = t => t?'<div style="background:rgba(212,144,10,.08);border:1px solid var(--aborder);border-radius:9px;padding:9px 11px;margin:2px 0 6px;font-size:12px;color:var(--amber2);font-family:\'Lora\',serif;font-style:italic;line-height:1.5">💡 '+t+'</div>':'';
-  // Jun 7 2026 — per-plant frequency chips (display only; data.js `days` stays the engine truth)
-  const chip=(t,c)=>t?'<span style="display:inline-block;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:12px;background:rgba(6,5,10,.45);border:1px solid '+c+'55;color:'+c+';font-family:\'Lora\',serif;line-height:1.4;margin:0 6px 4px 0;max-width:100%;white-space:normal">'+t+'</span>':'';
-  const chipRow=h=>h?'<div style="margin:0 0 7px">'+h+'</div>':"";
   const sect = (label,color,text) => '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:'+color+';font-family:\'Lora\',serif;margin:9px 0 3px">'+label+'</div><div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.55">'+text+'</div>';
   const hdr = (p,right) => '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:24px">'+p.emoji+'</div><div style="flex:1;font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text)">'+p.name+'</div>'+(right?'<div style="font-size:11px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;white-space:nowrap">'+right+'</div>':'')+'</div>';
 
@@ -2350,7 +1784,6 @@ function renderGarden() {
       else if(st==="soon"){bTxt="⚠️ Due soon";bCol="#FBBF24";bl="💧 Water";bc="soon";}
       else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Water";bc="ok";}
       let body=hdr(p, days!==null?days+"d ago":"never");
-      body+=chipRow(chip(p.waterChip,"#7EB8F0"));
       body+=sect("💧 When & how","#7EB8F0",wi.when||p.freq);
       if(wi.thirst) body+=sect("👀 Thirst check","#22D3EE",wi.thirst);
       body+=wxWaterNote(p);
@@ -2366,7 +1799,6 @@ function renderGarden() {
   else if (gardenSub === "harvest") {
     const todayDate=new Date(today+"T12:00:00");
     html += `<div class="section-label">🌾 Harvest</div>`;
-    html += `<div style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.55">🍴 <b style="color:#4ADE80">Herbs are pick-when-you-cook now</b> — no calendar harvests. Anything marked REQUIRED is for the plant’s health, not the kitchen (basil pinching, dill flower-bud patrol). Picked more than you need? Every card has a keep-fresh / freeze / dry guide under 🌟.</div>`;
     PLANTS.filter(p=>HARVEST_INFO[p.id]).map(p=>({p,h:HARVEST_INFO[p.id]}))
       .sort((x,y)=>{ const hx=harvested[x.p.id]===today?1:0, hy=harvested[y.p.id]===today?1:0; if(hx!==hy) return hx-hy; const dx=x.h.date?new Date(x.h.date):todayDate, dy=y.h.date?new Date(y.h.date):todayDate; return dx-dy; })
       .forEach(o=>{ const p=o.p, h=o.h;
@@ -2374,11 +1806,10 @@ function renderGarden() {
         const diff=ong?null:Math.ceil((new Date(h.date+"T12:00:00")-todayDate)/86400000);
         const ready=!ong&&diff<=0, soon=!ong&&diff>0&&diff<=14;
         const hDone=harvested[p.id]===today;
-        const bTxt=hDone?"✓ Harvested":ong?(h.badge||"🌿 Pick when ripe"):ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
+        const bTxt=hDone?"✓ Harvested":ong?"🌿 Pick when ripe":ready?"🌿 Ready now":soon?diff+"d 🔥":diff+"d";
         const bCol=hDone?"#2DB870":(ong||ready)?"#4ADE80":soon?"#FBBF24":"#9bb3c9";
-        let body=hdr(p, ong?(h.hdrNote||"when ripe"):(ready?"ready":h.date));
-        body+=chipRow(chip(p.harvestChip,"#4ADE80"));
-        if(ong&&h.signs) body+=sect(h.signsLabel||"👀 Ready when you see…","#4ADE80",h.signs);
+        let body=hdr(p, ong?"when ripe":(ready?"ready":h.date));
+        if(ong&&h.signs) body+=sect("👀 Ready when you see…","#4ADE80",h.signs);
         body+=sect("✂️ How to pick","#4ADE80",h.how);
         body+=sect("🌟 Good to know","#FBBF24",h.fact);
         body+=wxHarvestNote(p);
@@ -2386,14 +1817,6 @@ function renderGarden() {
         body+=factBox(dailyFact(p.id));
         html+=pcard(p,bTxt,bCol,body);
       });
-    // display-only outlook for plants without a harvest card (incl. seedlings' "not yet" lines)
-    const hRest=PLANTS.filter(p=>!HARVEST_INFO[p.id]&&p.harvestChip);
-    if(hRest.length){
-      html+=`<div class="section-label">🌱 Harvest outlook — everything else</div>`;
-      html+='<div style="background:linear-gradient(145deg,var(--s2),var(--s1));border:1px solid var(--border);border-radius:var(--rad);padding:6px 14px;margin-bottom:14px;box-shadow:0 4px 20px rgba(0,0,0,.3)">'
-        +hRest.map((p,i)=>'<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;'+(i<hRest.length-1?'border-bottom:1px solid var(--border)':'')+'"><div style="font-size:18px;flex-shrink:0;line-height:1.3">'+p.emoji+'</div><div style="flex:1;min-width:0"><div style="font-family:\'Playfair Display\',serif;font-size:13px;font-weight:700;color:var(--text)">'+p.name+'</div><div style="margin-top:3px">'+chip(p.harvestChip,"#4ADE80")+'</div></div></div>').join("")
-        +'</div>';
-    }
   }
 
   else {
@@ -2452,7 +1875,6 @@ function renderGarden() {
       let bTxt="",bCol="#4AD490";
       if(p.trim){ const dT=daysSinceTrimmed(p.id), doneT=trimmed[p.id]===today; const due=!doneT&&(dT===null||(p.trimDays&&dT>=p.trimDays)); if(doneT){bTxt="✓ Tended";bCol="#4AD490";} else if(due){bTxt="🌿 Needs tending";bCol="#FB923C";} }
       let body=hdr(p,"");
-      body+=chipRow(chip(p.light,"#FBBF24"));
       if(CARE_INFO[p.id]) body+=sect("🌿 Care note","#86C232",CARE_INFO[p.id].fact);
       if(p.trim){
         const dT=daysSinceTrimmed(p.id), doneT=trimmed[p.id]===today;
@@ -2488,8 +1910,7 @@ function renderShopping() {
     ["5/27*","0.25","0","5","7.6","125","60","Post-livestock mini cycle"],
     ["5/30","0","0","5","7.6","—","—","Mini cycle COMPLETE — NH3 back to 0 ✅"],
     ["6/2","1.0","0","5","7.6","125","—","Ammonia spike 0→0.5→1.0 (feeding + 82°F heat + pulled anemone) — WC + Prime + SafeStart, feeding paused"],
-    ["6/4","1.0","0","5","7.6","125","74","Down & holding after a water change — shrimp active & eating, no losses"],
-    ["6/10","0","0","5","7.6","125","74","Ammonia back to 0 ✅ — permanent always-on ammonia alert card installed (continuous monitor)"]
+    ["6/4","1.0","0","5","7.6","125","74","Down & holding after a water change — shrimp active & eating, no losses"]
   ];
   const rows = P.map(r=>`<tr>${r.map((c,i)=>`<td${i===0?' style="color:#7fe9dd;font-weight:700"':(i===7?' style="color:#9bb3c9;white-space:normal;min-width:160px"':'')}>${c}</td>`).join('')}</tr>`).join('');
   const chip=(v,k,cls)=>`<div style="background:#0a1628;border:1px solid #1a3a5c;border-radius:10px;padding:9px 4px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:${cls==='warn'?'#F5B830':cls==='ok'?'#4AD490':'#00e5cc'}">${v}</div><div style="font-size:8px;letter-spacing:.05em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif">${k}</div></div>`;
@@ -2507,20 +1928,17 @@ function renderShopping() {
   <div style="text-align:center;margin-bottom:12px;padding-top:4px">
     <div style="font-size:9px;letter-spacing:.25em;color:#00e5cc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🌊 Cyrus · Tanks · pick a tank above</div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4fc3f7,#00e5cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">${TITLES[tankSub]||'Tanks'}</div>
-    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated June 10, 2026</div>
+    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated June 5, 2026</div>
   </div>`;
 
   if (tankSub === "bluedream") {
     html += hero('images/tank_bluedream_20260604.jpg','Blue Dream cube — LED bar, colorful substrate, hydro baskets + feeding tube');
     html += specs('11.2 × 11.4 × 11.1 in','3.7 gal','💧 Aquatic — Imagitarium PRO Deluxe cube');
-    html += banner('74,212,144','Status — June 10 ✅ · Always-on monitor','Ammonia 0 ppm · permanent ammonia alert card installed','A <b style="color:#4AD490">permanent Seachem-style always-on ammonia alert card</b> is now installed in the tank (continuous monitor — not a one-off strip test). It currently reads <b style="color:#4AD490">0 ppm ammonia (safe)</b>. The 5/31–6/2 spike (0→0.5→1.0) is fully resolved — 🦐 shrimp active &amp; eating, no losses. Glance at the card any time for a live reading.');
-    html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('0','NH3','ok')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('74°','Temp','ok')}</div>`;
-    html += panel('⚗️ Right Now (June 10)','<b style="color:#4AD490">Ammonia 0 ppm — safe.</b> A <b style="color:#4AD490">permanent always-on ammonia alert card</b> (Seachem-style continuous monitor) is now installed and reads 0 — no more relying on one-off strips. NO2 0, NO3 5, temp in range, shrimp active and eating. Keep feeding light and just glance at the alert card on water-change day.');
-    html += panel('🧼 Daily care — '+(laundry['tankd-bdamm-'+todayKey()]?1:0)+' of 1 today',
-      tdaily('bdamm',"👀 Glance at the ammonia alert card — confirm it's still showing safe / 0 ppm")
-      + '<div style="font-size:10.5px;color:#5a7a99;font-style:italic;margin-top:6px">Now that the alert card is always-on, this is a 5-second look — not a strip test. Resets every morning, like the daily items on Today.</div>');
+    html += banner('245,184,48','Status — June 4 ⚠️→✅','Recovering from an ammonia spike · 🦐 shrimp active & eating','Ammonia spiked <b style="color:#F5B830">0 → 0.5 → 1.0 (5/31–6/2)</b> from resumed feeding + an 82°F heat spike + pulling the fake anemone. After a water change it is <b style="color:#4AD490">down to 1.0 and holding</b> — no shrimp lost, and they are active and eating again. Keep doing small temp-matched water changes until it reads 0.');
+    html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('1.0','NH3','warn')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('74°','Temp','ok')}</div>`;
+    html += panel('⚗️ Right Now (June 4)','<b style="color:#4AD490">Ammonia down to 1.0 and holding</b> after a water change (NO2 0, NO3 5). Temp under control, no losses, shrimp active and eating. Keep up small temp-matched water changes + Prime until ammonia reads 0, and avoid overfeeding.');
     html += panel('🎯 Neocaridina Targets',
-      '<div class="kv"><span>Ammonia</span><span>0 ppm <span style="color:#4AD490">(0 ✅ — always-on alert card)</span></span></div>'
+      '<div class="kv"><span>Ammonia</span><span>0 ppm <span style="color:#F5B830">(1.0 — recovering)</span></span></div>'
       +'<div class="kv"><span>Nitrite</span><span>0 ppm <span style="color:#4AD490">(0 ✅)</span></span></div>'
       +'<div class="kv"><span>Nitrate</span><span>under 20 ppm <span style="color:#4AD490">(5 ✅)</span></span></div>'
       +'<div class="kv"><span>pH</span><span>6.8–7.5 <span style="color:#F5B830">(7.6 — slightly high, fine)</span></span></div>'
@@ -2554,7 +1972,7 @@ function renderShopping() {
       '<div class="kv"><span>Shrimp</span><span>10× Blue Dream Neocaridina, high grade (dark blue) — one-color breeding colony</span></div>'
       +'<div class="kv"><span>Snails</span><span>2× Nerite (Tiger) — glass cleaners; can\'t breed in freshwater</span></div>'
       +'Added 5/27 via ~1.5h drip acclimation, no losses.');
-    html += panel('🧰 Equipment On Hand','<b>Treatment:</b> Seachem Prime · Tetra SafeStart · filter regenerator<br><b>Testing:</b> <b style="color:#4AD490">permanent always-on ammonia alert card (Seachem-style, installed Jun 10)</b> · multi-param strips · ammonia strips · API Master Kit<br><b>Food:</b> Color Studio 40g · Ultra Fresh 53g');
+    html += panel('🧰 Equipment On Hand','<b>Treatment:</b> Seachem Prime · Tetra SafeStart · filter regenerator<br><b>Testing:</b> multi-param strips · ammonia strips · API Master Kit<br><b>Food:</b> Color Studio 40g · Ultra Fresh 53g');
     html += `<div style="height:6px"></div><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif;text-align:center;margin:14px 0 8px">— History &amp; Log —</div>`;
     html += panel('📋 Full Parameter Log',`<div class="tbl"><table><thead><tr><th>Date</th><th>NH3</th><th>NO2</th><th>NO3</th><th>pH</th><th>Hard</th><th>Alk</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></div><div style="font-size:10px;color:#5a7a99;margin-top:4px">* Livestock added 5/27/2026</div>`);
     html += panel('🔄 Cycling History','Fishless cycle, early May (Tetra SafeStart + filter regenerator, no water changes, heater 80°F, bubbler HIGH). Wk 1–2 ammonia stalled at 0.5; 5/22 nitrite spiked (stage-2 on); 5/24 ammonia hit 0; 5/27 both 0/0 — CYCLED ✅.');
@@ -2592,25 +2010,19 @@ function renderShopping() {
   else if (tankSub === "dry") {
     html += hero('images/tank_dry_20260604.jpg','Dry terrarium — rounded face, built-in light; stocked, fed & furnished');
     html += specs('10 × 12 × 7 in','~3.6 gal','🪲 Bioactive — dry / terrestrial');
-    html += banner('167,139,250','Status — Stocked & settled (updated Jun 10)','🕷️ Jumping spider added · 🐞 ladybugs all gone','<b>All ladybugs are out</b> — every one released to the garden, none left inside. <b>New inhabitant: a small jumping spider</b> 🕷️ (noticeably <b>smaller than the katydid nymph</b>) has joined the crew. Added <b>more fresh basil + more strawberry cuttings</b> to the greens; the <b>fake plant</b> stays as the katydid\'s molting perch, with <b>almond leaves + water</b> in the base. Food in the tank: <b>fresh basil (stems in sugar-water-soaked cotton balls) + soaked raisins</b>. Springtails still hide by day — peek at night for a real headcount.');
-    html += panel('🐾 Current inhabitants &amp; greens (Jun 10)',
-      '<div class="kv"><span>🦗 Katydid nymph</span><span>resident — molts on the fake-plant perch</span></div>'
-      + '<div class="kv"><span>🕷️ Jumping spider</span><span><b>new (Jun 10)</b> — small, <b>smaller than the katydid nymph</b></span></div>'
-      + '<div class="kv"><span>🪲 Cleanup crew</span><span>springtails + isopods (microfauna)</span></div>'
-      + '<div class="kv"><span>🐞 Ladybugs</span><span><b style="color:#8b9bb5">removed — all released to the garden</b></span></div>'
-      + '<div class="kv"><span>🌿 Greens</span><span><b>more basil + more strawberry cuttings</b> added (Jun 10) · almond leaves + water in the base</span></div>');
+    html += banner('167,139,250','Status — Stocked & settled (updated Jun 6)','🪲 Crew fed & furnished — 1 stubborn ladybug left','<b>Ladybugs released to the garden</b> — all except <b>1 stubborn one still inside; relocate it when caught</b>. A <b>fake plant</b> went in as the katydid\'s molting perch, <b>more fruit flies</b> were added, and the base got <b>almond leaves + water</b>. Food in the tank: <b>fresh basil (stems in sugar-water-soaked cotton balls) + soaked raisins</b>. Springtails still hide by day — peek at night for a real headcount.');
     const dDaily=['mist','leaves','perch','headcount'];
     const dDone=dDaily.filter(k=>!!laundry['tankd-'+k+'-'+todayKey()]).length;
     html += panel('🧼 Daily care — '+dDone+' of '+dDaily.length+' today',
       tdaily('mist','🌫️ Light mist — damp, not soggy')
-      + tdaily('leaves','🍃 Refresh the greens: basil + strawberry cuttings + sugar-water cotton balls + soaked raisins')
+      + tdaily('leaves','🍃 Refresh the food: basil + sugar-water cotton balls + soaked raisins')
       + tdaily('perch','🪵 Check perches are standing — katydids hang upside-down to molt; vertical twigs are life-or-death')
       + tdaily('headcount','👀 Critter headcount / activity check')
       + '<div style="font-size:10.5px;color:#5a7a99;font-style:italic;margin-top:6px">Resets every morning, like the daily items on Today.</div>');
     html += panel('🛠️ Setup',
       tchk('dry-perches','⬆️ Vertical perches for the katydid — DONE: fake plant in for molting')
       + tchk('dry-litterbark','🍂 Leaf litter for the isopods — DONE: almond leaves + water in the base')
-      + '<div style="font-size:11px;color:rgba(232,244,253,.6);font-style:italic;line-height:1.55;margin-top:7px">🐞 Ladybugs all removed — released to the garden. 🕷️ Small jumping spider added (smaller than the katydid nymph). 🦗 The katydid does best in its own enclosure, away from predators.</div>');
+      + '<div style="font-size:11px;color:rgba(232,244,253,.6);font-style:italic;line-height:1.55;margin-top:7px">🐞 1 stubborn ladybug still inside — relocate to the garden when caught. 🦗 The katydid does best in its own enclosure, away from predators.</div>');
     html += panel('🪲 Bioactive Build — Cleanup Crew',
       '<b>Goal:</b> grow a thriving isopod + springtail colony FIRST, then (much later) add a small animal — a <b>mourning gecko</b> or <b>dart frog</b> — once the microfauna is booming.'
       + sh('Build steps')
@@ -2657,7 +2069,7 @@ function recipeCard(r, featured){
   if(r.draft) badges='<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(245,184,48,.18);color:#8a6210;border:1px solid rgba(200,150,30,.6);font-family:\'Lora\',serif;font-weight:700">🕒 DRAFT · pending approval</span>'+badges;
   return '<div onclick="openRecipe(\''+r.id+'\')" style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;margin-bottom:14px;overflow:hidden;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35)">'
     +'<div style="height:6px;background:repeating-linear-gradient(45deg,#C44536,#C44536 7px,#F5ECD7 7px,#F5ECD7 14px)"></div>'
-    +(ph?'<div style="height:'+(featured?170:130)+'px;overflow:hidden;border-bottom:1px solid #D9C39A;background:#e8dab9;position:relative"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:'+(featured?62:46)+'px">'+(r.emoji||'🍽️')+'</span><img src="'+ph+'" alt="'+r.name+'" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;position:relative" onerror="this.style.display=\'none\'"></div>':recipeHero(r,featured?170:130))
+    +(ph?'<div style="height:'+(featured?170:130)+'px;overflow:hidden;border-bottom:1px solid #D9C39A;background:#e8dab9"><img src="'+ph+'" alt="'+r.name+'" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover"></div>':recipeHero(r,featured?170:130))
     +'<div style="padding:12px 15px 14px">'
     +(featured?'<div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#C44536;font-family:\'Lora\',serif;margin-bottom:4px">★ This week’s pick</div>':'')
     +'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:'+(featured?20:16)+'px;font-weight:700;color:#5a3a2a;line-height:1.25">'+(r.emoji||'🍽️')+' '+r.name+'</div>'
@@ -2671,13 +2083,13 @@ function recipesHtml(){
     +'<div style="height:10px;background:repeating-linear-gradient(45deg,#C44536,#C44536 10px,#F5ECD7 10px,#F5ECD7 20px)"></div>'
     +'<div style="text-align:center;padding:16px 18px 14px">'
     +'<div style="font-size:34px;margin-bottom:2px">📇</div>'
-    +'<div class="gk-title" style="font-size:40px;color:#F7ECD2;text-shadow:0 2px 3px rgba(0,0,0,.45);margin:3px 0 1px">Cy\u2019s Recipe Box</div>'
+    +'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:27px;font-weight:700;color:#F5ECD7;text-shadow:0 1px 2px rgba(0,0,0,.4)">Recipe Box</div>'
     +'<div style="font-size:12px;color:#E8D2A8;font-family:\'Lora\',serif;font-style:italic;margin-top:3px">'+(n?('Tap a card to cook · '+n+' recipe'+(n===1?'':'s')+' in the box'):'The box is warming up — recipes coming soon')+'</div>'
     +'</div></div>';
   if(!has){
-    return '<div class="section-label">📇 Cy\u2019s Recipe Box</div>'+lid+'<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:24px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px;line-height:1.5">No cards yet — the recipes chat is filling the box. They’ll show up here as cute index cards.</div>';
+    return '<div class="section-label">📇 Recipe Box</div>'+lid+'<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:24px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px;line-height:1.5">No cards yet — the recipes chat is filling the box. They’ll show up here as cute index cards.</div>';
   }
-  return '<div class="section-label">\ud83d\udcc7 Cy\u2019s Recipe Box</div>'+lid+recipeSearchBox()+'<div id="recipe-list">'+recipeListHtml()+'</div>';
+  return '<div class="section-label">\ud83d\udcc7 Recipe Box</div>'+lid+recipeSearchBox()+'<div id="recipe-list">'+recipeListHtml()+'</div>';
 }
 function recipeSearchBox(){
   const n=(typeof RECIPES!=='undefined')?RECIPES.length:0;
@@ -2687,76 +2099,31 @@ function recipeMatch(r,q){
   const hay=(r.name+' '+(r.tags||[]).join(' ')+' '+(r.ingredients||[]).join(' ')+' '+(r.blurb||'')+' '+(r.source||'')).toLowerCase();
   return q.split(/\s+/).filter(Boolean).every(function(w){ return hay.indexOf(w)!==-1; });
 }
-function recipeFilter(v){ recipeQuery=String(v||''); if(!String(recipeQuery).trim()) recipeCat=null; var f=document.getElementById('recipe-featured'); if(f) f.style.display=(String(recipeQuery).trim()?'none':''); const el=document.getElementById('recipe-list'); if(el) el.innerHTML=recipeListHtml(); }
-function weekIndex(){ return Math.floor((Math.floor(Date.now()/86400000)-4)/7); } // continuous week counter; advances each Monday (UTC)
-function weeklyFeatured(list){ if(!list||!list.length) return null; var i=((weekIndex()%list.length)+list.length)%list.length; return list[i]; }
-// 🍴 Recipe Box category mapper + landing tiles (added Jun 9 2026) — buckets human recipes by cuisine/type, first match wins.
-const RECIPE_CATS=[['Italian','🍝'],['French','🥐'],['Mexican','🌮'],['Breakfast','🍳'],['Seafood','🦐'],['Pasta','🍜'],['Sides & Veg','🥗'],['Desserts','🍰'],['American / Mains','🍔']];
-function recipeCategory(r){
-  var t=((r&&r.tags)||[]).map(function(x){return String(x).toLowerCase();}); var nm=String((r&&r.name)||'').toLowerCase();
-  function has(){for(var i=0;i<arguments.length;i++){if(t.indexOf(arguments[i])!==-1)return true;}return false;}
-  if(has('italian')) return 'Italian';
-  if(has('french')) return 'French';
-  if(has('mexican')) return 'Mexican';
-  if(has('breakfast')||/pancake|waffle|omelet|frittata|french toast|breakfast/.test(nm)) return 'Breakfast';
-  if(has('seafood','fish','shrimp','salmon','trout','tuna')) return 'Seafood';
-  if(has('pasta')||/pasta|spaghetti|noodle|lasagna/.test(nm)) return 'Pasta';
-  if(has('side','vegetarian','veg','salad')) return 'Sides & Veg';
-  if(has('dessert','sweet','baking')) return 'Desserts';
-  return 'American / Mains';
-}
-function recipeCatEmoji(c){ for(var i=0;i<RECIPE_CATS.length;i++){ if(RECIPE_CATS[i][0]===c) return RECIPE_CATS[i][1]; } return '🍽️'; }
-function recipeTile(label,emoji,sub,onclick,disabled){
-  return '<div '+(disabled?'':'onclick="'+onclick+'" ')+'style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:10px;padding:15px 12px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.25);'+(disabled?'opacity:.55;cursor:default':'cursor:pointer')+'">'
-    +'<div style="font-size:30px;line-height:1">'+emoji+'</div>'
-    +'<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-weight:700;font-size:15px;color:#5a3a2a;margin-top:6px;line-height:1.2">'+label+'</div>'
-    +'<div style="font-size:11px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;margin-top:3px">'+sub+'</div></div>';
-}
-function recipeTilesGrid(tiles){ return '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0 0 8px">'+tiles.join('')+'</div>'; }
-function recipeBackBar(onclick){ return '<div onclick="'+onclick+'" style="display:inline-flex;align-items:center;gap:6px;margin:0 0 14px;padding:7px 14px;border-radius:20px;background:#EFE0BE;border:1px solid #D9C39A;color:#7a5230;cursor:pointer;font-family:\'Lora\',serif;font-size:13px">← All categories</div>'; }
-function recipeGo(c){ recipeCat=c; var el=document.getElementById('recipe-list'); if(el) el.innerHTML=recipeListHtml(); try{window.scrollTo(0,0);}catch(e){} }
+function recipeFilter(v){ recipeQuery=String(v||''); const el=document.getElementById('recipe-list'); if(el) el.innerHTML=recipeListHtml(); }
 function recipeListHtml(){
   const q=String(recipeQuery||'').trim().toLowerCase();
   const all=(typeof RECIPES!=='undefined')?RECIPES:[];
-  const human=all.filter(function(r){return !r.dog;}), dogs=all.filter(function(r){return r.dog;});
-  // ── SEARCH: flat across ALL recipes (human + dog), ignoring the selected category ──
+  const human=all.filter(r=>!r.dog), dogs=all.filter(r=>r.dog);
+  let out='';
   if(q){
     const hits=human.filter(function(r){return recipeMatch(r,q);}), dhits=dogs.filter(function(r){return recipeMatch(r,q);});
     const total=hits.length+dhits.length;
-    if(!total) return '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:22px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No recipes match “'+q.replace(/</g,'&lt;')+'” — try a single ingredient or a shorter word.</div>';
-    let out='<div style="font-size:11.5px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;margin:0 0 10px">'+total+' match'+(total===1?'':'es')+' across the whole box</div>';
+    if(!total) return '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:22px 18px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No recipes match \u201c'+q.replace(/</g,'&lt;')+'\u201d \u2014 try a single ingredient or a shorter word.</div>';
+    out+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;margin:0 0 10px">'+total+' match'+(total===1?'':'es')+'</div>';
     out+=hits.map(function(r){return recipeCard(r,false);}).join('');
     out+=dhits.map(function(r){return recipeCard(r,false);}).join('');
     return out;
   }
-  // ── DOGGY drill-in ──
-  if(recipeCat==='__doggy'){
-    let out=recipeBackBar('recipeGo(null)');
-    out+='<div style="display:flex;align-items:center;gap:10px;margin:4px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#8a5a2a">🐕 Zoey’s Kitchen</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
-    out+='<div style="font-size:11.5px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Rotate the recipes; eggshell calcium, liver, eggs, and weekly sardines keep it balanced.</div>';
-    out+= dogs.length ? dogs.map(function(r){return recipeCard(r,false);}).join('') : '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:20px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No doggy recipes yet.</div>';
-    return out;
+  const feat=human.find(r=>r.featured)||human[0];
+  const rest=human.filter(r=>r!==feat);   // featured renders in the spotlight at the top of the Recipe Box tab
+  if(rest.length) out+=rest.map(r=>recipeCard(r,false)).join('');
+  if(dogs.length){
+    out+='<div style="display:flex;align-items:center;gap:10px;margin:20px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#E8D2A8">🐕 Zoey\u2019s Kitchen</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
+    out+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Rotate the three; eggshell calcium, liver, eggs, and weekly sardines keep it balanced.</div>';
+    out+=dogs.map(r=>recipeCard(r,false)).join('');
   }
-  // ── HOOMAN category drill-in ──
-  if(recipeCat && recipeCat.indexOf('cat:')===0){
-    const cn=recipeCat.slice(4);
-    const items=human.filter(function(r){return recipeCategory(r)===cn;});
-    let out=recipeBackBar('recipeGo(null)');
-    out+='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:18px;font-weight:700;color:#7a5230;margin:0 0 12px">'+recipeCatEmoji(cn)+' '+cn+' <span style="font-size:12px;color:#8a6a3a;font-style:italic">· '+items.length+' recipe'+(items.length===1?'':'s')+'</span></div>';
-    out+=items.map(function(r){return recipeCard(r,false);}).join('');
-    return out;
-  }
-  // ── LANDING: Hooman category tiles + Doggy tile ──
-  const counts={}; human.forEach(function(r){var c=recipeCategory(r); counts[c]=(counts[c]||0)+1;});
-  let tiles=[];
-  RECIPE_CATS.forEach(function(cm){ var c=cm[0]; if(counts[c]) tiles.push(recipeTile(c,cm[1],counts[c]+' recipe'+(counts[c]===1?'':'s'),"recipeGo('cat:"+c+"')",false)); });
-  let out='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:16px;font-weight:700;color:#7a5230;margin:2px 0 10px">🧑 Hooman Food</div>';
-  out+=recipeTilesGrid(tiles);
-  out+='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:16px;font-weight:700;color:#7a5230;margin:16px 0 10px">🐶 Doggy Food</div>';
-  out+=recipeTilesGrid([recipeTile('Zoey’s Kitchen','🐶',dogs.length+' recipe'+(dogs.length===1?'':'s'),"recipeGo('__doggy')",false)]);
   return out;
 }
-
 function baseServ(r){ const m=String((r&&r.servings)||'').match(/\d+/); return m?Math.max(1,parseInt(m[0],10)):2; }
 const _VULG={'¼':[1,4],'½':[1,2],'¾':[3,4],'⅓':[1,3],'⅔':[2,3],'⅛':[1,8],'⅜':[3,8],'⅝':[5,8],'⅞':[7,8],'⅙':[1,6],'⅚':[5,6]};
 const _GLYPH={'1/8':'⅛','1/4':'¼','1/3':'⅓','3/8':'⅜','1/2':'½','5/8':'⅝','2/3':'⅔','3/4':'¾','7/8':'⅞'};
@@ -2833,7 +2200,7 @@ function openRecipe(id, keepScroll){
     +'<div onclick="closeRecipe()" style="display:inline-flex;align-items:center;gap:6px;padding:10px 4px 14px;color:var(--text2);font-family:\'Lora\',serif;font-size:14px;cursor:pointer">← Back to recipes</div>'
     +'<div style="position:relative;height:240px;border-radius:var(--rad);overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2417,#0f0e14);margin-bottom:16px">'
     +'<div style="font-size:80px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.5))">'+(r.emoji||'🍽️')+'</div>'
-    +(r.photo?'<img src="'+r.photo+'" alt="'+r.name+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">':'')+'</div>'
+    +(r.photo?'<img src="'+r.photo+'" alt="'+r.name+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">':'')+'</div>'
     +(r.photoCredit?'<div style="font-size:9.5px;color:var(--text3,#5a7a99);font-family:\'Lora\',serif;margin:-12px 0 10px;text-align:right">'+r.photoCredit+'</div>':'')
     +'<h1 style="font-family:\'Playfair Display\',serif;font-size:24px;color:var(--text);margin:0 0 8px">'+r.name+'</h1>'
     +(meta.length?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">'+meta.map(m=>'<span style="font-size:12px;padding:4px 11px;border-radius:20px;background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border)">'+m+'</span>').join('')+'</div>':'')
@@ -3047,18 +2414,6 @@ function renderPrint() {
       </div>
     </div>
     ${Object.keys(PRINT_VIBES).map(vibeSection).join('')}
-    <!-- 📚 REFERENCE BACKLOGS (collapsible, not active to-dos) — added Jun 8 2026 -->
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);margin:6px 0 14px"></div>
-    <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#818CF8;font-family:'Lora',serif;text-align:center;margin-bottom:10px">📚 Reference backlogs — saved for later, not active to-dos</div>
-    <details style="background:#0d0d1a;border:1px solid rgba(129,140,248,.25);border-radius:12px;padding:4px 14px;margin-bottom:10px">
-      <summary style="cursor:pointer;list-style:none;padding:10px 0;font-size:13.5px;font-weight:700;color:#818CF8;font-family:'Playfair Display',serif">🖨️ SV06+ Printer Upgrades (blue PLA)</summary>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 10px"><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Filament guide / runout guide</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Upgraded spool holder + bearing roller</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Filament duster / filter clip</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">PTFE / drybox passthrough guide</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">X & Y cable drag chains</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Gantry cable clips / strain reliefs</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Under-base storage drawer</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Allen-key + nozzle organizer</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Frame-mounted tool tray</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Scraper holder</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Touchscreen glare visor</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Screen tilt mount</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Knob / button caps</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Webcam mount</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">LED light-bar bracket</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Belt tensioner clips / indicator</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Z-axis top brace</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Vibration-damping feet</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">PEI removal handle / tab</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Purge bucket</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Bed-level test squares / cube</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Sovol logo badge</span><span style="font-size:11px;color:#cbd5e1;font-family:'Lora',serif;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);border-radius:14px;padding:3px 9px;display:inline-block">Drawer pulls</span></div>
-      <div style="font-size:10.5px;color:#F59E0B;font-family:'Lora',serif;font-style:italic;padding:0 0 10px">⚠️ Note: hotend-adjacent parts stay PETG.</div>
-    </details>
-    <details style="background:#0d0d1a;border:1px solid rgba(52,211,153,.25);border-radius:12px;padding:4px 14px;margin-bottom:14px">
-      <summary style="cursor:pointer;list-style:none;padding:10px 0;font-size:13.5px;font-weight:700;color:#34D399;font-family:'Playfair Display',serif">🏡 Household / Hobby print ideas</summary>
-      <div style="padding:0 0 8px"><div style="padding:7px 0;border-top:1px solid rgba(255,255,255,.06)"><div style="font-size:12px;font-weight:700;color:#34D399;font-family:'Lora',serif">🪲 Bug terrarium</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:2px">molting perch · auto-fly-feeder · isopod hides · clip-on feeding ledge</div></div><div style="padding:7px 0;border-top:1px solid rgba(255,255,255,.06)"><div style="font-size:12px;font-weight:700;color:#34D399;font-family:'Lora',serif">🐟 Aquarium (out-of-water parts)</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:2px">raised light-lid bracket · tank labels · feeding-tube holder · cord organizer</div></div><div style="padding:7px 0;border-top:1px solid rgba(255,255,255,.06)"><div style="font-size:12px;font-weight:700;color:#34D399;font-family:'Lora',serif">🌱 Garden</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:2px">plant markers ×21 · seed tray + dome · self-watering insert · trellis clips · tool hooks</div></div><div style="padding:7px 0;border-top:1px solid rgba(255,255,255,.06)"><div style="font-size:12px;font-weight:700;color:#34D399;font-family:'Lora',serif">🐕 Zoey</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:2px">name tag · treat puzzle · portion scoop · elevated bowl stand</div></div><div style="padding:7px 0;border-top:1px solid rgba(255,255,255,.06)"><div style="font-size:12px;font-weight:700;color:#34D399;font-family:'Lora',serif">🍳 Kitchen</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:2px">measuring spoons · bag clips · spice labels · utensil holder</div></div><div style="padding:7px 0;border-top:1px solid rgba(255,255,255,.06)"><div style="font-size:12px;font-weight:700;color:#34D399;font-family:'Lora',serif">🎲 Desk / fun</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:2px">print-in-place axolotl / shrimp / dragon · phone + tablet stand · headphone hook · pen cup · mountain / Milky-Way desk piece · dice tower · fidgets</div></div></div>
-    </details>
     <div style="font-size:11px;color:var(--text3,#5a7a99);font-family:'Lora',serif;font-style:italic;text-align:center;padding:2px 0 10px">Spotlight rotates daily · aquarium parts = PETG only, always</div>
 `;
   const _upg = `
@@ -3139,20 +2494,10 @@ function renderPrint() {
       <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;line-height:1.6">Print brackets and clips in <strong style="color:var(--text)">PETG or ABS</strong> — not PLA. Enclosure interiors can reach 45°C+ during ABS prints and PLA will warp and fail. PETG handles up to ~80°C and is easy to print on the SV06 Plus.</div>
     </div>
   `;
-  const silDone=!!laundry['print-silica-'+isoWeekKey()];
   const _todo = `    <!-- PRINT TO-DO -->
     <div style="text-align:center;margin-bottom:16px;padding-top:4px">
       <div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🖨️ Print Queue</div>
       <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#c084fc,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">To-Do</div>
-    </div>
-    <div style="background:linear-gradient(135deg,rgba(74,222,128,.14),rgba(34,211,238,.05));border:1px solid rgba(74,222,128,.45);border-radius:14px;padding:13px 15px;margin-bottom:12px">
-      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#4ADE80;font-family:'Lora',serif;margin-bottom:4px">🎉 New gear</div>
-      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)">🎉 Got the Sovol filament dryer!</div>
-      <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5;margin-top:3px">No more soggy filament — dry the TPU before the grommets, and keep PETG/PLA crisp. Keep an eye on the silica so it stays effective. 👇</div>
-    </div>
-    <div onclick="togglePrintSilica()" style="background:#0d0d1a;border:1px solid rgba(74,222,128,.3);border-radius:12px;padding:13px 15px;margin-bottom:12px;cursor:pointer;display:flex;align-items:center;gap:11px">
-      <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${silDone?'#4AD490':'rgba(255,255,255,.3)'};background:${silDone?'rgba(74,212,144,.2)':'transparent'};display:flex;align-items:center;justify-content:center;color:#4AD490;font-weight:900;font-size:12px;flex-shrink:0">${silDone?'✓':''}</div>
-      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:${silDone?'#4AD490':'var(--text)'};${silDone?'text-decoration:line-through':''}">💧 Check &amp; recharge the dryer's silica</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;margin-top:2px">Weekly — if the beads turned (pink/clear), recharge or swap them. Resets every week. ${silDone?'Done this week ✔':''}</div></div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(129,140,248,.08));border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:13px 15px;margin-bottom:12px">
       <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#22D3EE;font-family:'Lora',serif;margin-bottom:4px">🟢 Active Print</div>
@@ -3307,8 +2652,6 @@ function renderWellness() {
   const today = todayKey();
   const log   = painLog;
   let out = "";
-  // 😴 Sleep first — the current priority (v2-features.js)
-  try{ out += hgSleepSectionHtml(today); }catch(e){}
 
   // ── Litfulo med reminder ──
   const litDone = !!laundry["well-litfulo-"+today];
@@ -3414,12 +2757,8 @@ function finEditBox(kind,id,cur){ return '<div style="display:flex;gap:8px;align
   +'<div onclick="finEditCancel()" style="font-size:12px;color:#5a7a99;cursor:pointer;font-style:italic">✕</div></div>'; }
 function finBillToggle(id){ const k=id+'-'+todayKey().slice(0,7); fin.bills=fin.bills||{}; if(fin.bills[k]) delete fin.bills[k]; else fin.bills[k]=true; saveFin(); renderFinance(); }
 function finCancelToggle(id){ fin.cancel=fin.cancel||{}; if(fin.cancel[id]) delete fin.cancel[id]; else { fin.cancel[id]=true; try{toast('✂️ Verified gone — your monthly gap just improved');}catch(e){} } saveFin(); renderFinance(); }
-function finTodoToggle(id){ fin.todoDone=fin.todoDone||{}; if(fin.todoDone[id]) delete fin.todoDone[id]; else fin.todoDone[id]=true; saveFin(); renderFinance(); try{renderToday();}catch(e){} }
+function finTodoToggle(id){ fin.todoDone=fin.todoDone||{}; if(fin.todoDone[id]) delete fin.todoDone[id]; else fin.todoDone[id]=true; saveFin(); renderFinance(); }
 function finMondayToggle(id){ fin.monday=fin.monday||{}; if(fin.monday[id]) delete fin.monday[id]; else { fin.monday[id]=todayKey(); try{toast('📞 Handled — the Monday queue advances');}catch(e){} } saveFin(); renderFinance(); renderToday(); }
-// ── 📞 Mondays ⇄ ✅ To-dos single-source bridge (Jun 8 2026): a Monday card whose task also lives on the master ✅ To-dos list reflects THAT list's done state (finTaskDone) instead of carrying its own independent checkbox. fin.todoDone[ft] is the source of truth; legacy fin.monday[mon] is still honored, and the queue still paces one item a week. ──
-const MON_FT={ mon_latefee:'ft_latefee', mon_xfinity:'ft_xfinity', mon_family:'ft_family', mon_amazon:'ft_prime', mon_farmersdog:'ft_farmersdog', mon_carwash:'ft_carwash', mon_gamepass:'ft_gamepass', mon_disney:'ft_disney', mon_crunchy:'ft_crunchy', mon_uberone:'ft_uberone' };
-function finTaskDone(id){ fin.todoDone=fin.todoDone||{}; fin.monday=fin.monday||{}; if(fin.todoDone[id]) return true; if(fin.monday[id]) return true; var ft=MON_FT[id]; if(ft&&fin.todoDone[ft]) return true; for(var mk in MON_FT){ if(MON_FT[mk]===id&&fin.monday[mk]) return true; } return false; }
-function finTaskToggle(id){ var ft=MON_FT[id]; if(ft){ finTodoToggle(ft); } else { finMondayToggle(id); } }
 function finMondayKey(offset){ const d=new Date(); const shift=(1-d.getDay()+7)%7; d.setDate(d.getDate()+shift+offset*7); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); } // 0 = today if Monday, else next Monday
 const FIN_MON_BAL=[['bal','checking','🏦 Capital One 360 Checking'],['bal','savings','🌱 Capital One 360 Savings'],['debt','savor','💳 SAVOR balance'],['debt','c6605','💳 Quicksilver •6605 balance']];
 function finMonBalStart(){ finMonBalIdx=0; renderToday(); }
@@ -3441,11 +2780,6 @@ function finMondayLabel(k){ const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','
 function addFinTodo(){ const el=document.getElementById('finTodoInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; fin.todoCustom=fin.todoCustom||{}; fin.todoCustom['ft-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v; el.value=''; saveFin(); renderFinance(); }
 function removeFinTodo(id){ if(fin.todoCustom&&fin.todoCustom[id]!=null) delete fin.todoCustom[id]; if(fin.todoDone&&fin.todoDone[id]) delete fin.todoDone[id]; saveFin(); renderFinance(); }
 function finMoreTips(){ finTipOff+=3; renderFinance(); }
-// === 💸 SIDE INCOME helpers (Jun 8 2026) — aspirational; NEVER folded into the One Number ===
-function sidePhaseToggle(n){ fin.side=fin.side||{}; fin.side.phase=fin.side.phase||{}; if(fin.side.phase[n]) delete fin.side.phase[n]; else { fin.side.phase[n]=true; try{toast('🚀 Phase '+n+' shipped — next phase unlocked');}catch(e){} } saveFin(); renderFinance(); }
-function sideProdToggle(n){ fin.side=fin.side||{}; fin.side.prod=fin.side.prod||{}; if(fin.side.prod[n]) delete fin.side.prod[n]; else fin.side.prod[n]=true; saveFin(); renderFinance(); }
-function sideEditListings(){ fin.side=fin.side||{}; const cur=fin.side.listings||0; const v=prompt('How many listings are live right now?',cur); if(v===null) return; const n=parseInt(String(v).replace(/[^0-9]/g,''),10); if(isNaN(n)){ try{toast('Hmm — enter a whole number');}catch(e){} return; } fin.side.listings=Math.max(0,n); saveFin(); renderFinance(); }
-function sideEditEarned(){ fin.side=fin.side||{}; const cur=fin.side.earned||0; const v=prompt('Total side income earned to date ($)?',cur); if(v===null) return; const n=parseFloat(String(v).replace(/[^0-9.\-]/g,'')); if(isNaN(n)){ try{toast('Hmm — that does not look like a number');}catch(e){} return; } fin.side.earned=Math.max(0,n); saveFin(); renderFinance(); }
 
 function renderFinance(){
   const el=document.getElementById('view-finance'); if(!el) return;
@@ -3475,7 +2809,7 @@ function renderFinance(){
     +'<div style="font-family:\'Playfair Display\',serif;font-size:38px;font-weight:800;color:'+(pos?G:R)+';line-height:1">'+(pos?'+':'')+finFmt(gap,true)+'<span style="font-size:14px;color:var(--text2);font-weight:400;font-family:\'Lora\',serif"> / month</span></div>'
     +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;margin-top:8px">In ~'+finFmt(FINANCE.incomeMonthly,true)+' · committed out ~'+finFmt(committed,true)+(cancelGot>0?' <span style="color:'+G+'">(already trimmed '+finFmt(cancelGot,true)+' ✂️)</span>':'')+'</div>'
     +(pos?'<div style="font-size:12.5px;color:'+G+';font-family:\'Lora\',serif;font-style:italic;margin-top:8px">You\'re above water — every verified cancellation widens the margin. 🎉</div>'
-        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b>'+(!(fin.cancel||{}).farmersdog?'<br>🐕 Farmer\'s Dog $215/mo — <b>~6 weeks out</b>: use up the shipment, then the 12-day switch <b style="color:#4AD490">(the big one)</b>':'')+'<br>✂️ '+finFmt(cancelLeft-((fin.cancel||{}).farmersdog?0:215.05),true)+'/mo of smaller subscriptions left to verify (now on ✅ To-dos)<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
+        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b>'+(!(fin.cancel||{}).farmersdog?'<br>🐕 Farmer\'s Dog $215/mo — <b>~6 weeks out</b>: use up the shipment, then the 12-day switch <b style="color:#4AD490">(the big one)</b>':'')+'<br>✂️ '+finFmt(cancelLeft-((fin.cancel||{}).farmersdog?0:215.05),true)+'/mo of smaller subscriptions left to verify below<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
     +'<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:var(--text)">💰 Next paycheck: <b>'+(left===0?'today! 🎉':pdLabel+' — '+(left===1?'tomorrow':'in '+left+' days'))+'</b> <span style="color:var(--text2)">(~$2,250, every other Thursday)</span></div>'
   +'</div>';
 
@@ -3516,44 +2850,10 @@ function renderFinance(){
   // ── 4 · BILLS — monthly check-offs ──
   out+='\u0001bills\u0001';
   fin.bills=fin.bills||{};
-  // ── 🛟 OVERDRAFT GUARD — payday-relative bill timing (added Jun 9 2026; does NOT touch the One Number math) ──
-  const PD_ANCHOR=new Date(FINANCE.paydayAnchor+'T12:00:00'), PD_MS=86400000;
-  const _pdToday=new Date();
-  function _pdInto(d){ return ((Math.floor((d-PD_ANCHOR)/PD_MS)%14)+14)%14; }
-  function _nextPayday(from){ const left=(14-_pdInto(from))%14; return new Date(from.getTime()+left*PD_MS); }
-  function _lastPaydayOnOrBefore(d){ return new Date(d.getTime()-_pdInto(d)*PD_MS); }
-  const _nextPd=_nextPayday(_pdToday);
-  const _nextPdStr=_nextPd.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-  function billDueDay(b){ const m=String(b.due||'').match(/(\d+)/); return m?parseInt(m[1],10):null; }
-  function billPaydayFlag(b){ const day=billDueDay(b); if(!day) return null;
-    const due=new Date(_pdToday.getFullYear(),_pdToday.getMonth(),Math.min(day,28),12,0,0);
-    const daysAfter=Math.round((due-_lastPaydayOnOrBefore(due))/PD_MS);
-    return { risk: daysAfter>=7, daysAfter:daysAfter }; }
-  function billFlagHtml(b){ const f=billPaydayFlag(b); if(!f) return '';
-    return '<div style="font-size:10px;margin-top:4px;display:inline-block;padding:2px 7px;border-radius:5px;font-family:\'Lora\',serif;'
-      +(f.risk?'background:rgba(248,113,113,.13);color:#F87171;border:1px solid rgba(248,113,113,.4)':'background:rgba(45,184,112,.12);color:#34D399;border:1px solid rgba(45,184,112,.35)')+'">'
-      +(f.risk?'⚠️ due before payday — overdraft risk':'✅ covered (after payday)')+'</div>'; }
-  // 🛟 rule card — top of the Bills sub-tab
-  out+='<div style="background:linear-gradient(135deg,rgba(56,189,248,.13),rgba(255,255,255,.02));border:1px solid rgba(56,189,248,.4);border-radius:var(--rad);padding:14px 16px;margin-bottom:14px">'
-    +'<div style="display:flex;align-items:center;gap:9px;margin-bottom:5px"><span style="font-size:20px">🛟</span><span style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text)">Overdraft Guard</span></div>'
-    +'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">Never let an autopay hit an empty account — <b style="color:var(--text)">move the due date</b>. A planned-late bill beats a $35 bounce.</div>'
-    +'<div style="font-size:11px;color:#38BDF8;font-family:\'Lora\',serif;margin-top:9px;line-height:1.6">💵 Next payday: <b>'+_nextPdStr+'</b> &nbsp;·&nbsp; <span style="color:#F87171">⚠️ due before payday</span> &nbsp;·&nbsp; <span style="color:#34D399">✅ covered after payday</span></div>'
-  +'</div>';
   const sortedBills=FINANCE.bills.slice().sort(function(a,b){return a.sort-b.sort;});
-  // 💳 loan bills show TOTAL owed (wired to the matching debt); unknown => tap to set on ❄️ Debts
-  const LOAN_DEBT={studentloan:'studentL',nissan:'nissanL',irs:'irsL',lendmark:'lendmarkL',family:'famloan'};
-  const billTotalHtml=function(b){
-    const did=LOAN_DEBT[b.id]; if(!did) return '';
-    const dt=FINANCE.debts.find(function(d){return d.id===did;});
-    const c=dt?finLatest('debt',dt.id,dt.start):null;
-    const known=!!(c&&c.v!=null);
-    if(known) return '<div style="font-size:10.5px;color:#7DD3FC;font-family:\'Lora\',serif;margin-top:2px">📊 total owed: '+finFmt(c.v,true)+'</div>';
-    return '<div onclick="event.stopPropagation();goDebtsTab()" style="font-size:10.5px;color:#FBBF24;font-family:\'Lora\',serif;margin-top:2px;cursor:pointer">📊 total owed: unknown — tap to set →</div>';
-  };
   const paidCt=sortedBills.filter(function(b){return fin.bills[b.id+'-'+ym];}).length;
   const billTotal=sortedBills.reduce(function(s,b){return s+b.amt;},0);
   out+='<div class="section-label">🧾 Bills — '+monthName+' · '+paidCt+' of '+sortedBills.length+' paid</div>';
-  try{ out+=hgBillsTimelineHtml(sortedBills,ym); }catch(e){}
   out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:6px 14px;margin-bottom:14px">';
   sortedBills.forEach(function(b){
     const pd=!!fin.bills[b.id+'-'+ym];
@@ -3561,7 +2861,7 @@ function renderFinance(){
       +'<div style="width:22px;height:22px;border-radius:50%;border:2px solid '+(pd?'#10B981':'rgba(250,204,21,.45)')+';background:'+(pd?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0">'+(pd?'✓':'')+'</div>'
       +'<div style="font-size:9.5px;color:var(--text2);width:46px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em">'+b.due+'</div>'
       +'<div style="flex:1;min-width:0"><div style="font-size:13px;color:'+(pd?'var(--text3)':'var(--text)')+';'+(pd?'text-decoration:line-through;':'')+'font-family:\'Lora\',serif">'+b.label+'</div>'
-      +(b.note?'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+b.note+'</div>':'')+billTotalHtml(b)+billFlagHtml(b)+'</div>'
+      +(b.note?'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+b.note+'</div>':'')+'</div>'
       +'<div style="font-size:13px;font-weight:700;color:'+(pd?'var(--text3)':Y)+';flex-shrink:0">'+finFmt(b.amt,true)+'</div></div>';
   });
   out+='<div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0 9px;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif"><span>Check each off as it\'s paid — fresh boxes every month.</span><b style="color:var(--text);flex-shrink:0">'+finFmt(billTotal,true)+'/mo</b></div></div>';
@@ -3569,7 +2869,6 @@ function renderFinance(){
   // ── 5 · DEBT SNOWBALL ──
   out+='\u0001debts\u0001';
   out+='<div class="section-label">❄️ Debt snowball — smallest card first</div>';
-  try{ out+=hgDebtChartsHtml(); }catch(e){}
   let target=null;
   const cardCur=FINANCE.debts.filter(function(d){return d.card;}).reduce(function(s,d){ const c=finLatest('debt',d.id,d.start); return s+(c?Math.max(0,c.v):0);},0);
   FINANCE.debts.forEach(function(d,i){
@@ -3582,11 +2881,11 @@ function renderFinance(){
     const editing=finEdit==='debt:'+d.id;
     const col=paidOff?G:(isTarget?'#FB923C':Y);
     out+='<div style="background:'+(isTarget?'linear-gradient(135deg,rgba(251,146,60,.12),rgba(255,255,255,.02))':'rgba(255,255,255,.03)')+';border:1px solid '+(isTarget?'rgba(251,146,60,.45)':'rgba(255,255,255,.08)')+';border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">'
-      +(isTarget?'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FB923C;font-family:\'Lora\',serif;margin-bottom:6px">🎯 Current target — every spare dollar goes here</div>':'')+(d.keepZero&&cur&&cur.v<=0?'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#4AD490;font-family:\'Lora\',serif;margin-bottom:6px">🟢 Working card — autopay on</div>':'')
+      +(isTarget?'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#FB923C;font-family:\'Lora\',serif;margin-bottom:6px">🎯 Current target — every spare dollar goes here</div>':'')+(d.keepZero&&cur&&cur.v<=0?'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#4AD490;font-family:\'Lora\',serif;margin-bottom:6px">🟢 Open — keep it at $0</div>':'')
       +'<div style="display:flex;align-items:center;gap:10px">'
       +'<div style="font-size:12px;color:var(--text2);font-weight:700;flex-shrink:0">#'+(i+1)+'</div>'
       +'<div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:'+(paidOff?'var(--text3)':'var(--text)')+';'+(paidOff?'text-decoration:line-through;':'')+'font-family:\'Lora\',serif">'+d.label+(paidOff?' — PAID 🎉':'')+'</div>'
-      +'<div style="font-size:10.5px;color:var(--text2);margin-top:1px">min '+finFmt(d.min,true)+'/mo'+(d.apr?' · '+d.apr:'')+(d.note?' · '+d.note:'')+'</div></div>'
+      +'<div style="font-size:10.5px;color:var(--text2);margin-top:1px">min '+finFmt(d.min,true)+'/mo · '+d.apr+(d.note?' · '+d.note:'')+'</div></div>'
       +(editing?finEditBox('debt',d.id,cur?cur.v:'')
         :'<div onclick="finEditOpen(\'debt\',\''+d.id+'\')" style="text-align:right;cursor:pointer;flex-shrink:0"><div style="font-size:15px;font-weight:800;color:'+col+';font-family:\'Playfair Display\',serif">'+(cur?finFmt(cur.v,true):'tap to set')+'</div><div style="font-size:9.5px;color:var(--text2)">'+(cur&&cur.d?'as of '+finNiceDate(cur.d):(cur?'from statements':'unknown'))+' ✏️</div></div>')
       +'</div>'
@@ -3594,6 +2893,21 @@ function renderFinance(){
     +'</div>';
   });
   out+='<div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.12);border-radius:var(--rad);padding:12px 16px;margin-bottom:14px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.7">💳 Cards together: <b style="color:var(--text)">'+finFmt(cardCur,true)+'</b> at ~29%. An extra $300/mo on the snowball = debt-free in ~15 months and ~$1,570 of interest saved vs minimums. Family loan is 0% — cards first, but keep family in the loop. Tap any balance to update it after a payment — the bars move.</div>';
+
+  // ── 6 · CANCEL LIST ──
+  out+='\u0001debts\u0001';
+  const cancelAll=FINANCE.cancels.reduce(function(s,c){return s+c.amt;},0);
+  out+='<div class="section-label">✂️ Cancel list — '+finFmt(cancelGot,true)+' of ~'+finFmt(cancelAll,true)+'/mo verified gone</div>';
+  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:6px 14px;margin-bottom:14px">';
+  FINANCE.cancels.forEach(function(c){
+    const v=!!(fin.cancel||{})[c.id];
+    out+='<div onclick="finCancelToggle(\''+c.id+'\')" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer">'
+      +'<div style="width:22px;height:22px;border-radius:6px;border:1.5px solid '+(v?'#10B981':'rgba(248,113,113,.5)')+';background:'+(v?'rgba(16,185,129,.2)':'transparent')+';display:flex;align-items:center;justify-content:center;color:'+G+';font-weight:900;font-size:11px;flex-shrink:0">'+(v?'✓':'')+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13px;color:'+(v?'var(--text3)':'var(--text)')+';font-family:\'Lora\',serif;'+(v?'text-decoration:line-through':'')+'">'+c.label+'</div>'
+      +'<div style="font-size:10.5px;color:var(--text2);font-style:italic">'+(v?'verified gone on a statement ✓':(c.note?c.note:'canceled — verify it on the June statement'))+'</div></div>'
+      +(c.amt?'<div style="font-size:13px;font-weight:700;color:'+(v?G:R)+';flex-shrink:0">'+finFmt(c.amt)+'</div>':'<div style="font-size:11px;font-weight:700;color:'+(v?G:R)+';flex-shrink:0">$? — check statement</div>')+'</div>';
+  });
+  out+='<div style="padding:10px 0;font-size:11px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;font-style:italic">'+FINANCE.cancelPending+'<br>'+FINANCE.keeping+'</div></div>';
 
   // ── 6b · FARMER'S DOG vs HOMEMADE — cost analysis (computed Jun 6 2026; estimates at Denver King Soopers-ish prices) ──
   out+='\u0001coach\u0001';
@@ -3611,8 +2925,8 @@ function renderFinance(){
   // ── 6c · 📞 FINANCIAL MONDAYS — one call/cancel per week, never a pile (added Jun 6 2026) ──
   out+='\u0001mondays\u0001';
   fin.monday=fin.monday||{};
-  const monAll=(FINANCE.mondays||[]).map(function(m){return {id:m.id,label:m.label,note:m.note||'',deadline:m.deadline||'',linked:MON_FT[m.id]||'',done:finTaskDone(m.id),doneStamp:fin.monday[m.id]||''};});
-  const monOpen=monAll.filter(function(m){return !m.done;}), monDone=monAll.filter(function(m){return m.done;});
+  const monAll=(FINANCE.mondays||[]).map(function(m){return {id:m.id,label:m.label,note:m.note||'',deadline:m.deadline||'',done:fin.monday[m.id]||''};});
+  const monOpen=monAll.filter(function(m){return !m.done;}), monDone=monAll.filter(function(m){return !!m.done;});
   out+='<div class="section-label">📞 Financial Mondays — one thing a week</div>';
   out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:12px 15px;margin-bottom:12px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">Monday is the money day — ONE retention call or cancellation, then you\'re done. No piles, no overwhelm. Check one off and the next slides into next Monday automatically.</div>';
   if(!monOpen.length){
@@ -3621,64 +2935,35 @@ function renderFinance(){
   monOpen.forEach(function(m,i){ const k=finMondayKey(i); const isThis=(i===0);
     const late=m.deadline&&k>m.deadline;
     out+='<div style="background:'+(isThis?'linear-gradient(135deg,rgba(250,204,21,.12),rgba(255,255,255,.02))':'rgba(255,255,255,.03)')+';border:1px solid '+(isThis?'rgba(250,204,21,.45)':'rgba(255,255,255,.08)')+';border-radius:var(--rad);padding:13px 15px;margin-bottom:9px;display:flex;align-items:flex-start;gap:12px">'
-      +(m.linked
-        ? '<div style="width:26px;height:26px;border-radius:7px;background:rgba(250,204,21,.10);border:1px solid rgba(250,204,21,.3);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px">📋</div>'
-        : '<div onclick="finMondayToggle(\''+m.id+'\')" style="width:26px;height:26px;border-radius:50%;border:2px solid '+(isThis?'#FACC15':'rgba(255,255,255,.25)')+';background:transparent;flex-shrink:0;cursor:pointer;margin-top:1px"></div>')
+      +'<div onclick="finMondayToggle(\''+m.id+'\')" style="width:26px;height:26px;border-radius:50%;border:2px solid '+(isThis?'#FACC15':'rgba(255,255,255,.25)')+';background:transparent;flex-shrink:0;cursor:pointer;margin-top:1px"></div>'
       +'<div style="flex:1;min-width:0">'
       +'<div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:'+(isThis?'#FACC15':'var(--text3)')+';font-family:\'Lora\',serif;margin-bottom:3px">'+(isThis?'⭐ THIS MONDAY · ':'')+finMondayLabel(k)+(late?' · <span style=\"color:#F87171\">⚠️ past the '+m.deadline.slice(5).replace('-','/')+' deadline — jump the line</span>':'')+'</div>'
       +'<div style="font-size:13.5px;font-weight:'+(isThis?'700':'400')+';color:var(--text);font-family:\'Lora\',serif;line-height:1.45">'+m.label+'</div>'
       +(m.note&&isThis?'<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;line-height:1.55;margin-top:4px">'+m.note+'</div>':'')
-      +(m.linked?'<div onclick="switchFinSub(\'todos\')" style="display:inline-block;margin-top:6px;font-size:10.5px;color:#7EB8F0;font-family:\'Lora\',serif;cursor:pointer;border:1px solid rgba(126,184,240,.3);border-radius:8px;padding:3px 8px;max-width:100%">📋 Tracked on your ✅ To-dos list — check it off there</div>':'')
       +'</div></div>';
   });
   if(monDone.length){
     out+='<div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);font-family:\'Lora\',serif;margin:12px 0 6px">✓ Handled — '+monDone.length+' down</div>';
-    monDone.forEach(function(m){ out+='<div style="display:flex;align-items:center;gap:10px;padding:7px 4px;opacity:.55"><div onclick="finTaskToggle(\''+m.id+'\')" style="width:22px;height:22px;border-radius:50%;border:2px solid #10B981;background:#10B981;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0;cursor:pointer">✓</div><div style="flex:1;font-size:12.5px;color:var(--text3);font-family:\'Lora\',serif;text-decoration:line-through">'+m.label+'</div>'+(m.doneStamp?'<div style="font-size:10px;color:var(--text3)">'+m.doneStamp+'</div>':'<div style="font-size:9px;color:#7EB8F0">✅ on To-dos</div>')+'</div>'; });
+    monDone.forEach(function(m){ out+='<div style="display:flex;align-items:center;gap:10px;padding:7px 4px;opacity:.55"><div onclick="finMondayToggle(\''+m.id+'\')" style="width:22px;height:22px;border-radius:50%;border:2px solid #10B981;background:#10B981;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0;cursor:pointer">✓</div><div style="flex:1;font-size:12.5px;color:var(--text3);font-family:\'Lora\',serif;text-decoration:line-through">'+m.label+'</div><div style="font-size:10px;color:var(--text3)">'+m.done+'</div></div>'; });
   }
   out+='<div style="font-size:10.5px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin:10px 0 16px">Pool league is Monday night — handle the one money thing in the morning and the table is guilt-free. 🎱</div>';
 
   // ── 7 · MONEY TO-DOS ──
   out+='\u0001todos\u0001';
   fin.todoDone=fin.todoDone||{}; fin.todoCustom=fin.todoCustom||{};
-  const finTiers=FINANCE.todosSeed||[];
-  let finOpenCount=0;
-  finTiers.forEach(function(g){ if(g.info) return; (g.items||[]).forEach(function(it){ if((!it.showFrom||it.showFrom<=todayKey()) && !finTaskDone(it.id)) finOpenCount++; }); });
-  Object.keys(fin.todoCustom).forEach(function(id){ if(!fin.todoDone[id]) finOpenCount++; });
-  out+='<div class="section-label">✅ Money to-dos — '+finOpenCount+' open</div>';
-  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:10px 14px;margin-bottom:6px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">Your whole money list, in priority order — this is the master. The 📞 Mondays tab just paces the calls; check things off <b>here</b>.</div>';
-  const finTodoRow=function(t,done,col){ return '<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)">'
-    +'<div onclick="finTodoToggle(\''+t.id+'\')" style="width:22px;height:22px;border-radius:50%;border:2px solid '+(done?'#10B981':(col||'rgba(250,204,21,.5)'))+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0;cursor:pointer;margin-top:1px">'+(done?'✓':'')+'</div>'
-    +'<div style="flex:1;min-width:0">'
-      +'<div onclick="finTodoToggle(\''+t.id+'\')" style="font-size:13px;color:'+(done?'var(--text3)':'var(--text)')+';font-family:\'Lora\',serif;'+(done?'text-decoration:line-through;':'')+'cursor:pointer;line-height:1.45">'+t.label+(t.deadline&&!done?' <span style="display:inline-block;font-size:10px;color:#E0506A;border:1px solid rgba(224,80,106,.4);border-radius:7px;padding:1px 6px;white-space:nowrap;vertical-align:middle">⏰ by '+t.deadline.slice(5).replace('-','/')+'</span>':'')+'</div>'
-      +(t.note?'<div style="font-size:11px;color:var(--text2);font-style:italic;font-family:\'Lora\',serif;line-height:1.5;margin-top:3px">'+t.note+'</div>':'')
-      +(t.steps&&t.steps.length?'<div style="margin-top:6px;display:flex;flex-direction:column;gap:5px">'+t.steps.map(function(sp){return '<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45;display:flex;gap:7px"><span style="color:'+(col||'#FBBF24')+';flex-shrink:0;font-weight:700">→</span><span style="min-width:0">'+sp+'</span></div>';}).join('')+'</div>':'')
-    +'</div>'
+  const allTodos=FINANCE.todosSeed.map(function(t){return {id:t.id,label:t.label,custom:false};})
+    .concat(Object.keys(fin.todoCustom).map(function(id){return {id:id,label:esc(fin.todoCustom[id]),custom:true};}));
+  const openT=allTodos.filter(function(t){return !fin.todoDone[t.id];});
+  const doneT=allTodos.filter(function(t){return fin.todoDone[t.id];});
+  out+='<div class="section-label">✅ Money to-dos — '+openT.length+' open</div>';
+  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:10px 14px;margin-bottom:14px">';
+  const finTodoRow=function(t,done){ return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)">'
+    +'<div onclick="finTodoToggle(\''+t.id+'\')" style="width:22px;height:22px;border-radius:50%;border:2px solid '+(done?'#10B981':'rgba(250,204,21,.5)')+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0;cursor:pointer">'+(done?'✓':'')+'</div>'
+    +'<div onclick="finTodoToggle(\''+t.id+'\')" style="flex:1;font-size:13px;color:'+(done?'var(--text3)':'var(--text)')+';font-family:\'Lora\',serif;'+(done?'text-decoration:line-through;':'')+'cursor:pointer;line-height:1.45">'+t.label+'</div>'
     +(t.custom?'<div onclick="removeFinTodo(\''+t.id+'\')" style="font-size:18px;color:#5a7a99;padding:0 2px 0 8px;cursor:pointer;flex-shrink:0;line-height:1">×</div>':'')
     +'</div>'; };
-  finTiers.forEach(function(g){
-    if(g.info){
-      out+='<div style="display:flex;align-items:center;gap:8px;margin:14px 0 6px"><div style="width:4px;align-self:stretch;min-height:15px;border-radius:3px;background:'+g.col+'"></div><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:'+g.col+';font-family:\'Lora\',serif;font-weight:700">'+g.tier+'</div></div>';
-      out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-left:3px solid '+g.col+';border-radius:var(--rad);padding:2px 14px">';
-      (g.items||[]).forEach(function(it){ out+='<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)"><div style="color:'+g.col+';flex-shrink:0;font-size:13px;line-height:1.45">•</div><div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.45">'+it.label+'</div>'+(it.note?'<div style="font-size:11px;color:var(--text2);font-style:italic;font-family:\'Lora\',serif;line-height:1.5;margin-top:3px">'+it.note+'</div>':'')+'</div></div>'; });
-      if(g.footer) out+='<div style="font-size:11px;color:var(--text3);font-family:\'Lora\',serif;line-height:1.5;padding:9px 0 4px">'+g.footer+'</div>';
-      out+='</div>';
-      return;
-    }
-    const items=(g.items||[]).filter(function(it){ return !it.showFrom||it.showFrom<=todayKey(); }).map(function(it){ return {id:it.id,label:it.label,deadline:it.deadline||'',note:it.note||'',steps:it.steps||null,custom:false,done:finTaskDone(it.id)}; });
-    if(!items.length && !g.footer) return;
-    const op=items.filter(function(t){return !t.done;}), dn=items.filter(function(t){return t.done;});
-    out+='<div style="display:flex;align-items:center;gap:8px;margin:14px 0 6px"><div style="width:4px;align-self:stretch;min-height:15px;border-radius:3px;background:'+g.col+'"></div><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:'+g.col+';font-family:\'Lora\',serif;font-weight:700">'+g.tier+'</div></div>';
-    out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-left:3px solid '+g.col+';border-radius:var(--rad);padding:2px 14px">';
-    op.forEach(function(t){ out+=finTodoRow(t,false,g.col); });
-    dn.forEach(function(t){ out+=finTodoRow(t,true,g.col); });
-    if(g.footer) out+='<div style="font-size:11px;color:var(--text3);font-family:\'Lora\',serif;line-height:1.5;padding:9px 0 4px">'+g.footer+'</div>';
-    out+='</div>';
-  });
-  const finCustom=Object.keys(fin.todoCustom).map(function(id){return {id:id,label:esc(fin.todoCustom[id]),custom:true,done:!!fin.todoDone[id]};});
-  out+='<div style="display:flex;align-items:center;gap:8px;margin:14px 0 6px"><div style="width:4px;align-self:stretch;min-height:15px;border-radius:3px;background:#9CA3AF"></div><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#9CA3AF;font-family:\'Lora\',serif;font-weight:700">✍️ Your additions</div></div>';
-  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-left:3px solid #9CA3AF;border-radius:var(--rad);padding:2px 14px">';
-  finCustom.filter(function(t){return !t.done;}).forEach(function(t){ out+=finTodoRow(t,false,'rgba(156,163,175,.6)'); });
-  finCustom.filter(function(t){return t.done;}).forEach(function(t){ out+=finTodoRow(t,true,'rgba(156,163,175,.6)'); });
+  openT.forEach(function(t){ out+=finTodoRow(t,false); });
+  doneT.forEach(function(t){ out+=finTodoRow(t,true); });
   out+='<div style="display:flex;gap:8px;padding:11px 0 6px">'
     +'<input id="finTodoInput" type="text" placeholder="Add a money to-do…" onkeydown="if(event.key===\'Enter\')addFinTodo()" style="flex:1;background:#0a1628;border:1px solid rgba(250,204,21,.3);border-radius:10px;padding:11px 13px;color:var(--text);font-family:\'Lora\',serif;font-size:14px;outline:none">'
     +'<div onclick="addFinTodo()" style="background:rgba(250,204,21,.14);border:1px solid rgba(250,204,21,.5);border-radius:10px;padding:11px 16px;color:'+Y+';font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;white-space:nowrap">+ Add</div>'
@@ -3697,78 +2982,6 @@ function renderFinance(){
   [t2,t3].forEach(function(t){ out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 16px;margin-bottom:10px"><div style="font-size:13.5px;font-weight:700;color:var(--text);font-family:\'Lora\',serif;margin-bottom:4px">'+t.t+'</div><div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.65">'+t.b+'</div></div>'; });
   out+='<div onclick="finMoreTips()" style="text-align:center;padding:11px;border:1px dashed rgba(99,102,241,.4);border-radius:var(--rad);color:#A5B4FC;font-size:13px;cursor:pointer;font-family:\'Lora\',serif;margin-bottom:12px">🎲 Show me three more</div>';
   out+='<div style="font-size:10.5px;color:#5a7a99;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:20px">Practical budgeting nudges only — never investment advice. Numbers from your statements, Mar–May 2026.</div>';
-
-  // ── 9 · 💸 SIDE INCOME — aspirational, kept SEPARATE from the One Number ──
-  out+='\u0001sideincome\u0001';
-  fin.side=fin.side||{}; fin.side.phase=fin.side.phase||{}; fin.side.prod=fin.side.prod||{};
-  const _sListings=fin.side.listings||0, _sEarned=fin.side.earned||0;
-  const _sGate1=(!!fin.side.phase[1])||_sListings>0;   // Phase 1 ships = listings live
-  const _sGate2=(!!fin.side.phase[2]);                 // Phase 2 ships = one gig landed
-  out+='<div style="background:linear-gradient(135deg,rgba(74,212,144,.16),rgba(74,212,144,.03));border:1px solid rgba(74,212,144,.5);border-left:4px solid '+G+';border-radius:var(--rad);padding:14px 16px;margin-bottom:16px">'
-    +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:'+G+';font-family:\'Lora\',serif;margin-bottom:6px">🟢 Best first move this week</div>'
-    +'<div style="font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text);line-height:1.35">Print, shoot, and list ONE thing — the moss ledge.</div>'
-    +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;margin-top:6px">One photo, one listing. Done beats perfect — momentum is the whole game.</div>'
-  +'</div>';
-  out+='<div class="section-label">🚀 The 3-phase roadmap</div>';
-  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:11px 14px;margin-bottom:11px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">One phase at a time. <b>Don\'t open the next phase until the one before it has shipped</b> — Phase 1 = listings live, Phase 2 = one gig landed. Check a phase off when it ships and the next unlocks.</div>';
-  const _sPhases=[
-    {n:1,clr:G,emoji:'🟢',badge:'NOW · WK 1–2',title:'Sell 3D prints',body:'List 2–3 products on Etsy + local Facebook. This is your active phase — you already own the printer.',gate:'Ships when your listings go live.'},
-    {n:2,clr:Y,emoji:'🟡',badge:'WK 3–6',title:'Freelance writing / admin on Upwork',body:'AI-leveraged gigs for steady cash while the prints trickle in.',gate:'Ships when you land one gig.'},
-    {n:3,clr:'#7EB8F0',emoji:'🔵',badge:'MONTH 2+',title:'Build sites / apps for local businesses',body:'$500–5k per job — the real earner once you have momentum.',gate:''}
-  ];
-  _sPhases.forEach(function(p){
-    const unlocked=(p.n===1)||(p.n===2&&_sGate1)||(p.n===3&&_sGate2);
-    const done=!!fin.side.phase[p.n];
-    const lockMsg=(p.n===2)?'🔒 Locked — get your listings live first':'🔒 Locked — land one freelance gig first';
-    out+='<div style="background:'+(unlocked?'rgba(255,255,255,.03)':'rgba(255,255,255,.015)')+';border:1px solid '+(unlocked?(done?'rgba(74,212,144,.4)':'rgba(255,255,255,.1)'):'rgba(255,255,255,.06)')+';border-left:4px solid '+(unlocked?p.clr:'rgba(255,255,255,.12)')+';border-radius:var(--rad);padding:13px 15px;margin-bottom:9px;display:flex;align-items:flex-start;gap:12px;'+(unlocked?'':'opacity:.5')+'">'
-      +(unlocked
-        ? '<div onclick="sidePhaseToggle('+p.n+')" style="width:24px;height:24px;border-radius:50%;border:2px solid '+(done?'#10B981':p.clr)+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0;cursor:pointer;margin-top:1px">'+(done?'✓':'')+'</div>'
-        : '<div style="width:24px;height:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;margin-top:1px">🔒</div>')
-      +'<div style="flex:1;min-width:0">'
-        +'<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:'+(unlocked?p.clr:'var(--text3)')+';font-family:\'Lora\',serif;margin-bottom:3px">'+p.emoji+' Phase '+p.n+' · '+(unlocked?p.badge:lockMsg)+'</div>'
-        +'<div style="font-family:\'Playfair Display\',serif;font-size:14.5px;font-weight:700;color:var(--text);line-height:1.3">'+p.title+'</div>'
-        +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;margin-top:4px">'+p.body+'</div>'
-        +((p.gate&&unlocked&&!done)?'<div style="font-size:11px;color:'+p.clr+';font-family:\'Lora\',serif;font-style:italic;margin-top:5px">'+p.gate+'</div>':'')
-      +'</div></div>';
-  });
-  out+='<div class="section-label" style="margin-top:18px">🖨️ First products to list</div>';
-  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:11px 14px;margin-bottom:11px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">All PETG / water-safe. Check each off as you list it.</div>';
-  const _sProds=[
-    {n:1,name:'Magnetic moss / plant ledge',price:'13',note:'⭐ start here'},
-    {n:2,name:'Shrimp / isopod hide',price:'9',note:''},
-    {n:3,name:'Betta floating house',price:'17',note:'costs ~$5.76 to make'},
-    {n:4,name:'Coral frag rack',price:'18',note:''},
-    {n:5,name:'Net-pot / grommet bundle',price:'12',note:''}
-  ];
-  const _sListed=_sProds.filter(function(p){return fin.side.prod[p.n];}).length;
-  _sProds.forEach(function(p){
-    const done=!!fin.side.prod[p.n];
-    out+='<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);margin-bottom:7px">'
-      +'<div onclick="sideProdToggle('+p.n+')" style="width:22px;height:22px;border-radius:50%;border:2px solid '+(done?'#10B981':'rgba(250,204,21,.5)')+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:11px;flex-shrink:0;cursor:pointer;margin-top:1px">'+(done?'✓':'')+'</div>'
-      +'<div style="flex:1;min-width:0;cursor:pointer" onclick="sideProdToggle('+p.n+')">'
-        +'<div style="font-size:13px;color:'+(done?'var(--text3)':'var(--text)')+';font-family:\'Lora\',serif;line-height:1.4;'+(done?'text-decoration:line-through':'')+'">'+p.name+(p.note?' <span style="font-size:10.5px;color:'+G+';font-style:italic">— '+p.note+'</span>':'')+'</div>'
-      +'</div>'
-      +'<div style="flex-shrink:0;font-family:\'Playfair Display\',serif;font-size:14px;font-weight:700;color:'+G+';margin-left:6px">~$'+p.price+'</div>'
-    +'</div>';
-  });
-  out+='<div style="background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.3);border-radius:var(--rad);padding:12px 15px;margin:4px 0 8px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:'+Y+';font-family:\'Lora\',serif;margin-bottom:5px">💡 The pricing rule</div><div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.65">Full cost (filament + electricity + ~$0.16/hr machine wear + labor + a failure buffer) <b>× 3–4</b>. That multiple covers the fees, the duds, and your time — not greedy, just sustainable.</div></div>';
-  out+='<div class="section-label" style="margin-top:18px">📈 Earnings tracker</div>';
-  out+='<div style="display:flex;gap:9px;margin-bottom:9px">'
-    +'<div onclick="sideEditListings()" style="flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 12px;cursor:pointer;text-align:center">'
-      +'<div style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:700;color:'+Y+';line-height:1">'+_sListings+'</div>'
-      +'<div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px">listings live</div>'
-      +'<div style="font-size:9.5px;color:var(--text3);font-family:\'Lora\',serif;margin-top:3px">tap to update</div>'
-    +'</div>'
-    +'<div onclick="sideEditEarned()" style="flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:13px 12px;cursor:pointer;text-align:center">'
-      +'<div style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:700;color:'+G+';line-height:1">$'+((_sEarned%1===0)?_sEarned:_sEarned.toFixed(2))+'</div>'
-      +'<div style="font-size:10.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px">earned to date</div>'
-      +'<div style="font-size:9.5px;color:var(--text3);font-family:\'Lora\',serif;margin-top:3px">tap to update</div>'
-    +'</div>'
-  +'</div>';
-  out+='<div style="font-size:11px;color:var(--text2);font-family:\'Lora\',serif;text-align:center;margin-bottom:11px">'+_sListed+' of 5 starter prints listed</div>';
-  out+='<div style="background:linear-gradient(135deg,rgba(74,212,144,.1),rgba(255,255,255,.02));border:1px solid rgba(74,212,144,.3);border-radius:var(--rad);padding:13px 16px;margin-bottom:10px"><div style="font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.6">💪 Every dollar here goes to the <b>$500 buffer first, then the debt snowball</b> (smallest card •6605). Extra firepower — not money you have to count on.</div></div>';
-  out+='<div style="background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.3);border-radius:var(--rad);padding:11px 14px;margin-bottom:18px;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">⚠️ Aspirational income — kept <b>separate from your real cashflow "One Number."</b> Don\'t spend it before it lands.</div>';
-
   const _fsegs=out.split('\u0001'); let _fvis='';
   for(let _i=1;_i<_fsegs.length;_i+=2){ if(_fsegs[_i]===finSub) _fvis+=_fsegs[_i+1]||''; }
   el.innerHTML=_fvis;
@@ -3778,11 +2991,11 @@ function renderFinance(){
 // ═══ 📖 RECIPE BOX TAB + 🍳 TO COOK QUEUE ═══════════════════════════════════
 function renderRecipeBox(){ const el=document.getElementById('view-grocery'); if(!el||foodSub!=='recipebox') return;
   const all=(typeof RECIPES!=='undefined')?RECIPES:[];
-  const _fpool=(typeof RECIPES_BOX!=='undefined'?RECIPES_BOX:all).filter(function(r){return !r.dog && !r.draft;}); const feat=weeklyFeatured(_fpool)||all.filter(function(r){return !r.dog;})[0]; // 🔁 same weekly pick as the grid + recipes.html
+  const feat=all.filter(function(r){return !r.dog;}).find(function(r){return r.featured;})||all.filter(function(r){return !r.dog;})[0];
   let out='';
-  if(feat) out+='<div id="recipe-featured"><div class="section-label">⭐ Featured recipe</div>'+recipeCard(feat,true)+'</div>';
+  if(feat) out+='<div class="section-label">⭐ Featured recipe</div>'+recipeCard(feat,true);
   out+=recipesHtml();
-  el.innerHTML='<div class="gk-surface">'+out+'</div>';
+  el.innerHTML=out;
 }
 const MEAL_META={breakfast:['🥞','Breakfast',0],lunch:['🥗','Lunch',1],dinner:['🍽️','Dinner',2]};
 function cookDayLabel(d){ const t=todayKey(); if(d===t) return 'Today';
@@ -3888,15 +3101,8 @@ function showApp() {
   if(!window.__wxTimer) window.__wxTimer=setInterval(loadWeather,2700000);
 }
 
-// ── 🔒 AUTH GATE (v2) ── data listeners attach via startData() once we know
-// whether the database rules are locked (see hgAuthBoot below). Open rules →
-// starts instantly, exactly like before. Locked rules → sign-in screen first.
-let fbTimeout = null;
-let __dataStarted = false;
-function startData() {
-if (__dataStarted) return; __dataStarted = true;
 // Fallback: show app after 6 seconds even if Firebase is slow
-fbTimeout = setTimeout(showApp, 6000);
+const fbTimeout = setTimeout(showApp, 6000);
 
 ST.on('value', snap => {
   const d = snap.val() || {};
@@ -3921,11 +3127,7 @@ ST.on('value', snap => {
   zoey        = d.zoey        || {};
   fin         = d.fin         || {};
   cookQueue   = d.cookQueue   || {};
-  habits      = d.habits      || {};
   wishCustom  = d.wishCustom  || {};
-  rollovers   = d.rollovers   || {};
-  sleep       = d.sleep       || {};
-  harvestLog  = d.harvestLog  || {};
   // one-time idempotent migration: grocery is FOOD-ONLY (Jun 6 2026) — strip non-food strays
   try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false, ci=false;
     for(const k in grocCustom){ if(NF.test(String(grocCustom[k]))){ delete grocCustom[k]; ch=true; } }
@@ -3967,18 +3169,6 @@ ST.on('value', snap => {
     const seed2=[['Worcestershire sauce','🍶'],['Cholula hot sauce','🌶️'],["Nanita's mild green chile (jar)",'🌶️'],["Nanita's enchilada sauce (jar)",'🥫'],['Hot green chile (jar)','🌶️'],['Frozen chicken thighs','🍗'],['Frozen pinto beans (cooked)','🫘'],['Frozen white fish','🐟'],['Frozen turkey pot pies','🥧'],['Frozen pizza','🍕'],['Chocolate ice cream','🍨'],['English toffee sugar crystals','🍬']];
     seed2.forEach(function(p){ const k=invKey(p[0]); if(!inventory[k]) inventory[k]={name:p[0],emoji:p[1],inStock:true,ts:Date.now()}; });
     ST.update({ inventory: inventory, 'flags/inventory-seed-v2': 'done' });
-    return;
-  }
-  // One-time: Jun 8 2026 — seed the 11 Sausage & Pesto Stuffed Shells staples into Kitchen Inventory (in-stock) + clear any matching active grocery-List items
-  if (!flags['inv-seed-shells-jun8-v1']) {
-    const seed3=[['Jumbo pasta shells','🐚'],['Ricotta','🧀'],['Mozzarella','🧀'],['Parmesan','🧀'],['Marinara','🥫'],['Italian sausage','🌭'],['Onion','🧅'],['Garlic','🧄'],['Pesto','🌿'],['Fresh basil','🌿'],['Lemon','🍋']];
-    seed3.forEach(function(p){
-      const k=invKey(p[0]); if(!k) return;
-      if(!inventory[k]) inventory[k]={name:p[0],emoji:p[1],inStock:true,ts:Date.now()}; else inventory[k].inStock=true;
-      const bi=GROC_BUILTIN.find(function(i){return invKey(splitEmoji(i.label).name)===k;}); if(bi) grocPurchased[bi.id]=true;
-      Object.keys(grocCustom).forEach(function(id){ if(invKey(splitEmoji(String(grocCustom[id]).replace(/\s*\(from:[^)]*\)\s*$/,'')).name)===k) grocPurchased[id]=true; });
-    });
-    ST.update({ inventory: inventory, grocPurchased: grocPurchased, 'flags/inv-seed-shells-jun8-v1': 'done' });
     return;
   }
 
@@ -4040,64 +3230,10 @@ ST.on('value', snap => {
     return;
   }
 
-  // One-time: Jun 8 2026 — RECIPE SWAP: he actually made Sausage & Squash Flatbread (lunch) + Pasta (dinner) today.
-  // Pull the two replaced planned dishes from To Cook (KEEP the now-approved salad), queue today's two dishes,
-  // add Hot honey to the grocery list, and correct Eggs back to IN-STOCK.
-  if (!flags['jun8-recipeswap-v1']) {
-    // To Cook: remove the spaghetti + the old squash flatbread (salad stays — it's approved/permanent now)
-    delete cookQueue['ck-seed-dinner2']; delete cookQueue['ck-seed-side1'];
-    Object.keys(cookQueue).forEach(function(id){ var x=cookQueue[id]; if(x&&(x.rid==='r_box_sausage_squash_spaghetti'||x.rid==='r_box_squash_flatbread')) delete cookQueue[id]; });
-    // queue today's actual dishes
-    cookQueue['ck-seed-flat2']={rid:'r_box_sausage_squash_flatbread',day:'2026-06-08',meal:'lunch',done:false,ts:Date.now()};
-    cookQueue['ck-seed-pasta2']={rid:'r_box_sausage_squash_pasta',day:'2026-06-08',meal:'dinner',done:false,ts:Date.now()};
-    // grocery: add Hot honey (food item) if not already there
-    var _hadHoney=Object.keys(grocCustom).some(function(k){return /hot honey/i.test(grocCustom[k]||'');});
-    if(!_hadHoney) grocCustom['gc-hothoney1']='🍯 Hot honey';
-    // inventory: correct Eggs back to IN-STOCK
-    var _eggKey=Object.keys(inventory).find(function(k){return /egg/i.test((inventory[k]&&inventory[k].name)||k);});
-    if(_eggKey){ inventory[_eggKey].inStock=true; inventory[_eggKey].ts=Date.now(); }
-    else { inventory[invKey('Eggs')]={name:'Eggs',emoji:'🥚',inStock:true,ts:Date.now()}; }
-    ST.update({ cookQueue: cookQueue, grocCustom: grocCustom, inventory: inventory, 'flags/jun8-recipeswap-v1': 'done' });
-    return;
-  }
-
-  // One-time: Jun 8 2026 — flatbread DROPPED (replaced by authentic Frittata di Zucchine) + roasted-zucchini recipe DELETED. Pull both from To Cook.
-  if (!flags['jun8-flatbread-out-v1']) {
-    delete cookQueue['ck-seed-flat2']; delete cookQueue['ck-seed-dinner'];
-    Object.keys(cookQueue).forEach(function(id){ var x=cookQueue[id]; if(x&&(x.rid==='r_box_sausage_squash_flatbread'||x.rid==='r_box_roasted_garlic_parmesan_zucchini_squash_')) delete cookQueue[id]; });
-    ST.update({ cookQueue: cookQueue, 'flags/jun8-flatbread-out-v1': 'done' });
-    return;
-  }
-
-  // One-time: Jun 9 2026 — water unit switched cups → BOTTLES (1 bottle = 32 oz). Reset any leftover cups-era
-  // goal/serving to the bottle defaults (goal 3 ≈ 96 oz, 1 bottle per tap). Daily counts reset on their own.
-  if (!flags['water-bottles-v1']) {
-    habits = habits || {};
-    habits.waterGoal = 3; habits.waterServing = 1;
-    ST.update({ habits: habits, 'flags/water-bottles-v1': 'done' });
-    return;
-  }
-
   // One-time: Jun 6 2026 — dry terrarium setup items completed in real life (fake molt plant + almond-leaf base)
   if (!flags['jun6-terrarium-v1']) {
     checked['dry-perches']=true; checked['dry-litterbark']=true;
     ST.update({ checked: checked, 'flags/jun6-terrarium-v1': 'done' });
-    return;
-  }
-
-  // One-time: Jun 10 2026 — seed the "Clean and set up divider tank" rollover task (Part E). Idempotent via flag.
-  if (!flags['rollover-seed-v1']) {
-    rollovers = rollovers || {};
-    if(!rollovers['ro-divider-tank']) rollovers['ro-divider-tank']={ label:"Clean and set up divider tank", created: todayKey() };
-    ST.update({ rollovers: rollovers, 'flags/rollover-seed-v1': 'done' });
-    return;
-  }
-
-  // One-time: Jun 10 2026 — seed the "headrest cup holder for Zoe" 3D-print idea as a rollover (stays on Today until printed). Idempotent via flag.
-  if (!flags['rollover-seed-headrest-v1']) {
-    rollovers = rollovers || {};
-    if(!rollovers['ro-headrest-cupholder']) rollovers['ro-headrest-cupholder']={ label:"🛠️ 3D print: headrest cup holder for Zoe", created: todayKey() };
-    ST.update({ rollovers: rollovers, 'flags/rollover-seed-headrest-v1': 'done' });
     return;
   }
 
@@ -4110,40 +3246,6 @@ ST.on('value', () => {}, err => {
   clearTimeout(fbTimeout);
   showApp();
 });
-} // ── end startData()
-
-// ── 🔒 AUTH BOOT — adapts automatically to open vs locked rules ──
-function hgShowLogin(){ const l=document.getElementById('hg-login'); if(l) l.style.display='flex'; const f=document.getElementById('fb-loading'); if(f) f.remove(); const c=document.getElementById('curtain'); if(c) c.style.display='none'; setTimeout(function(){ const e=document.getElementById('hg-login-email'); if(e) e.focus(); },120); }
-function hgHideLogin(){ const l=document.getElementById('hg-login'); if(l) l.style.display='none'; }
-function hgLoginTry(ev){ if(ev&&ev.preventDefault) ev.preventDefault();
-  const e=document.getElementById('hg-login-email'), p=document.getElementById('hg-login-pass'), msg=document.getElementById('hg-login-msg');
-  if(msg) msg.textContent='Signing in…';
-  firebase.auth().signInWithEmailAndPassword((e&&e.value||'').trim(),(p&&p.value)||'')
-    .then(function(){ if(msg) msg.textContent=''; })
-    .catch(function(err){
-      const friendly={'auth/invalid-credential':'Wrong email or password.','auth/user-not-found':'No account with that email.','auth/wrong-password':'Wrong password.','auth/too-many-requests':'Too many tries — wait a minute.'};
-      if(msg) msg.textContent=friendly[err.code]||('Sign-in failed: '+(err.code||err.message));
-      const b=document.getElementById('hg-login-box'); if(b){ b.classList.remove('curtain-shake'); void b.offsetWidth; b.classList.add('curtain-shake'); }
-    });
-  return false; }
-function hgSignOut(){ try{ firebase.auth().signOut().then(function(){ location.reload(); }); }catch(e){ location.reload(); } }
-(function hgAuthBoot(){
-  if(!firebase.auth){ startData(); return; }
-  try{
-    let settled=false;
-    firebase.auth().onAuthStateChanged(function(u){
-      if(u){ settled=true; hgHideLogin(); try{ localStorage.setItem(CURTAIN_FLAG,CURTAIN_PASSWORD); curtainOpen(); }catch(e){} startData(); }
-    });
-    // probe: can we still read without signing in? (i.e. rules not locked yet)
-    db.ref('state/flags').once('value')
-      .then(function(){ if(!settled && !__dataStarted) startData(); })
-      .catch(function(err){
-        const code=String((err&&err.code)||err).toLowerCase();
-        if(code.indexOf('permission')>-1){ if(!settled && !__dataStarted) hgShowLogin(); }
-        else if(!__dataStarted) startData();
-      });
-  }catch(e){ startData(); }
-})();
 
 const HEADER_NIGHT = "images/bg_night_20260606.jpg"; // Milky Way over RMNP — Public Domain (NPS / Jeremy M. White)
 
@@ -4272,8 +3374,6 @@ function wxCareBanner(){
   return "";
 }
 const PEST_PLAN=[
- {e:"🪴",t:"Fungus gnats — REPOT DAY plan (Sun Jun 14, the nuclear option)",b:"One day instead of a 4-week chemical war — the old soil is harboring eggs at every depth, so it ALL goes. The one rule: all 5 plants the SAME day, or survivors just re-colonize the fresh pots. Method, per pot: (1) tip the plant out and knock off as much old soil as possible, then gently rinse the roots bare and trim anything brown or mushy; (2) scrub the pot AND saucer with hot soapy water — eggs cling to pot walls and drainage holes; (3) replant in fresh mix from a SEALED bag (mixes per plant below), same pot size unless root-bound — oversize pots stay wet and invite gnats back; (4) cap the soil with about half an inch of fine aquarium gravel; (5) bag the old soil and trash it OUTSIDE — or solarize it in clear bags in the greenhouse (free sterilizer) and reuse it later. Afterward: keep a couple sticky traps out ~2 weeks (clean traps = war over), make the first 2–3 waterings BTI tea for insurance, empty saucers fast, and check nearby sink drains — they breed there too."},
- {e:"🌱",t:"Repot mixes — custom soil per plant",b:"🪨 Jade: 1 part cactus mix + 1 part perlite — gritty and fast-draining, nearly gnat-proof (terracotta pot if you have one). 🪴 Philodendron + 🌴 Croton: 2 parts potting mix + 1 perlite + 1 orchid bark — the airy aroid mix their roots love. 🍃 Royal Tea Ivy: 3 parts potting mix + 1 perlite. 🌱 Fittonia: 2 parts potting mix + 1 coco coir + a half-part perlite — holds even moisture so it stops the every-2-day drama; expect ~4–5 days between drinks after the move. Supply run (one bag each, sealed): indoor potting mix · cactus mix · perlite · orchid bark · coco coir. Store leftovers SEALED — open bags are where gnats come from in the first place."},
  {e:"🐦",t:"Birds love your red fruit",b:"Strawberries, cherry tomatoes and raspberries are bird magnets. The most reliable fix is a physical barrier — drape ¼-inch bird netting over a simple frame or stakes so it floats above the fruit without touching it. A small berry cage of PVC or wood works great."},
  {e:"🎨",t:"Red decoy-rock trick",b:"A cheap first layer that genuinely helps with strawberries: paint a handful of rocks strawberry-red and scatter them around the pot 2–3 weeks BEFORE the berries ripen. Birds peck the fakes, learn they are not food, and tend to leave the real berries alone. Pair it with netting — on its own, birds eventually wise up."},
  {e:"✨",t:"Scare tactics",b:"Anything that moves and shines unsettles birds — hang flash tape, old CDs, or foil pie pans near the berries, and shift them every few days so the birds do not get comfortable."},
@@ -4332,147 +3432,6 @@ curtainInit();
     }).catch(function(){});
   });
 }</script>
-<div id="recipe-page" style="display:none;position:fixed;inset:0;z-index:200;overflow-y:auto;padding:16px 16px 40px;--text:#4a3526;--text2:#7c5c39;--text3:#9c7c50;--border:#dcc69a;--amber:#a85a23;--amber2:#8c3f17;--aborder:rgba(168,90,35,.30);background-color:#efe1c2;background-image:repeating-linear-gradient(0deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px),repeating-linear-gradient(90deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px)"></div>
-<script>
-/* v2-nav: fancy bottom tab bar (reconstructed Jun 13 2026 — original was lost in a file truncation).
-   Self-protecting: top nav is hidden via body.v2-nav-ready ONLY after this bar renders. */
-(function(){
-  try{
-    if(document.getElementById('v2-nav')) return;
-    var DEST=[
-      ['today','\u2600\ufe0f','Today'],['forecast','\ud83c\udf24\ufe0f','Forecast'],['rooms','\ud83c\udfe0','Rooms'],['timeline','\ud83d\udcc5','Timeline'],['garden','\ud83c\udf3f','Plants'],
-      ['shopping','\ud83e\udd90','Tank'],['grocery','\ud83c\udf7d\ufe0f','Food'],['print','\ud83e\uddca','Print'],['wellness','\ud83d\udc8a','Health'],['finance','\ud83d\udcb0','Finance']
-    ];
-    var nav=document.createElement('div'); nav.id='v2-nav';
-    [DEST.slice(0,5),DEST.slice(5)].forEach(function(row){
-      var rd=document.createElement('div'); rd.className='v2-row';
-      row.forEach(function(d){
-        var b=document.createElement('button'); b.type='button'; b.className='v2-bn'; b.setAttribute('data-tab',d[0]);
-        b.setAttribute('aria-label',d[2]);
-        b.innerHTML='<span class="ic">'+d[1]+'</span><span class="lb">'+d[2]+'</span><span class="dt"></span>';
-        b.addEventListener('click',function(){ try{ switchTab(d[0]); }catch(e){} v2Active(d[0]); });
-        rd.appendChild(b);
-      });
-      nav.appendChild(rd);
-    });
-    document.body.appendChild(nav);
-    function v2Active(t){ var bs=nav.querySelectorAll('.v2-bn'); for(var i=0;i<bs.length;i++){ bs[i].classList.toggle('on', bs[i].getAttribute('data-tab')===t); } }
-    window.__v2Active=v2Active;
-    if(typeof window.switchTab==='function'){ var _o=window.switchTab; window.switchTab=function(t){ var r=_o.apply(this,arguments); try{ v2Active(t); }catch(e){} return r; }; }
-    v2Active((typeof currentTab!=='undefined'&&currentTab)?currentTab:'today');
-    document.body.classList.add('v2-nav-ready');
-  }catch(e){ /* on any error, leave the original top nav visible as fallback */ }
-})();
-</script>
-
-<!-- 🎉 celebrations -->
-<script>
-// ═══ 🎉 CELEBRATIONS — a moment of delight for the healthy thing ══════════════
-// Version-agnostic, idempotent. Wraps whatever logging functions exist:
-//   💧 water · 🍽️ meals · 🌿 plant watering · 🍅 harvest · ✅ tasks · 💊 meds · 🔥 streaks
-// Honors prefers-reduced-motion (keeps the kind message, drops particles).
-(function(){
-  if (window.__hgCheerInstalled) return;
-  window.__hgCheerInstalled = true;
-  var RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  function rec(e){ var p=(e.touches&&e.touches[0])||e; if(p&&p.clientX!=null) window.__hgTap={x:p.clientX,y:p.clientY,t:Date.now()}; }
-  document.addEventListener("pointerdown",rec,true);
-  document.addEventListener("touchstart",rec,true);
-  function buzz(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||12); }catch(e){} }
-
-  function style(){
-    if(document.getElementById("hg-cheer-style")) return;
-    var s=document.createElement("style"); s.id="hg-cheer-style";
-    s.textContent=
-      "#hg-cheer{position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:hidden}"
-     +".hg-pt{position:absolute;will-change:transform,opacity;line-height:1;opacity:0;transform:translate(-50%,-50%)}"
-     +"@keyframes hg-rise{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% - 58px)) scale(1)}}"
-     +"@keyframes hg-fly{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}12%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,0px))) scale(var(--s,1)) rotate(var(--r,0deg))}}"
-     +"@keyframes hg-ring{0%{opacity:.6;transform:translate(-50%,-50%) scale(.25)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.9)}}"
-     +"@keyframes hg-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}32%{opacity:1;transform:translate(-50%,-50%) scale(1.28)}68%{transform:translate(-50%,-50%) scale(.94)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.06)}}";
-    document.head.appendChild(s);
-  }
-  function layer(){ var el=document.getElementById("hg-cheer"); if(!el){ el=document.createElement("div"); el.id="hg-cheer"; document.body.appendChild(el); } return el; }
-  function spawn(x,y,cfg){
-    if(RM) return; style(); var L=layer();
-    if(cfg.ring){ var r=document.createElement("div"); var d=cfg.ringSize||96;
-      r.style.cssText="position:absolute;border-radius:50%;left:"+x+"px;top:"+y+"px;width:"+d+"px;height:"+d+"px;border:2px solid "+cfg.color+";box-shadow:0 0 18px "+cfg.color+"88;animation:hg-ring .72s ease-out forwards";
-      L.appendChild(r); setTimeout(function(){ r.remove(); },800); }
-    if(cfg.pop){ var p=document.createElement("div"); p.className="hg-pt"; p.textContent=cfg.pop;
-      p.style.cssText="left:"+x+"px;top:"+y+"px;font-size:"+(cfg.popSize||34)+"px;filter:drop-shadow(0 0 9px "+cfg.color+"aa);animation:hg-pop .8s ease-out forwards";
-      L.appendChild(p); setTimeout(function(){ p.remove(); },840); }
-    var n=cfg.count||6;
-    for(var i=0;i<n;i++){
-      var pt=document.createElement("div"); pt.className="hg-pt"; pt.textContent=cfg.glyphs[i%cfg.glyphs.length];
-      var sz=(cfg.size||15)+Math.random()*(cfg.sizeVar||9), dur=(cfg.dur||0.85)+Math.random()*0.45;
-      var st="left:"+x+"px;top:"+y+"px;font-size:"+sz.toFixed(0)+"px;";
-      if(cfg.rise){ var dx=(Math.random()-0.5)*(cfg.spread||56);
-        st+="--dx:"+dx.toFixed(0)+"px;animation:hg-rise "+dur.toFixed(2)+"s ease-out forwards;animation-delay:"+(i*0.045).toFixed(2)+"s";
-      } else { var ang=Math.random()*Math.PI*2, rad=(cfg.spread||72)*(0.45+Math.random()*0.55), fx=Math.cos(ang)*rad, fy=Math.sin(ang)*rad-(cfg.up||0);
-        st+="--dx:"+fx.toFixed(0)+"px;--dy:"+fy.toFixed(0)+"px;--r:"+((Math.random()-0.5)*120).toFixed(0)+"deg;--s:"+(0.7+Math.random()*0.5).toFixed(2)+";animation:hg-fly "+dur.toFixed(2)+"s cubic-bezier(.2,.7,.3,1) forwards;animation-delay:"+(i*0.025).toFixed(2)+"s"; }
-      pt.style.cssText+=st; L.appendChild(pt);
-      (function(el,life){ setTimeout(function(){ el.remove(); },life); })(pt,(dur+0.35)*1000+i*45);
-    }
-  }
-  function at(){ var t=window.__hgTap; if(t && (Date.now()-t.t)<4000) return {x:t.x,y:t.y}; return {x:window.innerWidth/2, y:Math.round(window.innerHeight*0.42)}; }
-  function say(m){ try{ if(typeof toast==="function") toast(m); }catch(e){} }
-
-  window.hgCheer = function(kind,o){
-    o=o||{}; var c=at(), x=c.x, y=c.y, me=o.emoji;
-    buzz(kind==="meal-complete"||kind==="water-goal"||kind==="streak" ? [10,40,18] : 12);
-    if(kind==="water")          spawn(x,y,{glyphs:["💧","💧","💦"],count:5,rise:true,spread:54,color:"#38BDF8"});
-    else if(kind==="water-goal"){ spawn(x,y,{glyphs:["💧","💦","✨","💧"],count:14,spread:98,up:30,color:"#38BDF8",ring:true,ringSize:92,pop:"💧",popSize:40}); say("💧 Water goal met — nicely hydrated"); }
-    else if(kind==="meal-ontime"){ spawn(x,y,{glyphs:["✨","🌟",me||"🍽️","✨"],count:11,spread:90,up:24,color:"#F5B830",ring:true,ringSize:86,pop:me||"🍽️",popSize:34}); say("🍽️ Right on time — that's the rhythm"); }
-    else if(kind==="meal-late"){ spawn(x,y,{glyphs:["✨","🌱"],count:5,rise:true,spread:50,color:"#B47C14"}); say("🌱 Logged — every meal counts"); }
-    else if(kind==="meal-complete"){ spawn(x,y,{glyphs:["🎉","✨","🌟",me||"🍽️","💛"],count:18,spread:122,up:42,color:"#F5B830",ring:true,ringSize:112,pop:"🎉",popSize:42}); say("🎉 All three meals today — beautifully done"); }
-    else if(kind==="plant")     spawn(x,y,{glyphs:["🌿","🌱","💧","✨"],count:8,spread:74,up:18,color:"#4ADE80",ring:true,ringSize:78});
-    else if(kind==="plant-all"){ spawn(x,y,{glyphs:["🌿","🌱","💧","✨","🍃"],count:16,spread:116,up:34,color:"#4ADE80",ring:true,ringSize:104,pop:"🌿",popSize:38}); say("🌿 Whole bunch watered — they'll love you"); }
-    else if(kind==="harvest"){ spawn(x,y,{glyphs:["🍅","🥬","🌶️","🫑","✨"],count:13,spread:104,up:30,color:"#F97316",ring:true,ringSize:94,pop:me||"🧺",popSize:38}); say("🧺 Harvested — fruits of your patience"); }
-    else if(kind==="task")      spawn(x,y,{glyphs:["✨","✅"],count:4,spread:46,up:14,color:"#A3E635"});
-    else if(kind==="med")       spawn(x,y,{glyphs:["✨","💊","✅"],count:5,spread:52,up:16,color:"#818CF8"});
-    else if(kind==="streak"){ spawn(x,y,{glyphs:["🔥","✨","🔥","⭐"],count:16,spread:118,up:40,color:"#FB923C",ring:true,ringSize:108,pop:"🔥",popSize:44}); say("🔥 "+(o.days||"")+"-day streak — you're on fire"); }
-  };
-
-  function wrap(name, before, after){
-    var fn = window[name]; if(typeof fn!=="function") return;
-    window[name] = function(){ var ctx={args:arguments}; try{ if(before) before(ctx); }catch(e){}
-      var r = fn.apply(this, arguments); try{ if(after) after(ctx); }catch(e){} return r; };
-  }
-  function key(){ try{ return todayKey(); }catch(e){ return ""; } }
-  function milestone(n){ return n===7||n===14||n===30||n===50||n===100; }
-
-  wrap("waterAdd",
-    function(c){ try{ c.before=waterCount(); }catch(e){ c.before=0; } },
-    function(c){ try{ var a=waterCount(), g=waterGoal(); if(a>c.before) hgCheer(a===g?"water-goal":"water"); }catch(e){} });
-
-  wrap("toggleMeal",
-    function(c){ var m=c.args[0]; c.k="meal-"+m+"-"+key(); c.was=!!laundry[c.k]; c.meal=m; },
-    function(c){ if(!laundry[c.k]||c.was) return;
-      var A=(typeof MEAL_ANCHORS!=="undefined")?MEAL_ANCHORS.find(function(z){return z.id===c.meal;}):null;
-      var now=new Date(), mins=now.getHours()*60+now.getMinutes();
-      var on=(A&&A.winStart!=null&&A.winEnd!=null)?(mins>=A.winStart&&mins<=A.winEnd):true;
-      var done=0; try{ done=mealsEaten(key()); }catch(e){}
-      if(done>=3) hgCheer("meal-complete",{emoji:A&&A.emoji});
-      else if(on) hgCheer("meal-ontime",{emoji:A&&A.emoji});
-      else        hgCheer("meal-late",{emoji:A&&A.emoji}); });
-
-  wrap("waterPlant",
-    function(c){ var id=c.args[0]; c.fresh = !(typeof watered!=="undefined" && watered[id]===key()); },
-    function(c){ if(c.fresh) hgCheer("plant"); });
-  wrap("waterPlantGroup", null, function(){ hgCheer("plant-all"); });
-  wrap("harvestPlant",
-    function(c){ var id=c.args[0]; c.on = !(typeof harvested!=="undefined" && harvested[id]===key()); },
-    function(c){ if(c.on) hgCheer("harvest"); });
-  wrap("toggle",
-    function(c){ var id=c.args[0]; c.willOn = !(typeof checked!=="undefined" && checked[id]); },
-    function(c){ if(c.willOn) hgCheer("task"); });
-  wrap("toggleWellness",
-    function(c){ c.id=c.args[0]; c.k="well-"+c.id+"-"+key(); c.was=!!laundry[c.k]; },
-    function(c){ if(!laundry[c.k]||c.was) return;
-      var st=0; try{ st=streakOf("well-"+c.id+"-"); }catch(e){}
-      if(milestone(st)) hgCheer("streak",{days:st}); else hgCheer("med"); });
-})();
-</script>
+<div id="recipe-page" style="display:none;position:fixed;inset:0;z-index:200;overflow-y:auto;background:var(--bg);padding:16px 16px 40px"></div>
 </body>
 </html>

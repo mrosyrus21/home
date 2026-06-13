@@ -1,0 +1,6 @@
+Staged Jun 12 2026 from the FB Marketplace flipping chat — FLIP PACK (supersedes staged_tv_triage_jun12).
+Built against live commit fb0719b (SW hg-v76). TWO files: data.js (REMINDERS + new FLIP_SCAN const) and
+index.html (flip-scan render block in renderToday() + one timeline push line).
+All code node-checked + behavior-tested (11/11 asserts: links, stopPropagation, date-keying, done-state,
+timeline gating, Jun 12 vs Jun 13 visibility). Full handoff: PROJECT_STATE.md Section 10 ("STAGED — FLIP PACK").
+Deploy only on "GO LIVE" from the Home Garden Schedule chat.

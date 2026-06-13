@@ -99,6 +99,23 @@ for path in ["index.html", "recipes.html", "data.js", "recipes.js", "v2-features
     if os.path.exists(os.path.join(HOUSE, path)):
         run(["git", "add", path])
 
+# ── FIX 3: stage any OTHER untracked (non-ignored) files so a merge can't be
+# blocked by "untracked working tree files would be overwritten" (e.g. restamp.py,
+# wire-photos.py). The secret token is NEVER staged — guarded two ways below.
+def _is_secret(p):
+    low = p.lower().replace("\\", "/")
+    return ("deploy-token" in low) or low.endswith(".token") or low.endswith(".deploy-token")
+
+untracked = subprocess.run(["git", "ls-files", "--others", "--exclude-standard"],
+                           capture_output=True, text=True, cwd=HOUSE)
+for f in untracked.stdout.splitlines():
+    f = f.strip()
+    if not f or _is_secret(f):
+        if f and _is_secret(f):
+            print("[SAFE] Skipping secret file (never committed): " + f)
+        continue
+    run(["git", "add", "--", f])
+
 status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, cwd=HOUSE)
 if status.stdout.strip():
     run(["git", "commit", "-m", "Deploy update"])
