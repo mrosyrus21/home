@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Day Arc — example</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dayarc.css">
+<style>
+  :root{ --rad:14px; --text:#EDE5F8; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{ background:radial-gradient(120% 80% at 50% -10%, rgba(212,144,10,.10), transparent 55%), #06050A;
+    color:#EDE5F8; font-family:'Lora',Georgia,serif; min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; padding:34px 18px 60px; gap:18px; }
+  .intro{max-width:560px;text-align:center}
+  .intro .eyebrow{font-size:10px;letter-spacing:.32em;text-transform:uppercase;font-style:italic;color:rgba(240,180,60,.85);margin-bottom:8px}
+  .intro h1{font-family:'Playfair Display',serif;font-weight:700;font-size:25px}
+  .intro p{font-size:13px;color:#A89FB8;margin-top:8px;line-height:1.55}
+  #day-arc-host{width:min(460px,100%)}
+  .note{font-size:11px;color:#6A6480;font-style:italic;max-width:460px;text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+  <div class="intro">
+    <div class="eyebrow">A living header · example data</div>
+    <h1>The Day Arc</h1>
+    <p>The real path of the sun &amp; moon for the day, over the Front Range, with the day's reminders on their own timeline. Grab the sky and drag to move through time.</p>
+  </div>
+  <div id="day-arc-host"></div>
+  <div class="note">Showing example reminders &amp; a sample forecast. The sun, moon, sunrise/sunset and phase are computed live for the location below.</div>
+
+  <script>
+  // ----- EXAMPLE configuration (edit freely; the app uses its own real data) -----
+  window.DAYARC_CONFIG = {
+    host: "day-arc-host",
+    lat: 39.78, lng: -104.75,            // Denver-ish; change to taste
+    tasks: [
+      {m: 7*60+30,  ic:"🌅", label:"Wake up",     color:"#F0A820"},
+      {m: 8*60,     ic:"🍳", label:"Breakfast",   color:"#C084FC"},
+      {m: 9*60,     ic:"💻", label:"Deep work",   color:"#38BDF8"},
+      {m: 12*60+30, ic:"🥗", label:"Lunch",       color:"#2DB870"},
+      {m: 15*60,    ic:"🚶", label:"Walk",        color:"#E0915A"},
+      {m: 18*60+30, ic:"🍽️", label:"Dinner",      color:"#C084FC"},
+      {m: 21*60,    ic:"📖", label:"Reading",     color:"#38BDF8"},
+      {m: 22*60+30, ic:"🛏️", label:"Bedtime",     color:"#A78BFA"}
+    ],
+    // sample hourly forecast (WMO codes): clear AM -> cumulus -> afternoon storm -> clearing
+    hourly: (function(){ var spec=[[0,0,54],[7,0,58],[10,2,68],[12,2,76],[13,3,80],[15,3,80],[16,95,73],[17,61,69],[19,2,66],[20,0,62],[22,0,57]];
+      var out=[]; for(var h=0;h<24;h++){ var s=spec[0]; for(var i=0;i<spec.length;i++){ if(spec[i][0]<=h) s=spec[i]; } out[h]={code:s[1],temp:s[2]}; } return out; })()
+  };
+  </script>
+  <script src="dayarc.js"></script>
+</body>
+</html>
