@@ -767,7 +767,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260613124106"></script>
+<script src="./data.js?v=20260614093323"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -779,7 +779,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 13 · 12:41 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 14 · 9:33 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -4474,5 +4474,274 @@ curtainInit();
       if(milestone(st)) hgCheer("streak",{days:st}); else hgCheer("med"); });
 })();
 </script>
+
+<!-- ============================================================
+     THE DAY ARC — production module (injected at top of Today)
+     Self-contained: scoped #day-arc styles + IIFE that mounts above
+     the Today flow, reads RHYTHM times + computed sunrise/sunset,
+     real moon phase, tap-a-node-to-jump. No external deps.
+     ============================================================ -->
+<style id="dayarc-css">
+#day-arc{position:relative;border-radius:var(--rad);overflow:hidden;margin:0 0 14px;
+  border:1px solid rgba(255,255,255,.09);box-shadow:0 12px 34px -20px rgba(0,0,0,.75)}
+#day-arc .da-sky{position:absolute;inset:0;z-index:0;transition:background .6s ease}
+#day-arc .da-svgwrap{position:relative;z-index:1;line-height:0}
+#day-arc svg{display:block;width:100%;height:auto;overflow:visible}
+#day-arc .da-foot{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:8px 14px 10px;background:rgba(8,7,14,.82);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  border-top:1px solid rgba(255,255,255,.06);font-family:'Lora',serif}
+#day-arc .da-now{font-size:12px;color:var(--text);font-weight:600;white-space:nowrap}
+#day-arc .da-day{font-size:10px;color:rgba(255,255,255,.62);white-space:nowrap;text-align:center;flex:1}
+#day-arc .da-next{font-size:11.5px;color:#38BDF8;text-align:right;white-space:nowrap;max-width:48%;overflow:hidden;text-overflow:ellipsis}
+#day-arc .da-next b{font-weight:600}
+#day-arc .da-node{cursor:pointer}
+@media (prefers-reduced-motion: reduce){ #day-arc .da-anim{display:none} }
+</style>
+<script id="dayarc-js">
+(function(){
+  "use strict";
+  var LAT=39.74, LNG=-104.99;                 // Denver metro (matches the app's locale)
+  var VW=640, PADL=36, PADR=36, HOR=100, TOP=28, VH=132, GROUND=HOR-12;
+  var SVGNS="http://www.w3.org/2000/svg";
+
+  function el(tag,attrs,parent){ var n=document.createElementNS(SVGNS,tag);
+    if(attrs) for(var k in attrs) n.setAttribute(k,attrs[k]);
+    if(parent) parent.appendChild(n); return n; }
+  function nowMin(){ if(typeof window.__dayArcTestMin==="number") return window.__dayArcTestMin;
+    var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60; }
+  function parseClock(s){ if(!s) return null; var m=String(s).match(/(\d{1,2}):(\d{2})\s*([AP]M)?/i);
+    if(!m) return null; var h=+m[1],mn=+m[2],ap=(m[3]||"").toUpperCase();
+    if(ap==="PM"&&h<12)h+=12; if(ap==="AM"&&h===12)h=0; return h*60+mn; }
+
+  // ---- sunrise / sunset (classic sunrise equation) → local minutes-of-day ----
+  function sunTimes(date){
+    var rad=Math.PI/180, deg=180/Math.PI, zenith=90.833;
+    var start=new Date(date.getFullYear(),0,0), N=Math.floor((date-start)/86400000);
+    function calc(rise){
+      var lngHour=LNG/15, t=N+((rise?6:18)-lngHour)/24;
+      var M=(0.9856*t)-3.289;
+      var L=M+(1.916*Math.sin(rad*M))+(0.020*Math.sin(rad*2*M))+282.634; L=((L%360)+360)%360;
+      var RA=deg*Math.atan(0.91764*Math.tan(rad*L)); RA=((RA%360)+360)%360;
+      RA=(RA+(Math.floor(L/90)*90-Math.floor(RA/90)*90))/15;
+      var sinDec=0.39782*Math.sin(rad*L), cosDec=Math.cos(Math.asin(sinDec));
+      var cosH=(Math.cos(rad*zenith)-(sinDec*Math.sin(rad*LAT)))/(cosDec*Math.cos(rad*LAT));
+      if(cosH>1||cosH<-1) return null;
+      var H=rise?360-deg*Math.acos(cosH):deg*Math.acos(cosH); H/=15;
+      var T=H+RA-(0.06571*t)-6.622, UT=((T-lngHour)%24+24)%24;
+      var mins=UT*60 - date.getTimezoneOffset(); mins=((mins%1440)+1440)%1440; return mins;
+    }
+    var sr=calc(true), ss=calc(false);
+    return { sunrise: sr==null?5.6*60:sr, sunset: ss==null?20.5*60:ss };
+  }
+
+  // ---- moon phase ----
+  function moonInfo(date){
+    var lp=2551443, new0=new Date(2000,0,6,18,14,0).getTime();
+    var f=(((date.getTime()-new0)/1000)%lp)/lp; if(f<0)f+=1;
+    var illum=(1-Math.cos(2*Math.PI*f))/2, waxing=f<0.5;
+    var name = f<0.03||f>0.97?"New moon": f<0.22?"Waxing crescent": f<0.28?"First quarter":
+      f<0.47?"Waxing gibbous": f<0.53?"Full moon": f<0.72?"Waning gibbous":
+      f<0.78?"Last quarter": "Waning crescent";
+    return {illum:illum, waxing:waxing, name:name};
+  }
+
+  function nodes(){
+    var RY=(typeof RHYTHM!=="undefined"&&RHYTHM)?RHYTHM:{breakfast:"8:00 AM",lunch:"12:30 PM",dinner:"6:30 PM",windDown:"10:00 PM",lightsOut:"11:00 PM"};
+    function pc(s,f){ var v=parseClock(s); return v==null?f:v; }
+    return [
+      {m:7.25*60, ic:"🔍", label:"Flip scan",    color:"#38BDF8", find:"flip scan"},
+      {m:7.75*60, ic:"💰", label:"Money",        color:"#F0A820", find:"money situation"},
+      {m:pc(RY.breakfast,480),  ic:"🍳", label:"Breakfast", color:"#C084FC", find:"breakfast"},
+      {m:pc(RY.lunch,750),      ic:"🥗", label:"Lunch",     color:"#2DB870", find:"lunch"},
+      {m:pc(RY.dinner,1110),    ic:"🍽️", label:"Dinner",    color:"#C084FC", find:"dinner"},
+      {m:20*60,   ic:"🌱", label:"Mom's plants", color:"#2DB870", find:"mom's plants"},
+      {m:pc(RY.windDown,1320),  ic:"🌙", label:"Wind-down", color:"#A78BFA", find:"winding down"},
+      {m:pc(RY.lightsOut,1380), ic:"🛏️", label:"Bedtime",   color:"#38BDF8", find:"bedtime"}
+    ];
+  }
+
+  // geometry helpers (depend on SUN)
+  var SUN={sunrise:5.6*60,sunset:20.5*60};
+  function x(m){ return PADL+(VW-PADL-PADR)*(m/1440); }
+  function alt(m){ if(m<=SUN.sunrise||m>=SUN.sunset) return 0; return Math.sin(Math.PI*(m-SUN.sunrise)/(SUN.sunset-SUN.sunrise)); }
+  function arcY(m){ return HOR-(HOR-TOP)*alt(m); }
+  function moonY(m){ var nm=m<SUN.sunrise?m+1440:m, f=(nm-SUN.sunset)/((SUN.sunrise+1440)-SUN.sunset);
+    if(f<0||f>1) return HOR-6; return HOR-(HOR-TOP+18)*Math.sin(Math.PI*f); }
+  function fmt(m){ m=((m%1440)+1440)%1440; var h=Math.floor(m/60),mn=Math.floor(m%60),ap=h<12?"AM":"PM",hh=h%12; if(hh===0)hh=12; return hh+":"+(mn<10?"0":"")+mn+" "+ap; }
+  function stateText(m){ var h=m/60;
+    if(m<SUN.sunrise)return "Before sunrise"; if(h<9)return "Early"; if(h<12)return "Mid-morning";
+    if(h<14)return "Midday"; if(h<17)return "Afternoon"; if(m<SUN.sunset)return "Golden hour";
+    if(h<22)return "Evening"; return "Late"; }
+  function skyFor(m){ var dA=SUN.sunrise-55,dB=SUN.sunrise+70,kA=SUN.sunset-75,kB=SUN.sunset+55;
+    if(m<dA||m>kB)return ["#070A18","#0C1230"]; if(m<dB)return ["#22243F","#E0795A"];
+    if(m/60<11)return ["#102246","#3E6E9E"]; if(m/60<15)return ["#0E2A50","#4E86B8"];
+    if(m<kA)return ["#143055","#9A6E5A"]; if(m<SUN.sunset)return ["#2A2747","#E0795A"]; return ["#161A38","#7A4A55"]; }
+  function nightFactor(m){ var a=SUN.sunrise-40,b=SUN.sunrise+25,c=SUN.sunset-25,d=SUN.sunset+45;
+    if(m<a||m>d)return 1; if(m>b&&m<c)return 0; if(m>=a&&m<=b)return (b-m)/(b-a); return (m-c)/(d-c); }
+
+  var stars=[];
+  function buildSvg(host){
+    SUN=sunTimes(new Date());
+    var svg=el("svg",{viewBox:"0 0 "+VW+" "+VH,"aria-hidden":"true"});
+    var defs=el("defs",null,svg);
+    var tg=el("linearGradient",{id:"daTrail",x1:"0",y1:"0",x2:"1",y2:"0"},defs);
+    el("stop",{offset:"0","stop-color":"#E0795A"},tg); el("stop",{offset:".5","stop-color":"#F0A820"},tg); el("stop",{offset:"1","stop-color":"#FCE3A6"},tg);
+    var sgr=el("radialGradient",{id:"daSun"},defs); el("stop",{offset:"0","stop-color":"#FFF6DA"},sgr); el("stop",{offset:".5","stop-color":"#FBC55A"},sgr); el("stop",{offset:"1","stop-color":"#F0A820"},sgr);
+    var mgr=el("radialGradient",{id:"daMoon"},defs); el("stop",{offset:"0","stop-color":"#FBFCFF"},mgr); el("stop",{offset:"1","stop-color":"#C9D4F0"},mgr);
+    var f1=el("filter",{id:"daSoft",x:"-80%",y:"-80%",width:"260%",height:"260%"},defs); el("feGaussianBlur",{stdDeviation:"6"},f1);
+    var f2=el("filter",{id:"daSoft2",x:"-60%",y:"-60%",width:"220%",height:"220%"},defs); el("feGaussianBlur",{stdDeviation:"3"},f2);
+    var cp=el("clipPath",{id:"daMoonClip"},defs); el("circle",{cx:"0",cy:"0",r:"6.5"},cp);
+
+    // stars
+    var sg=el("g",{id:"daStars"},svg); stars=[];
+    for(var i=0;i<30;i++){ var c=el("circle",{cx:(12+Math.random()*(VW-24)).toFixed(1),cy:(10+Math.random()*Math.max(16,GROUND-22)).toFixed(1),r:(Math.random()*1+.4).toFixed(2),fill:"#EAF0FF"},sg);
+      c.dataset.base=(Math.random()*.5+.5).toFixed(2); stars.push(c); }
+
+    // clouds (gentle, for partly/cloudy)
+    var cl=el("g",{id:"daClouds",opacity:"0","class":"da-anim"},svg);
+    [[150,34,1,46],[420,26,.85,58],[300,52,.7,64]].forEach(function(cf,idx){
+      var g=el("g",{transform:"translate("+cf[0]+","+cf[1]+") scale("+cf[2]+")"},cl);
+      var inner=el("g",null,g);
+      el("ellipse",{rx:"24",ry:"9",fill:"#EAF0FA"},inner); el("ellipse",{cx:"16",cy:"3",rx:"15",ry:"7",fill:"#EAF0FA"},inner); el("ellipse",{cx:"-14",cy:"4",rx:"12",ry:"6",fill:"#EAF0FA"},inner);
+      el("animateTransform",{attributeName:"transform",type:"translate",from:"-80 0",to:"740 0",dur:cf[3]+"s",begin:(-idx*15)+"s",repeatCount:"indefinite"},inner);
+    });
+
+    // ground + horizon
+    el("rect",{x:0,y:HOR,width:VW,height:VH-HOR,fill:"rgba(0,0,0,.30)"},svg);
+    el("line",{x1:0,x2:VW,y1:HOR,y2:HOR,stroke:"rgba(255,255,255,.14)","stroke-width":"1"},svg);
+
+    // path ahead (faint)
+    var d="M "+x(SUN.sunrise).toFixed(1)+" "+arcY(SUN.sunrise).toFixed(1);
+    for(var m=SUN.sunrise;m<=SUN.sunset;m+=10) d+=" L "+x(m).toFixed(1)+" "+arcY(m).toFixed(1);
+    el("path",{d:d,fill:"none",stroke:"rgba(255,255,255,.16)","stroke-width":"1.4","stroke-dasharray":"1 5","stroke-linecap":"round"},svg);
+    // traveled trail (glow + line)
+    el("path",{id:"daTrailGlow",fill:"none",stroke:"url(#daTrail)","stroke-width":"6","stroke-linecap":"round",opacity:".30",filter:"url(#daSoft2)"},svg);
+    el("path",{id:"daTrailLine",fill:"none",stroke:"url(#daTrail)","stroke-width":"2.4","stroke-linecap":"round"},svg);
+
+    // sunrise/sunset ticks
+    [[SUN.sunrise,"sunrise"],[SUN.sunset,"sunset"]].forEach(function(p){
+      el("text",{x:x(p[0]),y:HOR+13,"text-anchor":"middle",fill:"rgba(255,255,255,.45)","font-size":"8","font-family":"Lora,serif"},svg).textContent=p[1];
+      el("circle",{cx:x(p[0]),cy:HOR,r:"2",fill:"rgba(255,255,255,.4)"},svg);
+    });
+
+    // nodes (tap to jump)
+    var ng=el("g",{id:"daNodes"},svg);
+    nodes().forEach(function(e){
+      var ny=alt(e.m)>0?arcY(e.m):GROUND;
+      var g=el("g",{"class":"da-node"},ng); g.dataset.m=e.m; g.dataset.find=e.find;
+      el("circle",{cx:x(e.m),cy:ny,r:"7",fill:"transparent"},g);   // tap target
+      el("circle",{cx:x(e.m),cy:ny,r:"4",fill:"#0F0E14",stroke:e.color,"stroke-width":"2","class":"da-dot"},g);
+      g.addEventListener("click",function(){ jumpTo(e.find); });
+    });
+
+    // celestial body
+    var body=el("g",{id:"daBody"},svg);
+    el("circle",{id:"daHalo",r:"16",fill:"#F0A820",opacity:".28",filter:"url(#daSoft)"},body);
+    el("circle",{id:"daCore",r:"8",fill:"url(#daSun)"},body);
+    el("ellipse",{id:"daMoonShadow",cx:"-2.6",cy:"0",rx:"5",ry:"6.5",fill:"#0A0E20",opacity:"0","clip-path":"url(#daMoonClip)"},body);
+
+    // floating label for next
+    var fl=el("g",{id:"daFloat"},svg);
+    el("text",{id:"daFloatT","text-anchor":"middle","font-size":"10","font-family":"Lora,serif",fill:"#FCE7C0"},fl);
+
+    host.appendChild(svg);
+    return svg;
+  }
+
+  function jumpTo(find){
+    try{
+      var host=document.getElementById("view-today"); if(!host) return;
+      var all=host.querySelectorAll("div,section,article"), target=null;
+      for(var i=0;i<all.length;i++){ var n=all[i];
+        if(n.closest && n.closest("#day-arc")) continue;
+        var t=(n.textContent||"").toLowerCase();
+        if(t.indexOf(find)!==-1){ target=n; break; } }
+      if(target){ var y=target.getBoundingClientRect().top+window.pageYOffset-70;
+        window.scrollTo({top:y,behavior:"smooth"});
+        target.style.transition="box-shadow .4s"; var os=target.style.boxShadow;
+        target.style.boxShadow="0 0 0 2px rgba(240,168,32,.6)";
+        setTimeout(function(){ target.style.boxShadow=os; },1100); }
+    }catch(e){}
+  }
+
+  function update(){
+    var root=document.getElementById("day-arc"); if(!root) return;
+    var m=nowMin(), day=m>SUN.sunrise&&m<SUN.sunset;
+    var sky=skyFor(m), wx=window.__dayArcWx||"partly";
+    var bg="linear-gradient(180deg, "+sky[0]+" 0%, "+sky[1]+" 100%)";
+    if(wx==="rain") bg="linear-gradient(rgba(18,24,40,.45),rgba(18,24,40,.45)), "+bg;
+    root.querySelector(".da-sky").style.background=bg;
+
+    var nf=nightFactor(m);
+    stars.forEach(function(s){ s.setAttribute("opacity",(nf*+s.dataset.base).toFixed(2)); });
+    var clouds=root.querySelector("#daClouds");
+    if(clouds) clouds.setAttribute("opacity", ((wx==="clear"?0:wx==="rain"?.32:.18)*(1-nf*.55)).toFixed(2));
+
+    // trail
+    var glow=root.querySelector("#daTrailGlow"), line=root.querySelector("#daTrailLine");
+    if(m<=SUN.sunrise){ glow.setAttribute("d",""); line.setAttribute("d",""); }
+    else { var tEnd=Math.min(m,SUN.sunset), d="M "+x(SUN.sunrise).toFixed(1)+" "+arcY(SUN.sunrise).toFixed(1);
+      for(var mm=SUN.sunrise;mm<=tEnd;mm+=8) d+=" L "+x(mm).toFixed(1)+" "+arcY(mm).toFixed(1);
+      glow.setAttribute("d",d); line.setAttribute("d",d); }
+
+    // body
+    var body=root.querySelector("#daBody"), core=root.querySelector("#daCore"), halo=root.querySelector("#daHalo"), msh=root.querySelector("#daMoonShadow");
+    var bx,by;
+    if(day){ bx=x(m); by=arcY(m); core.setAttribute("fill","url(#daSun)"); core.setAttribute("r","8");
+      halo.setAttribute("fill","#F0A820"); halo.setAttribute("opacity",(0.16+0.2*alt(m)).toFixed(2)); halo.setAttribute("r","16"); msh.setAttribute("opacity","0"); body.style.opacity="1"; }
+    else { bx=x(m); by=moonY(m); core.setAttribute("fill","url(#daMoon)"); core.setAttribute("r","6.5");
+      halo.setAttribute("fill","#9FB2E8"); halo.setAttribute("opacity",".2"); halo.setAttribute("r","13");
+      var mi=moonInfo(new Date()); msh.setAttribute("cx",(mi.waxing?-2.6:2.6).toString());
+      msh.setAttribute("rx",(6.5*(1-mi.illum)+0.6).toFixed(1)); msh.setAttribute("opacity", nf>.15?".9":".25"); body.style.opacity= nf>.15?"1":".3"; }
+    body.setAttribute("transform","translate("+bx+","+by+")");
+
+    // nodes fill by passage
+    var ns=nodes(), next=null;
+    for(var k=0;k<ns.length;k++){ if(ns[k].m>m){ next=ns[k]; break; } }
+    var gEls=root.querySelectorAll("#daNodes .da-node");
+    gEls.forEach(function(g){ var em=+g.dataset.m, dot=g.querySelector(".da-dot"), past=em<=m, isNext=next&&em===next.m, c=ns.find(function(e){return e.m===em;});
+      dot.setAttribute("r",isNext?"5.5":"4"); dot.setAttribute("fill",past?c.color:"#0F0E14"); dot.setAttribute("stroke-width",isNext?"2.6":"2"); });
+
+    // float label
+    var fl=root.querySelector("#daFloat"), flT=root.querySelector("#daFloatT");
+    if(next){ var ny=alt(next.m)>0?arcY(next.m):GROUND, lx=Math.max(56,Math.min(VW-56,x(next.m)));
+      flT.textContent=next.ic+"  "+next.label; fl.setAttribute("transform","translate("+lx+","+(ny-14)+")"); fl.style.opacity="1"; }
+    else fl.style.opacity="0";
+
+    // footer
+    root.querySelector(".da-now").textContent=stateText(m);
+    var nextEl=root.querySelector(".da-next");
+    nextEl.innerHTML = next ? "<b>"+next.ic+" "+next.label+"</b> · "+fmt(next.m) : "<b>🌙 Rest</b> · until dawn";
+    var dl; if(day){ var L=SUN.sunset-m; dl="☀️ "+Math.floor(L/60)+"h "+(Math.round(L%60)<10?"0":"")+Math.round(L%60)+"m of daylight left"; }
+    else if(m<SUN.sunrise){ var U=SUN.sunrise-m; dl="☾ sunrise in "+Math.floor(U/60)+"h "+(Math.round(U%60)<10?"0":"")+Math.round(U%60)+"m"; }
+    else dl="🌙 "+moonInfo(new Date()).name;
+    root.querySelector(".da-day").textContent=dl;
+  }
+
+  function mount(){
+    var host=document.getElementById("view-today"); if(!host) return;
+    if(host.firstElementChild && host.firstElementChild.id==="day-arc"){ update(); return; }
+    var wrap=document.createElement("div"); wrap.id="day-arc";
+    var sky=document.createElement("div"); sky.className="da-sky"; wrap.appendChild(sky);
+    var sw=document.createElement("div"); sw.className="da-svgwrap"; wrap.appendChild(sw);
+    var foot=document.createElement("div"); foot.className="da-foot";
+    foot.innerHTML='<span class="da-now">—</span><span class="da-day"></span><span class="da-next"></span>';
+    wrap.appendChild(foot);
+    host.insertBefore(wrap, host.firstChild);
+    buildSvg(sw); update();
+  }
+
+  // wrap renderToday so the arc re-mounts after every Today re-render
+  if(typeof window.renderToday==="function"){
+    var _o=window.renderToday;
+    window.renderToday=function(){ var r=_o.apply(this,arguments); try{ mount(); }catch(e){} return r; };
+  }
+  // keep the sun moving + survive tab switches
+  setInterval(function(){ try{ if((typeof currentTab==="undefined"||currentTab==="today")){ if(!document.getElementById("day-arc")) mount(); else update(); } }catch(e){} }, 60000);
+  document.addEventListener("DOMContentLoaded",function(){ setTimeout(function(){ try{ mount(); }catch(e){} },400); });
+  setTimeout(function(){ try{ if(typeof currentTab==="undefined"||currentTab==="today") mount(); }catch(e){} }, 600);
+})();
+</script>
+
 </body>
 </html>
