@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260615103612"></script>
+<script src="./data.js?v=20260615115802"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 15 · 10:36 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 15 · 11:58 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1856,6 +1856,15 @@ function renderToday() {
       : reminderCardHtml("🔍",FLIP_SCAN.label,"","toggleReminder('flipscan',true)",fsExtra));
   }
 
+  // ── 🦷 JAW EXERCISER — daily habit card (date-keyed → reappears each day). Safe cadence baked in. (added Jun 15 2026) ──
+  {
+    const jawDone=!!laundry["rem-jaw-"+today];
+    const jawSub="2 sets of 12 slow, controlled bites on the lowest strength, every other day (about 3x a week) — keep each session under 10 minutes. STOP and rest extra if you feel any clicking, jaw pain, or headache. Stay on the starting strength about 4 weeks, and only move up a level when it feels easy and pain-free. Skip it entirely if you have jaw (TMJ) issues, gum disease, braces, or recent dental work.";
+    add("jaw",287,jawDone, jawDone
+      ? strip("🦷","Jaw exerciser — done for today",true,"#A78BFA","toggleReminder('jaw',true)","Daily","","Reappears tomorrow")
+      : strip("🦷","Jaw exerciser — 2×12 slow bites, lowest level (every other day)",false,"#A78BFA","toggleReminder('jaw',true)","Daily","",jawSub));
+  }
+
   // 🔔 dated + standing reminders
   if(typeof REMINDERS!=='undefined'){
     REMINDERS.forEach(function(r,i){
@@ -2481,6 +2490,8 @@ function renderGarden() {
         body+=sect("🌿 Maintenance · "+stTxt,"#FB923C",p.trim);
         body+='<button class="water-btn" onclick="trimPlant(\''+p.id+'\')" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px;background:'+(doneT?'rgba(45,184,112,.15)':'rgba(251,146,60,.15)')+';border:1px solid '+(doneT?'#2DB870':'#FB923C')+';color:'+(doneT?'#4AD490':'#FB923C')+'">'+(doneT?'✓ Tended':'🌿 Mark tended')+'</button>';
       }
+      if(PEST_INFO[p.id]){ body+=sect("🐛 Pests — where to look","#E07070",PEST_INFO[p.id].look); body+=sect("🌿 Natural fix","#86C232",PEST_INFO[p.id].fix); }
+      if(FEED_INFO[p.id]){ body+=sect("🍽️ Feeding — grow it strong","#22D3EE",FEED_INFO[p.id].what+" "+FEED_INFO[p.id].how); }
       body+=factBox(dailyFact(p.id));
       html+=pcard(p,bTxt,bCol,body);
     });
