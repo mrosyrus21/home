@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  var DACFG=(window.DAYARC_CONFIG||{}); var HOSTID=DACFG.host||"view-today";
+  var DACFG=(window.DAYARC_CONFIG||{}); var HOSTID=DACFG.host||"view-today"; var APPENDSEL=DACFG.appendHost||null;
   var SVGNS="http://www.w3.org/2000/svg";
   var LAT=(DACFG.lat!=null?DACFG.lat:39.78), LNG=(DACFG.lng!=null?DACFG.lng:-104.75), RAD=Math.PI/180;
   var TZ=-(new Date().getTimezoneOffset())/60;   // user's local tz (Denver = -6/-7)
@@ -75,13 +75,15 @@
   function wxLab(cond,night){ return cond==="rain"?"Storm":cond==="cloudy"?"Overcast":cond==="partly"?"Partly cloudy":night?"Clear":"Clear"; }
 
   // geometry
-  function sx(az){ var f=(az-SUN.azRise)/(SUN.azSet-SUN.azRise); return PADL+(VW-PADL-PADR)*Math.max(-0.04,Math.min(1.04,f)); }
+  // shared compass mapping (E~left → S~center → W~right) so the sun AND moon each sit at their
+  // true sky position and visibly diverge whenever they aren't on the same path.
+  function sx(az){ var f=(az-45)/(315-45); return PADL+(VW-PADL-PADR)*Math.max(-0.03,Math.min(1.03,f)); }
   function sy(elev){ return HOR-(Math.max(0,elev)/ELEV_REF)*(HOR-TOP); }
   function nightFactor(m){var a=SUN.sunrise-40,b=SUN.sunrise+25,c=SUN.sunset-25,d=SUN.sunset+45;if(m<a||m>d)return 1;if(m>b&&m<c)return 0;if(m>=a&&m<=b)return (b-m)/(b-a);return (m-c)/(d-c);}
-  function skyFor(m){var dA=SUN.sunrise-55,dB=SUN.sunrise+70,kA=SUN.sunset-75,kB=SUN.sunset+55;
-    if(m<dA||m>kB)return ["#070A18","#11173A"]; if(m<dB)return ["#241B3A","#E89066"];
-    if(m/60<11)return ["#0F2348","#5A8FC0"]; if(m/60<15)return ["#11305A","#6AA6D6"];
-    if(m<kA)return ["#163358","#B98A66"]; if(m<SUN.sunset)return ["#3A2A4E","#E8855A"]; return ["#1A1C3C","#7A4A58"];}
+  function skyFor(m){var dA=SUN.sunrise-50,dB=SUN.sunrise+22,kA=SUN.sunset-75,kB=SUN.sunset+55;
+    if(m<dA||m>kB)return ["#161F42","#2E3E68"]; if(m<dB)return ["#7C5E92","#E8A77E"];
+    if(m/60<11)return ["#3E6FA8","#9AC2E2"]; if(m/60<15)return ["#3A6FAE","#A0CAE6"];
+    if(m<kA)return ["#4A6E9E","#D8C49E"]; if(m<SUN.sunset)return ["#6E4E78","#E8997A"]; return ["#36406E","#9E7E86"];}
   function fmt(m){m=((m%1440)+1440)%1440;var h=Math.floor(m/60),mn=Math.floor(m%60),ap=h<12?"AM":"PM",hh=h%12;if(hh===0)hh=12;return hh+":"+(mn<10?"0":"")+mn+" "+ap;}
   function stateText(m){var h=m/60;if(m<SUN.sunrise)return "Before sunrise";if(h<9)return "Early";if(h<12)return "Mid-morning";if(h<14)return "Midday";if(h<17)return "Afternoon";if(m<SUN.sunset)return "Golden hour";if(h<22)return "Evening";return "Late";}
 
@@ -96,7 +98,7 @@
 
   var svg,stars=[];
   function buildSvg(host){
-    svg=add("svg",{"class":"da-svg",viewBox:"0 0 "+VW+" "+VH,"aria-hidden":"true"},host);
+    svg=add("svg",{"class":"da-svg",viewBox:"0 0 "+VW+" "+VH,preserveAspectRatio:"xMidYMid meet","aria-hidden":"true"},host);
     var defs=add("defs",null,svg);
     defs.innerHTML='<linearGradient id="da_trail" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E0795A"/><stop offset=".5" stop-color="#F5B830"/><stop offset="1" stop-color="#FCE3A6"/></linearGradient>'
       +'<radialGradient id="da_sun"><stop offset="0" stop-color="#FFFBEA"/><stop offset=".45" stop-color="#FBC55A"/><stop offset="1" stop-color="#F0A820"/></radialGradient>'
@@ -138,7 +140,8 @@
     add("path",{id:"da_rfar",d:rangePath(RIDGE_FAR),fill:"#46557A",opacity:".55"},svg);
     add("path",{id:"da_rback",d:rangePath(RIDGE_BACK),fill:"#39476A"},svg);
     var cb=add("clipPath",{id:"da_clipB"},defs); add("path",{d:rangePath(RIDGE_BACK)},cb);
-    add("rect",{id:"da_snow",x:0,y:0,width:VW,height:Math.max(0,HOR-46),fill:"url(#da_snow)","clip-path":"url(#da_clipB)"},svg);
+    var sd="M 0 0 L "+VW+" 0"; for(var sxp=VW;sxp>=0;sxp-=14){ sd+=" L "+sxp+" "+(HOR-(40+9*Math.sin(sxp*0.045)+5*Math.sin(sxp*0.11+2))).toFixed(1); } sd+=" Z";
+    add("path",{id:"da_snow",d:sd,fill:"url(#da_snow)","clip-path":"url(#da_clipB)"},svg);
     add("rect",{id:"da_alpen",x:0,y:0,width:VW,height:Math.max(0,HOR-38),fill:"url(#da_alpen)","clip-path":"url(#da_clipB)",opacity:"0"},svg);
     add("path",{id:"da_rmid",d:rangePath(RIDGE_MID),fill:"#27314C"},svg);
     add("rect",{id:"da_hazeb",x:0,y:HOR-26,width:VW,height:26,fill:"url(#da_haze)",opacity:".55"},svg);
@@ -170,12 +173,10 @@
   var TASKS=[];
   function buildTimeline(span){
     span.innerHTML="";
-    [["Morning",TL_A,12*60],["Afternoon",12*60,17*60],["Evening",17*60,TL_B]].forEach(function(s,i){ var a=pct(s[1]),b=pct(s[2]); var d=document.createElement("div"); d.className="da-seg"; d.style.left=a+"%"; d.style.width=(b-a)+"%"; if(i===2)d.style.borderRight="none"; d.innerHTML="<span>"+s[0]+"</span>"; span.appendChild(d); });
     TASKS.forEach(function(t){ var mk=document.createElement("div"); mk.className="da-mk"; mk.style.left=pct(t.m)+"%"; mk.style.setProperty("--mc",t.color); mk.dataset.m=t.m; mk.title=t.label+" · "+fmt(t.m);
       mk.innerHTML='<span class="ic">'+t.ic+'</span><span class="dot"></span>';
       mk.addEventListener("click",function(ev){ ev.stopPropagation(); jumpTo(t.find); });
       span.appendChild(mk); });
-    var nx=document.createElement("div"); nx.className="da-tl-next"; nx.id="da_next"; span.appendChild(nx);
     var nl=document.createElement("div"); nl.className="da-tl-now"; nl.id="da_now"; span.appendChild(nl);
   }
 
@@ -186,7 +187,7 @@
   var $=function(id){return document.getElementById(id);};
   var userScrub=false, scrubM=0;
   function liveMin(){ var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60; }
-  function curM(){ return userScrub?scrubM:liveMin(); }
+  function curM(){ if(userScrub) return scrubM; if(DACFG.demoMin!=null) return DACFG.demoMin; return liveMin(); }
 
   function update(){
     var root=$("day-arc"); if(!root||!svg)return;
@@ -196,16 +197,19 @@
     if(cond==="rain") bg="linear-gradient(rgba(18,24,40,.46),rgba(18,24,40,.46)), "+bg;
     else if(cond==="cloudy") bg="linear-gradient(rgba(120,128,142,.24),rgba(86,92,108,.2)), "+bg;
     root.querySelector(".da-sky").style.background=bg;
+    // CRITICAL: when embedded in the app header, the header's own dark gradient paints over .da-sky.
+    // Paint the sky straight onto the header element so it's always the visible background.
+    if(root.classList.contains("da-inheader") && root.parentElement){ root.parentElement.style.setProperty("background", bg, "important"); }
 
     if($("da_stars")) $("da_stars").setAttribute("opacity",nf.toFixed(2));
     if($("da_clouds")) $("da_clouds").setAttribute("opacity",((cond==="clear"?0:cond==="partly"?.55:cond==="cloudy"?.95:.85)*(1-nf*.45)).toFixed(2));
     if($("da_rain")) $("da_rain").setAttribute("opacity",cond==="rain"?"1":"0");
     if($("da_rback")){ var dk=nf;
-      $("da_rfar").setAttribute("fill",dk>.5?"#232B47":"#46557A");
-      $("da_rback").setAttribute("fill",dk>.5?"#1B2236":"#39476A");
-      $("da_rmid").setAttribute("fill",dk>.5?"#141A2C":"#27314C");
-      $("da_rfront").setAttribute("fill",dk>.5?"#080B14":"#121828");
-      if($("da_snow"))$("da_snow").setAttribute("fill",dk>.5?"#9DAECF":"url(#da_snow)");
+      $("da_rfar").setAttribute("fill",dk>.5?"#4A5688":"#93A3CE");
+      $("da_rback").setAttribute("fill",dk>.5?"#3E4B78":"#8092C2");
+      $("da_rmid").setAttribute("fill",dk>.5?"#323D62":"#6678A6");
+      $("da_rfront").setAttribute("fill",dk>.5?"#222B4A":"#4A5A86");
+      if($("da_snow"))$("da_snow").setAttribute("fill",dk>.5?"#D2DCEE":"url(#da_snow)");
       if($("da_hazeb"))$("da_hazeb").setAttribute("opacity",dk>.5?".22":".55");
       var ag=day?Math.max(0,1-Math.abs(sp.elev)/11):0; if($("da_alpen"))$("da_alpen").setAttribute("opacity",(ag*.8).toFixed(2));
     }
@@ -236,12 +240,12 @@
     var next=null; for(var ti=0;ti<TASKS.length;ti++){ if(TASKS[ti].m>m){next=TASKS[ti];break;} }
     var mks=root.querySelectorAll(".da-mk"); for(var mi=0;mi<mks.length;mi++){ var em=+mks[mi].dataset.m; mks[mi].classList.toggle("past",em<=m); mks[mi].classList.toggle("next",!!next&&em===next.m); }
     var nx=$("da_next");
-    if(next){ nx.style.display="block"; var np=pct(next.m); nx.style.left=np+"%"; nx.style.transform=np>80?"translateX(-100%)":np<14?"translateX(0)":"translateX(-50%)"; nx.style.marginLeft=np>80?"10px":np<14?"-10px":"0"; nx.innerHTML=next.ic+" "+next.label+" · "+fmt(next.m).replace(":00",""); } else nx.style.display="none";
+    if(nx){ if(next){ nx.style.display="block"; var np=pct(next.m); nx.style.left=np+"%"; nx.style.transform=np>80?"translateX(-100%)":np<14?"translateX(0)":"translateX(-50%)"; nx.style.marginLeft=np>80?"10px":np<14?"-10px":"0"; nx.innerHTML=next.ic+" "+next.label+" · "+fmt(next.m).replace(":00",""); } else nx.style.display="none"; }
 
     // overlay + foot
-    root.querySelector(".da-state").textContent=stateText(m);
+    var stEl=root.querySelector(".da-state"); if(stEl) stEl.textContent=stateText(m);
     var tEl=root.querySelector(".da-wx .t"), cEl=root.querySelector(".da-wx .c");
-    if(w.temp!=null){ tEl.textContent=w.temp+"°"; cEl.textContent=wxIc(cond,!day)+" "+wxLab(cond,!day); } else { tEl.textContent=""; cEl.textContent=""; }
+    if(tEl){ if(w.temp!=null){ tEl.textContent=w.temp+"°"; cEl.textContent=wxIc(cond,!day)+" "+wxLab(cond,!day); } else { tEl.textContent=""; cEl.textContent=""; } }
     // forecast strip — next few hours, from the same data the sky uses
     var fc=root.querySelector(".da-fc");
     if(fc){ var fhtml="", baseH=Math.floor(m/60);
@@ -253,26 +257,28 @@
     var dl; if(day){var L=SUN.sunset-m;dl="☀️ "+Math.floor(L/60)+"h "+(Math.round(L%60)<10?"0":"")+Math.round(L%60)+"m of daylight left";}
     else if(m<SUN.sunrise){var U=SUN.sunrise-m;dl="☾ sunrise in "+Math.floor(U/60)+"h "+(Math.round(U%60)<10?"0":"")+Math.round(U%60)+"m";}
     else dl="🌙 "+mp.name+" · "+Math.round(mp.illum*100)+"% lit";
-    root.querySelector(".da-day-l").textContent=dl;
-    var live=$("da_live"); if(live) live.style.display=userScrub?"block":"none";
+    var dEl=root.querySelector(".da-day-l");
+    if(userScrub){ dEl.innerHTML="↩ Go to NOW"; dEl.classList.add("da-gonow"); }
+    else { dEl.textContent=dl; dEl.classList.remove("da-gonow"); }
   }
 
   function mount(){
-    var host=document.getElementById(HOSTID); if(!host)return;
-    if(host.firstElementChild && host.firstElementChild.id==="day-arc"){ update(); return; }
+    var append=!!APPENDSEL, host=append?document.querySelector(APPENDSEL):document.getElementById(HOSTID);
+    if(!host)return;
+    if(document.getElementById("day-arc")){ update(); return; }
     computeAstro(); TASKS=tasks(); userScrub=false;
-    var wrap=document.createElement("div"); wrap.id="day-arc";
+    var wrap=document.createElement("div"); wrap.id="day-arc"; if(append) wrap.className="da-inheader";
     wrap.innerHTML='<div class="da-sky"></div>'
-      +'<div class="da-head"><div class="da-state">—</div><div class="da-wx"><div class="t"></div><div class="c"></div><div class="da-fc"></div></div></div>'
-      +'<div class="da-live" id="da_live">● Now</div>';
-    var svgHost=document.createElement("div"); wrap.appendChild(svgHost);
+      +(append?'':'<div class="da-head"><div class="da-state">—</div><div class="da-wx"><div class="t"></div><div class="c"></div><div class="da-fc"></div></div></div>')
+      +'';
+    var svgHost=document.createElement("div"); svgHost.className="da-svgwrap"; wrap.appendChild(svgHost);
     var tl=document.createElement("div"); tl.className="da-tl";
     tl.innerHTML='<div class="da-tl-track"></div><div class="da-tl-fill" id="da_fill"></div><div class="da-tl-span" id="da_span"></div><span class="da-anchor l">5 AM</span><span class="da-anchor r">11:30 PM</span>';
     wrap.appendChild(tl);
     var foot=document.createElement("div"); foot.className="da-foot";
     foot.innerHTML='<span class="da-now-l">—</span><span class="da-day-l"></span><span class="da-next-l"></span>';
     wrap.appendChild(foot);
-    host.insertBefore(wrap, host.firstChild);
+    if(append) host.appendChild(wrap); else host.insertBefore(wrap, host.firstChild);
     buildSvg(svgHost); buildTimeline(document.getElementById("da_span"));
     wireInput(wrap, tl);
     update();
@@ -280,17 +286,22 @@
 
   function wireInput(wrap, tl){
     var dragging=false, sX=0, sM=0;
-    wrap.addEventListener("pointerdown",function(e){ if(e.target.closest(".da-mk")||e.target.closest(".da-live"))return; dragging=true; sX=e.clientX; sM=curM(); wrap.classList.add("grabbing"); try{wrap.setPointerCapture(e.pointerId);}catch(_){ } });
+    wrap.addEventListener("pointerdown",function(e){ if(e.target.closest(".da-mk")||e.target.closest(".da-live")||e.target.closest(".da-foot")||e.target.closest(".da-tl"))return; dragging=true; sX=e.clientX; sM=curM(); wrap.classList.add("grabbing"); try{wrap.setPointerCapture(e.pointerId);}catch(_){ } });
     wrap.addEventListener("pointermove",function(e){ if(!dragging)return; var W=wrap.clientWidth||640; var dt=(e.clientX-sX)/W*1440; userScrub=true; scrubM=Math.max(0,Math.min(1439,sM+dt)); update(); });
     function end(){ dragging=false; wrap.classList.remove("grabbing"); }
     wrap.addEventListener("pointerup",end); wrap.addEventListener("pointercancel",end);
-    tl.addEventListener("pointerdown",function(e){ if(e.target.closest(".da-mk"))return; e.stopPropagation(); var r=tl.getBoundingClientRect(); var x=e.clientX-r.left-18,W=r.width-36; var frac=Math.max(0,Math.min(1,x/W)); userScrub=true; scrubM=TL_A+frac*(TL_B-TL_A); update(); });
-    var live=document.getElementById("da_live"); if(live) live.addEventListener("click",function(e){ e.stopPropagation(); userScrub=false; update(); });
+    var tld=false;
+    function seekTl(cx){ var r=tl.getBoundingClientRect(); var x=cx-r.left-18,W=r.width-36; var frac=Math.max(0,Math.min(1,x/W)); userScrub=true; scrubM=TL_A+frac*(TL_B-TL_A); update(); }
+    tl.addEventListener("pointerdown",function(e){ if(e.target.closest(".da-mk"))return; e.stopPropagation(); tld=true; try{tl.setPointerCapture(e.pointerId);}catch(_){ } seekTl(e.clientX); });
+    tl.addEventListener("pointermove",function(e){ if(tld) seekTl(e.clientX); });
+    tl.addEventListener("pointerup",function(){ tld=false; });
+    tl.addEventListener("pointercancel",function(){ tld=false; });
+    var dEl2=wrap.querySelector(".da-day-l"); if(dEl2) dEl2.addEventListener("click",function(e){ if(!userScrub)return; e.stopPropagation(); userScrub=false; update(); });
   }
 
   // re-mount after every Today render; keep the sun moving; reset to live on tab change
   if(typeof window.renderToday==="function"){ var _o=window.renderToday; window.renderToday=function(){ var r=_o.apply(this,arguments); try{ mount(); }catch(e){} return r; }; }
-  setInterval(function(){ try{ if((typeof currentTab==="undefined"||currentTab==="today")){ if(!document.getElementById("day-arc")) mount(); else if(!userScrub) update(); } }catch(e){} }, 30000);
+  setInterval(function(){ try{ if(APPENDSEL||typeof currentTab==="undefined"||currentTab==="today"){ if(!document.getElementById("day-arc")) mount(); else if(!userScrub) update(); } }catch(e){} }, 30000);
   document.addEventListener("DOMContentLoaded",function(){ setTimeout(function(){ try{mount();}catch(e){} },400); });
-  setTimeout(function(){ try{ if(typeof currentTab==="undefined"||currentTab==="today") mount(); }catch(e){} }, 700);
+  setTimeout(function(){ try{ mount(); }catch(e){} }, 700);
 })();

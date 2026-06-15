@@ -5,65 +5,181 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Day Arc — example</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="dayarc.css?v=3">
+<link rel="stylesheet" href="dayarc.css?v=20260615140832">
 <style>
-  :root{ --rad:14px; --text:#EDE5F8; }
+  :root{
+    --bg:#06050A; --s1:#0F0E14; --s2:#16151C; --s3:#1E1D26; --border:#242232; --border2:#312F40;
+    --text:#EDE5F8; --text2:#6A6480; --text3:#302E3A; --amber:#D4900A; --amber2:#F0A820;
+    --aglow:rgba(212,144,10,.15); --aborder:rgba(212,144,10,.25); --green:#2DB870; --red:#D95050;
+    --teal:#22D3EE; --gold:#F0A820; --rad:14px;
+  }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{ background:radial-gradient(120% 80% at 50% -10%, rgba(212,144,10,.10), transparent 55%), #06050A;
-    color:#EDE5F8; font-family:'Lora',Georgia,serif; min-height:100vh; display:flex; flex-direction:column;
-    align-items:center; padding:34px 18px 60px; gap:18px; }
-  .intro{max-width:560px;text-align:center}
-  .intro .eyebrow{font-size:10px;letter-spacing:.32em;text-transform:uppercase;font-style:italic;color:rgba(240,180,60,.85);margin-bottom:8px}
-  .intro h1{font-family:'Playfair Display',serif;font-weight:700;font-size:25px}
-  .intro p{font-size:13px;color:#A89FB8;margin-top:8px;line-height:1.55}
-  #day-arc-host{width:min(460px,100%)}
-  .note{font-size:11px;color:#6A6480;font-style:italic;max-width:460px;text-align:center;line-height:1.6}
+  body{ background:#06050A; color:var(--text); font-family:'Lora',Georgia,serif; min-height:100vh; }
+
+  /* ── HEADER (mirrors the schedule app) ── */
+  .header, .header *{ text-shadow:0 0 3px rgba(0,0,0,.95), 0 0 7px rgba(0,0,0,.85), 0 1px 2px rgba(0,0,0,1) !important; }
+  .hdr-clock{ text-shadow:0 0 16px rgba(212,144,10,.5) !important; }
+  .wx-ic{ text-shadow:none !important; }
+  .garden-tracker{ text-shadow:0 0 8px rgba(34,211,238,.5) !important; }
+  .garden-tracker.trim{ text-shadow:0 0 8px rgba(192,132,252,.45) !important; }
+  .garden-tracker.harvest{ text-shadow:0 0 8px rgba(74,222,128,.45) !important; }
+  .header-eyebrow{ position:absolute !important; top:2px; left:50%; right:auto; transform:translateX(-50%); margin:0 !important; z-index:4; font-size:7.5px !important; }
+  #day-arc .da-foot, #day-arc .da-foot *{ text-shadow:none !important; }
+  @media (max-width:560px){ .hdr-fact{ display:none !important; } }
+  .header{ background:linear-gradient(180deg,#100D1B 0%,#09080E 100%); border-bottom:1px solid rgba(255,255,255,.04);
+    position:relative; z-index:1; box-shadow:0 8px 40px rgba(0,0,0,.7); overflow:hidden; }
+  .header::before{ content:''; position:absolute; top:0; left:0; right:0; height:2px; z-index:3;
+    background:linear-gradient(90deg,transparent 0%,rgba(212,144,10,.8) 30%,rgba(240,168,32,1) 50%,rgba(34,211,238,.6) 70%,transparent 100%); }
+  .header-inner{ padding:16px 18px 0; position:relative; z-index:2 }
+  .header-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px }
+  .hdr-left{ flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:1px }
+  .hdr-center{ flex:0 1 auto; display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:1px }
+  .hdr-right{ flex:0 1 auto; min-width:0; display:flex; justify-content:flex-end }
+  .hdr-greeting{ font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:rgba(248,206,120,.98); font-family:'Lora',serif; font-style:italic; text-shadow:0 1px 3px rgba(0,0,0,.92),0 0 9px rgba(0,0,0,.6) }
+  .hdr-clock{ font-family:'Playfair Display',serif; font-size:32px; font-weight:700; color:var(--amber2); line-height:1.05; text-shadow:0 0 16px rgba(212,144,10,.45); white-space:nowrap }
+  .hdr-date{ display:inline-block; font-size:9.5px; color:#F0ECF8; background:none; border:none; border-radius:12px; padding:2px 0; margin-top:5px; font-family:'Lora',serif }
+  .hdr-fact{ position:absolute; top:44px; left:50%; transform:translateX(-50%); width:calc(100% - 280px); min-width:240px; max-width:300px; text-align:center; font-size:10px; color:#F4F0FA; font-weight:500; font-family:'Lora',serif; font-style:italic; line-height:1.38; text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.65) }
+  .header-eyebrow{ font-size:8px; letter-spacing:.32em; color:rgba(250,210,130,.98); text-transform:uppercase; font-family:'Lora',serif; font-style:italic; text-shadow:0 1px 3px rgba(0,0,0,.92),0 0 9px rgba(0,0,0,.6) }
+  .hdr-trackers{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:10px }
+  .garden-tracker{ font-size:11px; font-family:'Lora',serif; letter-spacing:.04em; color:var(--teal); text-shadow:0 0 8px rgba(34,211,238,.5); white-space:nowrap }
+  .garden-tracker.trim{ color:#c084fc; text-shadow:0 0 8px rgba(192,132,252,.4) }
+  .garden-tracker.harvest{ color:#4ADE80; text-shadow:0 0 8px rgba(74,222,128,.45) }
+  .hdr-weather{ font-family:'Lora',serif; text-align:right; line-height:1.46; background:none; border:none; border-radius:14px; padding:0 }
+  .wx-now{ font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#F3F1FA; text-shadow:0 0 14px rgba(34,211,238,.3); line-height:1.1 }
+  .wx-now .wx-ic{ font-size:17px; margin-right:3px }
+  .wx-row{ font-size:11.5px; color:#ECE7F4; letter-spacing:.02em; text-shadow:0 1px 3px rgba(0,0,0,.9); white-space:nowrap }
+  .wx-tom{ font-size:11px; color:#BBD6F2; margin-top:3px; text-shadow:0 1px 3px rgba(0,0,0,.9); white-space:nowrap }
+  .progress-wrap{ position:relative; z-index:2; padding:12px 18px 0 }
+  .progress-row{ display:flex; align-items:center; gap:10px; margin-bottom:7px }
+  .progress-row-label{ font-size:9px; color:rgba(255,255,255,.85); font-family:'Lora',serif; letter-spacing:.08em; text-transform:uppercase; width:46px; flex-shrink:0; text-shadow:0 1px 3px rgba(0,0,0,.9) }
+  .progress-bar{ flex:1; height:5px; background:rgba(0,0,0,.35); border-radius:6px; overflow:hidden; position:relative }
+  .progress-bar-pct{ font-size:9px; font-family:'Playfair Display',serif; font-weight:700; width:30px; text-align:right; flex-shrink:0; text-shadow:0 1px 3px rgba(0,0,0,.9) }
+  .progress-fill{ height:100%; background:linear-gradient(90deg,#B87010,#F0A820,#E87030); border-radius:6px }
+  .daily-fill{ background:linear-gradient(90deg,#0E7490,#0891B2,#22D3EE) }
+
+  /* ── Day Arc = the header's living background (same as the app) ── */
+  .header .header-bg{ position:absolute; left:0; right:0; top:0; bottom:94px; z-index:1;
+    background:linear-gradient(180deg, rgba(6,5,10,.16) 0%, rgba(6,5,10,0) 14%, rgba(6,5,10,0) 82%, rgba(6,5,10,.08) 100%); }
+  .header #day-arc.da-inheader{ position:static; display:block; border:none; border-radius:0; margin:0; box-shadow:none; cursor:grab }
+  .header #day-arc.da-inheader.grabbing{ cursor:grabbing }
+  .header #day-arc.da-inheader .da-sky{ position:absolute; left:0; right:0; top:0; bottom:94px; z-index:0 }
+  .header #day-arc.da-inheader .da-svgwrap{ position:absolute; left:0; right:0; top:0; bottom:94px; z-index:0; line-height:0 }
+  .header #day-arc.da-inheader .da-svgwrap svg{ width:100%; height:100% }
+  .header #day-arc.da-inheader .da-tl{ position:relative; z-index:2; border-radius:0 }
+  .header #day-arc.da-inheader .da-foot{ position:relative; z-index:2 }
+  .header #day-arc.da-inheader .da-live{ z-index:6 }
+
+  .below{ max-width:680px; margin:26px auto 0; padding:0 20px; text-align:center }
+  .below .eyebrow{ font-size:10px; letter-spacing:.32em; text-transform:uppercase; font-style:italic; color:rgba(240,180,60,.85); margin-bottom:8px }
+  .below h1{ font-family:'Playfair Display',serif; font-weight:700; font-size:23px }
+  .below p{ font-size:13px; color:#A89FB8; margin-top:8px; line-height:1.55 }
+  .below .note{ font-size:11px; color:#8A8398; font-style:italic; margin-top:16px; line-height:1.6 }
+
+  /* password gate */
+  #da-gate{ position:fixed; inset:0; z-index:9999; background:#06050A; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px }
+  #da-gate .g-t{ font-family:'Playfair Display',serif; font-size:24px; color:#FCE7C0 }
+  #da-gate .g-s{ font-size:12px; color:#A89FB8; font-style:italic }
+  #da-pass{ background:rgba(255,255,255,.05); border:1px solid #242232; border-radius:10px; padding:10px 14px; color:#EDE5F8; font-family:'Lora',serif; font-size:14px; outline:none; text-align:center; width:200px }
+  #da-pass-err{ font-size:11px; color:#D95050; height:14px }
 </style>
 </head>
 <body>
-  <div id="da-gate" style="position:fixed;inset:0;z-index:9999;background:#06050A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:'Lora',serif">
-    <div style="font-family:'Playfair Display',serif;font-size:24px;color:#FCE7C0">The Day Arc</div>
-    <div style="font-size:12px;color:#A89FB8;font-style:italic">Enter the password to view</div>
-    <input id="da-pass" type="password" placeholder="Password" autocomplete="off" style="background:rgba(255,255,255,.05);border:1px solid #242232;border-radius:10px;padding:10px 14px;color:#EDE5F8;font-family:'Lora',serif;font-size:14px;outline:none;text-align:center;width:200px">
-    <div id="da-pass-err" style="font-size:11px;color:#D95050;height:14px"></div>
+  <div id="da-gate">
+    <div class="g-t">The Day Arc</div>
+    <div class="g-s">Enter the password to view</div>
+    <input id="da-pass" type="password" placeholder="Password" autocomplete="off">
+    <div id="da-pass-err"></div>
   </div>
+
+  <!-- HEADER (example data) -->
+  <div class="header">
+    <div class="header-bg" id="headerBg"></div>
+    <div class="header-inner">
+      <div class="header-row">
+        <div class="hdr-left">
+          <div class="hdr-greeting">Good afternoon</div>
+          <div class="hdr-clock">12:30 PM</div>
+          <div class="hdr-date">Sat, Jun 14</div>
+          <div class="hdr-fact">🌄 A living header — the sun &amp; moon trace their real path over the Front Range.</div>
+        </div>
+        <div class="hdr-center"><div class="header-eyebrow">Today</div></div>
+        <div class="hdr-right">
+          <div class="hdr-weather">
+            <div class="wx-now"><span class="wx-ic">⛅</span>74°</div>
+            <div class="wx-row">High 80° · Low 54°</div>
+            <div class="wx-row">Rain 20% · Wind 8 mph</div>
+            <div class="wx-tom">Tomorrow 78°/52°</div>
+          </div>
+        </div>
+      </div>
+      <div class="hdr-trackers">
+        <div class="garden-tracker">💧 1/3</div>
+        <div class="garden-tracker harvest">✂️ 2/4</div>
+        <div class="garden-tracker trim">❤️ 3/3</div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-row"><div class="progress-row-label">Tasks</div><div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div><div class="progress-bar-pct" style="color:#F0A820">45%</div></div>
+      <div class="progress-row"><div class="progress-row-label">Habits</div><div class="progress-bar"><div class="progress-fill daily-fill" style="width:60%"></div></div><div class="progress-bar-pct" style="color:#22D3EE">60%</div></div>
+    </div>
+  </div>
+
+  <div class="below">
+    <div class="eyebrow">A living header · example data</div>
+    <h1>The Day Arc</h1>
+    <p>The real path of the sun &amp; moon for the day, over the Front Range, sitting behind your clock, weather &amp; trackers — with the day's reminders on their own timeline. Grab the sky and drag to move through time.</p>
+    <div class="note">Showing example reminders &amp; a sample forecast. The sun, moon, sunrise/sunset and phase are computed live for the location in the config.</div>
+    <div style="margin:22px auto 0;max-width:540px">
+      <div style="font-size:10px;letter-spacing:.28em;text-transform:uppercase;font-style:italic;color:#C9A86A;margin-bottom:12px">Today's reminders</div>
+      <div id="task-legend" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+  </div>
+
   <script>
-  (function(){ var PW="duckquack";  /* ← change this password */
+  window.__buildLegend = function(){
+    var c=window.DAYARC_CONFIG; if(!c||!c.tasks) return;
+    var box=document.getElementById('task-legend'); if(!box) return;
+    function fmt(m){var h=Math.floor(m/60),mn=m%60,ap=h<12?'AM':'PM',hh=h%12;if(hh===0)hh=12;return hh+(mn?':'+(mn<10?'0':'')+mn:'')+' '+ap;}
+    box.innerHTML=c.tasks.slice().sort(function(a,b){return a.m-b.m;}).map(function(t){
+      return '<div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-left:3px solid '+t.color+';border-radius:11px">'
+        +'<span style="font-size:16px;line-height:1">'+t.ic+'</span>'
+        +'<span style="flex:1;text-align:left;font-size:14px;color:#EDE5F8;font-family:\'Lora\',serif">'+t.label+'</span>'
+        +'<span style="font-size:12px;color:#B8AECC;font-variant-numeric:tabular-nums">'+fmt(t.m)+'</span></div>';
+    }).join('');
+  };
+  </script>
+
+  <script>
+  // ----- password gate (default password: dayarc — change PW below) -----
+  (function(){ var PW="dayarc";
     var gate=document.getElementById('da-gate'), inp=document.getElementById('da-pass'), err=document.getElementById('da-pass-err');
-    try{ if(localStorage.getItem('dayarc_ok2')==='1') gate.style.display='none'; }catch(e){}
-    function go(){ if(inp.value===PW){ try{localStorage.setItem('dayarc_ok2','1');}catch(e){} gate.style.display='none'; } else { err.textContent='Nope — try again'; inp.value=''; } }
+    try{ if(localStorage.getItem('dayarc_ok')==='1') gate.style.display='none'; }catch(e){}
+    function go(){ if(inp.value===PW){ try{localStorage.setItem('dayarc_ok','1');}catch(e){} gate.style.display='none'; } else { err.textContent='Nope — try again'; inp.value=''; } }
     inp.addEventListener('keydown',function(e){ if(e.key==='Enter') go(); });
     setTimeout(function(){ try{inp.focus();}catch(e){} },120);
   })();
-  </script>
-  <div class="intro">
-    <div class="eyebrow">A living header · example data</div>
-    <h1>The Day Arc</h1>
-    <p>The real path of the sun &amp; moon for the day, over the Front Range, with the day's reminders on their own timeline. Grab the sky and drag to move through time.</p>
-  </div>
-  <div id="day-arc-host"></div>
-  <div class="note">Showing example reminders &amp; a sample forecast. The sun, moon, sunrise/sunset and phase are computed live for the location below.</div>
 
-  <script>
-  // ----- EXAMPLE configuration (edit freely; the app uses its own real data) -----
+  // ----- EXAMPLE configuration (the real app uses its own live data) -----
   window.DAYARC_CONFIG = {
-    host: "day-arc-host",
-    lat: 39.78, lng: -104.75,            // Denver-ish; change to taste
+    appendHost: ".header",
+    lat: 39.78, lng: -104.75,
+    demoMin: 750,
     tasks: [
-      {m: 7*60+30,  ic:"🌅", label:"Wake up",     color:"#F0A820"},
-      {m: 8*60,     ic:"🍳", label:"Breakfast",   color:"#C084FC"},
-      {m: 9*60,     ic:"💻", label:"Deep work",   color:"#38BDF8"},
-      {m: 12*60+30, ic:"🥗", label:"Lunch",       color:"#2DB870"},
-      {m: 15*60,    ic:"🚶", label:"Walk",        color:"#E0915A"},
-      {m: 18*60+30, ic:"🍽️", label:"Dinner",      color:"#C084FC"},
-      {m: 21*60,    ic:"📖", label:"Reading",     color:"#38BDF8"},
-      {m: 22*60+30, ic:"🛏️", label:"Bedtime",     color:"#A78BFA"}
+      {m: 7*60+30,  ic:"🌅", label:"Wake up",   color:"#F0A820"},
+      {m: 8*60,     ic:"🍳", label:"Breakfast", color:"#C084FC"},
+      {m: 9*60,     ic:"💻", label:"Deep work", color:"#38BDF8"},
+      {m: 12*60+30, ic:"🥗", label:"Lunch",     color:"#2DB870"},
+      {m: 15*60,    ic:"🚶", label:"Walk",      color:"#E0915A"},
+      {m: 18*60+30, ic:"🍽️", label:"Dinner",    color:"#C084FC"},
+      {m: 21*60,    ic:"📖", label:"Reading",   color:"#38BDF8"},
+      {m: 22*60+30, ic:"🛏️", label:"Bedtime",   color:"#A78BFA"}
     ],
-    // sample hourly forecast (WMO codes): clear AM -> cumulus -> afternoon storm -> clearing
-    hourly: (function(){ var spec=[[0,0,54],[7,0,58],[10,2,68],[12,2,76],[13,3,80],[15,3,80],[16,95,73],[17,61,69],[19,2,66],[20,0,62],[22,0,57]];
+    hourly: (function(){ var spec=[[0,0,54],[7,0,58],[10,2,66],[12,2,74],[13,2,78],[15,1,80],[16,95,73],[17,61,69],[19,2,66],[20,0,62],[22,0,57]];
       var out=[]; for(var h=0;h<24;h++){ var s=spec[0]; for(var i=0;i<spec.length;i++){ if(spec[i][0]<=h) s=spec[i]; } out[h]={code:s[1],temp:s[2]}; } return out; })()
   };
+  if(window.__buildLegend) window.__buildLegend();
   </script>
-  <script src="dayarc.js?v=3"></script>
+
+  <script src="dayarc.js?v=20260615140832"></script>
 </body>
 </html>
