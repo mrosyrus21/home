@@ -1541,7 +1541,7 @@ function splashBurst(){
     })(); }
   }catch(_e){}
 }
-function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{splashBurst();}catch(_e){} try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
+function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
 function waterUndo(){ habits.water=habits.water||{}; const k=todayKey(); habits.water[k]=Math.max(0,(habits.water[k]||0)-waterServing()); saveHabits(); renderAll(); }
 function waterSetGoal(){ const v=prompt("Your daily water goal, in BOTTLES (1 bottle = 32 oz). It counts ALL fluids — water, tea, coffee, juice. No magic number; ~3 bottles (~96 oz) is a solid daily target:", waterGoal()); const n=parseInt(v,10); if(n>0){ habits.waterGoal=n; saveHabits(); renderAll(); } }
 function waterSetServing(){ const v=prompt("How many bottles per tap? (1 bottle = 32 oz)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
@@ -1825,6 +1825,14 @@ function renderToday() {
         ? strip("🩹","Silicone scar gel — started",true,"#A78BFA","toggleReminder('burnsilicone')","","","Keep it up ~12 hrs/day for 2–3 months + sun protection")
         : reminderCardHtml("🩹","Burn healed & skin fully closed? Start silicone scar gel (ScarAway or bioCorneum) ~12 hrs/day for 2–3 months, plus sun protection.","","toggleReminder('burnsilicone')",""));
     }
+  }
+  // ── 🍳 HEXCLAD PAN — one-off VERY IMPORTANT: clean the burnt-on oil properly (added Jun 14 2026) ──
+  {
+    const hxDone=reminderDone('hexcladclean',false);
+    const hxSub="Pan must be <b>fully cool first</b> — water on hot metal warps it and splatters.<br><b>Inside:</b> wipe out the oil → soak 20–30 min in hot soapy water → scrub gently with a non-scratch nylon pad along the hex lines. Still dark? simmer water + 1–2 tbsp baking soda 5–8 min, cool, then scrub. Stubborn spots: thick baking-soda paste, wait 15–30 min, scrub, rinse. Last resort: a dab of white vinegar to fizz with the soda.<br><b>Outside / heat tint:</b> baking-soda paste 10–20 min then nylon-pad scrub; for blue/brown tint wrap a vinegar-soaked paper towel 15–30 min. Dry right away.<br><b>Never</b> steel wool, oven cleaner, or strong acid — they ruin the finish. Repeat gentle cycles instead of one harsh scrub.";
+    add("hexcladclean",280,hxDone, hxDone
+      ? strip("🍳","HexClad pan — cleaned ✓",true,"#F97316","toggleReminder('hexcladclean',false)","Important","","Nice — burnt oil gone, finish intact.")
+      : strip("🍳","Clean the burnt HexClad pan",false,"#F97316","toggleReminder('hexcladclean',false)","Important","",hxSub));
   }
   // ── 🔍 FLIP SCAN — daily morning deal-hunt card (date-keyed → reappears each day). Links live in FLIP_SCAN (data.js). (added Jun 12 2026) ──
   if(typeof FLIP_SCAN!=='undefined'){
@@ -2111,6 +2119,7 @@ function renderTimeline() {
     REMINDERS.forEach(function(r){ if(r.standing && !reminderDone(r.id,false)){ (tlRem[today]=tlRem[today]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } }); // standing errands surface near-term (today)
   }
   if(typeof FLIP_SCAN!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"🔍",text:"Morning flip scan · ~7:15 AM",account:""}); }
+  if(typeof reminderDone==="function" && !reminderDone('hexcladclean',false)){ (tlRem[today]=tlRem[today]||[]).push({icon:"🍳",text:"Clean the burnt HexClad pan",account:""}); }
   if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
   // 📞 TG Meeting — recurring every Wednesday on the timeline
   if(typeof TG_MEETING!=='undefined'){
@@ -4846,6 +4855,5 @@ curtainInit();
   setTimeout(function(){ try{ mount(); }catch(e){} }, 700);
 })();
 </script>
-
 </body>
 </html>
