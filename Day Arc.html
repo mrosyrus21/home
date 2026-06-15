@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Day Arc — example</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="dayarc.css?v=2">
+<link rel="stylesheet" href="dayarc.css?v=3">
 <style>
   :root{ --rad:14px; --text:#EDE5F8; }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -21,6 +21,21 @@
 </style>
 </head>
 <body>
+  <div id="da-gate" style="position:fixed;inset:0;z-index:9999;background:#06050A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:'Lora',serif">
+    <div style="font-family:'Playfair Display',serif;font-size:24px;color:#FCE7C0">The Day Arc</div>
+    <div style="font-size:12px;color:#A89FB8;font-style:italic">Enter the password to view</div>
+    <input id="da-pass" type="password" placeholder="Password" autocomplete="off" style="background:rgba(255,255,255,.05);border:1px solid #242232;border-radius:10px;padding:10px 14px;color:#EDE5F8;font-family:'Lora',serif;font-size:14px;outline:none;text-align:center;width:200px">
+    <div id="da-pass-err" style="font-size:11px;color:#D95050;height:14px"></div>
+  </div>
+  <script>
+  (function(){ var PW="dayarc";  /* ← change this password */
+    var gate=document.getElementById('da-gate'), inp=document.getElementById('da-pass'), err=document.getElementById('da-pass-err');
+    try{ if(localStorage.getItem('dayarc_ok')==='1') gate.style.display='none'; }catch(e){}
+    function go(){ if(inp.value===PW){ try{localStorage.setItem('dayarc_ok','1');}catch(e){} gate.style.display='none'; } else { err.textContent='Nope — try again'; inp.value=''; } }
+    inp.addEventListener('keydown',function(e){ if(e.key==='Enter') go(); });
+    setTimeout(function(){ try{inp.focus();}catch(e){} },120);
+  })();
+  </script>
   <div class="intro">
     <div class="eyebrow">A living header · example data</div>
     <h1>The Day Arc</h1>
@@ -49,6 +64,6 @@
       var out=[]; for(var h=0;h<24;h++){ var s=spec[0]; for(var i=0;i<spec.length;i++){ if(spec[i][0]<=h) s=spec[i]; } out[h]={code:s[1],temp:s[2]}; } return out; })()
   };
   </script>
-  <script src="dayarc.js?v=2"></script>
+  <script src="dayarc.js?v=3"></script>
 </body>
 </html>

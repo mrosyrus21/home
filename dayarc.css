@@ -9,6 +9,9 @@
 #day-arc .da-wx{text-align:right;text-shadow:0 1px 6px rgba(0,0,0,.85)}
 #day-arc .da-wx .t{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff}
 #day-arc .da-wx .c{font-size:10px;color:rgba(255,255,255,.8)}
+#day-arc .da-fc{display:flex;gap:8px;justify-content:flex-end;margin-top:5px}
+#day-arc .da-fc span{font-size:8px;color:rgba(255,255,255,.66);display:flex;flex-direction:column;align-items:center;gap:1px;text-shadow:0 1px 5px rgba(0,0,0,.85)}
+#day-arc .da-fc span b{font-size:11px;font-weight:400;line-height:1}
 #day-arc svg.da-svg{display:block;width:100%;height:auto;position:relative;z-index:1}
 #day-arc .da-tl{position:relative;z-index:2;height:60px;background:rgba(9,8,14,.72);
   -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);border-top:1px solid rgba(255,255,255,.07);overflow:hidden}

@@ -242,6 +242,12 @@
     root.querySelector(".da-state").textContent=stateText(m);
     var tEl=root.querySelector(".da-wx .t"), cEl=root.querySelector(".da-wx .c");
     if(w.temp!=null){ tEl.textContent=w.temp+"°"; cEl.textContent=wxIc(cond,!day)+" "+wxLab(cond,!day); } else { tEl.textContent=""; cEl.textContent=""; }
+    // forecast strip — next few hours, from the same data the sky uses
+    var fc=root.querySelector(".da-fc");
+    if(fc){ var fhtml="", baseH=Math.floor(m/60);
+      for(var fk=1;fk<=4;fk++){ var fh=baseH+fk; if(fh>23)break; var fm=fh*60; var fw=wxAt(fm); var fnight=(fm<SUN.sunrise||fm>SUN.sunset);
+        var h12=fh%12||12, ap=fh<12?"a":"p"; fhtml+="<span><b>"+wxIc(fw.cond,fnight)+"</b>"+h12+ap+"</span>"; }
+      fc.innerHTML=fhtml; }
     root.querySelector(".da-now-l").textContent=stateText(m);
     root.querySelector(".da-next-l").innerHTML=next?"<b>"+next.ic+" "+next.label+"</b> · "+fmt(next.m):"<b>🌙 Rest</b> · until dawn";
     var dl; if(day){var L=SUN.sunset-m;dl="☀️ "+Math.floor(L/60)+"h "+(Math.round(L%60)<10?"0":"")+Math.round(L%60)+"m of daylight left";}
@@ -257,7 +263,7 @@
     computeAstro(); TASKS=tasks(); userScrub=false;
     var wrap=document.createElement("div"); wrap.id="day-arc";
     wrap.innerHTML='<div class="da-sky"></div>'
-      +'<div class="da-head"><div class="da-state">—</div><div class="da-wx"><div class="t"></div><div class="c"></div></div></div>'
+      +'<div class="da-head"><div class="da-state">—</div><div class="da-wx"><div class="t"></div><div class="c"></div><div class="da-fc"></div></div></div>'
       +'<div class="da-live" id="da_live">● Now</div>';
     var svgHost=document.createElement("div"); wrap.appendChild(svgHost);
     var tl=document.createElement("div"); tl.className="da-tl";
