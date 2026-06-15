@@ -1,0 +1,163 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     🎉 CELEBRATIONS — paste this ENTIRE block once, just before </body>
+     in your live index.html, then deploy.
+
+     • Version-agnostic: it wraps whatever functions already exist, so it will
+       NOT touch your nav bar, watering fix, or anything else. Safe on any build.
+     • Idempotent: if it's already pasted, pasting again does nothing.
+     • Honors prefers-reduced-motion (keeps the kind message, drops particles).
+
+     Delights it adds:
+       💧 tap water        → droplets rise; hit your goal → splash + ring
+       🍽️ log a meal       → on-time sparkle burst / gentle note if late / 🎉 all three
+       🌿 water a plant    → leafy green puff (whole group → bigger)
+       🍅 harvest          → produce pops
+       ✅ check a task      → quick subtle sparkle (kept small — happens a lot)
+       💊 meds & vitamins  → calm green check
+       🔥 streak milestone → flame burst at 7 / 14 / 30 / 50 / 100 days
+       📳 light haptic buzz on every positive tap (phones)
+═══════════════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  if (window.__hgCheerInstalled) return;      // idempotent — safe to paste twice
+  window.__hgCheerInstalled = true;
+
+  var RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ── remember last tap so bursts originate under the finger ──
+  function rec(e){ var p=(e.touches&&e.touches[0])||e; if(p&&p.clientX!=null) window.__hgTap={x:p.clientX,y:p.clientY,t:Date.now()}; }
+  document.addEventListener("pointerdown",rec,true);
+  document.addEventListener("touchstart",rec,true);
+
+  function buzz(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||12); }catch(e){} }
+
+  function style(){
+    if(document.getElementById("hg-cheer-style")) return;
+    var s=document.createElement("style"); s.id="hg-cheer-style";
+    s.textContent=
+      "#hg-cheer{position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:hidden}"
+     +".hg-pt{position:absolute;will-change:transform,opacity;line-height:1;opacity:0;transform:translate(-50%,-50%)}"
+     +"@keyframes hg-rise{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% - 58px)) scale(1)}}"
+     +"@keyframes hg-fly{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}12%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,0px))) scale(var(--s,1)) rotate(var(--r,0deg))}}"
+     +"@keyframes hg-ring{0%{opacity:.6;transform:translate(-50%,-50%) scale(.25)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.9)}}"
+     +"@keyframes hg-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}32%{opacity:1;transform:translate(-50%,-50%) scale(1.28)}68%{transform:translate(-50%,-50%) scale(.94)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.06)}}";
+    document.head.appendChild(s);
+  }
+  function layer(){
+    var el=document.getElementById("hg-cheer");
+    if(!el){ el=document.createElement("div"); el.id="hg-cheer"; document.body.appendChild(el); }
+    return el;
+  }
+  function spawn(x,y,cfg){
+    if(RM) return;
+    style(); var L=layer();
+    if(cfg.ring){
+      var r=document.createElement("div"); var d=cfg.ringSize||96;
+      r.style.cssText="position:absolute;border-radius:50%;left:"+x+"px;top:"+y+"px;width:"+d+"px;height:"+d+"px;border:2px solid "+cfg.color+";box-shadow:0 0 18px "+cfg.color+"88;animation:hg-ring .72s ease-out forwards";
+      L.appendChild(r); setTimeout(function(){ r.remove(); },800);
+    }
+    if(cfg.pop){
+      var p=document.createElement("div"); p.className="hg-pt"; p.textContent=cfg.pop;
+      p.style.cssText="left:"+x+"px;top:"+y+"px;font-size:"+(cfg.popSize||34)+"px;filter:drop-shadow(0 0 9px "+cfg.color+"aa);animation:hg-pop .8s ease-out forwards";
+      L.appendChild(p); setTimeout(function(){ p.remove(); },840);
+    }
+    var n=cfg.count||6;
+    for(var i=0;i<n;i++){
+      var pt=document.createElement("div"); pt.className="hg-pt";
+      pt.textContent=cfg.glyphs[i%cfg.glyphs.length];
+      var sz=(cfg.size||15)+Math.random()*(cfg.sizeVar||9);
+      var dur=(cfg.dur||0.85)+Math.random()*0.45;
+      var st="left:"+x+"px;top:"+y+"px;font-size:"+sz.toFixed(0)+"px;";
+      if(cfg.rise){
+        var dx=(Math.random()-0.5)*(cfg.spread||56);
+        st+="--dx:"+dx.toFixed(0)+"px;animation:hg-rise "+dur.toFixed(2)+"s ease-out forwards;animation-delay:"+(i*0.045).toFixed(2)+"s";
+      } else {
+        var ang=Math.random()*Math.PI*2, rad=(cfg.spread||72)*(0.45+Math.random()*0.55);
+        var fx=Math.cos(ang)*rad, fy=Math.sin(ang)*rad-(cfg.up||0);
+        st+="--dx:"+fx.toFixed(0)+"px;--dy:"+fy.toFixed(0)+"px;--r:"+((Math.random()-0.5)*120).toFixed(0)+"deg;--s:"+(0.7+Math.random()*0.5).toFixed(2)+";animation:hg-fly "+dur.toFixed(2)+"s cubic-bezier(.2,.7,.3,1) forwards;animation-delay:"+(i*0.025).toFixed(2)+"s";
+      }
+      pt.style.cssText+=st; L.appendChild(pt);
+      (function(el,life){ setTimeout(function(){ el.remove(); },life); })(pt,(dur+0.35)*1000+i*45);
+    }
+  }
+  function at(){
+    var t=window.__hgTap;
+    if(t && (Date.now()-t.t)<4000) return {x:t.x,y:t.y};
+    return {x:window.innerWidth/2, y:Math.round(window.innerHeight*0.42)};
+  }
+  function say(msg){ try{ if(typeof toast==="function") toast(msg); }catch(e){} }
+
+  // central celebration dispatcher
+  window.hgCheer = function(kind,o){
+    o=o||{}; var c=at(), x=c.x, y=c.y, me=o.emoji;
+    buzz(kind==="meal-complete"||kind==="water-goal"||kind==="streak" ? [10,40,18] : 12);
+    if(kind==="water")          spawn(x,y,{glyphs:["💧","💧","💦"],count:5,rise:true,spread:54,color:"#38BDF8"});
+    else if(kind==="water-goal"){ spawn(x,y,{glyphs:["💧","💦","✨","💧"],count:14,spread:98,up:30,color:"#38BDF8",ring:true,ringSize:92,pop:"💧",popSize:40}); say("💧 Water goal met — nicely hydrated"); }
+    else if(kind==="meal-ontime"){ spawn(x,y,{glyphs:["✨","🌟",me||"🍽️","✨"],count:11,spread:90,up:24,color:"#F5B830",ring:true,ringSize:86,pop:me||"🍽️",popSize:34}); say("🍽️ Right on time — that's the rhythm"); }
+    else if(kind==="meal-late"){ spawn(x,y,{glyphs:["✨","🌱"],count:5,rise:true,spread:50,color:"#B47C14"}); say("🌱 Logged — every meal counts"); }
+    else if(kind==="meal-complete"){ spawn(x,y,{glyphs:["🎉","✨","🌟",me||"🍽️","💛"],count:18,spread:122,up:42,color:"#F5B830",ring:true,ringSize:112,pop:"🎉",popSize:42}); say("🎉 All three meals today — beautifully done"); }
+    else if(kind==="plant")     spawn(x,y,{glyphs:["🌿","🌱","💧","✨"],count:8,spread:74,up:18,color:"#4ADE80",ring:true,ringSize:78});
+    else if(kind==="plant-all"){ spawn(x,y,{glyphs:["🌿","🌱","💧","✨","🍃"],count:16,spread:116,up:34,color:"#4ADE80",ring:true,ringSize:104,pop:"🌿",popSize:38}); say("🌿 Whole bunch watered — they'll love you"); }
+    else if(kind==="harvest"){ spawn(x,y,{glyphs:["🍅","🥬","🌶️","🫑","✨"],count:13,spread:104,up:30,color:"#F97316",ring:true,ringSize:94,pop:me||"🧺",popSize:38}); say("🧺 Harvested — fruits of your patience"); }
+    else if(kind==="task")      spawn(x,y,{glyphs:["✨","✅"],count:4,spread:46,up:14,color:"#A3E635"});
+    else if(kind==="med")       spawn(x,y,{glyphs:["✨","💊","✅"],count:5,spread:52,up:16,color:"#818CF8"});
+    else if(kind==="streak"){ spawn(x,y,{glyphs:["🔥","✨","🔥","⭐"],count:16,spread:118,up:40,color:"#FB923C",ring:true,ringSize:108,pop:"🔥",popSize:44}); say("🔥 "+(o.days||"")+"-day streak — you're on fire"); }
+  };
+
+  // ── helpers to wrap a global function safely ──
+  function wrap(name, before, after){
+    var fn = window[name];
+    if(typeof fn!=="function") return;
+    window[name] = function(){
+      var ctx={args:arguments}; try{ if(before) before(ctx); }catch(e){}
+      var r = fn.apply(this, arguments);
+      try{ if(after) after(ctx); }catch(e){}
+      return r;
+    };
+  }
+  function key(){ try{ return todayKey(); }catch(e){ return ""; } }
+  function milestone(n){ return n===7||n===14||n===30||n===50||n===100; }
+
+  // 💧 water
+  wrap("waterAdd",
+    function(c){ try{ c.before=waterCount(); }catch(e){ c.before=0; } },
+    function(c){ try{ var a=waterCount(), g=waterGoal(); if(a>c.before) hgCheer(a===g?"water-goal":"water"); }catch(e){} });
+
+  // 🍽️ meals
+  wrap("toggleMeal",
+    function(c){ var m=c.args[0]; c.k="meal-"+m+"-"+key(); c.was=!!laundry[c.k]; c.meal=m; },
+    function(c){ if(!laundry[c.k]||c.was) return;
+      var A=(typeof MEAL_ANCHORS!=="undefined")?MEAL_ANCHORS.find(function(z){return z.id===c.meal;}):null;
+      var now=new Date(), mins=now.getHours()*60+now.getMinutes();
+      var on=(A&&A.winStart!=null&&A.winEnd!=null)?(mins>=A.winStart&&mins<=A.winEnd):true;
+      var done=0; try{ done=mealsEaten(key()); }catch(e){}
+      if(done>=3) hgCheer("meal-complete",{emoji:A&&A.emoji});
+      else if(on) hgCheer("meal-ontime",{emoji:A&&A.emoji});
+      else        hgCheer("meal-late",{emoji:A&&A.emoji}); });
+
+  // 🌿 single plant
+  wrap("waterPlant",
+    function(c){ var id=c.args[0]; c.fresh = !(typeof watered!=="undefined" && watered[id]===key()); },
+    function(c){ if(c.fresh) hgCheer("plant"); });
+
+  // 🌿 plant group
+  wrap("waterPlantGroup", null, function(){ hgCheer("plant-all"); });
+
+  // 🍅 harvest (toggles on/off — celebrate only the "on")
+  wrap("harvestPlant",
+    function(c){ var id=c.args[0]; c.on = !(typeof harvested!=="undefined" && harvested[id]===key()); },
+    function(c){ if(c.on) hgCheer("harvest"); });
+
+  // ✅ generic task check (kept subtle — fires often; only on check, not uncheck)
+  wrap("toggle",
+    function(c){ var id=c.args[0]; c.willOn = !(typeof checked!=="undefined" && checked[id]); },
+    function(c){ if(c.willOn) hgCheer("task"); });
+
+  // 💊 meds & vitamins (+ streak milestone)
+  wrap("toggleWellness",
+    function(c){ c.id=c.args[0]; c.k="well-"+c.id+"-"+key(); c.was=!!laundry[c.k]; },
+    function(c){ if(!laundry[c.k]||c.was) return;
+      var st=0; try{ st=streakOf("well-"+c.id+"-"); }catch(e){}
+      if(milestone(st)) hgCheer("streak",{days:st}); else hgCheer("med"); });
+})();
+</script>

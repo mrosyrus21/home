@@ -1,24 +1,43 @@
-const CACHE='hg-v84';
-const SHELL=['./','./index.html','./recipes.html','./data.js','./recipes.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
-self.addEventListener('install', e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())); });
-self.addEventListener('activate', e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
-self.addEventListener('fetch', e=>{
-  const req=e.request;
-  if(req.method!=='GET') return;
-  const url=new URL(req.url);
-  if(url.origin!==location.origin) return; // never intercept Firebase / fonts / external images
-  const isHTML = req.mode==='navigate' || (req.headers.get('accept')||'').includes('text/html');
-  if(isHTML){
-    e.respondWith(
-      fetch(req).then(r=>{ const cp=r.clone(); caches.open(CACHE).then(c=>c.put('./index.html',cp)); return r; })
-                .catch(()=>caches.match('./index.html').then(m=>m||caches.match('./')))
-    );
-    return;
-  }
-  e.respondWith(
-    caches.match(req).then(cached=>{
-      const net=fetch(req).then(r=>{ if(r&&r.status===200){ const cp=r.clone(); caches.open(CACHE).then(c=>c.put(req,cp)); } return r; }).catch(()=>cached);
-      return cached || net;
-    })
-  );
+// sw.js — network-first service worker.
+// Fixes "deploys don't show up": always fetches the latest from the network when
+// online, caches a copy for offline use, and falls back to cache only when offline.
+const CACHE = 'hg-cache-20260615';
+
+self.addEventListener('install', (e) => {
+  // take over immediately, don't wait for old SW to release
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil((async () => {
+    // wipe every old cache so stale files can't linger
+    const keys = await caches.keys();
+    await Promise.all(keys.map((k) => caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
+
+self.addEventListener('message', (e) => {
+  if (e.data === 'skipWaiting') self.skipWaiting();
+});
+
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET') return; // never cache writes
+  e.respondWith((async () => {
+    try {
+      // network first — always the freshest version when online
+      const fresh = await fetch(req, { cache: 'no-store' });
+      try {
+        const cache = await caches.open(CACHE);
+        cache.put(req, fresh.clone());
+      } catch (_) {}
+      return fresh;
+    } catch (err) {
+      // offline: serve the last good copy if we have one
+      const cached = await caches.match(req);
+      if (cached) return cached;
+      throw err;
+    }
+  })());
 });
