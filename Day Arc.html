@@ -28,10 +28,10 @@
     <div id="da-pass-err" style="font-size:11px;color:#D95050;height:14px"></div>
   </div>
   <script>
-  (function(){ var PW="dayarc";  /* ← change this password */
+  (function(){ var PW="duckquack";  /* ← change this password */
     var gate=document.getElementById('da-gate'), inp=document.getElementById('da-pass'), err=document.getElementById('da-pass-err');
-    try{ if(localStorage.getItem('dayarc_ok')==='1') gate.style.display='none'; }catch(e){}
-    function go(){ if(inp.value===PW){ try{localStorage.setItem('dayarc_ok','1');}catch(e){} gate.style.display='none'; } else { err.textContent='Nope — try again'; inp.value=''; } }
+    try{ if(localStorage.getItem('dayarc_ok2')==='1') gate.style.display='none'; }catch(e){}
+    function go(){ if(inp.value===PW){ try{localStorage.setItem('dayarc_ok2','1');}catch(e){} gate.style.display='none'; } else { err.textContent='Nope — try again'; inp.value=''; } }
     inp.addEventListener('keydown',function(e){ if(e.key==='Enter') go(); });
     setTimeout(function(){ try{inp.focus();}catch(e){} },120);
   })();
