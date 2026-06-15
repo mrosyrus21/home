@@ -103,7 +103,7 @@ body::after{
 .hdr-center{flex:0 1 auto;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:1px}
 .hdr-right{flex:1 1 0;min-width:0;display:flex;justify-content:flex-end}
 .hdr-trackers{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:10px}
-.header-eyebrow{font-size:8px;letter-spacing:.32em;color:rgba(240,180,60,.85);text-transform:uppercase;font-family:'Lora',serif;font-style:italic;margin-bottom:5px;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.header-eyebrow{font-size:8px;letter-spacing:.32em;color:rgba(250,210,130,.98);text-transform:uppercase;font-family:'Lora',serif;font-style:italic;margin-bottom:5px;text-shadow:0 1px 3px rgba(0,0,0,.92),0 0 9px rgba(0,0,0,.6)}
 .header-title{
   font-family:'Playfair Display',serif;font-size:26px;font-weight:700;letter-spacing:-.02em;
   background:linear-gradient(130deg,#F5B830 0%,#F0C050 45%,#E07828 100%);
@@ -113,9 +113,28 @@ body::after{
 }
 /* Ring stat on the right */
 .header-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right}
-.hdr-greeting{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,144,10,.75);font-family:'Lora',serif;font-style:italic}
+.hdr-greeting{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(248,206,120,.98);font-family:'Lora',serif;font-style:italic;text-shadow:0 1px 3px rgba(0,0,0,.92),0 0 9px rgba(0,0,0,.6)}
 .hdr-clock{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--amber2);line-height:1.05;text-shadow:0 0 16px rgba(212,144,10,.45)}
-.hdr-date{display:inline-block;font-size:9.5px;color:#d3cde0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:3px 10px;margin-top:5px;font-family:'Lora',serif;letter-spacing:.05em}
+/* black glow on ALL header text for legibility over the sky */
+.header, .header *{ text-shadow:0 0 3px rgba(0,0,0,.95), 0 0 7px rgba(0,0,0,.85), 0 1px 2px rgba(0,0,0,1) !important; }
+/* ...but NOT the clock or the emoji glyphs */
+.hdr-clock{ text-shadow:0 0 16px rgba(212,144,10,.5) !important; }
+.wx-ic{ text-shadow:none !important; }
+.garden-tracker{ text-shadow:0 0 8px rgba(34,211,238,.5) !important; }
+.garden-tracker.trim{ text-shadow:0 0 8px rgba(192,132,252,.45) !important; }
+.garden-tracker.harvest{ text-shadow:0 0 8px rgba(74,222,128,.45) !important; }
+/* deploy timestamp moved to bottom-right corner, clear of the sun & moon */
+/* deploy timestamp moved to bottom of page (see script) */
+.header-eyebrow{ position:absolute !important; top:2px; left:50%; right:auto; transform:translateX(-50%); margin:0 !important; z-index:4; font-size:7.5px !important; }
+/* footer line incl. "Go to NOW" + its arrow: no black glow (sits on the dark bar) */
+#day-arc .da-foot, #day-arc .da-foot *{ text-shadow:none !important; }
+/* deploy timestamp lives at the very bottom of the page, not over the sky */
+.eyebrow-bottom{ position:static !important; transform:none !important; display:block; text-align:center; padding:20px 0 30px; font-size:8px !important; letter-spacing:.28em; color:rgba(150,140,170,.6) !important; }
+/* water / harvest / trim trackers relocated to their own strip below the header */
+.trackers-strip{ display:flex !important; gap:22px; justify-content:center; align-items:center; flex-wrap:wrap; margin:0 !important; padding:11px 16px; background:#0a0810; border-bottom:1px solid rgba(255,255,255,.06); }
+.trackers-strip .garden-tracker{ margin-top:0 !important; font-size:12px; }
+@media (max-width:560px){ .hdr-fact{ display:none !important; } }
+.hdr-date{display:inline-block;font-size:9.5px;color:#F0ECF8;background:none;border:none;border-radius:12px;padding:2px 0;margin-top:5px;font-family:'Lora',serif;letter-spacing:.05em}
 .stat-ring-wrap{position:relative;width:64px;height:64px}
 .stat-ring-wrap svg{transform:rotate(-90deg)}
 .stat-ring-bg{fill:none;stroke:rgba(255,255,255,.05);stroke-width:5}
@@ -129,12 +148,12 @@ body::after{
 .garden-tracker{font-size:11px;font-family:'Lora',serif;letter-spacing:.04em;color:var(--teal);text-shadow:0 0 8px rgba(34,211,238,.5);white-space:nowrap}
 .garden-tracker.trim{color:#c084fc;text-shadow:0 0 8px rgba(192,132,252,.4)}
 .garden-tracker.harvest{color:#4ADE80;text-shadow:0 0 8px rgba(74,222,128,.45)}
-.hdr-weather{font-family:'Lora',serif;text-align:right;line-height:1.46;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:9px 13px}
+.hdr-weather{font-family:'Lora',serif;text-align:right;line-height:1.46;background:none;border:none;border-radius:14px;padding:0}
 .wx-now{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#F3F1FA;text-shadow:0 0 14px rgba(34,211,238,.3);line-height:1.1}
 .wx-now .wx-ic{font-size:17px;margin-right:3px}
-.wx-row{font-size:11.5px;color:#d3cde0;letter-spacing:.02em;text-shadow:0 1px 4px rgba(0,0,0,.85);white-space:nowrap}
-.wx-tom{font-size:11px;color:#8fb6da;margin-top:3px;text-shadow:0 1px 4px rgba(0,0,0,.85);white-space:nowrap}
-.hdr-fact{font-size:10.5px;color:#bdb7cc;font-family:'Lora',serif;font-style:italic;line-height:1.45;margin-top:9px;max-width:220px;text-shadow:0 1px 4px rgba(0,0,0,.85)}
+.wx-row{font-size:11.5px;color:#ECE7F4;letter-spacing:.02em;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap}
+.wx-tom{font-size:11px;color:#BBD6F2;margin-top:3px;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap}
+.hdr-fact{position:absolute;top:44px;left:50%;transform:translateX(-50%);width:calc(100% - 280px);min-width:240px;max-width:300px;text-align:center;font-size:10px;color:#F4F0FA;font-weight:500;font-family:'Lora',serif;font-style:italic;line-height:1.38;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.65)}
 .agenda-h{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber2);font-family:'Lora',serif;margin:16px 2px 9px;opacity:.85;border-bottom:1px solid var(--border);padding-bottom:6px}
 .day-note{background:rgba(212,144,10,.09);border:1px solid var(--aborder);border-left:4px solid var(--amber2);border-radius:10px;padding:11px 14px;margin:8px 0 14px;font-size:13px;color:var(--amber2);font-family:'Lora',serif;font-style:italic;line-height:1.5}
 .plan-head{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text);background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:9px;margin:4px 0 0}
@@ -146,9 +165,9 @@ body::after{
 /* Progress bars */
 .progress-wrap{position:relative;z-index:1;padding:12px 18px 0}
 .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
-.progress-row-label{font-size:9px;color:var(--text2);font-family:'Lora',serif;letter-spacing:.08em;text-transform:uppercase;width:46px;flex-shrink:0}
-.progress-bar{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden;position:relative}
-.progress-bar-pct{font-size:9px;font-family:'Playfair Display',serif;font-weight:700;width:30px;text-align:right;flex-shrink:0}
+.progress-row-label{font-size:9px;color:rgba(255,255,255,.85);font-family:'Lora',serif;letter-spacing:.08em;text-transform:uppercase;width:46px;flex-shrink:0;text-shadow:0 1px 3px rgba(0,0,0,.9)}
+.progress-bar{flex:1;height:5px;background:rgba(0,0,0,.35);border-radius:6px;overflow:hidden;position:relative}
+.progress-bar-pct{font-size:9px;font-family:'Playfair Display',serif;font-weight:700;width:30px;text-align:right;flex-shrink:0;text-shadow:0 1px 3px rgba(0,0,0,.9)}
 .progress-fill{
   height:100%;
   background:linear-gradient(90deg,#B87010,#F0A820,#E87030);
@@ -548,7 +567,7 @@ body::after{
      with 3-digit temps/long wx rows it overflowed and shoved the greeting column into a wrap/overlap mess */
   .hdr-right{flex:0 1 auto;min-width:0}
   .hdr-clock{font-size:30px}
-  .hdr-fact{max-width:170px;font-size:10px;margin-top:7px}
+  .hdr-fact{max-width:170px;font-size:10px;margin-top:34px}
   .hdr-weather{padding:7px 10px;max-width:100%}
   .wx-now{font-size:19px}
   .wx-row{font-size:10.5px}
@@ -767,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260614232005"></script>
+<script src="./data.js?v=20260615091721"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -779,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 14 · 11:20 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 15 · 9:17 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1541,7 +1560,7 @@ function splashBurst(){
     })(); }
   }catch(_e){}
 }
-function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
+function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{splashBurst();}catch(_e){} try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
 function waterUndo(){ habits.water=habits.water||{}; const k=todayKey(); habits.water[k]=Math.max(0,(habits.water[k]||0)-waterServing()); saveHabits(); renderAll(); }
 function waterSetGoal(){ const v=prompt("Your daily water goal, in BOTTLES (1 bottle = 32 oz). It counts ALL fluids — water, tea, coffee, juice. No magic number; ~3 bottles (~96 oz) is a solid daily target:", waterGoal()); const n=parseInt(v,10); if(n>0){ habits.waterGoal=n; saveHabits(); renderAll(); } }
 function waterSetServing(){ const v=prompt("How many bottles per tap? (1 bottle = 32 oz)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
@@ -1825,14 +1844,6 @@ function renderToday() {
         ? strip("🩹","Silicone scar gel — started",true,"#A78BFA","toggleReminder('burnsilicone')","","","Keep it up ~12 hrs/day for 2–3 months + sun protection")
         : reminderCardHtml("🩹","Burn healed & skin fully closed? Start silicone scar gel (ScarAway or bioCorneum) ~12 hrs/day for 2–3 months, plus sun protection.","","toggleReminder('burnsilicone')",""));
     }
-  }
-  // ── 🍳 HEXCLAD PAN — one-off VERY IMPORTANT: clean the burnt-on oil properly (added Jun 14 2026) ──
-  {
-    const hxDone=reminderDone('hexcladclean',false);
-    const hxSub="Pan must be <b>fully cool first</b> — water on hot metal warps it and splatters.<br><b>Inside:</b> wipe out the oil → soak 20–30 min in hot soapy water → scrub gently with a non-scratch nylon pad along the hex lines. Still dark? simmer water + 1–2 tbsp baking soda 5–8 min, cool, then scrub. Stubborn spots: thick baking-soda paste, wait 15–30 min, scrub, rinse. Last resort: a dab of white vinegar to fizz with the soda.<br><b>Outside / heat tint:</b> baking-soda paste 10–20 min then nylon-pad scrub; for blue/brown tint wrap a vinegar-soaked paper towel 15–30 min. Dry right away.<br><b>Never</b> steel wool, oven cleaner, or strong acid — they ruin the finish. Repeat gentle cycles instead of one harsh scrub.";
-    add("hexcladclean",280,hxDone, hxDone
-      ? strip("🍳","HexClad pan — cleaned ✓",true,"#F97316","toggleReminder('hexcladclean',false)","Important","","Nice — burnt oil gone, finish intact.")
-      : strip("🍳","Clean the burnt HexClad pan",false,"#F97316","toggleReminder('hexcladclean',false)","Important","",hxSub));
   }
   // ── 🔍 FLIP SCAN — daily morning deal-hunt card (date-keyed → reappears each day). Links live in FLIP_SCAN (data.js). (added Jun 12 2026) ──
   if(typeof FLIP_SCAN!=='undefined'){
@@ -2119,7 +2130,6 @@ function renderTimeline() {
     REMINDERS.forEach(function(r){ if(r.standing && !reminderDone(r.id,false)){ (tlRem[today]=tlRem[today]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } }); // standing errands surface near-term (today)
   }
   if(typeof FLIP_SCAN!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"🔍",text:"Morning flip scan · ~7:15 AM",account:""}); }
-  if(typeof reminderDone==="function" && !reminderDone('hexcladclean',false)){ (tlRem[today]=tlRem[today]||[]).push({icon:"🍳",text:"Clean the burnt HexClad pan",account:""}); }
   if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
   // 📞 TG Meeting — recurring every Wednesday on the timeline
   if(typeof TG_MEETING!=='undefined'){
@@ -4332,7 +4342,7 @@ updateClock();
 setInterval(updateClock,30000);
 curtainInit();
 </script>
-<script>if('serviceWorker' in navigator){
+<script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
@@ -4490,9 +4500,11 @@ curtainInit();
   /* Day Arc = the header's living background (sky behind clock + weather) */
   .header{position:relative;overflow:hidden}
   .header-aurora{display:none}
+  .header .header-bg::after{display:none !important}
+  .header .header-bg::before{display:none !important}
   .header .header-bg{
     position:absolute;left:0;right:0;top:0;bottom:94px;z-index:1;
-    background:linear-gradient(180deg, rgba(6,5,10,.84) 0%, rgba(6,5,10,.5) 24%, rgba(6,5,10,.14) 52%, rgba(6,5,10,.4) 100%) !important;
+    background:none !important;
   }
   .header-inner, .progress-wrap{position:relative;z-index:2}
   .header #day-arc.da-inheader{position:static;display:block;border:none;border-radius:0;margin:0;box-shadow:none;cursor:grab}
@@ -4521,13 +4533,13 @@ curtainInit();
 #day-arc .da-fc span{font-size:8px;color:rgba(255,255,255,.66);display:flex;flex-direction:column;align-items:center;gap:1px;text-shadow:0 1px 5px rgba(0,0,0,.85)}
 #day-arc .da-fc span b{font-size:11px;font-weight:400;line-height:1}
 #day-arc svg.da-svg{display:block;width:100%;height:auto;position:relative;z-index:1}
-#day-arc .da-tl{position:relative;z-index:2;height:60px;background:rgba(9,8,14,.72);
+#day-arc .da-tl{position:relative;z-index:2;height:60px;background:rgba(7,6,11,.9);
   -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);border-top:1px solid rgba(255,255,255,.07);overflow:hidden}
 #day-arc .da-tl-track{position:absolute;left:18px;right:18px;top:30px;height:2px;border-radius:2px;background:rgba(255,255,255,.1)}
 #day-arc .da-tl-fill{position:absolute;left:18px;top:30px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(224,121,90,.7),#F5B830);box-shadow:0 0 6px rgba(245,184,48,.5)}
 #day-arc .da-tl-span{position:absolute;left:18px;right:18px;top:0;bottom:0}
 #day-arc .da-seg{position:absolute;top:0;bottom:0;border-right:1px solid rgba(255,255,255,.04)}
-#day-arc .da-seg span{position:absolute;top:5px;left:7px;font-size:7px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.26);font-family:'Lora',serif}
+#day-arc .da-seg span{position:absolute;top:5px;left:7px;font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.68);font-family:'Lora',serif;text-shadow:0 1px 3px rgba(0,0,0,.8)}
 #day-arc .da-mk{position:absolute;top:30px;transform:translateX(-50%);cursor:pointer;width:0;height:0}
 #day-arc .da-mk .ic{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);font-size:13px;line-height:1;transition:.2s}
 #day-arc .da-mk .dot{position:absolute;left:50%;top:0;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#0F0E14;border:2px solid var(--mc,#888);transition:.2s}
@@ -4536,19 +4548,17 @@ curtainInit();
 #day-arc .da-mk.next .dot{box-shadow:0 0 0 3px rgba(240,168,32,.16),0 0 7px var(--mc)}
 #day-arc .da-tl-next{position:absolute;top:44px;transform:translateX(-50%);white-space:nowrap;font-size:9px;color:#FCE7C0;
   background:rgba(240,168,32,.12);border:1px solid rgba(240,168,32,.3);border-radius:20px;padding:2px 8px;pointer-events:none}
-#day-arc .da-tl-now{position:absolute;top:0;bottom:0;width:0;transform:translateX(-50%);z-index:4}
-#day-arc .da-tl-now::before{content:'';position:absolute;top:11px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:7px solid #F0A820;filter:drop-shadow(0 0 4px rgba(240,168,32,.85))}
-#day-arc .da-anchor{position:absolute;top:7px;font-size:7px;letter-spacing:.06em;color:rgba(255,255,255,.3);font-family:'Lora',serif}
+#day-arc .da-tl-now{display:none}
+#day-arc .da-anchor{position:absolute;top:7px;font-size:8px;letter-spacing:.06em;color:rgba(255,255,255,.82);font-family:'Lora',serif;text-shadow:0 1px 3px rgba(0,0,0,.85)}
 #day-arc .da-anchor.l{left:5px}#day-arc .da-anchor.r{right:5px}
 #day-arc .da-foot{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:8px;
   padding:8px 15px 9px;background:rgba(8,7,14,.92);border-top:1px solid rgba(255,255,255,.05);font-family:'Lora',serif}
 #day-arc .da-now-l{font-size:11.5px;color:var(--text,#EDE5F8);font-weight:600;white-space:nowrap}
-#day-arc .da-day-l{flex:1;text-align:center;font-size:9.5px;color:rgba(255,255,255,.6);white-space:nowrap}
+#day-arc .da-day-l{flex:1;text-align:center;font-size:10px;color:rgba(255,255,255,.82);white-space:nowrap}
 #day-arc .da-next-l{font-size:11px;color:#38BDF8;text-align:right;white-space:nowrap;max-width:42%;overflow:hidden;text-overflow:ellipsis}
 #day-arc .da-next-l b{font-weight:600}
-#day-arc .da-live{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:5;display:none;
-  font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#F0A820;background:rgba(8,7,14,.85);
-  border:1px solid rgba(240,168,32,.5);border-radius:20px;padding:3px 11px;cursor:pointer;font-family:'Lora',serif;pointer-events:auto}
+#day-arc .da-live{display:none}
+#day-arc .da-day-l.da-gonow{color:#241500;background:linear-gradient(135deg,#F5B830,#E0792A);font-weight:700;border-radius:20px;padding:3px 12px;cursor:pointer;text-transform:uppercase;letter-spacing:.08em;box-shadow:0 3px 12px -4px rgba(240,168,32,.8)}
 @media (prefers-reduced-motion: reduce){ #day-arc .da-anim{display:none} }
 </style>
 <script>
@@ -4629,13 +4639,15 @@ curtainInit();
   function wxLab(cond,night){ return cond==="rain"?"Storm":cond==="cloudy"?"Overcast":cond==="partly"?"Partly cloudy":night?"Clear":"Clear"; }
 
   // geometry
-  function sx(az){ var f=(az-SUN.azRise)/(SUN.azSet-SUN.azRise); return PADL+(VW-PADL-PADR)*Math.max(-0.04,Math.min(1.04,f)); }
+  // shared compass mapping (E~left → S~center → W~right) so the sun AND moon each sit at their
+  // true sky position and visibly diverge whenever they aren't on the same path.
+  function sx(az){ var f=(az-45)/(315-45); return PADL+(VW-PADL-PADR)*Math.max(-0.03,Math.min(1.03,f)); }
   function sy(elev){ return HOR-(Math.max(0,elev)/ELEV_REF)*(HOR-TOP); }
   function nightFactor(m){var a=SUN.sunrise-40,b=SUN.sunrise+25,c=SUN.sunset-25,d=SUN.sunset+45;if(m<a||m>d)return 1;if(m>b&&m<c)return 0;if(m>=a&&m<=b)return (b-m)/(b-a);return (m-c)/(d-c);}
-  function skyFor(m){var dA=SUN.sunrise-55,dB=SUN.sunrise+70,kA=SUN.sunset-75,kB=SUN.sunset+55;
-    if(m<dA||m>kB)return ["#070A18","#11173A"]; if(m<dB)return ["#241B3A","#E89066"];
-    if(m/60<11)return ["#0F2348","#5A8FC0"]; if(m/60<15)return ["#11305A","#6AA6D6"];
-    if(m<kA)return ["#163358","#B98A66"]; if(m<SUN.sunset)return ["#3A2A4E","#E8855A"]; return ["#1A1C3C","#7A4A58"];}
+  function skyFor(m){var dA=SUN.sunrise-50,dB=SUN.sunrise+22,kA=SUN.sunset-75,kB=SUN.sunset+55;
+    if(m<dA||m>kB)return ["#161F42","#2E3E68"]; if(m<dB)return ["#7C5E92","#E8A77E"];
+    if(m/60<11)return ["#3E6FA8","#9AC2E2"]; if(m/60<15)return ["#3A6FAE","#A0CAE6"];
+    if(m<kA)return ["#4A6E9E","#D8C49E"]; if(m<SUN.sunset)return ["#6E4E78","#E8997A"]; return ["#36406E","#9E7E86"];}
   function fmt(m){m=((m%1440)+1440)%1440;var h=Math.floor(m/60),mn=Math.floor(m%60),ap=h<12?"AM":"PM",hh=h%12;if(hh===0)hh=12;return hh+":"+(mn<10?"0":"")+mn+" "+ap;}
   function stateText(m){var h=m/60;if(m<SUN.sunrise)return "Before sunrise";if(h<9)return "Early";if(h<12)return "Mid-morning";if(h<14)return "Midday";if(h<17)return "Afternoon";if(m<SUN.sunset)return "Golden hour";if(h<22)return "Evening";return "Late";}
 
@@ -4650,7 +4662,7 @@ curtainInit();
 
   var svg,stars=[];
   function buildSvg(host){
-    svg=add("svg",{"class":"da-svg",viewBox:"0 0 "+VW+" "+VH,preserveAspectRatio:"xMidYMax slice","aria-hidden":"true"},host);
+    svg=add("svg",{"class":"da-svg",viewBox:"0 0 "+VW+" "+VH,preserveAspectRatio:"none","aria-hidden":"true"},host);
     var defs=add("defs",null,svg);
     defs.innerHTML='<linearGradient id="da_trail" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E0795A"/><stop offset=".5" stop-color="#F5B830"/><stop offset="1" stop-color="#FCE3A6"/></linearGradient>'
       +'<radialGradient id="da_sun"><stop offset="0" stop-color="#FFFBEA"/><stop offset=".45" stop-color="#FBC55A"/><stop offset="1" stop-color="#F0A820"/></radialGradient>'
@@ -4729,7 +4741,6 @@ curtainInit();
       mk.innerHTML='<span class="ic">'+t.ic+'</span><span class="dot"></span>';
       mk.addEventListener("click",function(ev){ ev.stopPropagation(); jumpTo(t.find); });
       span.appendChild(mk); });
-    var nx=document.createElement("div"); nx.className="da-tl-next"; nx.id="da_next"; span.appendChild(nx);
     var nl=document.createElement("div"); nl.className="da-tl-now"; nl.id="da_now"; span.appendChild(nl);
   }
 
@@ -4740,7 +4751,7 @@ curtainInit();
   var $=function(id){return document.getElementById(id);};
   var userScrub=false, scrubM=0;
   function liveMin(){ var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60; }
-  function curM(){ return userScrub?scrubM:liveMin(); }
+  function curM(){ if(userScrub) return scrubM; if(DACFG.demoMin!=null) return DACFG.demoMin; return liveMin(); }
 
   function update(){
     var root=$("day-arc"); if(!root||!svg)return;
@@ -4750,16 +4761,19 @@ curtainInit();
     if(cond==="rain") bg="linear-gradient(rgba(18,24,40,.46),rgba(18,24,40,.46)), "+bg;
     else if(cond==="cloudy") bg="linear-gradient(rgba(120,128,142,.24),rgba(86,92,108,.2)), "+bg;
     root.querySelector(".da-sky").style.background=bg;
+    // CRITICAL: when embedded in the app header, the header's own dark gradient paints over .da-sky.
+    // Paint the sky straight onto the header element so it's always the visible background.
+    if(root.classList.contains("da-inheader") && root.parentElement){ root.parentElement.style.setProperty("background", bg, "important"); }
 
     if($("da_stars")) $("da_stars").setAttribute("opacity",nf.toFixed(2));
     if($("da_clouds")) $("da_clouds").setAttribute("opacity",((cond==="clear"?0:cond==="partly"?.55:cond==="cloudy"?.95:.85)*(1-nf*.45)).toFixed(2));
     if($("da_rain")) $("da_rain").setAttribute("opacity",cond==="rain"?"1":"0");
     if($("da_rback")){ var dk=nf;
-      $("da_rfar").setAttribute("fill",dk>.5?"#232B47":"#46557A");
-      $("da_rback").setAttribute("fill",dk>.5?"#1B2236":"#39476A");
-      $("da_rmid").setAttribute("fill",dk>.5?"#141A2C":"#27314C");
-      $("da_rfront").setAttribute("fill",dk>.5?"#080B14":"#121828");
-      if($("da_snow"))$("da_snow").setAttribute("fill",dk>.5?"#9DAECF":"url(#da_snow)");
+      $("da_rfar").setAttribute("fill",dk>.5?"#4A5688":"#93A3CE");
+      $("da_rback").setAttribute("fill",dk>.5?"#3E4B78":"#8092C2");
+      $("da_rmid").setAttribute("fill",dk>.5?"#323D62":"#6678A6");
+      $("da_rfront").setAttribute("fill",dk>.5?"#222B4A":"#4A5A86");
+      if($("da_snow"))$("da_snow").setAttribute("fill",dk>.5?"#D2DCEE":"url(#da_snow)");
       if($("da_hazeb"))$("da_hazeb").setAttribute("opacity",dk>.5?".22":".55");
       var ag=day?Math.max(0,1-Math.abs(sp.elev)/11):0; if($("da_alpen"))$("da_alpen").setAttribute("opacity",(ag*.8).toFixed(2));
     }
@@ -4790,7 +4804,7 @@ curtainInit();
     var next=null; for(var ti=0;ti<TASKS.length;ti++){ if(TASKS[ti].m>m){next=TASKS[ti];break;} }
     var mks=root.querySelectorAll(".da-mk"); for(var mi=0;mi<mks.length;mi++){ var em=+mks[mi].dataset.m; mks[mi].classList.toggle("past",em<=m); mks[mi].classList.toggle("next",!!next&&em===next.m); }
     var nx=$("da_next");
-    if(next){ nx.style.display="block"; var np=pct(next.m); nx.style.left=np+"%"; nx.style.transform=np>80?"translateX(-100%)":np<14?"translateX(0)":"translateX(-50%)"; nx.style.marginLeft=np>80?"10px":np<14?"-10px":"0"; nx.innerHTML=next.ic+" "+next.label+" · "+fmt(next.m).replace(":00",""); } else nx.style.display="none";
+    if(nx){ if(next){ nx.style.display="block"; var np=pct(next.m); nx.style.left=np+"%"; nx.style.transform=np>80?"translateX(-100%)":np<14?"translateX(0)":"translateX(-50%)"; nx.style.marginLeft=np>80?"10px":np<14?"-10px":"0"; nx.innerHTML=next.ic+" "+next.label+" · "+fmt(next.m).replace(":00",""); } else nx.style.display="none"; }
 
     // overlay + foot
     var stEl=root.querySelector(".da-state"); if(stEl) stEl.textContent=stateText(m);
@@ -4807,8 +4821,9 @@ curtainInit();
     var dl; if(day){var L=SUN.sunset-m;dl="☀️ "+Math.floor(L/60)+"h "+(Math.round(L%60)<10?"0":"")+Math.round(L%60)+"m of daylight left";}
     else if(m<SUN.sunrise){var U=SUN.sunrise-m;dl="☾ sunrise in "+Math.floor(U/60)+"h "+(Math.round(U%60)<10?"0":"")+Math.round(U%60)+"m";}
     else dl="🌙 "+mp.name+" · "+Math.round(mp.illum*100)+"% lit";
-    root.querySelector(".da-day-l").textContent=dl;
-    var live=$("da_live"); if(live) live.style.display=userScrub?"block":"none";
+    var dEl=root.querySelector(".da-day-l");
+    if(userScrub){ dEl.innerHTML="↩ Go to NOW"; dEl.classList.add("da-gonow"); }
+    else { dEl.textContent=dl; dEl.classList.remove("da-gonow"); }
   }
 
   function mount(){
@@ -4819,7 +4834,7 @@ curtainInit();
     var wrap=document.createElement("div"); wrap.id="day-arc"; if(append) wrap.className="da-inheader";
     wrap.innerHTML='<div class="da-sky"></div>'
       +(append?'':'<div class="da-head"><div class="da-state">—</div><div class="da-wx"><div class="t"></div><div class="c"></div><div class="da-fc"></div></div></div>')
-      +'<div class="da-live" id="da_live">● Now</div>';
+      +'';
     var svgHost=document.createElement("div"); svgHost.className="da-svgwrap"; wrap.appendChild(svgHost);
     var tl=document.createElement("div"); tl.className="da-tl";
     tl.innerHTML='<div class="da-tl-track"></div><div class="da-tl-fill" id="da_fill"></div><div class="da-tl-span" id="da_span"></div><span class="da-anchor l">5 AM</span><span class="da-anchor r">11:30 PM</span>';
@@ -4835,7 +4850,7 @@ curtainInit();
 
   function wireInput(wrap, tl){
     var dragging=false, sX=0, sM=0;
-    wrap.addEventListener("pointerdown",function(e){ if(e.target.closest(".da-mk")||e.target.closest(".da-live"))return; dragging=true; sX=e.clientX; sM=curM(); wrap.classList.add("grabbing"); try{wrap.setPointerCapture(e.pointerId);}catch(_){ } });
+    wrap.addEventListener("pointerdown",function(e){ if(e.target.closest(".da-mk")||e.target.closest(".da-live")||e.target.closest(".da-foot")||e.target.closest(".da-tl"))return; dragging=true; sX=e.clientX; sM=curM(); wrap.classList.add("grabbing"); try{wrap.setPointerCapture(e.pointerId);}catch(_){ } });
     wrap.addEventListener("pointermove",function(e){ if(!dragging)return; var W=wrap.clientWidth||640; var dt=(e.clientX-sX)/W*1440; userScrub=true; scrubM=Math.max(0,Math.min(1439,sM+dt)); update(); });
     function end(){ dragging=false; wrap.classList.remove("grabbing"); }
     wrap.addEventListener("pointerup",end); wrap.addEventListener("pointercancel",end);
@@ -4845,7 +4860,7 @@ curtainInit();
     tl.addEventListener("pointermove",function(e){ if(tld) seekTl(e.clientX); });
     tl.addEventListener("pointerup",function(){ tld=false; });
     tl.addEventListener("pointercancel",function(){ tld=false; });
-    var live=document.getElementById("da_live"); if(live) live.addEventListener("click",function(e){ e.stopPropagation(); userScrub=false; update(); });
+    var dEl2=wrap.querySelector(".da-day-l"); if(dEl2) dEl2.addEventListener("click",function(e){ if(!userScrub)return; e.stopPropagation(); userScrub=false; update(); });
   }
 
   // re-mount after every Today render; keep the sun moving; reset to live on tab change
@@ -4855,5 +4870,10 @@ curtainInit();
   setTimeout(function(){ try{ mount(); }catch(e){} }, 700);
 })();
 </script>
+<script>(function(){ function relocate(){ try{ var c=document.querySelector('.content'); if(!c) return;
+  var eb=document.getElementById('app-eyebrow'); if(eb&&eb.parentElement!==c){ eb.classList.add('eyebrow-bottom'); c.appendChild(eb); }
+  var tr=document.querySelector('.hdr-trackers'); if(tr&&tr.parentElement!==c){ tr.classList.add('trackers-strip'); c.insertBefore(tr, c.firstChild); }
+ }catch(e){} } relocate(); setTimeout(relocate,500); setTimeout(relocate,1500); })();</script>
+
 </body>
 </html>
