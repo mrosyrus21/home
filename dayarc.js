@@ -96,7 +96,7 @@
   function rangePath(pts){ var d="", n=pts.length, tiles=[-3,-2,-1,0,1,2,3];
     var x0=(-3)*VW+pts[0][0], y0=HOR-pts[0][1];
     d="M "+x0+" "+VH+" L "+x0+" "+y0;
-    tiles.forEach(function(t){ var off=t*VW; for(var i=0;i<n;i++){ d+=" L "+(pts[i][0]+off)+" "+(HOR-pts[i][1]); } });
+    tiles.forEach(function(t,ti){ var off=t*VW; for(var i=(ti>0?1:0);i<n;i++){ d+=" L "+(pts[i][0]+off)+" "+(HOR-pts[i][1]); } });
     var xe=3*VW+pts[n-1][0];
     d+=" L "+xe+" "+VH+" Z"; return d; }
   function pct(m){ return Math.max(0,Math.min(100,((m-TL_A)/(TL_B-TL_A))*100)); }
