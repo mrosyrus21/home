@@ -93,7 +93,7 @@
   var RIDGE_FAR=[[0,26],[60,34],[120,28],[180,40],[240,30],[300,42],[360,32],[420,44],[480,30],[540,40],[600,30],[640,34]];
 
   function add(tag,attrs,parent){ var n=document.createElementNS(SVGNS,tag); if(attrs)for(var k in attrs)n.setAttribute(k,attrs[k]); (parent).appendChild(n); return n; }
-  function rangePath(pts){ var d="M 0 "+VH+" L 0 "+(HOR-pts[0][1]); for(var i=0;i<pts.length;i++)d+=" L "+pts[i][0]+" "+(HOR-pts[i][1]); d+=" L "+VW+" "+VH+" Z"; return d; }
+  function rangePath(pts){ var EXT=VW, lp=pts[pts.length-1][1]; var d="M "+(-EXT)+" "+VH+" L "+(-EXT)+" "+(HOR-pts[0][1])+" L 0 "+(HOR-pts[0][1]); for(var i=0;i<pts.length;i++)d+=" L "+pts[i][0]+" "+(HOR-pts[i][1]); d+=" L "+VW+" "+(HOR-lp)+" L "+(VW+EXT)+" "+(HOR-lp)+" L "+(VW+EXT)+" "+VH+" Z"; return d; }
   function pct(m){ return Math.max(0,Math.min(100,((m-TL_A)/(TL_B-TL_A))*100)); }
 
   var svg,stars=[];
@@ -142,12 +142,12 @@
     var cb=add("clipPath",{id:"da_clipB"},defs); add("path",{d:rangePath(RIDGE_BACK)},cb);
     var sd="M 0 0 L "+VW+" 0"; for(var sxp=VW;sxp>=0;sxp-=14){ sd+=" L "+sxp+" "+(HOR-(40+9*Math.sin(sxp*0.045)+5*Math.sin(sxp*0.11+2))).toFixed(1); } sd+=" Z";
     add("path",{id:"da_snow",d:sd,fill:"url(#da_snow)","clip-path":"url(#da_clipB)"},svg);
-    add("rect",{id:"da_alpen",x:0,y:0,width:VW,height:Math.max(0,HOR-38),fill:"url(#da_alpen)","clip-path":"url(#da_clipB)",opacity:"0"},svg);
+    add("rect",{id:"da_alpen",x:-VW,y:0,width:VW*3,height:Math.max(0,HOR-38),fill:"url(#da_alpen)","clip-path":"url(#da_clipB)",opacity:"0"},svg);
     add("path",{id:"da_rmid",d:rangePath(RIDGE_MID),fill:"#27314C"},svg);
-    add("rect",{id:"da_hazeb",x:0,y:HOR-26,width:VW,height:26,fill:"url(#da_haze)",opacity:".55"},svg);
+    add("rect",{id:"da_hazeb",x:-VW,y:HOR-26,width:VW*3,height:26,fill:"url(#da_haze)",opacity:".55"},svg);
     add("path",{id:"da_rfront",d:rangePath(RIDGE_FRNT),fill:"#121828"},svg);
-    add("rect",{x:0,y:HOR,width:VW,height:VH-HOR,fill:"rgba(0,0,0,.2)"},svg);
-    add("line",{x1:0,x2:VW,y1:HOR,y2:HOR,stroke:"rgba(255,255,255,.1)","stroke-width":"1"},svg);
+    add("rect",{x:-VW,y:HOR,width:VW*3,height:VH-HOR,fill:"rgba(0,0,0,.2)"},svg);
+    add("line",{x1:-VW,x2:VW*2,y1:HOR,y2:HOR,stroke:"rgba(255,255,255,.1)","stroke-width":"1"},svg);
 
     // clouds (front of peaks) + rain
     var cl=add("g",{id:"da_clouds",opacity:"0","class":"da-anim"},svg);
