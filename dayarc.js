@@ -103,7 +103,7 @@
 
   var svg,stars=[];
   function buildSvg(host){
-    svg=add("svg",{"class":"da-svg",viewBox:"0 0 "+VW+" "+VH,preserveAspectRatio:"xMidYMid meet","aria-hidden":"true"},host);
+    svg=add("svg",{"class":"da-svg",viewBox:"0 0 "+VW+" "+VH,preserveAspectRatio:"xMidYMax meet","aria-hidden":"true"},host);
     var defs=add("defs",null,svg);
     defs.innerHTML='<linearGradient id="da_trail" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E0795A"/><stop offset=".5" stop-color="#F5B830"/><stop offset="1" stop-color="#FCE3A6"/></linearGradient>'
       +'<radialGradient id="da_sun"><stop offset="0" stop-color="#FFFBEA"/><stop offset=".45" stop-color="#FBC55A"/><stop offset="1" stop-color="#F0A820"/></radialGradient>'
