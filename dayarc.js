@@ -39,7 +39,7 @@
   // recomputed each mount (date may roll over)
   var N_TODAY, SUN, MOONPATH, D0;
   function computeAstro(){
-    D0=new Date(); N_TODAY=dayOfYear(D0);
+    D0=DACFG.demoDate?new Date(DACFG.demoDate):new Date(); N_TODAY=dayOfYear(D0);
     var prev=solar(0,N_TODAY).elev,sr=null,ss=null,peak=-90,pm=720;
     for(var m=1;m<=1440;m++){var e=solar(m,N_TODAY).elev; if(prev<0&&e>=0&&sr===null)sr=m; if(prev>=0&&e<0&&sr!==null&&ss===null)ss=m; if(e>peak){peak=e;pm=m;} prev=e;}
     if(sr===null)sr=336; if(ss===null)ss=1230;

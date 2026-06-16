@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Day Arc — example</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="dayarc.css?v=20260616000924">
+<link rel="stylesheet" href="dayarc.css?v=20260616143709">
 <style>
   :root{
     --bg:#06050A; --s1:#0F0E14; --s2:#16151C; --s3:#1E1D26; --border:#242232; --border2:#312F40;
@@ -99,16 +99,16 @@
         <div class="hdr-left">
           <div class="hdr-greeting">Good afternoon</div>
           <div class="hdr-clock">12:30 PM</div>
-          <div class="hdr-date">Sat, Jun 14</div>
+          <div class="hdr-date">Wed, Nov 5</div>
           <div class="hdr-fact">🌄 A living header — the sun &amp; moon trace their real path over the Front Range.</div>
         </div>
         <div class="hdr-center"><div class="header-eyebrow">Today</div></div>
         <div class="hdr-right">
           <div class="hdr-weather">
-            <div class="wx-now"><span class="wx-ic">⛅</span>74°</div>
-            <div class="wx-row">High 80° · Low 54°</div>
-            <div class="wx-row">Rain 20% · Wind 8 mph</div>
-            <div class="wx-tom">Tomorrow 78°/52°</div>
+            <div class="wx-now"><span class="wx-ic">☀️</span>52°</div>
+            <div class="wx-row">High 56° · Low 33°</div>
+            <div class="wx-row">Rain 5% · Wind 11 mph</div>
+            <div class="wx-tom">Tomorrow 54°/30°</div>
           </div>
         </div>
       </div>
@@ -164,6 +164,7 @@
     appendHost: ".header",
     lat: 39.78, lng: -104.75,
     demoMin: 750,
+    demoDate: "2025-11-05T12:00:00",   // pinned to a fall day — sun up, moon below the horizon
     tasks: [
       {m: 7*60+30,  ic:"🌅", label:"Wake up",   color:"#F0A820"},
       {m: 8*60,     ic:"🍳", label:"Breakfast", color:"#C084FC"},
@@ -174,12 +175,12 @@
       {m: 21*60,    ic:"📖", label:"Reading",   color:"#38BDF8"},
       {m: 22*60+30, ic:"🛏️", label:"Bedtime",   color:"#A78BFA"}
     ],
-    hourly: (function(){ var spec=[[0,0,54],[7,0,58],[10,2,66],[12,2,74],[13,2,78],[15,1,80],[16,95,73],[17,61,69],[19,2,66],[20,0,62],[22,0,57]];
+    hourly: (function(){ var spec=[[0,0,33],[7,0,31],[9,1,38],[11,2,47],[12,1,52],[14,1,56],[16,2,53],[17,1,48],[19,0,42],[21,0,37]];
       var out=[]; for(var h=0;h<24;h++){ var s=spec[0]; for(var i=0;i<spec.length;i++){ if(spec[i][0]<=h) s=spec[i]; } out[h]={code:s[1],temp:s[2]}; } return out; })()
   };
   if(window.__buildLegend) window.__buildLegend();
   </script>
 
-  <script src="dayarc.js?v=20260616000924"></script>
+  <script src="dayarc.js?v=20260616143709"></script>
 </body>
 </html>
