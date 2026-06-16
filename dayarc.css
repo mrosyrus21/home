@@ -40,3 +40,6 @@
 #day-arc .da-live{display:none}
 #day-arc .da-day-l.da-gonow{color:#241500;background:linear-gradient(135deg,#F5B830,#E0792A);font-weight:700;border-radius:20px;padding:3px 12px;cursor:pointer;text-transform:uppercase;letter-spacing:.08em;box-shadow:0 3px 12px -4px rgba(240,168,32,.8)}
 @media (prefers-reduced-motion: reduce){ #day-arc .da-anim{display:none} }
+
+/* hide sun & moon trajectory lines (keep the sun & moon discs) */
+#da_ahead,#da_glow,#da_line,#da_mahead,#da_mtrail{display:none !important}
