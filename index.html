@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260616153739"></script>
+<script src="./data.js?v=20260616160516"></script>
 <script src="./recipes.js?v=20260611075715"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 16 · 3:37 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 16 · 4:05 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -810,13 +810,13 @@ const LAST_DEPLOY = "Jun 16 · 3:37 PM"; // DEPLOY_STAMP — restamp at each dep
 // lock is the queued "Firebase Auth + locked database rules" project
 // (Rooms → ⭐ Priority).
 // ═══════════════════════════════════════════════════════════════
-const CURTAIN_PASSWORD = "UIOPjkl;";              // ← the password (lowercase)
+const CURTAIN_PASSWORD = "UIOPjkl;";              // ← the password (case-sensitive)
 const CURTAIN_FLAG     = "hg_curtain_ok";     // localStorage key — device remembered after one correct entry
 function curtainUnlocked(){ try{ return localStorage.getItem(CURTAIN_FLAG)===CURTAIN_PASSWORD; }catch(e){ return true; } }
 function curtainOpen(){ const el=document.getElementById('curtain'); if(el) el.style.display='none'; }
 function curtainTry(ev){ if(ev&&ev.preventDefault) ev.preventDefault();
   const i=document.getElementById('curtain-pass');
-  const v=((i&&i.value)||'').trim().toLowerCase();
+  const v=((i&&i.value)||'').trim();
   if(v===CURTAIN_PASSWORD){ try{ localStorage.setItem(CURTAIN_FLAG,CURTAIN_PASSWORD); }catch(e){} curtainOpen(); }
   else { const b=document.getElementById('curtain-box'); if(b){ b.classList.remove('curtain-shake'); void b.offsetWidth; b.classList.add('curtain-shake'); } if(i){ i.value=''; i.focus(); } }
   return false; }
