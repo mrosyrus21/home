@@ -93,7 +93,12 @@
   var RIDGE_FAR=[[0,26],[60,34],[120,28],[180,40],[240,30],[300,42],[360,32],[420,44],[480,30],[540,40],[600,30],[640,34]];
 
   function add(tag,attrs,parent){ var n=document.createElementNS(SVGNS,tag); if(attrs)for(var k in attrs)n.setAttribute(k,attrs[k]); (parent).appendChild(n); return n; }
-  function rangePath(pts){ var EXT=VW, lp=pts[pts.length-1][1]; var d="M "+(-EXT)+" "+VH+" L "+(-EXT)+" "+(HOR-pts[0][1])+" L 0 "+(HOR-pts[0][1]); for(var i=0;i<pts.length;i++)d+=" L "+pts[i][0]+" "+(HOR-pts[i][1]); d+=" L "+VW+" "+(HOR-lp)+" L "+(VW+EXT)+" "+(HOR-lp)+" L "+(VW+EXT)+" "+VH+" Z"; return d; }
+  function rangePath(pts){ var d="", n=pts.length, tiles=[-3,-2,-1,0,1,2,3];
+    var x0=(-3)*VW+pts[0][0], y0=HOR-pts[0][1];
+    d="M "+x0+" "+VH+" L "+x0+" "+y0;
+    tiles.forEach(function(t){ var off=t*VW; for(var i=0;i<n;i++){ d+=" L "+(pts[i][0]+off)+" "+(HOR-pts[i][1]); } });
+    var xe=3*VW+pts[n-1][0];
+    d+=" L "+xe+" "+VH+" Z"; return d; }
   function pct(m){ return Math.max(0,Math.min(100,((m-TL_A)/(TL_B-TL_A))*100)); }
 
   var svg,stars=[];
