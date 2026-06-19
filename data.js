@@ -565,7 +565,12 @@ const REMINDERS = [
   { id:"aq_0621", date:"2026-06-21", emoji:"🦐", text:"Aquarium #5 — repeat 30% change + Prime + retest NO2." },
   { id:"aq_0622", date:"2026-06-22", emoji:"🦐", text:"Aquarium #5 — retest NO2; stop daily changes once NO2 = 0, then resume feeding." },
   { id:"aq_seal", standing:true, emoji:"🦐", text:"Aquarium #5 — top off evaporation w/ distilled, keep pump chamber covered, FIX the broken pump-chamber seal." },
-  { id:"rem_smoothie", standing:true, emoji:"🥤", text:"Before-work smoothie — Banana-Apple Chia" }
+  { id:"rem_smoothie", standing:true, emoji:"🥤", text:"Before-work smoothie — Banana-Apple Chia" },
+  { id:"wr_0619", date:"2026-06-19", emoji:"🧹", text:"Weekend reset — Fri (kitchen): clear & wipe counters (easy) · junk drawer + under-sink (medium) · full kitchen cabinet reset by work-zones (hard)." },
+  { id:"inc_0619", date:"2026-06-19", emoji:"💵", text:"Income — Day 1: sign up + complete profiles on UserTesting, UserCrowd, Respondent.io, User Interviews; do UserTesting's required sample test (~30 min)." },
+  { id:"wr_0620", date:"2026-06-20", emoji:"🧹", text:"Weekend reset — Sat: entryway/mail + key drop (easy) · a closet or bathroom (medium) · the worst room — garage/storage (hard)." },
+  { id:"inc_0620", date:"2026-06-20", emoji:"💵", text:"Income — Day 2: take any usability tests you qualify for; start uTest Academy; open a Bug Journal (~20 min)." },
+  { id:"wr_0621", date:"2026-06-21", emoji:"🧹", text:"Weekend reset — Sun (optional/light): finish any spillover, run the donate pile to dropoff, log income progress." }
 ];
 
 // ── 🚙 DMV — daily reminder to call for an earlier cancellation slot, through the appointment date.
