@@ -557,7 +557,15 @@ const REMINDERS = [
   { id:"rem_petco_ammonia",   standing:true,     emoji:"🦐", text:"Petco: pick up aquarium ammonia tester (Seachem badge or API drops) for the shrimp tank" },
   { id:"rem_thyme_plant",     standing:true,     emoji:"🌿", text:"Get a thyme plant" },
   { id:"rem_tv_triage",       standing:true,     emoji:"📺", text:"After work: 10-min triage on the free 50-inch TV — grab the model number off the back sticker, check for a standby light, then flashlight test for a ghost image (ghost = ~$20 backlight fix). No buying parts until triage is done." },
-  { id:"rem_flip_leads",      date:"2026-06-13", emoji:"🎯", text:"Yesterday's flip leads (if still up): free 83-inch OLED in Thornton (boards alone sell $100+), $0 Samsung Neo QLED 55 in Conifer, $0 broken TV in Tech Center, $0 WORKING 42-inch flatscreen downtown — hit the Craigslist free section first thing." }
+  { id:"rem_flip_leads",      date:"2026-06-13", emoji:"🎯", text:"Yesterday's flip leads (if still up): free 83-inch OLED in Thornton (boards alone sell $100+), $0 Samsung Neo QLED 55 in Conifer, $0 broken TV in Tech Center, $0 WORKING 42-inch flatscreen downtown — hit the Craigslist free section first thing." },
+  // ── 🦐 AQUARIUM #5 nitrite recovery — daily distilled water changes until NO2 = 0 (added Jun 18 2026) ──
+  { id:"aq_0618", date:"2026-06-18", emoji:"🦐", text:"Aquarium #5 — 30% distilled water change (temp-matched + small tap splash for KH ~50–60), re-dose Prime, retest nitrite (NO2). Hold feeding." },
+  { id:"aq_0619", date:"2026-06-19", emoji:"🦐", text:"Aquarium #5 — repeat 30% change + Prime + retest NO2. Hold feeding if NO2 > 0." },
+  { id:"aq_0620", date:"2026-06-20", emoji:"🦐", text:"Aquarium #5 — repeat 30% change + Prime + retest NO2." },
+  { id:"aq_0621", date:"2026-06-21", emoji:"🦐", text:"Aquarium #5 — repeat 30% change + Prime + retest NO2." },
+  { id:"aq_0622", date:"2026-06-22", emoji:"🦐", text:"Aquarium #5 — retest NO2; stop daily changes once NO2 = 0, then resume feeding." },
+  { id:"aq_seal", standing:true, emoji:"🦐", text:"Aquarium #5 — top off evaporation w/ distilled, keep pump chamber covered, FIX the broken pump-chamber seal." },
+  { id:"rem_smoothie", standing:true, emoji:"🥤", text:"Before-work smoothie — Banana-Apple Chia" }
 ];
 
 // ── 🚙 DMV — daily reminder to call for an earlier cancellation slot, through the appointment date.
