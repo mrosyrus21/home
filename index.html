@@ -565,10 +565,10 @@ body::after{
   .hdr-left{flex:1 1 55%;min-width:145px}
   /* Jun 7 fix: weather card must be allowed to SHRINK (flex 0 1 + min-width:0), not just sit at auto width —
      with 3-digit temps/long wx rows it overflowed and shoved the greeting column into a wrap/overlap mess */
-  .hdr-right{flex:0 1 auto;min-width:0}
+  .hdr-right{flex:0 1 auto;min-width:0;margin-left:auto}
   .hdr-clock{font-size:27px}
   .hdr-fact{max-width:170px;font-size:10px;margin-top:34px}
-  .hdr-weather{padding:6px 9px;max-width:100%}
+  .hdr-weather{padding:6px 0;max-width:100%}
   .wx-now{font-size:18px}
   .wx-row{font-size:10.5px}
   .wx-tom{font-size:10px}
@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260618182032"></script>
+<script src="./data.js?v=20260619081611"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 18 · 6:20 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 19 · 8:16 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // ═══════════════════════════════════════════════════════════════
 
@@ -1829,16 +1829,8 @@ function renderToday() {
   // ── 🔥 BURN CARE — daily nag through the care window (date-keyed → reappears each day), then a one-shot
   // silicone-gel switch once healed. Config in BURN_CARE (data.js). (added Jun 10 2026) ──
   if(typeof BURN_CARE!=='undefined'){
-    if(today>=BURN_CARE.start && today<=BURN_CARE.end){
-      const bcDone=!!laundry["rem-burncare-"+today];
-      const inInf=(BURN_CARE.infectionDates||[]).indexOf(today)>=0;
-      const bcSub=inInf
-        ? "👀 Infection check today — spreading redness, thick/cloudy pus, warmth, more pain or fever → urgent care. Otherwise: keep it covered, don't pop it, thin Vaseline under a clean non-stick dressing."
-        : "Keep it covered for sleep, don't pop it, thin Vaseline under a clean non-stick dressing. Clear/yellow seep is normal — sleep on your back.";
-      add("burncare",286,bcDone, bcDone
-        ? strip("🔥","Burn care — done for today",true,"#FB7185","toggleReminder('burncare',true)","Daily","","Reappears tomorrow through "+BURN_CARE.endLabel)
-        : strip("🔥","Burn care — protect the forehead burn",false,"#FB7185","toggleReminder('burncare',true)","Daily","",bcSub));
-    } else if(today>=BURN_CARE.siliconeDate){
+    // Burn-care daily nag removed Jun 18 2026 — burn healed (per Cyrus). Silicone scar-gel next-step kept.
+    if(today>=BURN_CARE.siliconeDate){
       const siDone=reminderDone('burnsilicone',false);
       add("burnsilicone",286,siDone, siDone
         ? strip("🩹","Silicone scar gel — started",true,"#A78BFA","toggleReminder('burnsilicone')","","","Keep it up ~12 hrs/day for 2–3 months + sun protection")
