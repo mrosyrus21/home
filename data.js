@@ -576,6 +576,7 @@ const REMINDERS = [
   // ── 🐛 GARDEN PEST follow-ups — spinosad re-spray + Mosquito Bits (Bti) + sticky-trap checks (added Jun 20 2026) ──
   { id:"pest_spray_0626", date:"2026-06-26", emoji:"🐛", text:"Re-spray Captain Jack's Deadbug (spinosad), indoor + outdoor — evening. Dose 2 of 3 (thrips/aphids; repeat every 7–10 days)." },
   { id:"pest_bits_0626", date:"2026-06-26", emoji:"🦟", text:"Reapply Mosquito Bits (Bti) to indoor plant soil — fungus-gnat control (repeat weekly ~3 weeks)." },
+  { id:"rem_claude_downgrade", date:"2026-06-26", emoji:"📉", text:"Downgrade Claude subscription" },
   { id:"pest_spray_0703", date:"2026-07-03", emoji:"🐛", text:"Re-spray Captain Jack's Deadbug (spinosad), indoor + outdoor — evening. Dose 3 of 3." },
   { id:"pest_bits_0703", date:"2026-07-03", emoji:"🦟", text:"Reapply Mosquito Bits (Bti) to indoor plant soil — week 2." },
   { id:"pest_traps_0703", date:"2026-07-03", emoji:"🟨", text:"Check / replace indoor yellow sticky traps — swap any that are covered." },
