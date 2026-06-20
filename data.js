@@ -565,9 +565,12 @@ const REMINDERS = [
   { id:"aq_0620", date:"2026-06-20", emoji:"🦐", text:"Aquarium #5 — repeat 30% change + Prime + retest NO2." },
   { id:"aq_0621", date:"2026-06-21", emoji:"🦐", text:"Aquarium #5 — repeat 30% change + Prime + retest NO2." },
   { id:"aq_0622", date:"2026-06-22", emoji:"🦐", text:"Aquarium #5 — retest NO2; stop daily changes once NO2 = 0, then resume feeding." },
-  { id:"wr_0619", date:"2026-06-19", emoji:"🧹", text:"Weekend reset — Fri (kitchen): clear & wipe counters (easy) · junk drawer + under-sink (medium) · full kitchen cabinet reset by work-zones (hard)." },
   { id:"inc_0619", date:"2026-06-19", emoji:"💵", text:"Income — Day 1: sign up + complete profiles on UserTesting, UserCrowd, Respondent.io, User Interviews; do UserTesting's required sample test (~30 min)." },
   { id:"wr_0620", date:"2026-06-20", emoji:"🧹", text:"Weekend reset — Sat: entryway/mail + key drop (easy) · a closet or bathroom (medium) · the worst room — garage/storage (hard)." },
+  // ── 🍳 Kitchen reset — Friday's kitchen work rolled onto today (Sat 6/20), split easy/medium/hard (added Jun 20 2026) ──
+  { id:"kr_easy_0620", date:"2026-06-20", emoji:"🟢", text:"EASY (~15 min) — Clear & wipe all kitchen counters; sweep every homeless item into one 'to-sort' box." },
+  { id:"kr_med_0620", date:"2026-06-20", emoji:"🟡", text:"MEDIUM (~45 min) — Reset ONE zone: empty the everyday dishes & glasses cabinet by the dishwasher, sort keep/donate/trash, wipe, put back." },
+  { id:"kr_hard_0620", date:"2026-06-20", emoji:"🔴", text:"HARD (~2–3 hr) — Reset the food + cooking zones: pantry/food cabinet by the fridge + pots & pans around the stove; everything to its permanent home." },
   { id:"inc_0620", date:"2026-06-20", emoji:"💵", text:"Income — Day 2: take any usability tests you qualify for; start uTest Academy; open a Bug Journal (~20 min)." },
   { id:"wr_0621", date:"2026-06-21", emoji:"🧹", text:"Weekend reset — Sun (optional/light): finish any spillover, run the donate pile to dropoff, log income progress." }
 ];
