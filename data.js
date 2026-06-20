@@ -572,7 +572,14 @@ const REMINDERS = [
   { id:"kr_med_0620", date:"2026-06-20", emoji:"🟡", text:"MEDIUM (~45 min) — Reset ONE zone: empty the everyday dishes & glasses cabinet by the dishwasher, sort keep/donate/trash, wipe, put back." },
   { id:"kr_hard_0620", date:"2026-06-20", emoji:"🔴", text:"HARD (~2–3 hr) — Reset the food + cooking zones: pantry/food cabinet by the fridge + pots & pans around the stove; everything to its permanent home." },
   { id:"inc_0620", date:"2026-06-20", emoji:"💵", text:"Income — Day 2: take any usability tests you qualify for; start uTest Academy; open a Bug Journal (~20 min)." },
-  { id:"wr_0621", date:"2026-06-21", emoji:"🧹", text:"Weekend reset — Sun (optional/light): finish any spillover, run the donate pile to dropoff, log income progress." }
+  { id:"wr_0621", date:"2026-06-21", emoji:"🧹", text:"Weekend reset — Sun (optional/light): finish any spillover, run the donate pile to dropoff, log income progress." },
+  // ── 🐛 GARDEN PEST follow-ups — spinosad re-spray + Mosquito Bits (Bti) + sticky-trap checks (added Jun 20 2026) ──
+  { id:"pest_spray_0626", date:"2026-06-26", emoji:"🐛", text:"Re-spray Captain Jack's Deadbug (spinosad), indoor + outdoor — evening. Dose 2 of 3 (thrips/aphids; repeat every 7–10 days)." },
+  { id:"pest_bits_0626", date:"2026-06-26", emoji:"🦟", text:"Reapply Mosquito Bits (Bti) to indoor plant soil — fungus-gnat control (repeat weekly ~3 weeks)." },
+  { id:"pest_spray_0703", date:"2026-07-03", emoji:"🐛", text:"Re-spray Captain Jack's Deadbug (spinosad), indoor + outdoor — evening. Dose 3 of 3." },
+  { id:"pest_bits_0703", date:"2026-07-03", emoji:"🦟", text:"Reapply Mosquito Bits (Bti) to indoor plant soil — week 2." },
+  { id:"pest_traps_0703", date:"2026-07-03", emoji:"🟨", text:"Check / replace indoor yellow sticky traps — swap any that are covered." },
+  { id:"pest_bits_0710", date:"2026-07-10", emoji:"🦟", text:"Reapply Mosquito Bits (Bti) to indoor plant soil — week 3 (final; breaks the fungus-gnat cycle)." }
 ];
 
 // ── 🚙 DMV — daily reminder to call for an earlier cancellation slot, through the appointment date.
