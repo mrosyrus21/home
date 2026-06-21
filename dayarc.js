@@ -168,10 +168,12 @@
       var shape=CLOUD_SHAPES[cf[4]],maxx=0;
       shape.forEach(function(e){add("ellipse",{cx:e[0],cy:e[1],rx:e[2],ry:e[3],fill:"url(#da_cloud)"},inner); maxx=Math.max(maxx,Math.abs(e[0])+e[2]);});
       add("rect",{x:-maxx*0.68,y:5,width:maxx*1.36,height:10,fill:"url(#da_cloud)"},inner);
-      add("animateTransform",{attributeName:"transform",type:"translate",from:(-150)+" 0",to:(VW+150)+" 0",dur:cf[2]+"s",begin:(-idx*24)+"s",repeatCount:"indefinite"},wrap);
+      var C_FROM=-1.5*VW, C_TO=2.5*VW, C_DUR=Math.round(cf[2]*((C_TO-C_FROM)/(VW+300))); // drift across the FULL tiled width (header is far wider than the meet-centered 640 viewBox), keep per-pixel speed
+      add("animateTransform",{attributeName:"transform",type:"translate",from:C_FROM+" 0",to:C_TO+" 0",dur:C_DUR+"s",begin:(-idx*24)+"s",repeatCount:"indefinite"},wrap);
     });
     var rn=add("g",{id:"da_rain",opacity:"0","class":"da-anim"},svg);
-    for(var ri=0;ri<48;ri++){ var rx=6+Math.random()*(VW+24),ry=4+Math.random()*Math.max(20,HOR-6),len=5+Math.random()*6,op=(.22+Math.random()*.4).toFixed(2);
+    var RAIN_X0=-1.5*VW, RAIN_SPAN=4*VW; // tile rain across the FULL header width (the 640 viewBox is meet-centered inside a much wider header)
+    for(var ri=0;ri<150;ri++){ var rx=RAIN_X0+Math.random()*RAIN_SPAN,ry=4+Math.random()*Math.max(20,HOR-6),len=5+Math.random()*6,op=(.22+Math.random()*.4).toFixed(2);
       var ln=add("line",{x1:rx.toFixed(1),y1:ry.toFixed(1),x2:(rx-2).toFixed(1),y2:(ry+len).toFixed(1),stroke:"rgba(202,220,246,"+op+")","stroke-width":(Math.random()<.3?"1.1":"0.7")},rn);
       add("animateTransform",{attributeName:"transform",type:"translate",from:"0 -16",to:"5 24",dur:(.4+Math.random()*.35).toFixed(2)+"s",begin:(-Math.random()).toFixed(2)+"s",repeatCount:"indefinite"},ln); }
   }
