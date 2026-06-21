@@ -91,12 +91,13 @@
   var RIDGE_MID=[[0,10],[48,20],[96,15],[140,26],[182,21],[224,30],[266,19],[306,26],[348,17],[388,28],[430,20],[470,26],[512,15],[556,22],[600,13],[640,17]];
   var RIDGE_FRNT=[[0,5],[58,15],[118,8],[178,17],[238,9],[300,16],[360,8],[420,15],[480,9],[540,14],[600,7],[640,11]];
   var RIDGE_FAR=[[0,26],[60,34],[120,28],[180,40],[240,30],[300,42],[360,32],[420,44],[480,30],[540,40],[600,30],[640,34]];
+  var RIDGE_SCALE=0.55; // lower the ridgelines so the sun rides above the peaks through the afternoon (visual fix for "sun sets too early")
 
   function add(tag,attrs,parent){ var n=document.createElementNS(SVGNS,tag); if(attrs)for(var k in attrs)n.setAttribute(k,attrs[k]); (parent).appendChild(n); return n; }
   function rangePath(pts){ var d="", n=pts.length, tiles=[-3,-2,-1,0,1,2,3];
-    var x0=(-3)*VW+pts[0][0], y0=HOR-pts[0][1];
+    var x0=(-3)*VW+pts[0][0], y0=HOR-pts[0][1]*RIDGE_SCALE;
     d="M "+x0+" "+VH+" L "+x0+" "+y0;
-    tiles.forEach(function(t,ti){ var off=t*VW; for(var i=(ti>0?1:0);i<n;i++){ d+=" L "+(pts[i][0]+off)+" "+(HOR-pts[i][1]); } });
+    tiles.forEach(function(t,ti){ var off=t*VW; for(var i=(ti>0?1:0);i<n;i++){ d+=" L "+(pts[i][0]+off)+" "+(HOR-pts[i][1]*RIDGE_SCALE); } });
     var xe=3*VW+pts[n-1][0];
     d+=" L "+xe+" "+VH+" Z"; return d; }
   function pct(m){ return Math.max(0,Math.min(100,((m-TL_A)/(TL_B-TL_A))*100)); }
@@ -145,7 +146,7 @@
     add("path",{id:"da_rfar",d:rangePath(RIDGE_FAR),fill:"#46557A",opacity:".55"},svg);
     add("path",{id:"da_rback",d:rangePath(RIDGE_BACK),fill:"#39476A"},svg);
     var cb=add("clipPath",{id:"da_clipB"},defs); add("path",{d:rangePath(RIDGE_BACK)},cb);
-    var sd="M 0 0 L "+VW+" 0"; for(var sxp=VW;sxp>=0;sxp-=14){ sd+=" L "+sxp+" "+(HOR-(40+9*Math.sin(sxp*0.045)+5*Math.sin(sxp*0.11+2))).toFixed(1); } sd+=" Z";
+    var sd="M 0 0 L "+VW+" 0"; for(var sxp=VW;sxp>=0;sxp-=14){ sd+=" L "+sxp+" "+(HOR-(40+9*Math.sin(sxp*0.045)+5*Math.sin(sxp*0.11+2))*RIDGE_SCALE).toFixed(1); } sd+=" Z";
     add("path",{id:"da_snow",d:sd,fill:"url(#da_snow)","clip-path":"url(#da_clipB)"},svg);
     add("rect",{id:"da_alpen",x:-VW,y:0,width:VW*3,height:Math.max(0,HOR-38),fill:"url(#da_alpen)","clip-path":"url(#da_clipB)",opacity:"0"},svg);
     add("path",{id:"da_rmid",d:rangePath(RIDGE_MID),fill:"#27314C"},svg);
