@@ -158,7 +158,6 @@
     add("rect",{id:"da_snowtex",x:-1.5*VW,y:0,width:4*VW,height:120,fill:"#ffffff",filter:"url(#da_snowf)","clip-path":"url(#da_clipB)",opacity:".26"},svg);
     add("rect",{id:"da_alpen",x:-VW,y:0,width:VW*3,height:Math.max(0,HOR-38),fill:"url(#da_alpen)","clip-path":"url(#da_clipB)",opacity:"0"},svg);
     add("path",{id:"da_rmid",d:rangePath(RIDGE_MID),fill:"#27314C"},svg);
-    add("rect",{id:"da_hazeb",x:-VW,y:HOR-26,width:VW*3,height:26,fill:"url(#da_haze)",opacity:".55"},svg);
     add("path",{id:"da_rfront",d:rangePath(RIDGE_FRNT),fill:"#121828"},svg);
     add("rect",{x:-VW,y:HOR,width:VW*3,height:VH-HOR,fill:"rgba(0,0,0,.2)"},svg);
     add("line",{x1:-VW,x2:VW*2,y1:HOR,y2:HOR,stroke:"rgba(255,255,255,.1)","stroke-width":"1"},svg);
