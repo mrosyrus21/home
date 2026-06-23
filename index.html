@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260622133037"></script>
+<script src="./data.js?v=20260623150947"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 22 · 1:30 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 23 · 3:09 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -4298,8 +4298,8 @@ function wxCareBanner(){
   return "";
 }
 const PEST_PLAN=[
- {e:"🪴",t:"Fungus gnats — REPOT DAY plan (Sun Jun 14, the nuclear option)",b:"One day instead of a 4-week chemical war — the old soil is harboring eggs at every depth, so it ALL goes. The one rule: all 5 plants the SAME day, or survivors just re-colonize the fresh pots. Method, per pot: (1) tip the plant out and knock off as much old soil as possible, then gently rinse the roots bare and trim anything brown or mushy; (2) scrub the pot AND saucer with hot soapy water — eggs cling to pot walls and drainage holes; (3) replant in fresh mix from a SEALED bag (mixes per plant below), same pot size unless root-bound — oversize pots stay wet and invite gnats back; (4) cap the soil with about half an inch of fine aquarium gravel; (5) bag the old soil and trash it OUTSIDE — or solarize it in clear bags in the greenhouse (free sterilizer) and reuse it later. Afterward: keep a couple sticky traps out ~2 weeks (clean traps = war over), make the first 2–3 waterings BTI tea for insurance, empty saucers fast, and check nearby sink drains — they breed there too."},
- {e:"🌱",t:"Repot mixes — custom soil per plant",b:"🪨 Jade: 1 part cactus mix + 1 part perlite — gritty and fast-draining, nearly gnat-proof (terracotta pot if you have one). 🪴 Philodendron + 🌴 Croton: 2 parts potting mix + 1 perlite + 1 orchid bark — the airy aroid mix their roots love. 🍃 Royal Tea Ivy: 3 parts potting mix + 1 perlite. 🌱 Fittonia: 2 parts potting mix + 1 coco coir + a half-part perlite — holds even moisture so it stops the every-2-day drama; expect ~4–5 days between drinks after the move. Supply run (one bag each, sealed): indoor potting mix · cactus mix · perlite · orchid bark · coco coir. Store leftovers SEALED — open bags are where gnats come from in the first place."},
+ {e:"🪴",t:"Fungus gnats — REPOT DAY plan (Sun Jun 14, the nuclear option)",b:"One day instead of a 4-week chemical war — the old soil is harboring eggs at every depth, so it ALL goes. The one rule: all 3 plants the SAME day, or survivors just re-colonize the fresh pots. Method, per pot: (1) tip the plant out and knock off as much old soil as possible, then gently rinse the roots bare and trim anything brown or mushy; (2) scrub the pot AND saucer with hot soapy water — eggs cling to pot walls and drainage holes; (3) replant in fresh mix from a SEALED bag (mixes per plant below), same pot size unless root-bound — oversize pots stay wet and invite gnats back; (4) cap the soil with about half an inch of fine aquarium gravel; (5) bag the old soil and trash it OUTSIDE — or solarize it in clear bags in the greenhouse (free sterilizer) and reuse it later. Afterward: keep a couple sticky traps out ~2 weeks (clean traps = war over), make the first 2–3 waterings BTI tea for insurance, empty saucers fast, and check nearby sink drains — they breed there too."},
+ {e:"🌱",t:"Repot mixes — custom soil per plant",b:"🪨 Jade: 1 part cactus mix + 1 part perlite — gritty and fast-draining, nearly gnat-proof (terracotta pot if you have one). 🌴 Croton: 2 parts potting mix + 1 perlite + 1 orchid bark — the airy aroid mix its roots love. 🌱 Fittonia: 2 parts potting mix + 1 coco coir + a half-part perlite — holds even moisture so it stops the every-2-day drama; expect ~4–5 days between drinks after the move. Supply run (one bag each, sealed): indoor potting mix · cactus mix · perlite · orchid bark · coco coir. Store leftovers SEALED — open bags are where gnats come from in the first place."},
  {e:"🐦",t:"Birds love your red fruit",b:"Strawberries, cherry tomatoes and raspberries are bird magnets. The most reliable fix is a physical barrier — drape ¼-inch bird netting over a simple frame or stakes so it floats above the fruit without touching it. A small berry cage of PVC or wood works great."},
  {e:"🎨",t:"Red decoy-rock trick",b:"A cheap first layer that genuinely helps with strawberries: paint a handful of rocks strawberry-red and scatter them around the pot 2–3 weeks BEFORE the berries ripen. Birds peck the fakes, learn they are not food, and tend to leave the real berries alone. Pair it with netting — on its own, birds eventually wise up."},
  {e:"✨",t:"Scare tactics",b:"Anything that moves and shines unsettles birds — hang flash tape, old CDs, or foil pie pans near the berries, and shift them every few days so the birds do not get comfortable."},
@@ -4524,7 +4524,7 @@ curtainInit();
 </style>
 <script>window.DAYARC_CONFIG={appendHost:'.header'};</script>
 <link rel="stylesheet" href="dayarc.css?v=20260620180311">
-<script src="dayarc.js?v=20260622133037"></script>
+<script src="dayarc.js?v=20260623150947"></script>
 <script>(function(){ function relocate(){ try{ var c=document.querySelector('.content'); if(!c) return;
   var eb=document.getElementById('app-eyebrow'); if(eb&&eb.parentElement!==c){ eb.classList.add('eyebrow-bottom'); c.appendChild(eb); }
   var tr=document.querySelector('.hdr-trackers'); if(tr&&tr.parentElement!==c){ tr.classList.add('trackers-strip'); c.insertBefore(tr, c.firstChild); }
