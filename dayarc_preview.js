@@ -117,7 +117,7 @@
       +'<filter id="da_soft" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="6"/></filter>'
       +'<filter id="da_soft2" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3"/></filter>'
       +'<filter id="da_cblur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>'
-      +'<radialGradient id="da_bloom"><stop offset="0" stop-color="#FFF6D8" stop-opacity=".6"/><stop offset=".4" stop-color="#FFD98A" stop-opacity=".22"/><stop offset="1" stop-color="#FFD98A" stop-opacity="0"/></radialGradient>'+'<filter id="da_cloudf" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.009 0.02" numOctaves="5" seed="4" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.4 -1.15"/></filter>'+'<filter id="da_rockf"><feTurbulence type="fractalNoise" baseFrequency="0.05 0.10" numOctaves="4" seed="11" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.1 -0.42"/></filter>'+'<filter id="da_snowf"><feTurbulence type="fractalNoise" baseFrequency="0.07 0.12" numOctaves="3" seed="5" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.8 -0.35"/></filter>'+'<clipPath id="da_mclip"><circle cx="0" cy="0" r="7"/></clipPath>';
+      +'<radialGradient id="da_bloom"><stop offset="0" stop-color="#FFF6D8" stop-opacity=".6"/><stop offset=".4" stop-color="#FFD98A" stop-opacity=".22"/><stop offset="1" stop-color="#FFD98A" stop-opacity="0"/></radialGradient>'+'<filter id="da_cloudf" x="-20%" y="-8%" width="140%" height="116%"><feTurbulence type="fractalNoise" baseFrequency="0.009 0.02" numOctaves="5" seed="4" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.4 -1.15"/></filter>'+'<filter id="da_rockf"><feTurbulence type="fractalNoise" baseFrequency="0.05 0.10" numOctaves="4" seed="11" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.1 -0.42"/></filter>'+'<filter id="da_snowf"><feTurbulence type="fractalNoise" baseFrequency="0.07 0.12" numOctaves="3" seed="5" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.8 -0.35"/></filter>'+'<clipPath id="da_mclip"><circle cx="0" cy="0" r="7"/></clipPath>';
 
     var sg=add("g",{id:"da_stars",opacity:"0"},svg); stars=[];
     for(var i=0;i<60;i++){ var x=8+Math.random()*(VW-16),y=8+Math.random()*Math.max(20,HOR-44),r=(Math.random()*1.2+.4),base=(Math.random()*.45+.55);
@@ -145,11 +145,11 @@
     // clouds — fractal-noise sky clouds, BEHIND the peaks
     var cl=add("g",{id:"da_clouds",opacity:"0","class":"da-anim"},svg);
     var clw=add("g",{},cl);
-    add("rect",{x:-2*VW,y:1,width:5*VW,height:74,fill:"#ffffff",filter:"url(#da_cloudf)"},clw);
+    add("rect",{x:-2*VW,y:1,width:5*VW,height:46,fill:"#ffffff",filter:"url(#da_cloudf)"},clw);
     add("animateTransform",{attributeName:"transform",type:"translate",from:"0 0",to:VW+" 0",dur:"260s",repeatCount:"indefinite"},clw);
 
     // mountains
-    add("path",{id:"da_rfar",d:rangePath(RIDGE_FAR),fill:"#46557A",opacity:".55"},svg);
+    add("path",{id:"da_rfar",d:rangePath(RIDGE_FAR),fill:"#46557A",opacity:"1"},svg);
     add("path",{id:"da_rback",d:rangePath(RIDGE_BACK),fill:"#39476A"},svg);
     var cb=add("clipPath",{id:"da_clipB"},defs); add("path",{d:rangePath(RIDGE_BACK)},cb);
     add("rect",{id:"da_rock",x:-1.5*VW,y:0,width:4*VW,height:120,fill:"#0a1020",filter:"url(#da_rockf)","clip-path":"url(#da_clipB)",opacity:".30"},svg);
