@@ -550,6 +550,10 @@ const REMINDERS = [
   { id:"aq_0620", date:"2026-06-20", emoji:"🦐", text:"Aquarium #5 — repeat 30% change + Prime + retest NO2." },
   { id:"aq_0621", date:"2026-06-21", emoji:"🦐", text:"Aquarium #5 — repeat 30% change + Prime + retest NO2." },
   { id:"aq_0622", date:"2026-06-22", emoji:"🦐", text:"Aquarium #5 — retest NO2; stop daily changes once NO2 = 0, then resume feeding." },
+  { id:"wt_0628", date:"2026-06-28", emoji:"🌊", text:"Wide Tank #4 — test the cycle (NH3/NO2/NO3). NO water changes while cycling. Air 24/7, ~78–80°F. Watch NO2 rise then fall to 0 as NO3 climbs = cycle finishing. Test every 3 days." },
+  { id:"wt_0701", date:"2026-07-01", emoji:"🌊", text:"Wide Tank #4 — cycle test (NH3/NO2/NO3). No water changes. Watch for the nitrite spike, then the drop back to 0." },
+  { id:"wt_0704", date:"2026-07-04", emoji:"🌊", text:"Wide Tank #4 — cycle test (NH3/NO2/NO3). No water changes. STOP when NH3=0, NO2=0, NO3 present." },
+  { id:"wt_0707", date:"2026-07-07", emoji:"🌊", text:"Wide Tank #4 — cycle test (NH3/NO2/NO3). No water changes. When NH3=0, NO2=0, NO3 reads on its own, age ~2 weeks before adding shrimp." },
   { id:"inc_0619", date:"2026-06-19", emoji:"💵", text:"Income — Day 1: sign up + complete profiles on UserTesting, UserCrowd, Respondent.io, User Interviews; do UserTesting's required sample test (~30 min)." },
   { id:"wr_0620", date:"2026-06-20", emoji:"🧹", text:"Weekend reset — Sat: entryway/mail + key drop (easy) · a closet or bathroom (medium) · the worst room — garage/storage (hard)." },
   // ── 🍳 Kitchen reset — Friday's kitchen work rolled onto today (Sat 6/20), split easy/medium/hard (added Jun 20 2026) ──
