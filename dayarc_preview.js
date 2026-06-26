@@ -145,17 +145,7 @@
     add("rect",{x:-2*VW,y:1,width:5*VW,height:88,fill:"#ffffff",filter:"url(#da_cloudf)"},clw);
     add("animateTransform",{attributeName:"transform",type:"translate",from:"0 0",to:VW+" 0",dur:"260s",repeatCount:"indefinite"},clw);
 
-    // mountains (drawn vector ridgelines)
-    add("path",{id:"da_rfar",d:rangePath(RIDGE_FAR),fill:"#46557A",opacity:".55"},svg);
-    add("path",{id:"da_rback",d:rangePath(RIDGE_BACK),fill:"#39476A"},svg);
-    var cb=add("clipPath",{id:"da_clipB"},defs); add("path",{d:rangePath(RIDGE_BACK)},cb);
-    var sd="M 0 0 L "+VW+" 0"; for(var sxp=VW;sxp>=0;sxp-=14){ sd+=" L "+sxp+" "+(HOR-(40+9*Math.sin(sxp*0.045)+5*Math.sin(sxp*0.11+2))*RIDGE_SCALE).toFixed(1); } sd+=" Z";
-    add("path",{id:"da_snow",d:sd,fill:"url(#da_snow)","clip-path":"url(#da_clipB)"},svg);
-    add("rect",{id:"da_alpen",x:-VW,y:0,width:VW*3,height:Math.max(0,HOR-38),fill:"url(#da_alpen)","clip-path":"url(#da_clipB)",opacity:"0"},svg);
-    add("path",{id:"da_rmid",d:rangePath(RIDGE_MID),fill:"#27314C"},svg);
-    add("path",{id:"da_rfront",d:rangePath(RIDGE_FRNT),fill:"#121828"},svg);
-    add("rect",{x:-VW,y:HOR,width:VW*3,height:VH-HOR,fill:"rgba(0,0,0,.2)"},svg);
-    add("line",{x1:-VW,x2:VW*2,y1:HOR,y2:HOR,stroke:"rgba(255,255,255,.1)","stroke-width":"1"},svg);
+    // mountains come from the photo layer (.da-mtns), added in mount()
 
 
     // (clouds are rendered behind the mountains, above)
@@ -200,14 +190,7 @@
     if($("da_stars")) $("da_stars").setAttribute("opacity",nf.toFixed(2));
     if($("da_clouds")) $("da_clouds").setAttribute("opacity",((cond==="clear"?0:cond==="partly"?.55:cond==="cloudy"?.95:.85)*(1-nf*.45)).toFixed(2));
     if($("da_rain")) $("da_rain").setAttribute("opacity",cond==="rain"?"1":"0");
-    if($("da_rback")){ var dk=nf;
-      $("da_rfar").setAttribute("fill",dk>.5?"#4A5688":"#93A3CE");
-      $("da_rback").setAttribute("fill",dk>.5?"#3E4B78":"#8092C2");
-      $("da_rmid").setAttribute("fill",dk>.5?"#323D62":"#6678A6");
-      $("da_rfront").setAttribute("fill",dk>.5?"#222B4A":"#4A5A86");
-      if($("da_snow"))$("da_snow").setAttribute("fill",dk>.5?"#D2DCEE":"url(#da_snow)");
-      var ag=day?Math.max(0,1-Math.abs(sp.elev)/11):0; if($("da_alpen"))$("da_alpen").setAttribute("opacity",(ag*.8).toFixed(2));
-    }
+    var _mt=root.querySelector(".da-mtns"); if(_mt){ _mt.style.filter="brightness("+(1-nf*0.6).toFixed(2)+") saturate("+(1-nf*0.35).toFixed(2)+")"; }
 
     // sun
     var body=$("da_body"),halo=$("da_halo"),bx=0,by=0;
@@ -267,6 +250,7 @@
       +(append?'':'<div class="da-head"><div class="da-state">—</div><div class="da-wx"><div class="t"></div><div class="c"></div><div class="da-fc"></div></div></div>')
       +'';
     var svgHost=document.createElement("div"); svgHost.className="da-svgwrap"; wrap.appendChild(svgHost);
+    var mtns=document.createElement("div"); mtns.className="da-mtns"; mtns.style.cssText="position:absolute;left:0;right:0;top:0;bottom:94px;z-index:1;background:url(\'images/hdr_mountains.webp\') no-repeat center 38%;background-size:cover;pointer-events:none"; wrap.appendChild(mtns);
     var tl=document.createElement("div"); tl.className="da-tl";
     tl.innerHTML='<div class="da-tl-track"></div><div class="da-tl-fill" id="da_fill"></div><div class="da-tl-span" id="da_span"></div><span class="da-anchor l">5 AM</span><span class="da-anchor r">11:30 PM</span>';
     wrap.appendChild(tl);
