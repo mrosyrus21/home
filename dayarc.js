@@ -106,9 +106,9 @@
     E.sun=mk(host,"da-sun");  E.sun.innerHTML='<img src="'+ASSET+'sun.png" alt="">';
     E.moon=mk(host,"da-moon"); E.moon.innerHTML='<img src="'+ASSET+'moon.png" alt="">';
     E.clouds=mk(host,"da-clouds-layer");
-    E.mtnDay=mk(host,"da-mtn"); E.mtnDay.style.backgroundImage="url('"+ASSET+"mtn-day.png?v=2316')";
-    E.mtnDusk=mk(host,"da-mtn"); E.mtnDusk.style.backgroundImage="url('"+ASSET+"mtn-dusk.png?v=2316')"; E.mtnDusk.style.opacity="0";
-    E.mtnNight=mk(host,"da-mtn"); E.mtnNight.style.backgroundImage="url('"+ASSET+"mtn-night.png?v=2316')"; E.mtnNight.style.opacity="0";
+    E.mtnDay=mk(host,"da-mtn"); E.mtnDay.style.backgroundImage="url('"+ASSET+"mtn-day.png?v=2320')";
+    E.mtnDusk=mk(host,"da-mtn"); E.mtnDusk.style.backgroundImage="url('"+ASSET+"mtn-dusk.png?v=2320')"; E.mtnDusk.style.opacity="0";
+    E.mtnNight=mk(host,"da-mtn"); E.mtnNight.style.backgroundImage="url('"+ASSET+"mtn-night.png?v=2320')"; E.mtnNight.style.opacity="0";
     E.rain=mk(host,"da-rain-layer");
     E.snow=mk(host,"da-snow-layer");
   }
