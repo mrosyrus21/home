@@ -120,10 +120,7 @@
       +'<radialGradient id="da_bloom"><stop offset="0" stop-color="#FFF6D8" stop-opacity=".6"/><stop offset=".4" stop-color="#FFD98A" stop-opacity=".22"/><stop offset="1" stop-color="#FFD98A" stop-opacity="0"/></radialGradient>'+'<filter id="da_cloudf" x="-20%" y="-8%" width="140%" height="116%"><feTurbulence type="fractalNoise" baseFrequency="0.009 0.02" numOctaves="5" seed="4" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.4 -1.15"/></filter>'+'<filter id="da_rockf"><feTurbulence type="fractalNoise" baseFrequency="0.05 0.10" numOctaves="4" seed="11" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.1 -0.42"/></filter>'+'<filter id="da_snowf"><feTurbulence type="fractalNoise" baseFrequency="0.07 0.12" numOctaves="3" seed="5" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.8 -0.35"/></filter>'+'<clipPath id="da_mclip"><circle cx="0" cy="0" r="7"/></clipPath>';
 
     var sg=add("g",{id:"da_stars",opacity:"0"},svg); stars=[];
-    for(var i=0;i<60;i++){ var x=8+Math.random()*(VW-16),y=8+Math.random()*Math.max(20,HOR-44),r=(Math.random()*1.2+.4),base=(Math.random()*.45+.55);
-      var c=add("circle",{cx:x.toFixed(1),cy:y.toFixed(1),r:r.toFixed(2),fill:"#EAF2FF",opacity:base.toFixed(2)},sg);
-      if(Math.random()<.55){ add("animate",{attributeName:"opacity",values:(base*.25).toFixed(2)+";"+base.toFixed(2)+";"+(base*.25).toFixed(2),dur:(2.5+Math.random()*3).toFixed(1)+"s",begin:(-Math.random()*4).toFixed(1)+"s",repeatCount:"indefinite"},c); }
-      stars.push(c); }
+    add("image",{id:"da_starsimg","href":"images/hdr_stars.webp",x:-VW,y:0,width:3*VW,height:HOR,preserveAspectRatio:"none"},sg);
 
     add("ellipse",{id:"da_hglow",rx:"140",ry:"50",cy:HOR,cx:sx(180),fill:"url(#da_hz)",opacity:"0"},svg);
 
@@ -138,9 +135,9 @@
     add("path",{id:"da_mahead",d:md,fill:"none",stroke:"rgba(205,216,242,.28)","stroke-width":"1.2","stroke-dasharray":"1 5","stroke-linecap":"round",opacity:"0"},svg);
     add("path",{id:"da_mtrail",fill:"none",stroke:"rgba(216,224,248,.6)","stroke-width":"1.6","stroke-linecap":"round",opacity:"0"},svg);
     var body=add("g",{id:"da_body"},svg);
-    body.innerHTML='<circle id="da_bloom_c" r="60" fill="url(#da_bloom)"/><circle id="da_corona_c" r="32" fill="url(#da_corona)"/><circle id="da_halo" r="16" fill="#FFC247" opacity=".38" filter="url(#da_soft)"/><circle id="da_core" r="8.5" fill="url(#da_sun)"/>';
+    body.innerHTML='<image id="da_sunimg" href="images/hdr_sun.webp" x="-34" y="-34" width="68" height="68"/>';
     var mb=add("g",{id:"da_mbody",opacity:"0"},svg);
-    mb.innerHTML='<circle id="da_mhalo" r="12" fill="#AEBEE8" opacity=".18" filter="url(#da_soft)"/><circle id="da_mcore" r="7" fill="url(#da_moon)"/><g clip-path="url(#da_mclip)" opacity=".45"><circle cx="-2.2" cy="-2.4" r="1.7" fill="#9CA2B2"/><circle cx="2.3" cy="1.4" r="2.3" fill="#969DAD"/><circle cx="-1" cy="2.9" r="1.2" fill="#A6ACBB"/><circle cx="3" cy="-2.4" r=".9" fill="#9AA0B0"/><circle cx="0.4" cy="-.2" r="1.4" fill="#A1A7B6"/><circle cx="-3.2" cy="1" r=".8" fill="#A0A6B5"/></g><ellipse id="da_msh" cx="-2.6" cy="0" rx="5" ry="6.5" fill="#0A0E20" opacity="0" clip-path="url(#da_mclip)"/>';
+    mb.innerHTML='<image id="da_moonimg" href="images/hdr_moon.webp" x="-13" y="-13" width="26" height="26"/>';
 
     // clouds — fractal-noise sky clouds, BEHIND the peaks
     var cl=add("g",{id:"da_clouds",opacity:"0","class":"da-anim"},svg);
@@ -148,19 +145,8 @@
     add("rect",{x:-2*VW,y:1,width:5*VW,height:46,fill:"#ffffff",filter:"url(#da_cloudf)"},clw);
     add("animateTransform",{attributeName:"transform",type:"translate",from:"0 0",to:VW+" 0",dur:"260s",repeatCount:"indefinite"},clw);
 
-    // mountains
-    add("path",{id:"da_rfar",d:rangePath(RIDGE_FAR),fill:"#46557A",opacity:"1"},svg);
-    add("path",{id:"da_rback",d:rangePath(RIDGE_BACK),fill:"#39476A"},svg);
-    var cb=add("clipPath",{id:"da_clipB"},defs); add("path",{d:rangePath(RIDGE_BACK)},cb);
-    add("rect",{id:"da_rock",x:-1.5*VW,y:0,width:4*VW,height:120,fill:"#0a1020",filter:"url(#da_rockf)","clip-path":"url(#da_clipB)",opacity:".30"},svg);
-    var sd="M 0 0 L "+VW+" 0"; for(var sxp=VW;sxp>=0;sxp-=14){ sd+=" L "+sxp+" "+(HOR-(40+9*Math.sin(sxp*0.045)+5*Math.sin(sxp*0.11+2))*RIDGE_SCALE).toFixed(1); } sd+=" Z";
-    add("path",{id:"da_snow",d:sd,fill:"url(#da_snow)","clip-path":"url(#da_clipB)"},svg);
-    add("rect",{id:"da_snowtex",x:-1.5*VW,y:0,width:4*VW,height:120,fill:"#ffffff",filter:"url(#da_snowf)","clip-path":"url(#da_clipB)",opacity:".26"},svg);
-    add("rect",{id:"da_alpen",x:-VW,y:0,width:VW*3,height:Math.max(0,HOR-38),fill:"url(#da_alpen)","clip-path":"url(#da_clipB)",opacity:"0"},svg);
-    add("path",{id:"da_rmid",d:rangePath(RIDGE_MID),fill:"#27314C"},svg);
-    add("path",{id:"da_rfront",d:rangePath(RIDGE_FRNT),fill:"#121828"},svg);
-    add("rect",{x:-VW,y:HOR,width:VW*3,height:VH-HOR,fill:"rgba(0,0,0,.2)"},svg);
-    add("line",{x1:-VW,x2:VW*2,y1:HOR,y2:HOR,stroke:"rgba(255,255,255,.1)","stroke-width":"1"},svg);
+    // mountains come from the real photo layer (.da-mtns), added in mount()
+
 
     // (clouds are rendered behind the mountains, above)
     var rn=add("g",{id:"da_rain",opacity:"0","class":"da-anim"},svg);
@@ -204,24 +190,17 @@
     if($("da_stars")) $("da_stars").setAttribute("opacity",nf.toFixed(2));
     if($("da_clouds")) $("da_clouds").setAttribute("opacity",((cond==="clear"?0:cond==="partly"?.55:cond==="cloudy"?.95:.85)*(1-nf*.45)).toFixed(2));
     if($("da_rain")) $("da_rain").setAttribute("opacity",cond==="rain"?"1":"0");
-    if($("da_rback")){ var dk=nf;
-      $("da_rfar").setAttribute("fill",dk>.5?"#3C4A72":"#AFC0DA");
-      $("da_rback").setAttribute("fill",dk>.5?"#3A4767":"#6E7C96");
-      $("da_rmid").setAttribute("fill",dk>.5?"#28332C":"#566B5A");
-      $("da_rfront").setAttribute("fill",dk>.5?"#131E16":"#2F4128");
-      if($("da_snow"))$("da_snow").setAttribute("fill",dk>.5?"#C6D2E6":"url(#da_snow)");
-      var ag=day?Math.max(0,1-Math.abs(sp.elev)/11):0; if($("da_alpen"))$("da_alpen").setAttribute("opacity",(ag*.85).toFixed(2));
-    }
+    var _mt=root.querySelector(".da-mtns"); if(_mt){ _mt.style.filter="brightness("+(1-nf*0.62).toFixed(2)+") saturate("+(1-nf*0.4).toFixed(2)+")"; }
 
     // sun
     var body=$("da_body"),halo=$("da_halo"),bx=0,by=0;
-    if(day){ bx=sx(sp.az); by=sy(sp.elev); halo.setAttribute("opacity",(0.14+0.26*(sp.elev/SUN.maxElev)).toFixed(2)); body.style.opacity="1"; body.setAttribute("transform","translate("+bx+","+by+")");
+    if(day){ bx=sx(sp.az); by=sy(sp.elev); if(halo)halo.setAttribute("opacity",(0.14+0.26*(sp.elev/SUN.maxElev)).toFixed(2)); body.style.opacity="1"; body.setAttribute("transform","translate("+bx+","+by+")");
       if($("da_hglow")){ $("da_hglow").setAttribute("cx",bx); $("da_hglow").setAttribute("opacity",(Math.max(0,1-sp.elev/14)*.9).toFixed(2)); }
     } else { body.style.opacity="0"; if($("da_hglow"))$("da_hglow").setAttribute("opacity","0"); }
     // moon
     var mp=moonPos(D0,m), mB=$("da_mbody");
     if(mB){ if(mp.alt>0){ mB.setAttribute("transform","translate("+sx(mp.az)+","+sy(mp.alt)+")");
-        $("da_msh").setAttribute("cx",(mp.waxing?-2.6:2.6).toString()); $("da_msh").setAttribute("rx",(6.5*(1-mp.illum)+.5).toFixed(1)); $("da_msh").setAttribute("opacity",".92");
+        var sh=$("da_msh"); if(sh){ sh.setAttribute("cx",(mp.waxing?-2.6:2.6).toString()); sh.setAttribute("rx",(6.5*(1-mp.illum)+.5).toFixed(1)); sh.setAttribute("opacity",".92"); }
         mB.style.opacity=day?".4":(nf>.15?"1":".4");
       } else mB.style.opacity="0"; }
     // trails
@@ -271,6 +250,7 @@
       +(append?'':'<div class="da-head"><div class="da-state">—</div><div class="da-wx"><div class="t"></div><div class="c"></div><div class="da-fc"></div></div></div>')
       +'';
     var svgHost=document.createElement("div"); svgHost.className="da-svgwrap"; wrap.appendChild(svgHost);
+    var mtns=document.createElement("div"); mtns.className="da-mtns"; mtns.style.cssText="position:absolute;left:0;right:0;top:0;bottom:94px;z-index:1;background:url(\'images/hdr_mountains.webp\') no-repeat center bottom;background-size:cover;pointer-events:none"; wrap.appendChild(mtns);
     var tl=document.createElement("div"); tl.className="da-tl";
     tl.innerHTML='<div class="da-tl-track"></div><div class="da-tl-fill" id="da_fill"></div><div class="da-tl-span" id="da_span"></div><span class="da-anchor l">5 AM</span><span class="da-anchor r">11:30 PM</span>';
     wrap.appendChild(tl);
