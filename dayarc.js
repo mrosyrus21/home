@@ -103,7 +103,7 @@
     E.sun=mk(host,"da-sun");  E.sun.innerHTML='<img src="'+ASSET+'sun.png" alt="">';
     E.moon=mk(host,"da-moon"); E.moon.innerHTML='<img src="'+ASSET+'moon.png" alt="">';
     E.clouds=mk(host,"da-clouds-layer");
-    E.mtn=mk(host,"da-mtn"); E.mtn.style.backgroundImage="url('"+ASSET+"mtn.png')";
+    E.mtn=mk(host,"da-mtn"); E.mtn.style.backgroundImage="url('"+ASSET+"mtn-day.png')";
     E.rain=mk(host,"da-rain-layer");
     E.snow=mk(host,"da-snow-layer");
   }
@@ -149,6 +149,7 @@
     function topPx(elev){ var f=Math.max(0,Math.min(1,elev/Math.max(SUN.maxElev,1))); return ridge - f*(ridge-topPad); }
 
     if(E.stars) E.stars.style.opacity=nf.toFixed(2);
+    var _mi=(nf>=0.6?"mtn-night.png":(nf>0.18?"mtn-dusk.png":"mtn-day.png")); if(E.mtn&&E.mtn._mi!==_mi){E.mtn.style.backgroundImage="url('"+ASSET+_mi+"')";E.mtn._mi=_mi;}
 
     if(E.sun){ if(day){ var ss=Math.max(24,Math.min(H*0.55,W*0.15)); E.sun.style.width=ss+"px"; E.sun.style.height=ss+"px";
         E.sun.style.left=posLeftPct(sp.az)+"%"; E.sun.style.top=topPx(sp.elev)+"px"; E.sun.style.opacity="1"; }
