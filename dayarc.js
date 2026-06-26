@@ -150,11 +150,11 @@
 
     if(E.stars) E.stars.style.opacity=nf.toFixed(2);
 
-    if(E.sun){ if(day){ var ss=Math.max(26,H*0.5); E.sun.style.width=ss+"px"; E.sun.style.height=ss+"px";
+    if(E.sun){ if(day){ var ss=Math.max(24,Math.min(H*0.55,W*0.15)); E.sun.style.width=ss+"px"; E.sun.style.height=ss+"px";
         E.sun.style.left=posLeftPct(sp.az)+"%"; E.sun.style.top=topPx(sp.elev)+"px"; E.sun.style.opacity="1"; }
       else E.sun.style.opacity="0"; }
     var mp=moonPos(D0,m);
-    if(E.moon){ if(mp.alt>0){ var ms=Math.max(16,H*0.30); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
+    if(E.moon){ if(mp.alt>0){ var ms=Math.max(15,Math.min(H*0.34,W*0.09)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
         E.moon.style.left=posLeftPct(mp.az)+"%"; E.moon.style.top=topPx(mp.alt)+"px";
         E.moon.style.opacity=(day?0.35:(nf>0.15?1:0.4)).toFixed(2); }
       else E.moon.style.opacity="0"; }
