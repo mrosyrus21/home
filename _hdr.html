@@ -176,11 +176,11 @@
       {m: 21*60,    ic:"📖", label:"Reading",   color:"#38BDF8"},
       {m: 22*60+30, ic:"🛏️", label:"Bedtime",   color:"#A78BFA"}
     ],
-    hourly:(function(){var o=[];for(var h=0;h<24;h++)o[h]={code:2,temp:72};return o;})()
+    hourly:(function(){var c={};[[0,6,0],[7,10,2],[11,14,61],[15,18,71],[19,23,0]].forEach(function(r){for(var h=r[0];h<=r[1];h++)c[h]=r[2];});var o=[];for(var h=0;h<24;h++)o[h]={code:c[h],temp:[40,42,45,55,60,62,58,52,48,44][h%10]};return o;})()
   };
   if(window.__buildLegend) window.__buildLegend();
   </script>
 
-  <script src="dayarc_preview.js?cb=1782446501"></script>
+  <script src="dayarc_preview.js?cb=1782447133"></script>
 </body>
 </html>

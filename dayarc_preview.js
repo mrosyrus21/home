@@ -65,7 +65,7 @@
   var TL_A=5*60, TL_B=23.5*60;
 
   // weather: map WMO code -> sky condition; read hourly from WXF
-  function codeToCond(c){ if(c==null)return "clear"; if(c>=95)return "rain"; if((c>=71&&c<=77)||(c>=85&&c<=86))return "cloudy";
+  function codeToCond(c){ if(c==null)return "clear"; if(c>=95)return "rain"; if((c>=71&&c<=77)||(c>=85&&c<=86))return "snow";
     if((c>=51&&c<=67)||(c>=80&&c<=82))return "rain"; if(c>=45&&c<=48)return "cloudy"; if(c===3)return "cloudy"; if(c>=1)return "partly"; return "clear"; }
   function wxAt(min){ var h=Math.floor(((min%1440)+1440)%1440/60); var code=null,temp=null;
     if(DACFG.hourly){ var hw=DACFG.hourly[h%DACFG.hourly.length]; return {cond:codeToCond(hw.code),temp:(hw.temp!=null?hw.temp:null),code:hw.code}; }
@@ -117,10 +117,10 @@
       +'<filter id="da_soft" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="6"/></filter>'
       +'<filter id="da_soft2" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3"/></filter>'
       +'<filter id="da_cblur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>'
-      +'<radialGradient id="da_bloom"><stop offset="0" stop-color="#FFF6D8" stop-opacity=".6"/><stop offset=".4" stop-color="#FFD98A" stop-opacity=".22"/><stop offset="1" stop-color="#FFD98A" stop-opacity="0"/></radialGradient>'+'<filter id="da_cloudf" x="-20%" y="-8%" width="140%" height="116%"><feTurbulence type="fractalNoise" baseFrequency="0.009 0.02" numOctaves="5" seed="4" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.4 -1.15"/></filter>'+'<filter id="da_rockf"><feTurbulence type="fractalNoise" baseFrequency="0.05 0.10" numOctaves="4" seed="11" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.1 -0.42"/></filter>'+'<filter id="da_snowf"><feTurbulence type="fractalNoise" baseFrequency="0.07 0.12" numOctaves="3" seed="5" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.8 -0.35"/></filter>'+'<clipPath id="da_mclip"><circle cx="0" cy="0" r="7"/></clipPath>';
+      +'<radialGradient id="da_bloom"><stop offset="0" stop-color="#FFF6D8" stop-opacity=".6"/><stop offset=".4" stop-color="#FFD98A" stop-opacity=".22"/><stop offset="1" stop-color="#FFD98A" stop-opacity="0"/></radialGradient>'+'<filter id="da_cloudf" x="-20%" y="-8%" width="140%" height="116%"><feTurbulence type="fractalNoise" baseFrequency="0.009 0.02" numOctaves="5" seed="4" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.4 -1.15"/></filter>'+'<filter id="da_rockf"><feTurbulence type="fractalNoise" baseFrequency="0.05 0.10" numOctaves="4" seed="11" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.1 -0.42"/></filter>'+'<filter id="da_snowf"><feTurbulence type="fractalNoise" baseFrequency="0.07 0.12" numOctaves="3" seed="5" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.8 -0.35"/></filter>'+'<pattern id="da_starpat" patternUnits="userSpaceOnUse" width="213" height="128"><image href="images/hdr_stars.webp" x="0" y="0" width="213" height="128"/></pattern>'+'<pattern id="da_rainpat" patternUnits="userSpaceOnUse" width="150" height="150"><image href="images/hdr_rain.webp" x="0" y="0" width="150" height="150"/><animateTransform attributeName="patternTransform" type="translate" from="0 0" to="7 150" dur="0.55s" repeatCount="indefinite"/></pattern>'+'<pattern id="da_snowpat" patternUnits="userSpaceOnUse" width="200" height="200"><image href="images/hdr_snow.webp" x="0" y="0" width="200" height="200"/><animateTransform attributeName="patternTransform" type="translate" from="0 0" to="11 200" dur="4.5s" repeatCount="indefinite"/></pattern>'+'<clipPath id="da_mclip"><circle cx="0" cy="0" r="7"/></clipPath>';
 
     var sg=add("g",{id:"da_stars",opacity:"0"},svg); stars=[];
-    add("image",{id:"da_starsimg","href":"images/hdr_stars.webp",x:-VW,y:0,width:3*VW,height:HOR,preserveAspectRatio:"none"},sg);
+    add("rect",{x:-VW,y:0,width:3*VW,height:HOR,fill:"url(#da_starpat)"},sg);
 
     add("ellipse",{id:"da_hglow",rx:"140",ry:"50",cy:HOR,cx:sx(180),fill:"url(#da_hz)",opacity:"0"},svg);
 
@@ -139,31 +139,21 @@
     var mb=add("g",{id:"da_mbody",opacity:"0"},svg);
     mb.innerHTML='<image id="da_moonimg" href="images/hdr_moon.webp" x="-13" y="-13" width="26" height="26"/>';
 
-    // clouds — fractal-noise sky clouds, BEHIND the peaks
+    // clouds — your cloud image drifting, BEHIND the peaks
     var cl=add("g",{id:"da_clouds",opacity:"0","class":"da-anim"},svg);
     var clw=add("g",{},cl);
-    add("rect",{x:-2*VW,y:1,width:5*VW,height:88,fill:"#ffffff",filter:"url(#da_cloudf)"},clw);
-    add("animateTransform",{attributeName:"transform",type:"translate",from:"0 0",to:VW+" 0",dur:"260s",repeatCount:"indefinite"},clw);
+    add("image",{href:"images/hdr_clouds.webp",x:0,y:2,width:VW,height:78,preserveAspectRatio:"xMidYMid meet"},clw);
+    add("image",{href:"images/hdr_clouds.webp",x:-VW,y:2,width:VW,height:78,preserveAspectRatio:"xMidYMid meet"},clw);
+    add("animateTransform",{attributeName:"transform",type:"translate",from:"0 0",to:VW+" 0",dur:"110s",repeatCount:"indefinite"},clw);
 
-    // mountains (drawn vector ridgelines)
-    add("path",{id:"da_rfar",d:rangePath(RIDGE_FAR),fill:"#46557A",opacity:".55"},svg);
-    add("path",{id:"da_rback",d:rangePath(RIDGE_BACK),fill:"#39476A"},svg);
-    var cb=add("clipPath",{id:"da_clipB"},defs); add("path",{d:rangePath(RIDGE_BACK)},cb);
-    var sd="M 0 0 L "+VW+" 0"; for(var sxp=VW;sxp>=0;sxp-=14){ sd+=" L "+sxp+" "+(HOR-(40+9*Math.sin(sxp*0.045)+5*Math.sin(sxp*0.11+2))*RIDGE_SCALE).toFixed(1); } sd+=" Z";
-    add("path",{id:"da_snow",d:sd,fill:"url(#da_snow)","clip-path":"url(#da_clipB)"},svg);
-    add("rect",{id:"da_alpen",x:-VW,y:0,width:VW*3,height:Math.max(0,HOR-38),fill:"url(#da_alpen)","clip-path":"url(#da_clipB)",opacity:"0"},svg);
-    add("path",{id:"da_rmid",d:rangePath(RIDGE_MID),fill:"#27314C"},svg);
-    add("path",{id:"da_rfront",d:rangePath(RIDGE_FRNT),fill:"#121828"},svg);
-    add("rect",{x:-VW,y:HOR,width:VW*3,height:VH-HOR,fill:"rgba(0,0,0,.2)"},svg);
-    add("line",{x1:-VW,x2:VW*2,y1:HOR,y2:HOR,stroke:"rgba(255,255,255,.1)","stroke-width":"1"},svg);
+    // mountains come from the photo layer (.da-mtns), added in mount()
 
 
     // (clouds are rendered behind the mountains, above)
     var rn=add("g",{id:"da_rain",opacity:"0","class":"da-anim"},svg);
-    var RAIN_X0=-1.5*VW, RAIN_SPAN=4*VW; // tile rain across the FULL header width (the 640 viewBox is meet-centered inside a much wider header)
-    for(var ri=0;ri<150;ri++){ var rx=RAIN_X0+Math.random()*RAIN_SPAN,ry=4+Math.random()*Math.max(20,HOR-6),len=5+Math.random()*6,op=(.22+Math.random()*.4).toFixed(2);
-      var ln=add("line",{x1:rx.toFixed(1),y1:ry.toFixed(1),x2:(rx-2).toFixed(1),y2:(ry+len).toFixed(1),stroke:"rgba(202,220,246,"+op+")","stroke-width":(Math.random()<.3?"1.1":"0.7")},rn);
-      add("animateTransform",{attributeName:"transform",type:"translate",from:"0 -16",to:"5 24",dur:(.4+Math.random()*.35).toFixed(2)+"s",begin:(-Math.random()).toFixed(2)+"s",repeatCount:"indefinite"},ln); }
+    add("rect",{x:-VW,y:0,width:3*VW,height:HOR,fill:"url(#da_rainpat)"},rn);
+    var sn=add("g",{id:"da_snowfall",opacity:"0","class":"da-anim"},svg);
+    add("rect",{x:-VW,y:0,width:3*VW,height:HOR,fill:"url(#da_snowpat)"},sn);
   }
 
   var TASKS=[];
@@ -198,16 +188,10 @@
     if(root.classList.contains("da-inheader") && root.parentElement){ root.parentElement.style.setProperty("background", bg, "important"); }
 
     if($("da_stars")) $("da_stars").setAttribute("opacity",nf.toFixed(2));
-    if($("da_clouds")) $("da_clouds").setAttribute("opacity",((cond==="clear"?0:cond==="partly"?.55:cond==="cloudy"?.95:.85)*(1-nf*.45)).toFixed(2));
-    if($("da_rain")) $("da_rain").setAttribute("opacity",cond==="rain"?"1":"0");
-    if($("da_rback")){ var dk=nf;
-      $("da_rfar").setAttribute("fill",dk>.5?"#4A5688":"#93A3CE");
-      $("da_rback").setAttribute("fill",dk>.5?"#3E4B78":"#8092C2");
-      $("da_rmid").setAttribute("fill",dk>.5?"#323D62":"#6678A6");
-      $("da_rfront").setAttribute("fill",dk>.5?"#222B4A":"#4A5A86");
-      if($("da_snow"))$("da_snow").setAttribute("fill",dk>.5?"#D2DCEE":"url(#da_snow)");
-      var ag=day?Math.max(0,1-Math.abs(sp.elev)/11):0; if($("da_alpen"))$("da_alpen").setAttribute("opacity",(ag*.8).toFixed(2));
-    }
+    if($("da_clouds")) $("da_clouds").setAttribute("opacity",((cond==="clear"?0:cond==="partly"?.75:cond==="cloudy"?1:.92)*(1-nf*.35)).toFixed(2));
+    if($("da_rain")) $("da_rain").setAttribute("opacity",cond==="rain"?".92":"0");
+    if($("da_snowfall")) $("da_snowfall").setAttribute("opacity",cond==="snow"?".96":"0");
+    var _mt=root.querySelector(".da-mtns"); if(_mt){ _mt.style.filter="brightness("+(1-nf*0.6).toFixed(2)+") saturate("+(1-nf*0.35).toFixed(2)+")"; }
 
     // sun
     var body=$("da_body"),halo=$("da_halo"),bx=0,by=0;
@@ -267,6 +251,7 @@
       +(append?'':'<div class="da-head"><div class="da-state">—</div><div class="da-wx"><div class="t"></div><div class="c"></div><div class="da-fc"></div></div></div>')
       +'';
     var svgHost=document.createElement("div"); svgHost.className="da-svgwrap"; wrap.appendChild(svgHost);
+    var mtns=document.createElement("div"); mtns.className="da-mtns"; mtns.style.cssText="position:absolute;left:0;right:0;top:0;bottom:94px;z-index:1;background:url(\'images/hdr_mountains.webp\') no-repeat center 62%;background-size:cover;pointer-events:none"; wrap.appendChild(mtns);
     var tl=document.createElement("div"); tl.className="da-tl";
     tl.innerHTML='<div class="da-tl-track"></div><div class="da-tl-fill" id="da_fill"></div><div class="da-tl-span" id="da_span"></div><span class="da-anchor l">5 AM</span><span class="da-anchor r">11:30 PM</span>';
     wrap.appendChild(tl);
