@@ -142,7 +142,7 @@
     // clouds — fractal-noise sky clouds, BEHIND the peaks
     var cl=add("g",{id:"da_clouds",opacity:"0","class":"da-anim"},svg);
     var clw=add("g",{},cl);
-    add("rect",{x:-2*VW,y:1,width:5*VW,height:46,fill:"#ffffff",filter:"url(#da_cloudf)"},clw);
+    add("rect",{x:-2*VW,y:1,width:5*VW,height:88,fill:"#ffffff",filter:"url(#da_cloudf)"},clw);
     add("animateTransform",{attributeName:"transform",type:"translate",from:"0 0",to:VW+" 0",dur:"260s",repeatCount:"indefinite"},clw);
 
     // mountains come from the real photo layer (.da-mtns), added in mount()
