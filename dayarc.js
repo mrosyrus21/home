@@ -161,12 +161,14 @@
 
     if(E.sun){ if(sp.elev>-6.5){ var ss=Math.max(24,Math.min(H*0.55,W*0.15)); E.sun.style.width=ss+"px"; E.sun.style.height=ss+"px";
         var pS=(m-SUN.sunrise)/Math.max(1,SUN.sunset-SUN.sunrise), sPk=Math.min(1,Math.max(0.4,SUN.maxElev/70));
-        E.sun.style.left=(4+pS*92)+"%"; E.sun.style.top=(ridge-Math.sin(pS*Math.PI)*(ridge-topPad)*sPk)+"px"; E.sun.style.opacity="1"; }
+        var xS=4+pS*92; if(pS>1)xS+=(pS-1)*280; else if(pS<0)xS+=pS*280;
+        E.sun.style.left=xS+"%"; E.sun.style.top=(ridge-Math.sin(pS*Math.PI)*(ridge-topPad)*sPk)+"px"; E.sun.style.opacity="1"; }
       else E.sun.style.opacity="0"; }
     var mp=moonPos(D0,m), marc=moonArc(m);
     if(E.moon){ if(mp.alt>-6.5 && marc){ var ms=Math.max(15,Math.min(H*0.34,W*0.09)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
         var pM=(m-marc.rise)/Math.max(1,marc.set-marc.rise), mPk=Math.min(1,Math.max(0.35,marc.maxAlt/70));
-        E.moon.style.left=(4+pM*92)+"%"; E.moon.style.top=(ridge-Math.sin(pM*Math.PI)*(ridge-topPad)*mPk)+"px";
+        var xM=4+pM*92; if(pM>1)xM+=(pM-1)*280; else if(pM<0)xM+=pM*280;
+        E.moon.style.left=xM+"%"; E.moon.style.top=(ridge-Math.sin(pM*Math.PI)*(ridge-topPad)*mPk)+"px";
         E.moon.style.opacity=(day?0.35:(nf>0.15?1:0.4)).toFixed(2); }
       else E.moon.style.opacity="0"; }
 
