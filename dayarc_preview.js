@@ -250,7 +250,7 @@
       +(append?'':'<div class="da-head"><div class="da-state">—</div><div class="da-wx"><div class="t"></div><div class="c"></div><div class="da-fc"></div></div></div>')
       +'';
     var svgHost=document.createElement("div"); svgHost.className="da-svgwrap"; wrap.appendChild(svgHost);
-    var mtns=document.createElement("div"); mtns.className="da-mtns"; mtns.style.cssText="position:absolute;left:0;right:0;top:0;bottom:94px;z-index:1;background:url(\'images/hdr_mountains.webp\') no-repeat center bottom;background-size:cover;pointer-events:none"; wrap.appendChild(mtns);
+    var mtns=document.createElement("div"); mtns.className="da-mtns"; mtns.style.cssText="position:absolute;left:0;right:0;top:0;bottom:94px;z-index:1;background:url(\'images/hdr_mountains.webp\') no-repeat center top;background-size:cover;pointer-events:none"; wrap.appendChild(mtns);
     var tl=document.createElement("div"); tl.className="da-tl";
     tl.innerHTML='<div class="da-tl-track"></div><div class="da-tl-fill" id="da_fill"></div><div class="da-tl-span" id="da_span"></div><span class="da-anchor l">5 AM</span><span class="da-anchor r">11:30 PM</span>';
     wrap.appendChild(tl);
