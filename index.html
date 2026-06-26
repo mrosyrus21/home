@@ -4525,7 +4525,7 @@ curtainInit();
 <!-- Day Arc — shared module (also used by "House Day Arc.html"); edit dayarc.css / dayarc.js to update both -->
 <style>
   /* Day Arc = the header's living background (sky behind clock + weather) */
-  .header{position:relative;overflow:hidden;min-height:430px}
+  .header{position:relative;overflow:hidden;min-height:478px}
   .header-aurora{display:none}
   .header .header-bg::after{display:none !important}
   .header .header-bg::before{display:none !important}
@@ -4534,10 +4534,11 @@ curtainInit();
     background:none !important;
   }
   .header-inner, .progress-wrap{position:relative;z-index:2}
+  .header .progress-wrap{position:absolute;left:0;right:0;bottom:94px;z-index:3;background:rgba(8,7,14,.78);padding:6px 15px 4px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
   .header #day-arc.da-inheader{position:static;display:block;border:none;border-radius:0;margin:0;box-shadow:none;cursor:grab}
   .header #day-arc.da-inheader.grabbing{cursor:grabbing}
   .header #day-arc.da-inheader .da-sky{position:absolute;left:0;right:0;top:0;bottom:94px;z-index:0}
-  .header #day-arc.da-inheader .da-svgwrap{position:absolute;left:0;right:0;top:0;bottom:94px;z-index:0;line-height:0;aspect-ratio:auto;height:auto}
+  .header #day-arc.da-inheader .da-svgwrap{position:absolute;left:0;right:0;top:0;bottom:137px;z-index:0;line-height:0;aspect-ratio:auto;height:auto}
   .header #day-arc.da-inheader .da-svgwrap svg{width:100%;height:100%}
   .header #day-arc.da-inheader .da-tl{position:absolute;left:0;right:0;bottom:34px;z-index:2;border-radius:0}
   .header #day-arc.da-inheader .da-foot{position:absolute;left:0;right:0;bottom:0;z-index:2}
