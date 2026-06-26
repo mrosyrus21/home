@@ -46,6 +46,9 @@
     MOONPATH=[]; var seg=null;
     for(var mm=0;mm<=1440;mm+=4){var p=moonPos(D0,mm); if(p.alt>0){ if(!seg){seg=[];MOONPATH.push(seg);} seg.push([mm,p.az,p.alt]); } else seg=null; }
   }
+  // current moon up-period (rise->set minutes + peak altitude) so the moon traces a real arc, not a vertical drop
+  function moonArc(m){ for(var i=0;i<MOONPATH.length;i++){ var seg=MOONPATH[i]; var a=seg[0][0], b=seg[seg.length-1][0];
+      if(m>=a-25 && m<=b+25){ var mx=0; for(var j=0;j<seg.length;j++){ if(seg[j][2]>mx)mx=seg[j][2]; } return {rise:a,set:b,maxAlt:mx}; } } return null; }
 
   // ---------- reminders (unchanged data wiring) ----------
   function parseClock(s){ if(!s)return null; var m=String(s).match(/(\d{1,2}):(\d{2})\s*([AP]M)?/i); if(!m)return null;
@@ -157,11 +160,13 @@
     if(E.mtnNight) E.mtnNight.style.opacity=Math.max(0,Math.min(1,(nf-0.45)/0.30)).toFixed(2);
 
     if(E.sun){ if(sp.elev>-6.5){ var ss=Math.max(24,Math.min(H*0.55,W*0.15)); E.sun.style.width=ss+"px"; E.sun.style.height=ss+"px";
-        E.sun.style.left=posLeftPct(sp.az)+"%"; E.sun.style.top=topPx(sp.elev)+"px"; E.sun.style.opacity="1"; }
+        var pS=(m-SUN.sunrise)/Math.max(1,SUN.sunset-SUN.sunrise), sPk=Math.min(1,Math.max(0.4,SUN.maxElev/70));
+        E.sun.style.left=(4+pS*92)+"%"; E.sun.style.top=(ridge-Math.sin(pS*Math.PI)*(ridge-topPad)*sPk)+"px"; E.sun.style.opacity="1"; }
       else E.sun.style.opacity="0"; }
-    var mp=moonPos(D0,m);
-    if(E.moon){ if(mp.alt>-6.5){ var ms=Math.max(15,Math.min(H*0.34,W*0.09)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
-        E.moon.style.left=posLeftPct(mp.az)+"%"; E.moon.style.top=topPx(mp.alt)+"px";
+    var mp=moonPos(D0,m), marc=moonArc(m);
+    if(E.moon){ if(mp.alt>-6.5 && marc){ var ms=Math.max(15,Math.min(H*0.34,W*0.09)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
+        var pM=(m-marc.rise)/Math.max(1,marc.set-marc.rise), mPk=Math.min(1,Math.max(0.35,marc.maxAlt/70));
+        E.moon.style.left=(4+pM*92)+"%"; E.moon.style.top=(ridge-Math.sin(pM*Math.PI)*(ridge-topPad)*mPk)+"px";
         E.moon.style.opacity=(day?0.35:(nf>0.15?1:0.4)).toFixed(2); }
       else E.moon.style.opacity="0"; }
 
