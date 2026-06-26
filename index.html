@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260626090944"></script>
+<script src="./data.js?v=20260626171500"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -4525,7 +4525,7 @@ curtainInit();
 <!-- Day Arc — shared module (also used by "House Day Arc.html"); edit dayarc.css / dayarc.js to update both -->
 <style>
   /* Day Arc = the header's living background (sky behind clock + weather) */
-  .header{position:relative;overflow:hidden}
+  .header{position:relative;overflow:hidden;min-height:320px}
   .header-aurora{display:none}
   .header .header-bg::after{display:none !important}
   .header .header-bg::before{display:none !important}
@@ -4544,8 +4544,8 @@ curtainInit();
   .header #day-arc.da-inheader .da-live{z-index:6}
 </style>
 <script>window.DAYARC_CONFIG={appendHost:'.header'};</script>
-<link rel="stylesheet" href="dayarc.css?v=20260620180311">
-<script src="dayarc.js?v=20260626090944"></script>
+<link rel="stylesheet" href="dayarc.css?v=20260626171500">
+<script src="dayarc.js?v=20260626171500"></script>
 <script>(function(){ function relocate(){ try{ var c=document.querySelector('.content'); if(!c) return;
   var eb=document.getElementById('app-eyebrow'); if(eb&&eb.parentElement!==c){ eb.classList.add('eyebrow-bottom'); c.appendChild(eb); }
   var tr=document.querySelector('.hdr-trackers'); if(tr&&tr.parentElement!==c){ tr.classList.add('trackers-strip'); c.insertBefore(tr, c.firstChild); }
