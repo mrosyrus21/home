@@ -25,8 +25,8 @@
 #day-arc .da-clouds-layer.drift{animation:da-clouddrift 60s linear infinite}
 #day-arc .da-mtn{inset:0;background-repeat:no-repeat;background-position:center bottom;background-size:cover}
 #day-arc .da-rain-layer,#day-arc .da-snow-layer{inset:0;background-repeat:repeat;mix-blend-mode:screen;opacity:0;transition:opacity .5s ease;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent,#000 8%,#000 78%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 8%,#000 78%,transparent)}
-#day-arc .da-rain-layer{background-size:auto 300px}
-#day-arc .da-snow-layer{background-size:auto 520px}
+#day-arc .da-rain-layer{background-size:auto 380px}
+#day-arc .da-snow-layer{background-size:auto 600px}
 @keyframes da-rainfall{from{background-position:0 0}to{background-position:0 300px}}
 @keyframes da-snowfall{from{background-position:0 0}to{background-position:0 520px}}
 #day-arc .da-rain-layer.on{animation:da-rainfall .85s linear infinite}
