@@ -6,7 +6,7 @@
 <title>Day Arc — preview</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../dayarc.css?v=20260627000500">
+<link rel="stylesheet" href="../dayarc.css?v=20260627001500">
 <style>
   *{box-sizing:border-box}
   html,body{margin:0;background:#07060b;color:#EDE5F8;
@@ -68,7 +68,7 @@
     hourly: TEMPS.map(function(t){return {code:0,temp:t};})
   };
 </script>
-<script src="../dayarc.js?v=20260627000500"></script>
+<script src="../dayarc.js?v=20260627001500"></script>
 <script>
   function fmt(m){m=((m%1440)+1440)%1440;var h=Math.floor(m/60),mn=m%60,ap=h<12?"AM":"PM",hh=h%12||12;return hh+":"+(mn<10?"0":"")+mn+" "+ap;}
   var slider=document.getElementById('time'), tlabel=document.getElementById('tlabel');
