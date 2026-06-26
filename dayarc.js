@@ -103,7 +103,9 @@
     E.sun=mk(host,"da-sun");  E.sun.innerHTML='<img src="'+ASSET+'sun.png" alt="">';
     E.moon=mk(host,"da-moon"); E.moon.innerHTML='<img src="'+ASSET+'moon.png" alt="">';
     E.clouds=mk(host,"da-clouds-layer");
-    E.mtn=mk(host,"da-mtn"); E.mtn.style.backgroundImage="url('"+ASSET+"mtn-day.png')";
+    E.mtnDay=mk(host,"da-mtn"); E.mtnDay.style.backgroundImage="url('"+ASSET+"mtn-day.png')";
+    E.mtnDusk=mk(host,"da-mtn"); E.mtnDusk.style.backgroundImage="url('"+ASSET+"mtn-dusk.png')"; E.mtnDusk.style.opacity="0";
+    E.mtnNight=mk(host,"da-mtn"); E.mtnNight.style.backgroundImage="url('"+ASSET+"mtn-night.png')"; E.mtnNight.style.opacity="0";
     E.rain=mk(host,"da-rain-layer");
     E.snow=mk(host,"da-snow-layer");
   }
@@ -146,16 +148,19 @@
 
     var W=sceneHost.clientWidth||640, H=sceneHost.clientHeight||(W*0.34); if(H<10)H=W*0.34;
     var ridge=H*HORIZON, topPad=H*0.06;
-    function topPx(elev){ var f=Math.max(0,Math.min(1,elev/Math.max(SUN.maxElev,1))); return ridge - f*(ridge-topPad); }
+    function topPx(elev){ if(elev>=0){ var f=Math.min(1,elev/Math.max(SUN.maxElev,1)); return ridge - f*(ridge-topPad); }
+      var g=Math.min(1,(-elev)/6); return ridge + g*(H-ridge+H*0.12); }
 
     if(E.stars) E.stars.style.opacity=nf.toFixed(2);
-    var _mi=(nf>=0.6?"mtn-night.png":(nf>0.18?"mtn-dusk.png":"mtn-day.png")); if(E.mtn&&E.mtn._mi!==_mi){E.mtn.style.backgroundImage="url('"+ASSET+_mi+"')";E.mtn._mi=_mi;}
+    // mountain set cross-fade: day layer always opaque underneath, dusk+night fade on top -> never blanks on a swap
+    if(E.mtnDusk) E.mtnDusk.style.opacity=Math.max(0,Math.min(1,(nf-0.10)/0.20)).toFixed(2);
+    if(E.mtnNight) E.mtnNight.style.opacity=Math.max(0,Math.min(1,(nf-0.45)/0.30)).toFixed(2);
 
-    if(E.sun){ if(day){ var ss=Math.max(24,Math.min(H*0.55,W*0.15)); E.sun.style.width=ss+"px"; E.sun.style.height=ss+"px";
+    if(E.sun){ if(sp.elev>-6.5){ var ss=Math.max(24,Math.min(H*0.55,W*0.15)); E.sun.style.width=ss+"px"; E.sun.style.height=ss+"px";
         E.sun.style.left=posLeftPct(sp.az)+"%"; E.sun.style.top=topPx(sp.elev)+"px"; E.sun.style.opacity="1"; }
       else E.sun.style.opacity="0"; }
     var mp=moonPos(D0,m);
-    if(E.moon){ if(mp.alt>0){ var ms=Math.max(15,Math.min(H*0.34,W*0.09)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
+    if(E.moon){ if(mp.alt>-6.5){ var ms=Math.max(15,Math.min(H*0.34,W*0.09)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
         E.moon.style.left=posLeftPct(mp.az)+"%"; E.moon.style.top=topPx(mp.alt)+"px";
         E.moon.style.opacity=(day?0.35:(nf>0.15?1:0.4)).toFixed(2); }
       else E.moon.style.opacity="0"; }
