@@ -173,8 +173,9 @@
 
     var cl=lv.cloud; if(cl<1 && (cond==="rain"||cond==="snow")) cl=2;
     if(E.clouds){ if(cl>0){ E.clouds.style.backgroundImage="url('"+ASSET+CLOUD_FILE[cl]+"')";
-        if(cl>=3){ E.clouds.style.backgroundSize="cover"; E.clouds.style.backgroundPosition="center"; E.clouds.style.backgroundRepeat="no-repeat"; E.clouds.classList.remove("drift"); E.clouds.style.opacity=(0.95*(1-nf*0.18)).toFixed(2); }
-        else { E.clouds.style.backgroundSize="520px auto"; E.clouds.style.backgroundPosition="0 6%"; E.clouds.style.backgroundRepeat="repeat-x"; E.clouds.classList.add("drift"); E.clouds.style.opacity=([0,.6,.85][cl]*(1-nf*0.3)).toFixed(2); } }
+        E.clouds.style.filter="brightness("+(1-nf*0.62).toFixed(2)+")";
+        if(cl>=3){ E.clouds.style.backgroundSize="cover"; E.clouds.style.backgroundPosition="center"; E.clouds.style.backgroundRepeat="no-repeat"; E.clouds.classList.remove("drift"); E.clouds.style.opacity=(0.95*(1-nf*0.35)).toFixed(2); }
+        else { E.clouds.style.backgroundSize="520px auto"; E.clouds.style.backgroundPosition="0 6%"; E.clouds.style.backgroundRepeat="repeat-x"; E.clouds.classList.add("drift"); E.clouds.style.opacity=([0,.6,.85][cl]*(1-nf*0.45)).toFixed(2); } }
       else { E.clouds.style.opacity="0"; E.clouds.classList.remove("drift"); } }
     if(E.rain){ if(lv.rain>0){ E.rain.style.backgroundImage="url('"+ASSET+RAIN_FILE[lv.rain]+"')";
         E.rain.style.opacity=[0,.34,.52,.72][lv.rain]; E.rain.classList.add("on"); }
@@ -250,4 +251,5 @@
   setInterval(function(){ try{ if(APPENDSEL||typeof currentTab==="undefined"||currentTab==="today"){ if(!document.getElementById("day-arc")) mount(); else if(!userScrub) update(); } }catch(e){} }, 30000);
   document.addEventListener("DOMContentLoaded",function(){ setTimeout(function(){ try{mount();}catch(e){} },400); });
   setTimeout(function(){ try{ mount(); }catch(e){} }, 700);
+  window.DayArc={ mount:mount, update:update, cfg:DACFG, setMin:function(mm){ userScrub=(mm!=null); scrubM=(mm==null?0:mm); update(); } };
 })();

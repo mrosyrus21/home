@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Day Arc — preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../dayarc.css?v=20260626233000">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#07060b;color:#EDE5F8;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+  .lead{text-align:center;margin:6px 0 18px}
+  .lead .kick{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#F5B830}
+  .lead h1{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:26px;margin:6px 0 4px}
+  .lead p{color:rgba(255,255,255,.66);font-size:13px;max-width:560px;margin:0 auto;line-height:1.5}
+  #stage{position:relative;border-radius:16px;overflow:hidden;box-shadow:0 22px 50px -28px rgba(0,0,0,.85)}
+  .controls{margin:18px auto 0;max-width:700px;display:flex;flex-direction:column;gap:14px}
+  .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+  .slbl{font-family:'Lora',serif;font-size:13px;color:#FCE7C0;min-width:96px;text-align:center;
+    background:rgba(240,168,32,.12);border:1px solid rgba(240,168,32,.3);border-radius:20px;padding:4px 10px}
+  input[type=range]{flex:1;min-width:240px;accent-color:#F5B830}
+  button{font:inherit;font-size:12.5px;color:#EDE5F8;background:#15131d;border:1px solid rgba(255,255,255,.12);
+    border-radius:10px;padding:7px 13px;cursor:pointer;transition:.15s}
+  button:hover{background:#1f1c2b;border-color:rgba(245,184,48,.5)}
+  button.on{background:linear-gradient(135deg,#F5B830,#E0792A);color:#241500;font-weight:700;border-color:transparent}
+  .hint{text-align:center;color:rgba(255,255,255,.5);font-size:12px;font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="lead">
+    <div class="kick">Home &amp; Garden</div>
+    <h1>The Living Day Arc</h1>
+    <p>Real sun &amp; moon arcs, mountains that shift from day to dusk to night, and skies driven by live weather. Drag the scene or move the slider to travel through the day.</p>
+  </div>
+  <div id="stage"></div>
+  <div class="controls">
+    <div class="row">
+      <span class="slbl" id="tlabel">&mdash;</span>
+      <input id="time" type="range" min="0" max="1439" step="1">
+      <button id="now">Now</button>
+    </div>
+    <div class="row" id="wx">
+      <button data-c="0" class="on">&#9728;&#65039; Clear</button>
+      <button data-c="2">&#9925; Partly</button>
+      <button data-c="3">&#9729;&#65039; Overcast</button>
+      <button data-c="63">&#127783;&#65039; Rain</button>
+      <button data-c="73">&#127784;&#65039; Snow</button>
+    </div>
+    <div class="hint">Tip: drag left/right on the scene to scrub time, just like the app.</div>
+  </div>
+</div>
+<script>
+  var TEMPS=[]; for(var h=0;h<24;h++){ TEMPS.push(Math.round(58+16*Math.sin((h-9)/24*Math.PI*2))); }
+  window.DAYARC_CONFIG={
+    host:"stage",
+    assets:"../dayarc-assets",
+    tasks:[
+      {m:480, ic:"\u{1F373}", label:"Breakfast", color:"#C084FC"},
+      {m:750, ic:"\u{1F957}", label:"Lunch", color:"#2DB870"},
+      {m:1110,ic:"\u{1F37D}️", label:"Dinner", color:"#C084FC"},
+      {m:1320,ic:"\u{1F319}", label:"Wind-down", color:"#A78BFA"},
+      {m:1380,ic:"\u{1F6CF}️", label:"Bedtime", color:"#38BDF8"}
+    ],
+    hourly: TEMPS.map(function(t){return {code:0,temp:t};})
+  };
+</script>
+<script src="../dayarc.js?v=20260626233000"></script>
+<script>
+  function fmt(m){m=((m%1440)+1440)%1440;var h=Math.floor(m/60),mn=m%60,ap=h<12?"AM":"PM",hh=h%12||12;return hh+":"+(mn<10?"0":"")+mn+" "+ap;}
+  var slider=document.getElementById('time'), tlabel=document.getElementById('tlabel');
+  var n0=new Date(), nowMin=n0.getHours()*60+n0.getMinutes();
+  slider.value=nowMin; tlabel.textContent=fmt(nowMin);
+  slider.addEventListener('input',function(){ tlabel.textContent=fmt(+slider.value); if(window.DayArc) window.DayArc.setMin(+slider.value); });
+  document.getElementById('now').addEventListener('click',function(){ var n=new Date(),nm=n.getHours()*60+n.getMinutes(); slider.value=nm; tlabel.textContent=fmt(nm); if(window.DayArc) window.DayArc.setMin(null); });
+  var wx=document.getElementById('wx');
+  wx.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b)return;
+    [].forEach.call(wx.children,function(x){x.classList.remove('on');}); b.classList.add('on');
+    var code=+b.dataset.c, hr=TEMPS.map(function(t){return {code:code,temp:t};});
+    window.DAYARC_CONFIG.hourly=hr; if(window.DayArc){ if(window.DayArc.cfg) window.DayArc.cfg.hourly=hr; window.DayArc.update(); } });
+</script>
+</body>
+</html>
