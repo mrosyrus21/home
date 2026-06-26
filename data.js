@@ -264,6 +264,8 @@ const PLANTS = [
     trim:"Hilling, not pruning: keep mounding soil or mulch over the base as the plants grow so the developing potatoes stay buried — light turns them green and bitter. Flowers are fine to leave. Stop watering once the tops yellow and flop." },
   { id:"white_onion", light:"☀️ Full sun", waterChip:"💧 every 2 days — steady while bulbing", harvestChip:"🧅 ~90–120 days — lift when the tops flop over", name:"White Onion", emoji:"🧅", loc:"outdoor", freq:"One white onion in the middle of the shared wide gray pot. Give it steady, even moisture while the bulb sizes up, then ease off near the end. Water at the base every couple of days.", days:2, trimDays:30,
     trim:"Leave it be while it bulbs — no trimming. When the green tops naturally flop over and start to brown (late summer), stop watering, wait ~1–2 weeks, then lift it and cure the bulb in a dry, airy spot for a couple weeks before storing." },
+  { id:"ginger", light:"🌥️ Part shade — bright, no harsh afternoon sun", waterChip:"💧 every 2 days — evenly moist", harvestChip:"🫚 ~8–10 months — lift when leaves yellow & die back", name:"Ginger Root", emoji:"🫚", loc:"outdoor", freq:"A ginger rhizome tucked into the shared wide gray pot with the onions and potatoes. Keep it evenly moist and warm — water at the base every couple of days; it likes humidity but rots in soggy soil.", days:2, trimDays:30,
+    trim:"No real pruning — just remove yellow or dead leaves. Near harvest (~8–10 months) let the foliage die back and stop watering, then tip out the pot, break off a piece of rhizome, and replant the rest." },
 
   { id:"ristra", light:"☀️ Brightest warm light", waterChip:"💧 every 2 days — evenly moist, gentle", harvestChip:"🌶️ not yet — first harvest ~10–12 weeks after transplant",        name:"New Mexico Chile",       emoji:"🌶️", loc:"greenhouse", freq:"Just germinated — keep the seed mix lightly and evenly moist (never soggy) and give it the brightest, warm light you have. Water gently at the soil or from below so you do not flatten the sprout.", days:2, trimDays:30,
     trim:"Seedling stage — no pruning. Once it has 2–3 sets of true leaves, pot it up into a bigger container and harden it off gradually before it ever goes outside. Pinch the very first flower buds later for a bushier, more productive plant." },
@@ -277,6 +279,8 @@ const PLANTS = [
     trim:"Spring bloom is finishing and it is getting leggy — shear the whole plant back by about a third now to keep it compact and trigger a second flush." }];
 
 const PLANT_INFO = {
+  shared_pot:   { photo:"images/onion_potato_pot_20260615.jpg" },
+  ginger:       { fact:"Ginger is not a root — it is a rhizome, an underground stem. Each knobby hand you plant sends up leafy shoots and grows more rhizome to harvest." },
   fittonia:     { photo:"images/fittonia_20260615.jpg", fact:"Called the 'nerve plant' for its vein-like patterns — it dramatically faints when thirsty, then perks back up after a drink. In bark mulch, check it every 2 days — it dries faster than soil." },
   croton:       { photo:"images/croton_20260615.jpg", fact:"Croton leaves change color with light: more sun means brighter reds, oranges, and yellows." },
   jade:         { fact:"A succulent that can live for decades — jade is widely seen as a symbol of good luck and prosperity.", photo:"images/jade_20260615.jpg" },
@@ -541,7 +545,7 @@ const REMINDERS = [
   { id:"rem_bill_cluster_park", date:"2026-06-18", emoji:"💧", text:"Park ~$364 for the bill cluster (Xcel ~$133 · Denver Water $40 · Student loan $191) — don't touch until Xcel, water & student loan autopay clear." },
   { id:"rem_petco_ammonia",   standing:true,     emoji:"🦐", text:"Petco: pick up aquarium ammonia tester (Seachem badge or API drops) for the shrimp tank" },
   { id:"rem_derm", standing:true, emoji:"📞", text:"Call the dermatologist" },
-  { id:"rem_thyme_plant",     standing:true,     emoji:"🌿", text:"Get a thyme plant" },
+  { id:"rem_get_herbs",       standing:true,     emoji:"🌿", text:"Get saffron, thyme and cilantro plant/seeds" },
   { id:"rem_tv_triage",       standing:true,     emoji:"📺", text:"After work: 10-min triage on the free 50-inch TV — grab the model number off the back sticker, check for a standby light, then flashlight test for a ghost image (ghost = ~$20 backlight fix). No buying parts until triage is done." },
   { id:"rem_flip_leads",      date:"2026-06-13", emoji:"🎯", text:"Yesterday's flip leads (if still up): free 83-inch OLED in Thornton (boards alone sell $100+), $0 Samsung Neo QLED 55 in Conifer, $0 broken TV in Tech Center, $0 WORKING 42-inch flatscreen downtown — hit the Craigslist free section first thing." },
   // ── 🦐 AQUARIUM #5 nitrite recovery — daily distilled water changes until NO2 = 0 (added Jun 18 2026) ──
