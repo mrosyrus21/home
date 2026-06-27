@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 27 · 2:35 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 27 · 2:45 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -4186,7 +4186,7 @@ function hgSignOut(){ try{ firebase.auth().signOut().then(function(){ location.r
   }catch(e){ startData(); }
 })();
 
-const HEADER_NIGHT = "images/bg_night_20260606.jpg"; // Milky Way over RMNP — Public Domain (NPS / Jeremy M. White)
+const HEADER_NIGHT = "https://commons.wikimedia.org/wiki/Special:FilePath/Night_Sky_at_Rocky_Mountain_National_Park_(26972703445).jpg?width=2560"; // Milky Way over RMNP — Public Domain (NPS / Jeremy M. White)
 
 const TAB_BG = {
   today:"https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=2560",
@@ -4205,11 +4205,11 @@ const TAB_BG = {
 //   dusk:    Sunset in Palmer Park, Colorado Springs — Mark Byzewski, CC BY 4.0
 //   night:   Milky Way over RMNP — NPS / Jeremy M. White, Public Domain
 const TODAY_BG = {
-  dawn:   "images/bg_dawn_20260606.jpg",
-  morning:"images/bg_morning_20260606.jpg",
-  noon:   "images/bg_noon_20260606.jpg",
-  dusk:   "images/bg_dusk_20260606.jpg",
-  night:  "images/bg_night_20260606.jpg"
+  dawn:   "https://commons.wikimedia.org/wiki/Special:FilePath/Maroon_Bells,_two_peaks_in_the_Elk_Mountains_that_are_less_than_half-mile_apart,_are_reflected_on_Maroon_Lake.jpg?width=2560",
+  morning:"https://commons.wikimedia.org/wiki/Special:FilePath/Bear_Lake,_Rocky_Mountain_National_Park_(6045126612).jpg?width=2560",
+  noon:   "https://commons.wikimedia.org/wiki/Special:FilePath/Longs_Peak_with_Lenticular_Clouds,_Rocky_Mountain_National_Park.jpg?width=2560",
+  dusk:   "https://commons.wikimedia.org/wiki/Special:FilePath/Pikes_Peak_from_the_Garden_of_the_Gods_banner.jpg?width=2560",
+  night:  "https://commons.wikimedia.org/wiki/Special:FilePath/Night_Sky_at_Rocky_Mountain_National_Park_(26972703445).jpg?width=2560"
 };
 function todaySeg(){ const h=new Date().getHours(); return h<5?"night":h<8?"dawn":h<11?"morning":h<16?"noon":h<20?"dusk":"night"; }
 function setTabBg(t){
