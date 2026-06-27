@@ -168,7 +168,7 @@
         E.sun.style.left=xyS[0]+"%"; E.sun.style.top=xyS[1]+"px"; E.sun.style.opacity="1"; }
       else E.sun.style.opacity="0"; }
     var mp=moonPos(D0,m), marc=moonArc(m);
-    if(E.moon){ if(mp.alt>-9 && marc){ var ms=Math.max(15,Math.min(H*0.34,W*0.09)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
+    if(E.moon){ if(mp.alt>-9 && marc){ var ms=Math.max(13,Math.min(H*0.22,W*0.06)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
         var pM=(m-marc.rise)/Math.max(1,marc.set-marc.rise), mPk=Math.min(1,Math.max(0.35,marc.maxAlt/70)), xyM=arcXY(pM,mPk);
         E.moon.style.left=xyM[0]+"%"; E.moon.style.top=xyM[1]+"px";
         var rpos=mp.waxing?mp.illum/2:1-mp.illum/2, mf=moonFile(rpos);
