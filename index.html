@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260626171500"></script>
+<script src="./data.js?v=20260627-fix1"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1700,9 +1700,6 @@ function renderToday() {
     { id:"proj_greenonion", emoji:"🌿", hex:"#34D399", title:"Regrow green onions",
       sub:"Root ends in a glass with an inch of water, bright windowsill.",
       steps:["Save the white root ends, about 1 to 2 inches long, roots intact.","Stand them root-down in a glass with about 1 inch of water.","Bright windowsill — indirect light is fine.","Change the water every 1 to 2 days.","Snip new green tops as they regrow; they keep going for weeks.","Optional: pot into soil for sturdier growth."] },
-    { id:"proj_romaine", emoji:"🥬", hex:"#4ADE80", title:"Regrow a romaine head",
-      sub:"Base cut-side-up in a shallow water dish, bright windowsill.",
-      steps:["Slice the base off about 1 inch tall and keep the stump.","Set it cut-side-up in a shallow dish with about half an inch of water.","Bright windowsill — indirect light is fine.","Change the water every day.","New leaves push up from the center in 3 to 5 days.","After about a week, optionally pot it into moist soil.","Snip baby leaves as they grow; expect about 2 weeks before it bolts."] },
   ];
   PIN_OPEN.filter(p=>!checked[p.id]).forEach(p=>{
     const open=!!expanded[p.id];
@@ -1827,17 +1824,7 @@ function renderToday() {
         : reminderCardHtml("🚙",DMV.text,"","toggleReminder('dmv',true)",extra));
     }
   }
-  // ── 🔥 BURN CARE — daily nag through the care window (date-keyed → reappears each day), then a one-shot
-  // silicone-gel switch once healed. Config in BURN_CARE (data.js). (added Jun 10 2026) ──
-  if(typeof BURN_CARE!=='undefined'){
-    // Burn-care daily nag removed Jun 18 2026 — burn healed (per Cyrus). Silicone scar-gel next-step kept.
-    if(today>=BURN_CARE.siliconeDate){
-      const siDone=reminderDone('burnsilicone',false);
-      add("burnsilicone",286,siDone, siDone
-        ? strip("🩹","Silicone scar gel — started",true,"#A78BFA","toggleReminder('burnsilicone')","","","Keep it up ~12 hrs/day for 2–3 months + sun protection")
-        : reminderCardHtml("🩹","Burn healed & skin fully closed? Start silicone scar gel (ScarAway or bioCorneum) ~12 hrs/day for 2–3 months, plus sun protection.","","toggleReminder('burnsilicone')",""));
-    }
-  }
+  // Burn care removed Jun 27 2026 — wounds fully healed (per Cyrus).
   // ── 🔍 FLIP SCAN — daily morning deal-hunt card (date-keyed → reappears each day). Links live in FLIP_SCAN (data.js). (added Jun 12 2026) ──
   if(typeof FLIP_SCAN!=='undefined'){
     const fsDone=!!laundry["rem-flipscan-"+today];
@@ -4139,11 +4126,19 @@ ST.on('value', snap => {
     return;
   }
 
-  // One-time: Jun 10 2026 — seed the "headrest cup holder for Zoe" 3D-print idea as a rollover (stays on Today until printed). Idempotent via flag.
+  // One-time: Jun 10 2026 — seed the headrest 3D-print idea as a rollover (stays on Today until printed). Idempotent via flag.
   if (!flags['rollover-seed-headrest-v1']) {
     rollovers = rollovers || {};
-    if(!rollovers['ro-headrest-cupholder']) rollovers['ro-headrest-cupholder']={ label:"🛠️ 3D print: headrest cup holder for Zoe", created: todayKey() };
+    if(!rollovers['ro-headrest-cupholder']) rollovers['ro-headrest-cupholder']={ label:"🛠️ 3D print: new clean gyroid headrest", created: todayKey() };
     ST.update({ rollovers: rollovers, 'flags/rollover-seed-headrest-v1': 'done' });
+    return;
+  }
+
+  // One-time: Jun 27 2026 — relabel the headrest print rollover to the new clean gyroid version.
+  if (!flags['rollover-headrest-gyroid-v2']) {
+    rollovers = rollovers || {};
+    if(rollovers['ro-headrest-cupholder']) rollovers['ro-headrest-cupholder'].label="🛠️ 3D print: new clean gyroid headrest";
+    ST.update({ rollovers: rollovers, 'flags/rollover-headrest-gyroid-v2': 'done' });
     return;
   }
 
