@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 27 · 2:19 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 27 · 2:23 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -1875,7 +1875,7 @@ function renderToday() {
     });
   }
   // ＋ add-your-own rollover task (passive — doesn't count toward the daily tally)
-  add("ro-add",325,false,`<div onclick="addRollover()" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(245,158,11,.45);border-radius:var(--rad);padding:11px 16px;margin-bottom:10px;cursor:pointer;color:#F59E0B;font-family:'Lora',serif;font-size:13px">＋ Add a task that rolls over until done</div>`,true);
+  add("ro-add",1305,false,`<div onclick="addRollover()" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(245,158,11,.45);border-radius:var(--rad);padding:11px 16px;margin-bottom:10px;cursor:pointer;color:#F59E0B;font-family:'Lora',serif;font-size:13px">＋ Add a task that rolls over until done</div>`,true);
 
 
   // ── 🗑️ TRASH + RECYCLE — every Tuesday night Trash; alternating Tuesdays (anchor Tue Jun 9 2026) also Recycle (added Jun 10 2026) ──
