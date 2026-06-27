@@ -171,7 +171,7 @@
     if(E.moon){ if(mp.alt>-9 && marc){ var ms=Math.max(13,Math.min(H*0.22,W*0.06)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
         var pM=(m-marc.rise)/Math.max(1,marc.set-marc.rise), mPk=Math.min(1,Math.max(0.35,marc.maxAlt/70)), xyM=arcXY(pM,mPk);
         E.moon.style.left=xyM[0]+"%"; E.moon.style.top=xyM[1]+"px";
-        var rpos=mp.waxing?mp.illum/2:1-mp.illum/2, mf=moonFile(rpos);
+        var mday=moonPos(D0,720), rpos=mday.waxing?mday.illum/2:1-mday.illum/2, mf=moonFile(rpos);
         if(E.moonImg&&E.moonImg._mf!==mf){E.moonImg.src=ASSET+mf+"?v=2330";E.moonImg._mf=mf;}
         E.moon.style.opacity=(mp.illum<0.02?0.12:(day?0.35:(nf>0.15?1:0.4))).toFixed(2); }
       else E.moon.style.opacity="0"; }
