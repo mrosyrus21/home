@@ -2262,7 +2262,7 @@ function plantsDueOn(dateStr, ignoreWx) {
     const days = Math.round((target - last) / 86400000);
     let need = p.days;
     if(wxOn && (p.loc==="outdoor"||p.loc==="greenhouse")){
-      if(WXF.hot) need = Math.max(1, need - 1);              // heat: bring watering forward a day
+      if(WXF.hot) need = Math.max(2, need - 1);              // heat: bring watering forward a day
       if(WXF.rainToday && p.loc==="outdoor") need = need + 2; // rain: let the sky water outdoor plants
     }
     return days >= need;
