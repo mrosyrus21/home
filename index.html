@@ -606,7 +606,7 @@ body::after{
    pass, and perf fixes. Delete this block + the v2-nav markup/script
    at the end of body to fully revert. */
 body.v2-bgphoto{
-  background-image:linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280");
+  background-image:linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=2560");
 }
 /* small v1 bug fix: never let the clock wrap "PM" onto the date line */
 .hdr-clock{ white-space:nowrap; }
@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 27 · 2:25 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jun 27 · 2:35 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -4189,14 +4189,14 @@ function hgSignOut(){ try{ firebase.auth().signOut().then(function(){ location.r
 const HEADER_NIGHT = "images/bg_night_20260606.jpg"; // Milky Way over RMNP — Public Domain (NPS / Jeremy M. White)
 
 const TAB_BG = {
-  today:"https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=1280",
-  garden:"https://commons.wikimedia.org/wiki/Special:FilePath/GREAT_DIXTER_GARDEN_The_colourful_and_welcoming_potted_plant_display_in_front_of_the_house.JPG?width=1280",
-  shopping:"https://commons.wikimedia.org/wiki/Special:FilePath/Planted_Tank_03_-_Flickr_-_The_Wandering_Angel.jpg?width=1280",
-  grocery:"https://commons.wikimedia.org/wiki/Special:FilePath/Grocery_Store_Aisle%2C_vermont.jpg?width=1280",
-  print:"https://commons.wikimedia.org/wiki/Special:FilePath/3D_printer_at_35c3_01.jpg?width=1280",
-  wellness:"https://commons.wikimedia.org/wiki/Special:FilePath/Running_At_Sunrise_Malta_Color_Street_Photography_%28167052449%29.jpeg?width=1280",
-  rooms:"https://commons.wikimedia.org/wiki/Special:FilePath/IKEA_store%2C_Interior_design%2C_Living_room%2C_Rostov-on-Don%2C_Russia.jpg?width=1280",
-  timeline:"https://commons.wikimedia.org/wiki/Special:FilePath/Aurora_Borealis_%28Northern_Light%29_over_Svolv%C3%A6r%2C_Lofoten%2C_Norway2.jpg?width=1280",
+  today:"https://commons.wikimedia.org/wiki/Special:FilePath/Colorful_sky_with_orange_and_pink_clouds_reflecting_in_the_water_of_a_paddy_field_at_dusk_in_Don_Det_Laos.jpg?width=2560",
+  garden:"https://commons.wikimedia.org/wiki/Special:FilePath/GREAT_DIXTER_GARDEN_The_colourful_and_welcoming_potted_plant_display_in_front_of_the_house.JPG?width=2560",
+  shopping:"https://commons.wikimedia.org/wiki/Special:FilePath/Planted_Tank_03_-_Flickr_-_The_Wandering_Angel.jpg?width=2560",
+  grocery:"https://commons.wikimedia.org/wiki/Special:FilePath/Grocery_Store_Aisle%2C_vermont.jpg?width=2560",
+  print:"https://commons.wikimedia.org/wiki/Special:FilePath/3D_printer_at_35c3_01.jpg?width=2560",
+  wellness:"https://commons.wikimedia.org/wiki/Special:FilePath/Running_At_Sunrise_Malta_Color_Street_Photography_%28167052449%29.jpeg?width=2560",
+  rooms:"https://commons.wikimedia.org/wiki/Special:FilePath/IKEA_store%2C_Interior_design%2C_Living_room%2C_Rostov-on-Don%2C_Russia.jpg?width=2560",
+  timeline:"https://commons.wikimedia.org/wiki/Special:FilePath/Aurora_Borealis_%28Northern_Light%29_over_Svolv%C3%A6r%2C_Lofoten%2C_Norway2.jpg?width=2560",
 }
 // 🏔️ Time-of-day MOUNTAIN backgrounds — local, license-verified Wikimedia Commons:
 //   dawn:    Maroon Bells at sunrise, Aspen CO — Lorie Shaull, CC BY-SA 2.0
