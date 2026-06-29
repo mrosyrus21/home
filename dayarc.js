@@ -104,7 +104,8 @@
     sceneHost=host; host.innerHTML=""; host.classList.add("da-scene");
     E.stars=mk(host,"da-stars"); E.stars.style.backgroundImage="url('"+ASSET+"stars.jpg')";
     E.sun=mk(host,"da-sun");  E.sun.innerHTML='<img src="'+ASSET+'sun.png" alt="">';
-    E.moon=mk(host,"da-moon"); E.moon.innerHTML='<img src="'+ASSET+'moons/m11.png?v=2330" alt="">'; E.moonImg=E.moon.firstChild;
+    E.moon=mk(host,"da-moon"); E.moon.innerHTML='<canvas class="da-moon-cv" style="width:100%;height:100%;display:block"></canvas>'; E.moonCanvas=E.moon.firstChild;
+    E.moonBase=new Image(); E.moonBase.onload=function(){ try{ if(E.moonCanvas)E.moonCanvas._key=""; update(); }catch(e){} }; E.moonBase.src=ASSET+"moon-base.png?v=2340";
     E.clouds=mk(host,"da-clouds-layer");
     E.mtnDay=mk(host,"da-mtn"); E.mtnDay.style.backgroundImage="url('"+ASSET+"mtn-day.png?v=2326')";
     E.mtnDusk=mk(host,"da-mtn"); E.mtnDusk.style.backgroundImage="url('"+ASSET+"mtn-dusk.png?v=2326')"; E.mtnDusk.style.opacity="0";
@@ -139,6 +140,22 @@
   var MOON_POS=[[0,0.062],[1,0.220],[2,0.286],[3,0.463],[4,0.452],[5,0.226],[6,0.249],[7,0.273],[8,0.464],[9,0.459],[10,0.535],[11,0.531],[12,0.469],[13,0.468],[14,0.457],[15,0.538],[16,0.530],[17,0.467],[18,0.468],[19,0.478],[20,0.243],[21,0.517],[22,0.490],[23,0.492],[24,0.787]];
   function moonFile(pos){ var best=11,bd=9; for(var i=0;i<MOON_POS.length;i++){ var d=Math.abs(MOON_POS[i][1]-pos); if(d>0.5)d=1-d; if(d<bd){bd=d;best=MOON_POS[i][0];} } return "moons/m"+(best<10?"0":"")+best+".png"; }
 
+  function drawMoon(ms){
+    if(!E.moonCanvas||!E.moonBase||!E.moonBase.complete||!E.moonBase.naturalWidth) return;
+    var dpr=Math.min(2,window.devicePixelRatio||1), S=Math.max(8,Math.round(ms*dpr));
+    var il=(E._mil==null?1:E._mil), wax=(E._mwax!==false);
+    var key=S+"|"+Math.round(il*100)+"|"+(wax?1:0);
+    if(E.moonCanvas._key===key) return; E.moonCanvas._key=key;
+    var cv=E.moonCanvas; cv.width=S; cv.height=S; var ctx=cv.getContext("2d");
+    ctx.clearRect(0,0,S,S); ctx.drawImage(E.moonBase,0,0,S,S);
+    var im=ctx.getImageData(0,0,S,S), dt=im.data, c=(S-1)/2, soft=0.07;
+    for(var y=0;y<S;y++){ var v=(y-c)/c, sq=Math.sqrt(Math.max(0,1-v*v)), xt=(1-2*il)*sq;
+      for(var x=0;x<S;x++){ var u=(x-c)/c, idx=(y*S+x)*4;
+        if(u*u+v*v>1){ dt[idx+3]=0; continue; }
+        var sd=wax?(u-xt):(-xt-u), al=sd/soft; al=al<0?0:(al>1?1:al);
+        dt[idx+3]=dt[idx+3]*al; } }
+    ctx.putImageData(im,0,0);
+  }
   function update(){
     var root=$("day-arc"); if(!root||!sceneHost)return;
     var m=curM(), sp=solar(m,N_TODAY), day=sp.elev>-0.8, w=wxAt(m), cond=w.cond, nf=nightFactor(m);
@@ -171,8 +188,7 @@
     if(E.moon){ if(mp.alt>-9 && marc){ var ms=Math.max(13,Math.min(H*0.22,W*0.06)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
         var pM=(m-marc.rise)/Math.max(1,marc.set-marc.rise), mPk=Math.min(1,Math.max(0.35,marc.maxAlt/70)), xyM=arcXY(pM,mPk);
         E.moon.style.left=xyM[0]+"%"; E.moon.style.top=xyM[1]+"px";
-        var mday=moonPos(D0,720), rpos=mday.waxing?mday.illum/2:1-mday.illum/2, mf=moonFile(rpos);
-        if(E.moonImg&&E.moonImg._mf!==mf){E.moonImg.src=ASSET+mf+"?v=2330";E.moonImg._mf=mf;}
+        var mday=moonPos(D0,720); E._mil=mday.illum; E._mwax=mday.waxing; drawMoon(ms);
         E.moon.style.opacity=(mp.illum<0.02?0.12:(day?0.35:(nf>0.15?1:0.4))).toFixed(2); }
       else E.moon.style.opacity="0"; }
 
