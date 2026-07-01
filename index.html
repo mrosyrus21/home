@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260701092145-fix1"></script>
+<script src="./data.js?v=20260701140620-fix1"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jul 1 · 9:21 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jul 1 · 2:06 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -2347,13 +2347,13 @@ function renderGarden() {
     if (rainSet.size) html += `<div style="background:rgba(126,184,240,.08);border:1px solid #7EB8F0;border-radius:10px;padding:10px 13px;margin-bottom:12px;font-size:12.5px;color:#7EB8F0;font-family:'Lora',serif;line-height:1.5">🌧️ Rain (${WXF.pop}%) is covering ${rainSet.size} outdoor plant${rainSet.size>1?"s":""} today — auto-skipped from the due list. Water anyway if a light shower won't soak the pots.</div>`;
     if (dueSet.size) html += `<div onclick="waterAllDue()" style="background:rgba(45,184,112,.1);border:1px solid rgba(45,184,112,.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="font-size:18px">💧</div><div style="font-size:13px;font-weight:600;color:#4AD490">Mark all as watered today</div></div>`;
     else if (total) html += `<div style="background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">✅</div><div style="font-size:13px;color:#4AD490;font-style:italic">All watered today — nice work</div></div>`;
-    const POT_GROUP=["green_onion","potato","white_onion","ginger"].filter(id=>PLANTS.some(p=>p.id===id));
+    const POT_GROUP=["green_onion","potato","white_onion","ginger","turmeric"].filter(id=>PLANTS.some(p=>p.id===id));
     const potDS=()=>{ var ds=POT_GROUP.map(id=>daysSinceWatered(id)); if(!ds.length||ds.some(d=>d===null)) return null; return Math.max.apply(null,ds); };
     const potDone=POT_GROUP.length>0 && POT_GROUP.every(id=>watered[id]===today);
     const potPushed=POT_GROUP.some(id=>waterPushed[id]&&waterPushed[id]>today);
     const potDue=POT_GROUP.some(id=>dueSet.has(id));
     const potRain=POT_GROUP.some(id=>rainSet.has(id));
-    const potP={id:"shared_pot",name:"Shared Pot · Onions, Potatoes & Ginger",emoji:"🪴",days:2,waterChip:"💧 every 2 days — evenly moist",freq:"The wide gray pot shared by the green onions, golden potatoes, white onion, and ginger root — water them all together at the base every couple of days, keeping the soil evenly moist."};
+    const potP={id:"shared_pot",name:"Shared Pot · Onions, Potatoes, Ginger & Turmeric",emoji:"🪴",days:2,waterChip:"💧 every 2 days — evenly moist",freq:"The wide gray pot shared by the green onions, golden potatoes, white onion, ginger, and two turmeric roots — water them all together at the base every couple of days, keeping the soil evenly moist."};
     const urg = p => { if(p.id==="shared_pot"){ if(potDone) return -1000; if(potPushed) return -500; var pd=potDS(); if(pd===null) return 1e9; return pd-2; } if(watered[p.id]===today) return -1000; if(waterPushed[p.id]&&waterPushed[p.id]>today) return -500; const dd=daysSinceWatered(p.id); if(dd===null) return 1e9; return dd-(p.days||7); };
     // strict water-need order: most overdue (and never-watered) on top, least (watered today / snoozed) on bottom. (removed the WATER_GROUP clustering, which was overriding this order)
     const inPot=id=>POT_GROUP.indexOf(id)>=0;
@@ -2368,8 +2368,8 @@ function renderGarden() {
         let pbody=hdr(p, pdd!==null?pdd+"d ago":"never");
         pbody+=chipRow(chip(p.waterChip,"#7EB8F0"));
         pbody+=sect("💧 When & how","#7EB8F0",p.freq);
-        pbody+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px;font-style:italic">🪴 Green Onions · Golden Potatoes · White Onion · Ginger Root — watered together. Harvest each on its own under 🌾 Harvest.</div>';
-        pbody+='<button class="water-btn '+bc+'" onclick="waterPlantGroup([\'green_onion\',\'potato\',\'white_onion\',\'ginger\'])" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">'+bl+'</button>';
+        pbody+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px;font-style:italic">🪴 Green Onions · Golden Potatoes · White Onion · Ginger · Turmeric — watered together. Harvest each on its own under 🌾 Harvest.</div>';
+        pbody+='<button class="water-btn '+bc+'" onclick="waterPlantGroup([\'green_onion\',\'potato\',\'white_onion\',\'ginger\',\'turmeric\'])" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">'+bl+'</button>';
         html+=pcard(p,bTxt,bCol,pbody);
         return;
       }
@@ -4547,7 +4547,7 @@ curtainInit();
 </style>
 <script>window.DAYARC_CONFIG={appendHost:'.header'};</script>
 <link rel="stylesheet" href="dayarc.css?v=20260626213000">
-<script src="dayarc.js?v=20260701092145"></script>
+<script src="dayarc.js?v=20260701140620"></script>
 <script>(function(){ function relocate(){ try{ var c=document.querySelector('.content'); if(!c) return;
   var eb=document.getElementById('app-eyebrow'); if(eb&&eb.parentElement!==c){ eb.classList.add('eyebrow-bottom'); c.appendChild(eb); }
   var tr=document.querySelector('.hdr-trackers'), hd=document.querySelector('.header'); if(tr&&hd&&tr.parentElement!==hd){ hd.appendChild(tr); }
