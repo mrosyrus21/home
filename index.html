@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260627-fix1"></script>
+<script src="./data.js?v=20260701092145-fix1"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jun 27 · 2:45 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jul 1 · 9:21 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -3919,6 +3919,7 @@ function showApp() {
   setTabBg(currentTab);
   loadWeather();
   if(!window.__wxTimer) window.__wxTimer=setInterval(loadWeather,2700000);
+  if(!window.__wxFocus){ window.__wxFocus=1; document.addEventListener("visibilitychange",function(){ if(!document.hidden) loadWeather(); }); window.addEventListener("focus",loadWeather); }
 }
 
 // ── 🔒 AUTH GATE (v2) ── data listeners attach via startData() once we know
@@ -4546,7 +4547,7 @@ curtainInit();
 </style>
 <script>window.DAYARC_CONFIG={appendHost:'.header'};</script>
 <link rel="stylesheet" href="dayarc.css?v=20260626213000">
-<script src="dayarc.js?v=20260627010000"></script>
+<script src="dayarc.js?v=20260701092145"></script>
 <script>(function(){ function relocate(){ try{ var c=document.querySelector('.content'); if(!c) return;
   var eb=document.getElementById('app-eyebrow'); if(eb&&eb.parentElement!==c){ eb.classList.add('eyebrow-bottom'); c.appendChild(eb); }
   var tr=document.querySelector('.hdr-trackers'), hd=document.querySelector('.header'); if(tr&&hd&&tr.parentElement!==hd){ hd.appendChild(tr); }
