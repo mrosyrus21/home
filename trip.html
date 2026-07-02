@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06050A">
+<title>Como Trip · Jul 2–5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06050A; --line:rgba(232,180,74,.22);
+    --text:#EDE5F8; --muted:#9A93B0; --amber:#E8B44A; --amber2:#F0C868;
+    --teal:#34D3EE; --green:#7BD88F;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  body{margin:0; background:var(--bg); color:var(--text);
+    font-family:'Lora',Georgia,'Times New Roman',serif; line-height:1.5; padding:0 0 50px;}
+  .wrap{max-width:640px; margin:0 auto; padding:8px 16px;}
+  header.top{text-align:center; padding:16px 0 4px}
+  .eyebrow{font-size:10px; letter-spacing:.28em; text-transform:uppercase; color:var(--amber); font-style:italic}
+  h1{font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:29px; margin:7px 0 3px; letter-spacing:-.01em; line-height:1.1}
+  .dates{color:var(--amber2); font-size:15px; letter-spacing:.02em}
+  .goal{color:var(--muted); font-size:13.5px; font-style:italic; margin:12px auto 0; max-width:520px}
+  .offline{font-size:11px; color:var(--teal); margin-top:13px; border:1px solid rgba(52,211,238,.3); border-radius:20px; padding:5px 12px; display:inline-block}
+  section{background:linear-gradient(160deg,rgba(255,255,255,.032),rgba(255,255,255,.008)); border:1px solid var(--line); border-radius:16px; padding:15px 16px 9px; margin:15px 0}
+  .sec-title{font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:18px; margin:0 0 8px; display:flex; align-items:center; gap:9px}
+  .sub{font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--amber); margin:14px 0 4px}
+  ul.chk{list-style:none; margin:0 0 4px; padding:0}
+  ul.chk li{display:flex; gap:11px; align-items:flex-start; padding:9px 0; border-bottom:1px solid rgba(255,255,255,.045); cursor:pointer}
+  ul.chk li:last-child{border-bottom:none}
+  .box{width:20px;height:20px;border-radius:6px;border:2px solid var(--amber);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#06050A;transition:.12s}
+  li.done .box{background:var(--amber)}
+  li.done .lbl{text-decoration:line-through; color:var(--muted)}
+  .lbl{flex:1; font-size:14.5px}
+  .lbl small{display:block; color:var(--muted); font-size:12px; margin-top:2px; text-decoration:none}
+  ul.plain{list-style:none;margin:0;padding:0}
+  ul.plain li{padding:7px 0 7px 16px; position:relative; font-size:14px; border-bottom:1px solid rgba(255,255,255,.045)}
+  ul.plain li:last-child{border-bottom:none}
+  ul.plain li:before{content:"–"; position:absolute; left:0; color:var(--amber)}
+  ul.plain small{color:var(--muted); font-size:12.5px}
+  .rule li:before{content:"◆"; font-size:9px; top:9px}
+  .meal{margin-bottom:13px}
+  .meal h4{font-family:'Playfair Display',serif; font-size:13.5px; margin:0 0 3px; color:var(--amber2); letter-spacing:.04em; text-transform:uppercase}
+  .meal p{margin:0; font-size:13.5px}
+  .meal p.side{color:var(--muted); font-size:12.5px; margin-top:2px}
+  footer{text-align:center; color:var(--muted); font-size:11px; margin-top:20px; font-style:italic}
+  .reset{display:block; margin:16px auto 0; background:none; border:1px solid var(--line); color:var(--muted); border-radius:20px; padding:7px 18px; font-family:inherit; font-size:12px; cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="./" style="display:inline-block;margin:2px 0 -4px;font-size:12px;color:#9A93B0;text-decoration:none">‹ Schedule</a>
+  <header class="top">
+    <div class="eyebrow">Fishing · Cabin · Dog</div>
+    <h1>Como / Montgomery Reservoir</h1>
+    <div class="dates">July 2–5 · Trip Plan</div>
+    <div class="goal">Low cost, minimal people, good fishing, relax at the cabin, keep the dog away from crowds, use what I already have.</div>
+    <div class="offline">✓ Works offline — no signal needed</div>
+  </header>
+
+  <section><div class="sec-title">🌙 Tonight</div><ul class="chk" data-list="tonight"></ul></section>
+  <section><div class="sec-title">🌅 Morning</div><ul class="chk" data-list="morning"></ul></section>
+
+  <section>
+    <div class="sec-title">🎒 What to Pack</div>
+    <div class="sub">Food I have</div><ul class="chk" data-list="food"></ul>
+    <div class="sub">Herbs</div><ul class="chk" data-list="herbs"></ul>
+    <div class="sub">Fishing</div><ul class="chk" data-list="fishing"></ul>
+    <div class="sub">Other</div><ul class="chk" data-list="other"></ul>
+  </section>
+
+  <section><div class="sec-title">🛒 What to Buy</div><ul class="chk" data-list="buy"></ul></section>
+
+  <section>
+    <div class="sec-title">🍳 Meal Plan</div>
+    <div class="meal"><h4>Thursday · Dinner</h4><p>Chicken + zucchini + squash skillet — rosemary, garlic, butter, lemon.</p><p class="side">+ spinach salad w/ tomato, basil, mozzarella</p></div>
+    <div class="meal"><h4>Friday · Breakfast</h4><p>Eggs + hash browns + green onion. Coffee.</p></div>
+    <div class="meal"><h4>Friday · Lunch (fishing)</h4><p>Chicken pesto sandwich — bread, chicken, pesto, spinach, tomato, mozzarella, pickles.</p><p class="side">+ apple, nuts, jerky</p></div>
+    <div class="meal"><h4>Friday · Dinner</h4><p>Italian sausage linguini — sausage, marinara, garlic, basil + parsley, parmesan.</p><p class="side">+ spinach salad</p></div>
+    <div class="meal"><h4>Saturday · Lunch</h4><p>Chicken quesadillas — tortilla, chicken, mozzarella, spinach; salsa or pesto or hot honey.</p><p class="side">+ yogurt-lemon-dill dip</p></div>
+    <div class="meal"><h4>Saturday · Dinner</h4><p>Skillet meal — chicken or sausage or eggs; zucchini, squash, onion; soy sauce or balsamic; butter, parmesan; capers optional.</p><p class="side">serve with rice or salad</p></div>
+  </section>
+
+  <section>
+    <div class="sec-title">🥗 Salad System</div>
+    <ul class="plain">
+      <li>Base: spinach + tomato + herbs</li>
+      <li>Dressings: <small>olive oil + balsamic · yogurt + lemon + dill · honey + balsamic · hot honey</small></li>
+      <li>Add: mozzarella, pickles, capers</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-title">🎣 Fishing Plan</div>
+    <div class="sub">Setups</div>
+    <ul class="plain">
+      <li>Worm + bobber <small>best starting setup</small></li>
+      <li>Worm + split shot — bottom rig</li>
+      <li>Slow retrieve rig</li>
+    </ul>
+    <div class="sub">Decision rules</div>
+    <ul class="plain">
+      <li>Start fishing 5–10 min</li>
+      <li>If bites: stay — don't change anything</li>
+      <li>If no bites: change location first</li>
+      <li>Still no bites: change rig <small>bobber ↔ bottom ↔ retrieve</small></li>
+      <li>Still no bites: downsize bait and move again</li>
+      <li>Always change ONE thing at a time</li>
+    </ul>
+    <div class="sub">Hook rules</div>
+    <ul class="plain">
+      <li>Small hooks (#8–#10)</li>
+      <li>Pinch barbs for catch &amp; release</li>
+      <li>If deeply swallowed, cut line close and release</li>
+    </ul>
+    <div class="sub">Best strategy</div>
+    <ul class="plain">
+      <li>Fish early morning</li>
+      <li>Move often if no activity</li>
+      <li>Avoid crowds</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-title">📋 Rules</div>
+    <ul class="plain rule">
+      <li>Cook simple meals</li>
+      <li>Use spinach salad daily</li>
+      <li>Fish early, rest later</li>
+      <li>Avoid people (for the dog)</li>
+      <li>Don't overbuy groceries</li>
+      <li>Keep things simple and repeatable</li>
+    </ul>
+  </section>
+
+  <button class="reset" onclick="resetChecks()">↺ Reset all checkboxes</button>
+  <footer>Como / Montgomery Reservoir · Jul 2–5 · tap items to check them off</footer>
+</div>
+
+<script>
+const LISTS = {
+  tonight:[
+    'Pack fishing gear<small>rod · hooks · worms · pliers/hemostats · license</small>',
+    'Pack food + cooler',
+    'Pick herbs<small>basil (top stems) · parsley (outer stems) · dill (small handful) · rosemary (few sprigs) · mint optional</small>',
+    'Wrap herbs in slightly damp paper towel → ziplock bags',
+    'Charge phone + devices',
+    'Gather book + camera',
+    'Put everything by the door',
+    'Sleep early'
+  ],
+  morning:[
+    'Check work messages quickly',
+    'Load car + cooler',
+    'Grab herbs, food, gear',
+    'Leave for Golden appointment',
+    'After appointment, drive to Conifer',
+    'Set up base<small>parking + work if needed</small>'
+  ],
+  food:[
+    'Chicken breasts (2)','Italian sausage','Eggs','Spinach',
+    'Heirloom tomatoes (3) + cherry tomato','Zucchini + yellow squash',
+    'Mozzarella + parmesan + butter','Greek yogurt',
+    'Rice + linguini + corn tortillas','Pesto, salsa, pickles, capers',
+    'Olive oil, balsamic, honey, hot honey','Soy sauce, worcestershire',
+    'Spices<small>italian, cumin, paprika, chili powder</small>','Coffee, cream, sugar'
+  ],
+  herbs:['Basil','Parsley','Dill','Rosemary','Mint (optional)'],
+  fishing:['Rod + spinning reel','Hooks (#8–#10)','Worms','Split shot','Pliers/hemostats','Fishing license'],
+  other:['Book','Camera','Foil','Ziplock bags','Phone charger'],
+  buy:['Onion bread<small>for sandwiches</small>','Bell pepper<small>optional</small>','Worms<small>if needed</small>','Avocado<small>optional</small>']
+};
+function keyFor(list,i){return 'como_'+list+'_'+i;}
+function get(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function set(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function render(){
+  document.querySelectorAll('ul.chk').forEach(function(ul){
+    var list=ul.getAttribute('data-list'); var items=LISTS[list]||[];
+    ul.innerHTML=items.map(function(t,i){
+      var done=get(keyFor(list,i))==='1';
+      return '<li class="'+(done?'done':'')+'" onclick="tog(\''+list+'\','+i+')">'
+        +'<span class="box">'+(done?'✓':'')+'</span><span class="lbl">'+t+'</span></li>';
+    }).join('');
+  });
+}
+function tog(list,i){var k=keyFor(list,i); set(k, get(k)==='1'?'0':'1'); render();}
+function resetChecks(){
+  try{Object.keys(localStorage).forEach(function(k){if(k.indexOf('como_')===0)localStorage.removeItem(k);});}catch(e){}
+  render();
+}
+render();
+</script>
+</body>
+</html>

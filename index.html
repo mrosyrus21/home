@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260701140620-fix1"></script>
+<script src="./data.js?v=20260702065902-fix1"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jul 1 · 2:06 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jul 2 · 6:59 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -1848,12 +1848,12 @@ function renderToday() {
   // 🔔 dated + standing reminders
   if(typeof REMINDERS!=='undefined'){
     REMINDERS.forEach(function(r,i){
-      const showToday = r.standing ? true : (r.date===today);
+      const showToday = r.standing ? true : (r.dateEnd ? (today>=r.date && today<=r.dateEnd) : (r.date===today));
       if(!showToday) return;
       const dn=reminderDone(r.id,false);  // one-shot done-state
       add("rem-"+r.id,288+i,dn, dn
         ? strip(r.emoji,r.text,true,"#38BDF8","toggleReminder('"+r.id+"')","","","")
-        : reminderCardHtml(r.emoji,r.text,r.account||"","toggleReminder('"+r.id+"')",""));
+        : reminderCardHtml(r.emoji,r.text,r.account||"","toggleReminder('"+r.id+"')",r.link?('<a href="'+r.link+'" onclick="event.stopPropagation()" style="display:inline-block;margin-top:8px;font-size:11.5px;color:#7DD3FC;font-family:\'Lora\',serif;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.32);border-radius:20px;padding:4px 12px;text-decoration:none">\U0001F4C4 Open trip plan →</a>'):""));
     });
   }
 
@@ -4547,7 +4547,7 @@ curtainInit();
 </style>
 <script>window.DAYARC_CONFIG={appendHost:'.header'};</script>
 <link rel="stylesheet" href="dayarc.css?v=20260626213000">
-<script src="dayarc.js?v=20260701140620"></script>
+<script src="dayarc.js?v=20260702065902"></script>
 <script>(function(){ function relocate(){ try{ var c=document.querySelector('.content'); if(!c) return;
   var eb=document.getElementById('app-eyebrow'); if(eb&&eb.parentElement!==c){ eb.classList.add('eyebrow-bottom'); c.appendChild(eb); }
   var tr=document.querySelector('.hdr-trackers'), hd=document.querySelector('.header'); if(tr&&hd&&tr.parentElement!==hd){ hd.appendChild(tr); }

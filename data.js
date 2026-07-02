@@ -575,7 +575,11 @@ const REMINDERS = [
   { id:"pest_spray_0703", date:"2026-07-03", emoji:"🐛", text:"Re-spray Captain Jack's Deadbug (spinosad), indoor + outdoor — evening. Dose 3 of 3." },
   { id:"pest_bits_0703", date:"2026-07-03", emoji:"🦟", text:"Reapply Mosquito Bits (Bti) to indoor plant soil — week 2." },
   { id:"pest_traps_0703", date:"2026-07-03", emoji:"🟨", text:"Check / replace indoor yellow sticky traps — swap any that are covered." },
-  { id:"pest_bits_0710", date:"2026-07-10", emoji:"🦟", text:"Reapply Mosquito Bits (Bti) to indoor plant soil — week 3 (final; breaks the fungus-gnat cycle)." }
+  { id:"pest_bits_0710", date:"2026-07-10", emoji:"🦟", text:"Reapply Mosquito Bits (Bti) to indoor plant soil — week 3 (final; breaks the fungus-gnat cycle)." },
+  // ── 🎣 COMO / MONTGOMERY RESERVOIR TRIP (Jul 2–5) — added Jul 2 2026; range reminder auto-expires after 7/5 ──
+  { id:"rem_trip_plan", date:"2026-07-02", dateEnd:"2026-07-05", emoji:"🎣", text:"Como / Montgomery Reservoir trip (Jul 2–5) — full plan: packing, meals, salad & fishing", link:"trip.html" },
+  { id:"rem_trip_pack", date:"2026-07-02", emoji:"🎒", text:"Pack for Como: rod/hooks/worms/hemostats/license, food + cooler, herbs (basil/parsley/dill/rosemary), charge devices, book + camera by the door" },
+  { id:"rem_trip_go", date:"2026-07-02", emoji:"🚗", text:"Leaving for Como: check work messages, load car + cooler, grab herbs/food/gear, Golden appointment, then drive to Conifer" }
 ];
 
 // ── 🚙 DMV — daily reminder to call for an earlier cancellation slot, through the appointment date.
