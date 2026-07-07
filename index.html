@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jul 6 · 11:20 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jul 6 · 11:32 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -852,6 +852,7 @@ let recipeCat = null; // 🍴 transient Recipe Box nav: null=tiles, "__doggy", o
 const GROC_BUILTIN=[{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
 let printCustom = {};
 let taskCustom = {};
+let scheduleCustom = {};
 let painLog = {};
 let litfulo = {};
 let zoey = {};
@@ -975,6 +976,65 @@ function roomTaskEntries(roomId){ return Object.entries(TASKS).filter(([id,t])=>
 function saveTasksC(){ ST.child('taskCustom').set(taskCustom); }
 function addTaskC(roomId){ const el=document.getElementById('taskInput-'+roomId); if(!el) return; const v=(el.value||'').trim(); if(!v) return; taskCustom['ct-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={room:roomId,label:v,level:'easy'}; el.value=''; saveTasksC(); renderRooms(); }
 function removeTaskC(id){ delete taskCustom[id]; if(checked[id]){ delete checked[id]; save(); } saveTasksC(); renderRooms(); }
+function taskById(id){ return TASKS[id]||taskCustom[id]||scheduleCustom[id]; }
+function saveScheduleC(){ ST.child('scheduleCustom').set(scheduleCustom); }
+function scheduleTaskIdsForDate(ds){ return Object.entries(scheduleCustom).filter(([id,t])=>t&&t.date===ds).map(([id])=>id); }
+function addScheduleC(){
+  const date=(document.getElementById('schedDate')?.value||todayKey()).trim();
+  const label=(document.getElementById('schedLabel')?.value||'').trim();
+  const room=(document.getElementById('schedRoom')?.value||'priority').trim();
+  const level=(document.getElementById('schedLevel')?.value||'easy').trim();
+  const note=(document.getElementById('schedNote')?.value||'').trim();
+  if(!date||!label) return toast('Add a date and task name.');
+  const id='sc-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  scheduleCustom[id]={date,label,room,level};
+  if(note) scheduleCustom[id].note=note;
+  saveScheduleC();
+  ['schedLabel','schedNote'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  toast('Scheduled.');
+  renderAll();
+}
+function moveScheduleC(id){
+  const el=document.getElementById('schedMove-'+id), d=(el&&el.value||'').trim();
+  if(!scheduleCustom[id]||!d) return;
+  scheduleCustom[id].date=d;
+  saveScheduleC();
+  toast('Moved.');
+  renderAll();
+}
+function removeScheduleC(id){
+  if(!scheduleCustom[id]) return;
+  delete scheduleCustom[id];
+  if(checked[id]){ delete checked[id]; save(); }
+  saveScheduleC();
+  toast('Removed.');
+  renderAll();
+}
+function renderScheduleAdmin(){
+  const rooms=Object.entries(ROOMS).map(([id,r])=>`<option value="${id}">${r.emoji} ${r.name}</option>`).join('');
+  const items=Object.entries(scheduleCustom).sort((a,b)=>(a[1].date||'').localeCompare(b[1].date||'')).slice(0,20);
+  const rows=items.length?items.map(([id,t])=>{
+    const r=ROOMS[t.room]||ROOMS.priority||ROOMS.kitchen;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06)">
+      <input id="schedMove-${id}" type="date" value="${t.date||todayKey()}" style="width:126px;background:rgba(0,0,0,.24);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px;font-size:12px">
+      <div style="flex:1;min-width:0"><div style="font-size:12.5px;color:var(--text);font-weight:700;line-height:1.3">${t.label}</div><div style="font-size:10.5px;color:${r.color};font-family:'Lora',serif">${r.emoji} ${r.name} · ${t.level||'easy'}</div></div>
+      <button onclick="moveScheduleC('${id}')" style="background:rgba(99,102,241,.14);border:1px solid rgba(99,102,241,.4);color:#A5B4FC;border-radius:8px;padding:7px 9px;font-size:11px;cursor:pointer">Move</button>
+      <button onclick="removeScheduleC('${id}')" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#FCA5A5;border-radius:8px;padding:7px 9px;font-size:11px;cursor:pointer">Remove</button>
+    </div>`;
+  }).join(''):`<div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;font-style:italic;padding-top:4px">No manual schedule tasks yet.</div>`;
+  return `<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid #818CF8;border-radius:var(--rad);padding:13px 16px;margin-bottom:14px">
+    <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#A5B4FC;font-family:'Lora',serif;margin-bottom:8px">Admin · manual schedule</div>
+    <div style="display:grid;grid-template-columns:128px 1fr;gap:8px;margin-bottom:8px">
+      <input id="schedDate" type="date" value="${todayKey()}" style="background:rgba(0,0,0,.24);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px;font-size:12px">
+      <input id="schedLabel" placeholder="Task name" style="background:rgba(0,0,0,.24);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px;font-size:12px">
+      <select id="schedRoom" style="background:rgba(0,0,0,.24);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px;font-size:12px">${rooms}</select>
+      <select id="schedLevel" style="background:rgba(0,0,0,.24);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px;font-size:12px"><option value="easy">Easy</option><option value="moderate">Moderate</option><option value="hard">Hard</option></select>
+      <input id="schedNote" placeholder="Optional note" style="grid-column:1 / -1;background:rgba(0,0,0,.24);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px;font-size:12px">
+    </div>
+    <button onclick="addScheduleC()" style="width:100%;background:rgba(129,140,248,.16);border:1px solid rgba(129,140,248,.42);color:#C7D2FE;border-radius:9px;padding:9px 12px;font-size:12.5px;font-weight:700;cursor:pointer;margin-bottom:9px">Add to schedule</button>
+    ${rows}
+  </div>`;
+}
 function printCustomHtml(){ const ids=Object.keys(printCustom); if(!ids.length) return ''; const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); return '<div style="background:#0d0d1a;border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:2px 15px;margin-bottom:8px">'+ids.map(id=>'<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,.05)"><div style="flex:1;font-size:13px;color:var(--text);font-family:\'Lora\',serif">'+esc(printCustom[id])+'</div><div onclick="removePrint(\''+id+'\')" style="font-size:17px;color:#5a7a99;cursor:pointer;padding:0 2px;line-height:1">×</div></div>').join('')+'</div>'; }
 function saveTrimmed(){ ST.child('trimmed').set(trimmed); }
 function saveHarvested(){ ST.child('harvested').set(harvested); }
@@ -1064,7 +1124,8 @@ function findOriginalDate(id) {
 function effectiveTasksForDate(ds) {
   const base=(SCHEDULE.find(s=>s.date===ds)?.tasks||[]).filter(id=>!pushed[id]||pushed[id]===ds);
   const here=Object.entries(pushed).filter(([id,d])=>d===ds).map(([id])=>id);
-  return [...new Set([...base,...here])];
+  const manual=scheduleTaskIdsForDate(ds);
+  return [...new Set([...base,...here,...manual])].filter(id=>taskById(id));
 }
 // Find next date with available capacity starting from (not including) fromDs
 function findNextSlot(taskId,fromDs) {
@@ -1234,7 +1295,7 @@ function levelBadge(level) {
 }
 
 function taskItemHTML(id, color) {
-  const t=TASKS[id]; if(!t) return "";
+  const t=taskById(id); if(!t) return "";
   const done=!!checked[id];
   if(done){
     return `<div class="task-done-chip" onclick="toggle('${id}')">
@@ -1253,11 +1314,11 @@ function taskItemHTML(id, color) {
 function groupedCardHTML(taskIds, badgeType) {
   const levelOrder={easy:0,moderate:1,hard:2};
   const grouped={};
-  taskIds.forEach(id=>{ const t=TASKS[id]; if(!t) return; if(!grouped[t.room]) grouped[t.room]=[]; grouped[t.room].push(id); });
+  taskIds.forEach(id=>{ const t=taskById(id); if(!t) return; if(!grouped[t.room]) grouped[t.room]=[]; grouped[t.room].push(id); });
   return Object.entries(grouped).map(([roomId,ids])=>{
     const r=ROOMS[roomId]||ROOMS.kitchen;
     const allDone=ids.every(id=>checked[id]);
-    const sorted=[...ids].sort((a,b)=>(levelOrder[TASKS[a]?.level]||1)-(levelOrder[TASKS[b]?.level]||1));
+    const sorted=[...ids].sort((a,b)=>(levelOrder[taskById(a)?.level]||1)-(levelOrder[taskById(b)?.level]||1));
     const carriedBadge=badgeType==="carried"?`<span class="task-badge" style="background:rgba(200,134,10,.1);color:var(--amber);border:1px solid var(--aborder);margin-left:auto">↩ carried</span>`:"";
     return `<div class="task-card${badgeType==="carried"?" carried":""}" style="border-left-color:${r.color};opacity:${allDone?.5:1}">
       <div class="task-card-header">
@@ -1350,7 +1411,7 @@ const TIME_META={
 };
 function getTaskTime(id){
   if(TIME_META[id]) return TIME_META[id];
-  const t=TASKS[id]||taskCustom[id]; if(!t) return {order:850,timeLabel:"Afternoon",dur:"~30 min"};
+  const t=taskById(id); if(!t) return {order:850,timeLabel:"Afternoon",dur:"~30 min"};
   const isWknd=(new Date().getDay()===0||new Date().getDay()===6);
   if(t.level==="hard")     return isWknd?{order:440,timeLabel:"Morning",dur:"2–4 hrs"}:{order:840,timeLabel:"Afternoon",dur:"2–4 hrs"};
   if(t.level==="moderate") return isWknd?{order:460,timeLabel:"Morning",dur:"1–2 hrs"}:{order:860,timeLabel:"Afternoon",dur:"1–2 hrs"};
@@ -1475,7 +1536,7 @@ function todaysPlan(){
   return {ids:[], roomId:"kitchen", roomName:"", color:"#10B981", roomDone:0, roomTotal:0, roomPct:100};
 }
 function planCard(id){
-  const t=TASKS[id]||taskCustom[id]; if(!t) return "";
+  const t=taskById(id); if(!t) return "";
   const r=ROOMS[t.room]||ROOMS.kitchen;
   const isDone=!!checked[id];
   const open=!!expanded[id];
@@ -1988,11 +2049,17 @@ function renderToday() {
       <div style="font-size:11.5px;color:var(--text2);font-style:italic;margin-top:3px;font-family:'Lora',serif">The house can wait — recharge. Pool league tonight. 🎱</div>
     </div>`,true);
   } else if(oneId){
-    const t=TASKS[oneId]||taskCustom[oneId];
+    const t=taskById(oneId);
     const r=ROOMS[t.room]||ROOMS.kitchen;
     const all=roomTaskEntries(t.room);
     const rDone=all.filter(([id])=>checked[id]).length, rTotal=all.length;
     add("task",taskOrder,!!checked[oneId],`<div style="font-size:10px;color:${r.color};font-family:'Lora',serif;letter-spacing:.12em;text-transform:uppercase;margin:2px 2px 5px">🏡 Today's one thing · ${r.emoji} ${r.name} ${rDone}/${rTotal}</div>`+planCard(oneId)+(checked[oneId]?"":`<div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin:-4px 2px 12px">${(dow===0||dow===6)?"The weekend pick — a bigger one, but it is the only one. 💪":"Just this one thing today. That is the whole plan. 🌱"}</div>`));
+  }
+
+  const schedToday=scheduleTaskIdsForDate(today);
+  if(schedToday.length){
+    const allDone=schedToday.every(id=>checked[id]);
+    add("schedcustom",taskOrder+8,allDone,`<div style="font-size:10px;color:#A5B4FC;font-family:'Lora',serif;letter-spacing:.12em;text-transform:uppercase;margin:2px 2px 5px">Admin schedule · ${schedToday.filter(id=>checked[id]).length}/${schedToday.length}</div>`+groupedCardHTML(schedToday,""));
   }
 
   // Dinner + evening wind-down
@@ -2069,6 +2136,7 @@ function renderToday() {
 // Build a full date-indexed map of all days that appear in schedule or have watering
 function allTimelineDates() {
   const dates = new Set(SCHEDULE.map(s=>s.date));
+  Object.values(scheduleCustom).forEach(t=>{ if(t&&t.date) dates.add(t.date); });
   // Add watering dates for next 60 days
   for(let i=0;i<=60;i++){
     const fd=new Date(); fd.setDate(fd.getDate()+i);
@@ -2103,7 +2171,7 @@ function renderTimeline() {
       const id=oneTaskForDate(ds,isDoneSim);
       if(id){
         sim.add(id);
-        const t=TASKS[id]||taskCustom[id];
+        const t=taskById(id);
         const roomLeft=roomTaskEntries(t.room).some(([tid])=>!isDoneSim(tid)&&!NO_PROGRESS.has(tid));
         days.push({date:ds, id, roomId:t.room, finishesRoom:!roomLeft});
       }
@@ -2131,7 +2199,7 @@ function renderTimeline() {
   Object.keys(tlRem).forEach(function(ds){ if(!_have.has(ds)){ days.push({date:ds, remOnly:true}); } });
   days.sort(function(a,b){ return a.date<b.date?-1:(a.date>b.date?1:0); });
 
-  let html="";
+  let html=renderScheduleAdmin();
   // 🍽️ daily meal rhythm — eat on a clock (added Jun 9 2026)
   if(typeof MEAL_ANCHORS!=='undefined' && MEAL_ANCHORS.length){
     const _by=MEAL_ANCHORS.find(function(x){return x.by;});
@@ -3950,6 +4018,7 @@ ST.on('value', snap => {
   grocPurchased = d.grocPurchased || {};
   printCustom = d.printCustom || {};
   taskCustom  = d.taskCustom  || {};
+  scheduleCustom = d.scheduleCustom || {};
   painLog     = d.painLog     || {};
   litfulo     = d.litfulo     || {};
   zoey        = d.zoey        || {};
@@ -4379,7 +4448,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260706232058',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260706233228',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
