@@ -55,11 +55,14 @@
     var h=+m[1],mn=+m[2],ap=(m[3]||"").toUpperCase(); if(ap==="PM"&&h<12)h+=12; if(ap==="AM"&&h===12)h=0; return h*60+mn; }
   function tasks(){
     if(DACFG.tasks) return DACFG.tasks.slice().sort(function(a,b){return a.m-b.m;});
-    var RY=(typeof RHYTHM!=="undefined"&&RHYTHM)?RHYTHM:{breakfast:"8:00 AM",lunch:"12:30 PM",dinner:"6:30 PM",windDown:"10:00 PM",lightsOut:"11:00 PM"};
+    var RY=(typeof RHYTHM!=="undefined"&&RHYTHM)?RHYTHM:{waterWake:"8:00 AM",breakfast:"8:00 AM",lunch:"12:30 PM",hydration:"3:30 PM",workout:"5:30 PM",dinner:"6:30 PM",windDown:"10:00 PM",lightsOut:"11:00 PM"};
     function pc(s,f){var v=parseClock(s);return v==null?f:v;}
     return [
+      {m:pc(RY.waterWake||RY.wake,480), ic:"\u{1F4A7}", label:"Wake water", color:"#38BDF8", find:"wake"},
       {m:pc(RY.breakfast,480), ic:"\u{1F373}", label:"Breakfast", color:"#C084FC", find:"breakfast"},
       {m:pc(RY.lunch,750),     ic:"\u{1F957}", label:"Lunch",     color:"#2DB870", find:"lunch"},
+      {m:pc(RY.hydration,930), ic:"\u{1F4A7}", label:"Hydration", color:"#38BDF8", find:"hydration"},
+      {m:pc(RY.workout,1050),  ic:"\u{1F4AA}", label:"Movement", color:"#34D399", find:"movement"},
       {m:pc(RY.dinner,1110),   ic:"\u{1F37D}️", label:"Dinner", color:"#C084FC", find:"dinner"},
       {m:pc(RY.windDown,1320), ic:"\u{1F319}", label:"Wind-down", color:"#A78BFA", find:"wind"},
       {m:pc(RY.lightsOut,1380),ic:"\u{1F6CF}️", label:"Bedtime", color:"#38BDF8", find:"bedtime"}

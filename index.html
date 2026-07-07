@@ -786,7 +786,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260702065902-fix1"></script>
+<script src="./data.js?v=20260706234653-health"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jul 6 · 11:32 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jul 6 · 11:46 PM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -1598,6 +1598,77 @@ function mealAnchorHtml(A, done, nowM, dow){
   return { order:A.upOrder, html:strip(A.emoji,A.label,false,C_PAST,"toggleMeal('"+A.id+"')",win,"",(A.passed||"Window passed \u2014 a snack still counts whenever you can. \uD83C\uDF31")) };
 }
 
+// Health-coach layer: food/water/sleep protect the rest of the schedule.
+function clockMin(s,fb){
+  const m=String(s||"").match(/(\d{1,2}):(\d{2})\s*([AP]M)?/i);
+  if(!m) return fb;
+  let h=+m[1], mn=+m[2], ap=(m[3]||"").toUpperCase();
+  if(ap==="PM"&&h<12) h+=12;
+  if(ap==="AM"&&h===12) h=0;
+  return h*60+mn;
+}
+function hcCfg(){ return (typeof HEALTH_COACH!=="undefined"&&HEALTH_COACH)?HEALTH_COACH:{rescueMeals:[],workouts:{strengthDays:[2,4,6],strength:[],recovery:[]}}; }
+function mealDoneOn(id,d){ return !!laundry["meal-"+id+"-"+d]; }
+function healthCoachState(today,nowM,dow){
+  const cfg=hcCfg(), RY=(typeof RHYTHM!=="undefined")?RHYTHM:{lightsOut:"11:00 PM"};
+  const meals=mealsEaten(today), wc=waterCount(today), goal=waterGoal();
+  const missedBreakfast=nowM>=600 && !mealDoneOn("breakfast",today);
+  const missedLunch=nowM>=820 && !mealDoneOn("lunch",today);
+  const missedDinner=nowM>=1210 && !mealDoneOn("dinner",today);
+  const underfed=(nowM>=600&&meals===0)||(nowM>=900&&meals<2)||(nowM>=1230&&meals<3);
+  const lowWater=(nowM>=600&&wc===0)||(nowM>=930&&wc<Math.ceil(goal*0.5))||(nowM>=1200&&wc<goal);
+  const bedtime=clockMin(RY.lightsOut,1380);
+  const pastBed=nowM>=bedtime;
+  const late=nowM>=1290;
+  const rescue=(pastBed||late)&&(underfed||lowWater||missedDinner);
+  const strengthDays=(cfg.workouts&&cfg.workouts.strengthDays)||[2,4,6];
+  const strengthDay=strengthDays.indexOf(dow)>=0;
+  const workoutDone=!!laundry["health-workout-"+today];
+  const workoutAllowed=!rescue&&!underfed&&!lowWater&&meals>=2&&wc>=1&&nowM<bedtime;
+  return {cfg,meals,wc,goal,missedBreakfast,missedLunch,missedDinner,underfed,lowWater,pastBed,late,rescue,strengthDay,workoutDone,workoutAllowed};
+}
+function healthRescueCard(st){
+  const meals=(st.cfg.rescueMeals||[]).slice(0,10).map(x=>'<span style="display:inline-block;margin:3px 4px 3px 0;padding:4px 8px;border-radius:999px;background:rgba(245,184,48,.10);border:1px solid rgba(245,184,48,.24);color:#FBE8C0;font-size:11px">'+x+'</span>').join('');
+  return `<div style="background:linear-gradient(135deg,rgba(245,184,48,.18),rgba(124,58,237,.08));border:1.5px solid rgba(245,184,48,.55);border-left:5px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;box-shadow:0 0 24px rgba(245,184,48,.12)">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#F5B830;margin-bottom:7px;font-family:'Lora',serif">Health rescue mode · no guilt</div>
+    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#FBE8C0;margin-bottom:5px">Water, easy protein + carbs, bathroom, bed.</div>
+    <div style="font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.55;margin-bottom:10px">No workout. No cooking project. No cleaning. No planning spiral. The only job is to stop the crash loop.</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <button onclick="waterAdd()" style="flex:1;min-width:130px;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.45);color:#7DD3FC;border-radius:10px;padding:9px 10px;font-size:12.5px;font-family:'Lora',serif;font-weight:700;cursor:pointer">Log big water</button>
+      <button onclick="toggleMeal('${st.missedDinner?'dinner':(st.missedLunch?'lunch':'breakfast')}')" style="flex:1;min-width:130px;background:rgba(245,184,48,.14);border:1px solid rgba(245,184,48,.45);color:#F5B830;border-radius:10px;padding:9px 10px;font-size:12.5px;font-family:'Lora',serif;font-weight:700;cursor:pointer">Log rescue food</button>
+    </div>
+    <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.55">${meals}</div>
+  </div>`;
+}
+function hydrationCard(kind,done,label,sub,order){
+  return { key:"hyd-"+kind, order:order, done:done, html:strip("💧",label,done,"#38BDF8","waterAdd()","Checkpoint","",sub) };
+}
+function workoutCard(st,today){
+  const cfg=st.cfg, wo=cfg.workouts||{}, list=(st.strengthDay?wo.strength:wo.recovery)||[];
+  const title=st.strengthDay?(wo.strengthTitle||"Dumbbell strength"):(wo.recoveryTitle||"Light movement / mobility");
+  const detail=list.map(x=>'<div style="display:flex;gap:8px;padding:3px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:#34D399">•</span><span>'+x+'</span></div>').join('');
+  if(st.workoutDone) return strip(st.strengthDay?"🏋️":"🚶",title,true,"#34D399","toggleWellness('workout')","Done","","");
+  if(!st.workoutAllowed){
+    const why=st.rescue?"rescue mode is on":(st.underfed?"food comes first":(st.lowWater?"water comes first":"bedtime is protected"));
+    return `<div style="background:linear-gradient(135deg,rgba(52,211,153,.08),rgba(56,189,248,.03));border:1px solid rgba(52,211,153,.24);border-left:4px solid #34D399;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">
+      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#34D399;font-family:'Lora',serif;margin-bottom:5px">${st.strengthDay?"Strength day":"Movement day"} · gated</div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text)">Workout waits: ${why}.</div>
+      <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:4px">No training before water + protein. Recovery counts today.</div>
+    </div>`;
+  }
+  return `<div onclick="toggleWellness('workout')" style="background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(52,211,153,.03));border:1px solid rgba(52,211,153,.35);border-left:4px solid #34D399;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;cursor:pointer">
+    <div style="display:flex;align-items:flex-start;gap:13px">
+      <div style="font-size:23px;flex-shrink:0">${st.strengthDay?"🏋️":"🚶"}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text)">${title}</div>${timePill("After food + water","20–35 min")}</div>
+        <div style="font-size:11.5px;color:#A7F3D0;font-family:'Lora',serif;font-style:italic;margin:3px 0 6px">Every day can move; only 3 days are hard training.</div>
+        ${detail}
+      </div>
+      <div style="width:28px;height:28px;border-radius:50%;border:2px solid #34D399;background:transparent;flex-shrink:0"></div>
+    </div>
+  </div>`;
+}
+
 // ── 💧🍴💊 HABITS ENGINE — water counter, forgiving streak, "Today's 3" (added Jun 9 2026) ──
 function _hd(dt){ return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
 function isoWkH(d){ d=d||new Date(); const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=dt.getUTCDay()||7; dt.setUTCDate(dt.getUTCDate()+4-day); const ys=new Date(Date.UTC(dt.getUTCFullYear(),0,1)); return dt.getUTCFullYear()+"-W"+String(Math.ceil((((dt-ys)/86400000)+1)/7)).padStart(2,"0"); }
@@ -1628,7 +1699,7 @@ function waterSetGoal(){ const v=prompt("Your daily water goal, in BOTTLES (1 bo
 function waterSetServing(){ const v=prompt("How many bottles per tap? (1 bottle = 32 oz)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
 function ensureFreeze(){ const wk=isoWkH(); if(habits.freezeWeek!==wk){ habits.freezeWeek=wk; habits.freezeTokens=2; try{saveHabits();}catch(e){} } }
 function mealsEaten(d){ return ["breakfast","lunch","dinner"].filter(function(m){return !!laundry["meal-"+m+"-"+d];}).length; }
-function habitDone(d){ const water=waterCount(d)>=waterGoal(); const vit=!!laundry["well-litfulo-"+d]; const meals=mealsEaten(d)>=2; return { water:water, vit:vit, meals:meals, mealsN:mealsEaten(d), score:(water?1:0)+(vit?1:0)+(meals?1:0) }; }
+function habitDone(d){ const water=waterCount(d)>=waterGoal(); const vit=!!laundry["well-litfulo-"+d]; const meals=mealsEaten(d)>=3; return { water:water, vit:vit, meals:meals, mealsN:mealsEaten(d), score:(water?1:0)+(vit?1:0)+(meals?1:0) }; }
 function dayWin(d){ return habitDone(d).score>=2; }  // 2 of 3 = a good day (partial credit, never zero)
 function habitStats(){
   const today=todayKey();
@@ -1733,12 +1804,14 @@ function habitsTodayHtml(){
 function renderToday() {
   const el=document.getElementById("view-today"), today=todayKey();
   const dow=new Date().getDay();
-  const RY=(typeof RHYTHM!=="undefined")?RHYTHM:{breakfast:"8:00 AM",lunch:"12:30 PM",dinner:"6:30 PM",dinnerBy:"8:00 PM",windDown:"10:00 PM",reading:"10:00–11:00 PM",lightsOut:"11:00 PM"};
+  const RY=(typeof RHYTHM!=="undefined")?RHYTHM:{wake:"8:00 AM",waterWake:"8:00 AM",breakfast:"8:00 AM",lunch:"12:30 PM",hydration:"3:30 PM",dinner:"6:30 PM",dinnerBy:"8:00 PM",workout:"5:30 PM",windDown:"10:00 PM",reading:"10:00–11:00 PM",lightsOut:"11:00 PM"};
+  const _now=new Date(); const nowM=_now.getHours()*60+_now.getMinutes();
+  const hc=healthCoachState(today,nowM,dow);
   const RESET_DAY="2026-06-06"; // 🔄 one-off sleep-reset day — flow items auto-expire after this date
   let topHtml="";
 
   // ── #1 PRIORITY — GET AN ALARM CLOCK (pinned at the very top until checked) ──
-  if(!checked["get_alarm_clock"]){
+  if(!checked["get_alarm_clock"] && !hc.rescue){
     topHtml+=`<div style="background:linear-gradient(135deg,rgba(245,184,48,.16),rgba(245,184,48,.04));border:1px solid rgba(245,184,48,.45);border-left:4px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,184,48,.12)" onclick="toggle('get_alarm_clock')">
       <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,184,48,.5),transparent)"></div>
       <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#F5B830;margin-bottom:6px;font-family:'Lora',serif">⭐ Priority #1</div>
@@ -1762,7 +1835,7 @@ function renderToday() {
       sub:"Root ends in a glass with an inch of water, bright windowsill.",
       steps:["Save the white root ends, about 1 to 2 inches long, roots intact.","Stand them root-down in a glass with about 1 inch of water.","Bright windowsill — indirect light is fine.","Change the water every 1 to 2 days.","Snip new green tops as they regrow; they keep going for weeks.","Optional: pot into soil for sturdier growth."] },
   ];
-  PIN_OPEN.filter(p=>!checked[p.id]).forEach(p=>{
+  PIN_OPEN.filter(p=>!checked[p.id]&&!hc.rescue).forEach(p=>{
     const open=!!expanded[p.id];
     topHtml+=`<div style="display:flex;flex-direction:column;background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid ${p.hex};border-radius:var(--rad);padding:11px 16px;margin-bottom:8px">
       <div style="display:flex;align-items:center;gap:12px">
@@ -1781,6 +1854,17 @@ function renderToday() {
   // ── THE DAY, IN ORDER — one chronological flow; checked items sink to the done pile ──
   const flow=[];
   function add(key,order,done,html,passive){ flow.push({key,order,done:!!done,html,passive:!!passive}); }
+  const wakeWaterDone=waterCount(today)>0;
+  add("wakewater",281,wakeWaterDone,strip("💧","Wake water — before anything else",wakeWaterDone,"#38BDF8","waterAdd()",RY.waterWake||RY.wake||"Wake","1 glass","Food and hydration are priority tasks now."),false);
+  if(hc.rescue){
+    add("healthrescue",5,false,healthRescueCard(hc),false);
+  } else {
+    const afternoonDone=waterCount(today)>=Math.max(2,Math.ceil(waterGoal()*0.66));
+    if(nowM>=clockMin(RY.hydration,930) || hc.lowWater){
+      const h=hydrationCard("afternoon",afternoonDone,"Afternoon water / electrolyte checkpoint",afternoonDone?"Checkpoint handled":"If fluids have been low, feel weak, had caffeine, exercised, or went outside: water + electrolytes.",clockMin(RY.hydration,930));
+      add(h.key,h.order,h.done,h.html,false);
+    }
+  }
 
   // Call DT — morning anchor
   const dtDone=!!laundry["calldt-"+today];
@@ -1919,7 +2003,7 @@ function renderToday() {
   }
 
   // ── 🔁 ROLLOVER TASKS — user-addable, stay until checked, carry forward daily (added Jun 10 2026) ──
-  if(rollovers && typeof rollovers==='object'){
+  if(rollovers && typeof rollovers==='object' && !hc.rescue){
     Object.keys(rollovers).sort().forEach(function(id,i){
       const ro=rollovers[id]; if(!ro||!ro.label) return;
       const doneDate=ro.done||null;
@@ -1936,7 +2020,7 @@ function renderToday() {
     });
   }
   // ＋ add-your-own rollover task (passive — doesn't count toward the daily tally)
-  add("ro-add",1305,false,`<div onclick="addRollover()" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(245,158,11,.45);border-radius:var(--rad);padding:11px 16px;margin-bottom:10px;cursor:pointer;color:#F59E0B;font-family:'Lora',serif;font-size:13px">＋ Add a task that rolls over until done</div>`,true);
+  if(!hc.rescue) add("ro-add",1305,false,`<div onclick="addRollover()" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(245,158,11,.45);border-radius:var(--rad);padding:11px 16px;margin-bottom:10px;cursor:pointer;color:#F59E0B;font-family:'Lora',serif;font-size:13px">＋ Add a task that rolls over until done</div>`,true);
 
 
   // ── 🗑️ TRASH + RECYCLE — every Tuesday night Trash; alternating Tuesdays (anchor Tue Jun 9 2026) also Recycle (added Jun 10 2026) ──
@@ -1953,7 +2037,6 @@ function renderToday() {
   }
 
   // ── 🍽️ MEAL ANCHORS + 💊 pill bundle — eat on a clock; nag (pin + gentle escalate) until checked (added Jun 9 2026) ──
-  const _now=new Date(); const nowM=_now.getHours()*60+_now.getMinutes();
   const MA=(typeof MEAL_ANCHORS!=='undefined')?MEAL_ANCHORS:[];
   const litDone=!!laundry["well-litfulo-"+today];
   // 💊 pills bundled onto breakfast: when breakfast is due, the pill check sits right under it (one trigger: eat → pills)
@@ -2040,10 +2123,17 @@ function renderToday() {
   const _ln=MA.find(function(x){return x.id==='lunch';});
   if(_ln){ const _ld=!!laundry["meal-lunch-"+today]; const L=mealAnchorHtml(_ln,_ld,nowM,dow); add("lunch",L.order,_ld,L.html); }
 
+  add("movement",clockMin(RY.workout,1050),hc.workoutDone,workoutCard(hc,today),false);
+
   // The ONE house task — weekend mornings have energy; weekdays it sits after lunch
   const oneId=(dow===1)?null:oneTaskForDate(today);
   const taskOrder=(dow===0||dow===6)?500:800;
-  if(dow===1){
+  if(hc.rescue){
+    add("healthprotect",taskOrder,false,`<div style="background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(124,58,237,.03));border:1px solid rgba(124,58,237,.3);border-left:4px solid #7C3AED;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#DDD6FE">House/admin tasks paused tonight.</div>
+      <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:3px">This is the guardrail: eat, drink, bathroom, teeth, bed. Tomorrow gets a cleaner handoff.</div>
+    </div>`,true);
+  } else if(dow===1){
     add("rest",taskOrder,false,`<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.03));border:1px solid rgba(139,92,246,.3);border-left:4px solid #8B5CF6;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;text-align:center">
       <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#DDD6FE">🛋️ Monday — rest day. No house task.</div>
       <div style="font-size:11.5px;color:var(--text2);font-style:italic;margin-top:3px;font-family:'Lora',serif">The house can wait — recharge. Pool league tonight. 🎱</div>
@@ -2057,7 +2147,7 @@ function renderToday() {
   }
 
   const schedToday=scheduleTaskIdsForDate(today);
-  if(schedToday.length){
+  if(schedToday.length && !hc.rescue){
     const allDone=schedToday.every(id=>checked[id]);
     add("schedcustom",taskOrder+8,allDone,`<div style="font-size:10px;color:#A5B4FC;font-family:'Lora',serif;letter-spacing:.12em;text-transform:uppercase;margin:2px 2px 5px">Admin schedule · ${schedToday.filter(id=>checked[id]).length}/${schedToday.length}</div>`+groupedCardHTML(schedToday,""));
   }
@@ -2066,7 +2156,7 @@ function renderToday() {
   const _dn=MA.find(function(x){return x.id==='dinner';});
   if(_dn){ const _dd=!!laundry["meal-dinner-"+today]; const D=mealAnchorHtml(_dn,_dd,nowM,dow); add("dinner",D.order,_dd,D.html); }
   // 🌙 gentle late-night-eating cutoff nudge (after ~9:30 PM) — supportive, optional, not a rule
-  if(nowM>=1290){
+  if(nowM>=1290 && !hc.rescue){
     add("latenight",1295,false,`<div style="background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(124,58,237,.03));border:1px solid rgba(124,58,237,.3);border-left:4px solid #7C3AED;border-radius:var(--rad);padding:12px 15px;margin-bottom:10px">
       <div style="font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#A78BFA;font-family:'Lora',serif;margin-bottom:5px">🌙 Winding down</div>
       <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.55">Kitchen's about closed — eating late can nudge tomorrow's sleep. Water or tea is always fine. No rule, just a gentle heads-up.</div>
@@ -3403,6 +3493,27 @@ function medMini(key,name,timing,desc,color){
     +'<div style="width:24px;height:24px;border-radius:50%;border:2px solid '+(done?'#10B981':color)+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0">'+(done?'✓':'')+'</div>'
     +'</div></div>';
 }
+function healthCoachSectionHtml(){
+  const cfg=hcCfg(), wo=cfg.workouts||{};
+  const chip=s=>'<span style="display:inline-block;margin:3px 4px 3px 0;padding:4px 8px;border-radius:999px;background:rgba(245,184,48,.10);border:1px solid rgba(245,184,48,.24);color:#FBE8C0;font-size:11px">'+s+'</span>';
+  const row=(title,items,color)=>`<div style="background:rgba(0,0,0,.16);border:1px solid ${color}33;border-radius:10px;padding:10px 12px;margin-top:9px">
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:${color};font-family:'Lora',serif;font-weight:700;margin-bottom:5px">${title}</div>
+    ${(items||[]).map(x=>`<div style="display:flex;gap:8px;padding:3px 0;font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.45"><span style="color:${color}">•</span><span>${x}</span></div>`).join("")}
+  </div>`;
+  return `<div class="section-label">💪 Health Coach</div>
+  <div style="background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(56,189,248,.04));border:1px solid rgba(52,211,153,.28);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">
+    <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#A7F3D0;margin-bottom:6px">3-month home base layer</div>
+    <div style="font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.6">Food, water, sleep, and basic movement are priority tasks. Training only happens after water + protein; late-night rescue mode means no workout, cooking project, cleaning, or planning spiral.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px">
+      <div style="background:rgba(245,184,48,.08);border:1px solid rgba(245,184,48,.24);border-radius:10px;padding:10px 11px"><div style="font-size:10px;color:#F5B830;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Food</div><div style="font-size:12px;color:var(--text2);line-height:1.45;margin-top:3px">${cfg.proteinRange||"3 protein eating events first."}</div></div>
+      <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.24);border-radius:10px;padding:10px 11px"><div style="font-size:10px;color:#7DD3FC;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Hydration</div><div style="font-size:12px;color:var(--text2);line-height:1.45;margin-top:3px">${cfg.hydrationRange||"2-3 liters/day to start."}</div></div>
+    </div>
+    ${row("Strength days · Tue / Thu / Sat",wo.strength||[],"#34D399")}
+    ${row("Other days · recovery movement",wo.recovery||[],"#7DD3FC")}
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;font-weight:700;margin:12px 0 5px">Rescue meals</div>
+    <div>${(cfg.rescueMeals||[]).map(chip).join("")}</div>
+  </div>`;
+}
 function renderWellness() {
   const el = document.getElementById("view-wellness");
   const today = todayKey();
@@ -3410,6 +3521,7 @@ function renderWellness() {
   let out = "";
   // 😴 Sleep first — the current priority (v2-features.js)
   try{ out += hgSleepSectionHtml(today); }catch(e){}
+  out += healthCoachSectionHtml();
 
   // ── Litfulo med reminder ──
   const litDone = !!laundry["well-litfulo-"+today];
@@ -4448,7 +4560,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260706233228',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260707000100',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
@@ -4626,7 +4738,7 @@ curtainInit();
 </style>
 <script>window.DAYARC_CONFIG={appendHost:'.header'};</script>
 <link rel="stylesheet" href="dayarc.css?v=20260626213000">
-<script src="dayarc.js?v=20260702065902"></script>
+<script src="dayarc.js?v=20260707000100-health"></script>
 <script>(function(){ function relocate(){ try{ var c=document.querySelector('.content'); if(!c) return;
   var eb=document.getElementById('app-eyebrow'); if(eb&&eb.parentElement!==c){ eb.classList.add('eyebrow-bottom'); c.appendChild(eb); }
   var tr=document.querySelector('.hdr-trackers'), hd=document.querySelector('.header'); if(tr&&hd&&tr.parentElement!==hd){ hd.appendChild(tr); }

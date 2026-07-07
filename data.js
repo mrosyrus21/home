@@ -12,10 +12,14 @@
 // Drives the Today tab: meal times + the evening wind-down block.
 // Change any value and redeploy (or hand off) — nothing else needed.
 const RHYTHM = {
-  breakfast: "8:30 AM",        // anchor just after the 8:00 wake
+  wake:      "8:00 AM",
+  waterWake: "8:00 AM",        // water before anything else
+  breakfast: "8:30 AM",        // protein within 60 minutes of waking
   lunch:     "12:00 PM",
+  hydration: "3:30 PM",        // afternoon water / electrolyte checkpoint
   dinner:    "7:00 PM",        // aim to sit down here...
   dinnerBy:  "8:00 PM",        // ...hard rule: eaten BY this time
+  workout:   "5:30 PM",        // only if fed + hydrated
   windDown:  "10:00 PM",       // phone goes to the other room, screens off
   reading:   "10:00–11:00 PM", // the reading hour fills the no-screen block
   lightsOut: "11:00 PM",
@@ -25,10 +29,46 @@ const RHYTHM = {
 // `min` = minutes-since-midnight the anchor goes "due" (pins to the top); +45 min = "overdue" (gentle escalate).
 // pills:true bundles the Litfulo+vitamins check onto breakfast ("eat → pills" = one trigger). Tone stays supportive. (added Jun 9 2026)
 const MEAL_ANCHORS = [
-  { id:"breakfast", emoji:"🍳", label:"Breakfast", at:"8:30 AM",  min:510,  upOrder:320,  pills:true, win:"7–9 AM",  winStart:420,  winEnd:540,  cue:"even toast, a banana, or yogurt counts.", passed:"Window passed — a snack still counts whenever you can. 🌱" },
-  { id:"lunch",     emoji:"🥗", label:"Lunch",     at:"12:00 PM", min:720,  upOrder:700,              win:"12–1 PM", winStart:720,  winEnd:780,  cue:"step away from the desk — quick is fine.", passed:"Window passed — a late lunch still resets the afternoon. Something small beats skipping straight to dinner." },
-  { id:"dinner",    emoji:"🍽️", label:"Dinner",    at:"7:00 PM",  min:1140, upOrder:1080, by:"8:00 PM", win:"6–8 PM",  winStart:1080, winEnd:1200, cue:"something warm — you've got time before 8.", passed:"Window passed — late and light beats nothing. Something gentle this close to bed. 🌙" }
+  { id:"breakfast", emoji:"🍳", label:"Protein breakfast", at:"8:30 AM",  min:510,  upOrder:320,  pills:true, win:"8–9 AM",  winStart:480,  winEnd:540,  cue:"protein first: yogurt, eggs, shake, cottage cheese, or leftovers all count.", passed:"Breakfast slipped — rescue it with protein now. No guilt, just fuel. 🌱" },
+  { id:"lunch",     emoji:"🥗", label:"Protein lunch",     at:"12:00 PM", min:720,  upOrder:700,              win:"12–1 PM", winStart:720,  winEnd:780,  cue:"step away from the desk before the crash; quick protein is the win.", passed:"Lunch window passed — eat protein now so dinner does not become a rescue mission." },
+  { id:"dinner",    emoji:"🍽️", label:"Protein dinner",    at:"7:00 PM",  min:1140, upOrder:1080, by:"8:00 PM", win:"6–8 PM",  winStart:1080, winEnd:1200, cue:"eat before exhaustion; warm is nice, easy is allowed.", passed:"Dinner slipped — choose easy protein + carbs, then wind down. No cooking project. 🌙" }
 ];
+
+const HEALTH_COACH = {
+  proteinRange: "130–170 g/day eventually; right now the win is 3 protein eating events.",
+  hydrationRange: "2–3 liters/day to start, plus extra after caffeine, exercise, heat, outside time, or depletion.",
+  rescueMeals: [
+    "Greek yogurt + granola/fruit",
+    "Protein shake + banana",
+    "Eggs + toast",
+    "Cottage cheese + crackers/fruit",
+    "Turkey/chicken sandwich",
+    "Peanut butter toast + milk",
+    "Leftovers microwaved",
+    "Cereal + milk + Greek yogurt",
+    "Rice/pasta/ramen + eggs or meat",
+    "Frozen meal plus extra protein"
+  ],
+  workouts: {
+    strengthDays: [2,4,6],
+    strengthTitle: "Dumbbell strength — two 20 lb dumbbells",
+    strength: [
+      "Push-ups or floor press — 3 sets",
+      "One-arm dumbbell row — 3 sets each side",
+      "Dumbbell overhead press — 3 sets",
+      "Goblet squat or split squat — 3 sets",
+      "Curl + triceps extension superset — 2 sets",
+      "Dead bug or plank — 2 sets"
+    ],
+    recoveryTitle: "Light movement / mobility",
+    recovery: [
+      "Walk 10–30 minutes",
+      "Shoulder circles + thoracic rotations",
+      "Hip flexor stretch + hamstring stretch",
+      "Easy breathing, no max-effort work"
+    ]
+  }
+};
 
 const ROOMS = {
   priority: { name:"Priority",   emoji:"⭐", color:"#C8860A" },
