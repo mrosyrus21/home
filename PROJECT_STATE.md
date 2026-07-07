@@ -8,9 +8,23 @@ Cyrus says "GO LIVE."
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-07-07 — Encoding repair + deploy marker restamp
+
+**Status:** DEPLOYED after Cyrus said "go live."
+
+**What changed:**
+- Repaired mojibake in `index.html` so UTF-8 text renders as real emoji and punctuation again instead of broken multi-character sequences.
+- Repaired the same encoding issue in `sw.js` comments.
+- Bumped cache-busters for `data.js`, `dayarc.js`, and `sw.js`.
+- Restamped visible `LAST_DEPLOY` to `Jul 7 · 8:50 AM`.
+
+**Verification:**
+- Syntax checked `data.js`, `dayarc.js`, `sw.js`, and all inline scripts extracted from `index.html`.
+- Confirmed `index.html` has no leftover mojibake markers.
+
 ### 2026-07-07 — Health-coach schedule layer
 
-**Status:** STAGED in the House working folder. NOT pushed. Holding for "GO LIVE."
+**Status:** DEPLOYED after Cyrus said "go live."
 
 **What changed:**
 - Added a health-coach layer to Today so food, hydration, sleep, and movement outrank house/admin tasks.
