@@ -798,7 +798,7 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jul 7 · 8:50 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
+const LAST_DEPLOY = "Jul 8 · 8:22 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
 { const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
@@ -4180,6 +4180,19 @@ ST.on('value', snap => {
     ST.update({ watered: watered, waterPushed: waterPushed, 'flags/vacation-watering-jul2026-v1': 'done' });
     return;
   }
+  // One-time correction: the first vacation catch-up was too broad.
+  if (!flags['vacation-watering-jul2026-v2']) {
+    Object.assign(watered, {
+      fittonia:"2026-07-07", croton:"2026-05-31", jade:"2026-05-26",
+      basil1:"2026-05-31", basil2:"2026-05-31", parsley:"2026-06-01", mint:"2026-06-01", dill:"2026-06-01", rosemary:"2026-06-02", ristra:"2026-06-02",
+      strawberry:"2026-07-07", strawberry_pot:"2026-07-07", tomato:"2026-07-07", cherry_tomato:"2026-07-07",
+      jalapeno:"2026-07-06", raspberry:"2026-07-06", green_onion:"2026-07-06", potato:"2026-07-06", white_onion:"2026-07-06", ginger:"2026-07-06", turmeric:"2026-07-06",
+      dianthus:"2026-07-06", daisy:"2026-07-06", candytuft:"2026-07-06"
+    });
+    waterPushed = {};
+    ST.update({ watered: watered, waterPushed: waterPushed, 'flags/vacation-watering-jul2026-v2': 'done' });
+    return;
+  }
   // One-time: seed kitchen inventory with starting in-stock items
   if (!flags['inventory-seed-v1']) {
     const seed=[['green onions','🌿'],['yellow squash','🟡'],['zucchini','🥒'],['mushrooms','🍄'],['spinach','🥬'],['romaine lettuce','🥗']];
@@ -4560,7 +4573,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260707085007',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260708082239',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
