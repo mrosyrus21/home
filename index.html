@@ -1613,7 +1613,7 @@ function healthCoachState(today,nowM,dow){
   const rescue=(pastBed||late)&&(underfed||lowWater||missedDinner);
   const strengthDays=(cfg.workouts&&cfg.workouts.strengthDays)||[2,4,6];
   const strengthDay=strengthDays.indexOf(dow)>=0;
-  const workoutDone=!!laundry["health-workout-"+today];
+  const workoutDone=!!laundry["well-workout-"+today]||!!laundry["health-workout-"+today];
   const workoutAllowed=!rescue&&!underfed&&!lowWater&&meals>=2&&wc>=1&&nowM<bedtime;
   return {cfg,meals,wc,goal,missedBreakfast,missedLunch,missedDinner,underfed,lowWater,pastBed,late,rescue,strengthDay,workoutDone,workoutAllowed};
 }
@@ -3504,6 +3504,45 @@ function healthCoachSectionHtml(){
     <div>${(cfg.rescueMeals||[]).map(chip).join("")}</div>
   </div>`;
 }
+function fitnessPlanForDate(ds){
+  const cfg=hcCfg(), wo=cfg.workouts||{};
+  const dow=new Date(ds+"T12:00:00").getDay();
+  const strengthDays=wo.strengthDays||[2,4,6];
+  const strength=strengthDays.indexOf(dow)>=0;
+  return {
+    strength:strength,
+    title:strength?(wo.strengthTitle||"Strength"):(wo.recoveryTitle||"Recovery movement"),
+    list:(strength?(wo.strength||[]):(wo.recovery||[]))
+  };
+}
+function fitnessSectionHtml(today){
+  const dow=new Date(today+"T12:00:00").getDay();
+  const nowM=new Date().getHours()*60+new Date().getMinutes();
+  const st=healthCoachState(today,nowM,dow);
+  const plan=fitnessPlanForDate(today);
+  const done=!!laundry["well-workout-"+today]||!!laundry["health-workout-"+today];
+  const blocked=st.rescue||st.underfed||st.lowWater||st.pastBed;
+  const wc=waterCount(today), meals=mealsEaten(today);
+  let next=plan.strength?"Strength is available":"Recovery movement";
+  if(blocked) next="Water + protein first";
+  else if(wc===0) next="Drink water first";
+  else if(meals<1) next="Eat protein first";
+  const color=blocked?"#F5B830":"#34D399";
+  const items=(plan.list||[]).map(function(x){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">•</span><span>'+x+'</span></div>';}).join("");
+  return `<div class="section-label">Fitness</div>
+  <div style="background:linear-gradient(135deg,rgba(52,211,153,.11),rgba(56,189,248,.04));border:1px solid rgba(52,211,153,.3);border-radius:var(--rad);padding:15px 16px;margin-bottom:14px">
+    <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:${color};font-family:'Lora',serif;margin-bottom:5px">Next action</div>
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);line-height:1.15">${next}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0">
+      <div style="background:rgba(245,184,48,.08);border:1px solid rgba(245,184,48,.24);border-radius:10px;padding:9px 10px"><div style="font-size:10px;color:#F5B830;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Meals</div><div style="font-size:13px;color:var(--text);margin-top:2px">${meals}/3</div></div>
+      <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.24);border-radius:10px;padding:9px 10px"><div style="font-size:10px;color:#7DD3FC;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Water</div><div style="font-size:13px;color:var(--text);margin-top:2px">${wc*32} oz</div></div>
+    </div>
+    <div onclick="toggleWellness('workout')" style="display:flex;align-items:flex-start;gap:12px;background:rgba(0,0,0,.16);border:1px solid ${color}44;border-left:4px solid ${color};border-radius:10px;padding:12px;cursor:pointer">
+      <div style="width:28px;height:28px;border-radius:50%;border:2px solid ${done?'#10B981':color};background:${done?'#10B981':'transparent'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0">${done?'✓':''}</div>
+      <div style="flex:1;min-width:0"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${done?'var(--text3)':'var(--text)'};${done?'text-decoration:line-through':''}">${plan.title}</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin:3px 0 6px">${blocked?'Do the food/water rescue first.':'Stay easy and leave energy in the tank.'}</div>${items}</div>
+    </div>
+  </div>`;
+}
 function renderWellness() {
   const el = document.getElementById("view-wellness");
   const today = todayKey();
@@ -3512,6 +3551,7 @@ function renderWellness() {
   // 😴 Sleep first — the current priority (v2-features.js)
   try{ out += hgSleepSectionHtml(today); }catch(e){}
   out += healthCoachSectionHtml();
+  out += fitnessSectionHtml(today);
 
   // ── Litfulo med reminder ──
   const litDone = !!laundry["well-litfulo-"+today];
@@ -4576,7 +4616,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260709073053',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260709073513',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
