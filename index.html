@@ -123,13 +123,8 @@ body::after{
 .garden-tracker{ text-shadow:0 0 8px rgba(34,211,238,.5) !important; }
 .garden-tracker.trim{ text-shadow:0 0 8px rgba(192,132,252,.45) !important; }
 .garden-tracker.harvest{ text-shadow:0 0 8px rgba(74,222,128,.45) !important; }
-/* deploy timestamp moved to bottom-right corner, clear of the sun & moon */
-/* deploy timestamp moved to bottom of page (see script) */
-.header-eyebrow{ position:absolute !important; top:2px; left:50%; right:auto; transform:translateX(-50%); margin:0 !important; z-index:4; font-size:7.5px !important; }
 /* footer line incl. "Go to NOW" + its arrow: no black glow (sits on the dark bar) */
 #day-arc .da-foot, #day-arc .da-foot *{ text-shadow:none !important; }
-/* deploy timestamp lives at the very bottom of the page, not over the sky */
-.eyebrow-bottom{ position:static !important; transform:none !important; display:block; text-align:center; padding:20px 0 30px; font-size:8px !important; letter-spacing:.28em; color:rgba(150,140,170,.6) !important; }
 /* water / harvest / trim trackers relocated to their own strip below the header */
 .trackers-strip{ display:flex !important; gap:22px; justify-content:center; align-items:center; flex-wrap:wrap; margin:0 !important; padding:11px 16px; background:#0a0810; border-bottom:1px solid rgba(255,255,255,.06); }
 .trackers-strip .garden-tracker{ margin-top:0 !important; font-size:12px; }
@@ -727,9 +722,6 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
         <div class="hdr-date" id="hdr-date"></div>
         <div class="hdr-fact" id="hdrFact"></div>
       </div>
-      <div class="hdr-center">
-        <div class="header-eyebrow" id="app-eyebrow"></div>
-      </div>
       <div class="hdr-right">
         <div class="hdr-weather" id="hdrWeather"></div>
       </div>
@@ -798,8 +790,6 @@ const CONFIG = {
   emoji:   "📅",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-const LAST_DEPLOY = "Jul 8 · 8:43 AM"; // DEPLOY_STAMP — restamp at each deploy: AMERICA/DENVER time (verify vs an external source, e.g. a HTTP Date header — never trust a bare clock), short format "Jun 6 · 10:44 AM"
-{ const _eb=document.getElementById("app-eyebrow"); if(_eb) _eb.textContent=LAST_DEPLOY; }
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
 const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","ristra","strawberry_pot"];
 // ═══════════════════════════════════════════════════════════════
@@ -4586,7 +4576,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260708084318',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260709073053',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
@@ -4765,8 +4755,7 @@ curtainInit();
 <script>window.DAYARC_CONFIG={appendHost:'.header'};</script>
 <link rel="stylesheet" href="dayarc.css?v=20260626213000">
 <script src="dayarc.js?v=20260707085007-encoding"></script>
-<script>(function(){ function relocate(){ try{ var c=document.querySelector('.content'); if(!c) return;
-  var eb=document.getElementById('app-eyebrow'); if(eb&&eb.parentElement!==c){ eb.classList.add('eyebrow-bottom'); c.appendChild(eb); }
+<script>(function(){ function relocate(){ try{
   var tr=document.querySelector('.hdr-trackers'), hd=document.querySelector('.header'); if(tr&&hd&&tr.parentElement!==hd){ hd.appendChild(tr); }
  }catch(e){} } relocate(); setTimeout(relocate,500); setTimeout(relocate,1500); })();</script>
 
