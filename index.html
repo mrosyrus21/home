@@ -2409,7 +2409,7 @@ function plantsDueOn(dateStr, ignoreWx) {
     const last = new Date(watered[p.id]+"T12:00:00");
     const days = Math.round((target - last) / 86400000);
     let need = p.days;
-    if(wxOn && (p.loc==="outdoor"||p.loc==="greenhouse")){
+    if(wxOn && p.loc==="outdoor"){
       if(WXF.hot || WXF.hotTom) need = Math.max(need - 1, Math.min(2, p.days)); // current/next-day heat: bring watering forward a day
       if(WXF.rainToday && p.loc==="outdoor") need = need + 2; // rain: let the sky water outdoor plants
     }
@@ -4655,7 +4655,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260712213000',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260712220000',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
