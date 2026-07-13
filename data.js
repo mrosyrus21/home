@@ -199,72 +199,37 @@ const TASKS = {
   gard_mulch:     { room:"garden", label:"Add mulch or top dressing to outdoor pots", level:"easy" },
   gard_repot:     { room:"garden", label:"Check for root-bound plants and repot if needed", level:"moderate" },
   heat_shade:     { room:"garden", label:"Create afternoon shade in place for the daily-watered pots", level:"easy", note:"Before the peak heat, shade the single strawberry, multi-plant strawberry with both attached runners, both tomatoes, and both potatoes. Use an umbrella, chair, shade cloth, or cardboard on the west side with an air gap. Do not move or detach the runners." },
+  move_stage:     { room:"priority", label:"Set up one moving staging zone", level:"easy", note:"Use one clear area for packed boxes. Label three sections: PACKED, DECISION HOLD, and OPEN LAST. Do not make destination-dependent keep-or-discard decisions yet." },
+  move_supplies:  { room:"priority", label:"Gather moving supplies and start a move folder", level:"easy", note:"Boxes, tape, marker, bags, labels, and one folder for lease, IDs, receipts, and moving information. Keep IDs and essential documents accessible." },
+  move_decor:     { room:"priority", label:"Pack one labeled box of decor and display items", level:"easy", note:"One box is enough. Pack only obvious nonessentials you would take anywhere; stop after the box is labeled and in the staging zone." },
+  move_clothes:   { room:"priority", label:"Pack one labeled box of off-season clothes", level:"easy", note:"Keep current-week clothing accessible. Destination-dependent clothing decisions go into DECISION HOLD." },
+  move_books:     { room:"priority", label:"Pack one labeled box of books or media", level:"easy", note:"One box, clearly labeled with room and contents. No forced selling or donating." },
+  move_kitchen:   { room:"priority", label:"Pack one labeled box of rarely used kitchen items", level:"easy", note:"Pack extras you will not need before August 31. Leave a small daily cooking kit accessible." },
+  move_hobby:     { room:"priority", label:"Pack one labeled box of hobby or office extras", level:"easy", note:"Choose supplies you will not use before the move. Keep work essentials and current projects accessible." },
+  move_reset:     { room:"priority", label:"Tolerable-house reset: trash, dishes, laundry, walkway", level:"easy", note:"No deep cleaning. Remove trash, contain dishes and laundry, and clear one safe walking path. Stop when the house feels usable." },
+  move_checkpoint:{ room:"priority", label:"Mostly-packed checkpoint", level:"moderate", note:"Target: everything except daily essentials, current work gear, plant care, and final-cleaning supplies is packed and labeled by August 17." },
+  move_last_week: { room:"priority", label:"Build the final-week essentials kit and pack everything else", level:"moderate", note:"Keep out only seven days of clothes, medicines, toiletries, chargers, basic dishes, documents, pet supplies, plant care, and cleaning supplies." },
+  move_final:     { room:"priority", label:"Final pack, trash removal, and clean emptied areas", level:"moderate", note:"Finish open boxes, remove obvious trash, clean only the cleared surfaces and floors, and keep the move-out essentials together." },
+  move_out:       { room:"priority", label:"Move-out day: essentials, plants, final sweep, keys", level:"moderate", note:"Load the open-last kit, documents, medicines, valuables, plants, and pet supplies last. Do one final walkthrough and return keys as required." },
 };
 
 
 const SCHEDULE = [
-  // ── GETTING READY ─────────────────────────────────────────────────────────
-  { date:"2026-05-29", tasks:[], off:true, offNote:"Setup day. Your schedule is locked and loaded. Rest up, hydrate, maybe stretch — Sunday we go. 🌱" },
-  { date:"2026-05-30", tasks:[], off:true, offNote:"Your morning, your rules: a great breakfast and fetch with Zoey. 🍳🐶 Recharge — the most productive summer of your life starts tomorrow." },
+  // ── MOVING · FIRST NO-REGRET WEEK ─────────────────────────────────────────
+  { date:"2026-07-13", tasks:["heat_shade","move_stage"], note:"Protect the plants from the record heat, then make one clear landing zone for the move. No whole-house overhaul." },
+  { date:"2026-07-14", tasks:["move_supplies"],            note:"Build the basic moving kit so every later packing block is easier." },
+  { date:"2026-07-15", tasks:["move_decor"],               note:"One box. Label it. Put it in the staging zone. Done." },
+  { date:"2026-07-16", tasks:["move_clothes"],             note:"Pack only off-season clothing you will not need before move-out." },
+  { date:"2026-07-17", tasks:["move_books"],               note:"One destination-safe box; no keep-or-discard decisions required." },
+  { date:"2026-07-18", tasks:["move_kitchen"],             note:"Pack kitchen extras while leaving a small daily-use kit accessible." },
+  { date:"2026-07-19", tasks:["move_reset"],               note:"Make the house tolerable, not perfect. No deep cleaning." },
+  { date:"2026-07-20", tasks:["move_hobby"],               note:"One more no-regret box, then stop." },
 
-  // ── WEEK 1 · KITCHEN (top priority) ───────────────────────────────────────
-  { date:"2026-05-31", tasks:["e_k1","k5"],               note:"🚀 DAY ONE. Two easy wins only — clear the floor, give counter strays a home. Momentum is the whole game; we start tiny on purpose." },
-  { date:"2026-06-01", tasks:[], off:true, offNote:"Pool league night 🎱 — rack 'em. Zero chores. Recovery is part of the plan." },
-  { date:"2026-06-02", tasks:["k_utensils"], note:"The chaos drawer. Put on a hype playlist — you'll be done before track 4." },
-  { date:"2026-06-03", tasks:["k_filter"],                note:"Light day — just the dishwasher filter. One small gross-but-satisfying win, then go enjoy your evening." },
-  { date:"2026-06-04", tasks:["k3"],                      note:"Counter-clearing day. Goal: wipe it in one sweep without playing Tetris with the appliances." },
-  { date:"2026-06-05", tasks:["k1","xfinity_call"],       note:"Fridge day — toss the mystery jars. Plus ⭐ call Xfinity Retention and knock that $135 bill down." },
-  { date:"2026-06-06", tasks:["k2","k6","k_sink"],        note:"Pantry + labels + a sparkling sink. Clear bins, labels facing out — make it a tiny grocery store you're proud of." },
-  { date:"2026-06-07", tasks:["k_stovetop","k4","k_reward"], note:"🏆 KITCHEN FINALE — stovetop + oven, then COOK something amazing in your spotless kitchen. Room one: DONE. Feel that?" },
-
-  // ── WEEK 2 · LIVING ROOM ──────────────────────────────────────────────────
-  { date:"2026-06-08", tasks:[], off:true, offNote:"Pool league night 🎱 — you finished the kitchen, legend. Go celebrate." },
-  { date:"2026-06-09", tasks:["e_l1","e_l2"],             note:"Living room kickoff: break down the boxes, evict whatever doesn't belong in here." },
-  { date:"2026-06-10", tasks:["l_dust"],                  note:"Light day — dust surfaces & screens. Microfiber + 10 minutes. Done." },
-  { date:"2026-06-11", tasks:["l_couch","h_ct"],          note:"Couch + coffee table. Find the remote. Find the snacks you lost in 2024." },
-  { date:"2026-06-12", tasks:["l3"],                      note:"Deep-clean the floors. Pro move: declutter FIRST, then clean — never clean around clutter." },
-  { date:"2026-06-13", tasks:["l4","l5","find_desk"],     note:"Media area + decor declutter, and spend 10 min hunting a cheap sturdy desk online (the office will need it)." },
-  { date:"2026-06-14", tasks:["l_windows","l_lights","gnat_nuke"],    note:"🎉 LIVING ROOM DONE — clean the windows, install the lights, and just SIT in it. A space you actually want to be in." },
-
-  // ── WEEK 3 · BATHROOM + BEDROOM START ─────────────────────────────────────
-  { date:"2026-06-15", tasks:[], off:true, offNote:"Pool league night 🎱. Two rooms down — the house is noticing." },
-  { date:"2026-06-16", tasks:["ba5","ba2"],               note:"Bathroom blitz: fresh towels & mat, mirror, surfaces. Quick and high-impact." },
-  { date:"2026-06-17", tasks:["ba_medicine"],             note:"Light day — medicine cabinet. Toss expired meds (pharmacy take-back, not the toilet 🚫🐟)." },
-  { date:"2026-06-18", tasks:["ba1","ba3"],               note:"Scrub the throne, sink & tub + tame under the sink. Gloves on, podcast in, go." },
-  { date:"2026-06-19", tasks:["ba_grout"],                note:"🎉 BATHROOM DONE — deep-clean the grout (old toothbrush + baking-soda paste = oddly addictive)." },
-  { date:"2026-06-20", tasks:["e_b1a","e_b1b","b3"],      note:"Bedroom start: all clothes off the floors, wash the bedding. Clean sheets tonight = the reward." },
-  { date:"2026-06-21", tasks:["b2","b4","gnat_sand"],                 note:"Clear the floor (laundry only) + pare the nightstand to essentials. The room should feel like an exhale." },
-
-  // ── WEEK 4 · BEDROOM FINISH + OFFICE ──────────────────────────────────────
-  { date:"2026-06-22", tasks:[], off:true, offNote:"Pool league night 🎱. Halfway-ish — look how far you've come." },
-  { date:"2026-06-23", tasks:["b5","b_dust_fan"],         note:"Evict the random stuff + dust the ceiling fan (it's worse than you think up there 😬)." },
-  { date:"2026-06-24", tasks:["b6"],                      note:"Light day — build your calm sleep cave: cool, dark, phone across the room." },
-  { date:"2026-06-25", tasks:["b_closet"],                note:"🎉 BEDROOM DONE — conquer the closet. One bag donate, one bag toss. Haven't worn it in a year? Wave goodbye." },
-  { date:"2026-06-26", tasks:["o1","o_lighting"],         note:"Office begins: clear the desk, plan the layout, set up glare-free WFH lighting." },
-  { date:"2026-06-27", tasks:["o3","o4","o_filing"],      note:"Cables, music zone, filing system. Velcro ties = instant adult. No more cable spaghetti." },
-  { date:"2026-06-28", tasks:["o5","o6","gnat_check2"],                 note:"Shelving for gear + soundproof a wall. The studio is taking shape. 🥁" },
-
-  // ── WEEK 5 · OFFICE / PRINTER + GARAGE ────────────────────────────────────
-  { date:"2026-06-29", tasks:[], off:true, offNote:"Pool league night 🎱. The end is in sight." },
-  { date:"2026-06-30", tasks:["measure_printer","b1"],    note:"Measure the printer + move it out of the bedroom (desk should be in place). Bedroom is officially printer-noise-free." },
-  { date:"2026-07-01", tasks:["o2"],                      note:"Light day — set the 3D printer up in the office. Hello, dedicated maker corner." },
-  { date:"2026-07-02", tasks:["find_drum_spot"],          note:"🎉 OFFICE STUDIO DONE — set up the drum kit. Pro by day, rockstar by night. 🥁" },
-  { date:"2026-07-03", tasks:["g2","g_floor"],            note:"Garage: sort tools (keep / donate / toss) + degrease the floor. Be ruthless with the broken things you're 'gonna fix someday'." },
-  { date:"2026-07-04", tasks:["g1","g3"],                 note:"Clear it out & sweep, then mount the pegboard. A tool with a home is a tool you'll actually find. 🎆" },
-  { date:"2026-07-05", tasks:["g4","g5","g6"],            note:"🎉 GARAGE DONE — workbench with good light, label everything, set the workstation zone. A real workshop. Finally." },
-
-  // ── WEEK 6 · BACKYARD + THE BIG ONE ───────────────────────────────────────
-  { date:"2026-07-06", tasks:[], off:true, offNote:"Pool league night 🎱. One room left. ONE." },
-  { date:"2026-07-07", tasks:["bk1","weed_full"],         note:"Backyard: full sweep + hit the weeds. Vinegar weed killer in full sun (formula's in the Garden tab)." },
-  { date:"2026-07-08", tasks:["bk_powerwash"],            note:"Light day — power wash the patio. Quietly the most satisfying task on the entire list. 💦" },
-  { date:"2026-07-09", tasks:["bk4"],                     note:"🎉 BACKYARD DONE — string up the lights. Summer headquarters: open for business. 🌞" },
-  { date:"2026-07-10", tasks:["vacuum"],                  note:"🎉🎉 THE BIG ONE. First full-house vacuum. Every. Room. Done. Stand in the middle and soak it in — you built this. 🏆" },
-  { date:"2026-07-13", tasks:["heat_shade"],              note:"Record-heat prep: make afternoon shade where the pots already sit. Leave the strawberry runners attached and undisturbed." },
-
-  // ── RECURRING ─────────────────────────────────────────────────────────────
-  { date:"2026-07-24", tasks:["vacuum"], note:"Bi-weekly vacuum — keep the kingdom tidy. 15 minutes protects 6 weeks of work." },
-  { date:"2026-08-07", tasks:["vacuum"], note:"Bi-weekly vacuum. You're a maintenance machine now." },
-  { date:"2026-08-21", tasks:["vacuum"], note:"Bi-weekly vacuum. Future-you is so grateful." }];
+  // ── MOVING MILESTONES ─────────────────────────────────────────────────────
+  { date:"2026-08-17", tasks:["move_checkpoint"],          note:"Mostly packed two weeks before move-out. Decision-hold items can stay unresolved until the destination is known." },
+  { date:"2026-08-24", tasks:["move_last_week"],           note:"Switch to the open-last essentials kit and pack everything else that can safely go." },
+  { date:"2026-08-30", tasks:["move_final"],               note:"Finish packing and clean only what is already empty." },
+  { date:"2026-08-31", tasks:["move_out"],                 note:"Move-out deadline." }];
 
 
 const PLANTS = [
