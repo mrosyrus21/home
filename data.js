@@ -198,6 +198,7 @@ const TASKS = {
   gard_fertilize: { room:"garden", label:"Fertilize tomatoes, jalapeño, and strawberry", level:"easy" },
   gard_mulch:     { room:"garden", label:"Add mulch or top dressing to outdoor pots", level:"easy" },
   gard_repot:     { room:"garden", label:"Check for root-bound plants and repot if needed", level:"moderate" },
+  heat_shade:     { room:"garden", label:"Create afternoon shade in place for the daily-watered pots", level:"easy", note:"Before the peak heat, shade the single strawberry, multi-plant strawberry with both attached runners, both tomatoes, and both potatoes. Use an umbrella, chair, shade cloth, or cardboard on the west side with an air gap. Do not move or detach the runners." },
 };
 
 
@@ -258,6 +259,7 @@ const SCHEDULE = [
   { date:"2026-07-08", tasks:["bk_powerwash"],            note:"Light day — power wash the patio. Quietly the most satisfying task on the entire list. 💦" },
   { date:"2026-07-09", tasks:["bk4"],                     note:"🎉 BACKYARD DONE — string up the lights. Summer headquarters: open for business. 🌞" },
   { date:"2026-07-10", tasks:["vacuum"],                  note:"🎉🎉 THE BIG ONE. First full-house vacuum. Every. Room. Done. Stand in the middle and soak it in — you built this. 🏆" },
+  { date:"2026-07-13", tasks:["heat_shade"],              note:"Record-heat prep: make afternoon shade where the pots already sit. Leave the strawberry runners attached and undisturbed." },
 
   // ── RECURRING ─────────────────────────────────────────────────────────────
   { date:"2026-07-24", tasks:["vacuum"], note:"Bi-weekly vacuum — keep the kingdom tidy. 15 minutes protects 6 weeks of work." },
