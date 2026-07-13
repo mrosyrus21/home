@@ -11,6 +11,15 @@
 // ── DAILY RHYTHM — EDIT YOUR TIMES HERE ─────────────────────────
 // Drives the Today tab: meal times + the evening wind-down block.
 // Change any value and redeploy (or hand off) — nothing else needed.
+const ALMANAC_MORNING = [
+  { id:"bed",           emoji:"🛏️", label:"Make the bed",                              cue:"Start here" },
+  { id:"outdoor-water", emoji:"🌱", label:"Go outside and water the plants due today",    cue:"Outside" },
+  { id:"health",        emoji:"🧘", label:"Do the health coach activity",                 cue:"After watering" },
+  { id:"breakfast",     emoji:"🍳", label:"Make and eat breakfast",                      cue:"After movement" },
+  { id:"walk",          emoji:"🐕", label:"Walk Zoey",                                   cue:"After breakfast" },
+  { id:"work",          emoji:"💼", label:"Prepare for work and begin paid work",         cue:"8:00 AM", availableAt:480 }
+];
+
 const RHYTHM = {
   wake:      "8:00 AM",
   waterWake: "8:00 AM",        // water before anything else

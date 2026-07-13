@@ -1,7 +1,7 @@
 {
-  "name": "Home & Garden",
-  "short_name": "Garden",
-  "description": "Home, garden, aquarium & wellness dashboard",
+  "name": "Almanac",
+  "short_name": "Almanac",
+  "description": "Personal schedule, home, garden, health, and life record",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

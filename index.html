@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#06050A">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest?v=20260713002459">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Garden">
+<meta name="apple-mobile-web-app-title" content="Almanac">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Schedule 📅</title><!-- TITLE TAG — matches CONFIG.title above -->
+<title>Almanac</title><!-- TITLE TAG — matches CONFIG.title above -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
 /* 🍴 Cy's Recipe Box — grandma's-kitchen theme (recipe surfaces ONLY) */
@@ -105,9 +105,9 @@ body::after{
 .hdr-trackers{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:10px}
 .header-eyebrow{font-size:8px;letter-spacing:.32em;color:rgba(250,210,130,.98);text-transform:uppercase;font-family:'Lora',serif;font-style:italic;margin-bottom:5px;text-shadow:0 1px 3px rgba(0,0,0,.92),0 0 9px rgba(0,0,0,.6)}
 .header-title{
-  font-family:'Playfair Display',serif;font-size:26px;font-weight:700;letter-spacing:-.02em;
-  background:linear-gradient(130deg,#F5B830 0%,#F0C050 45%,#E07828 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-family:'Playfair Display',serif;font-size:26px;font-weight:700;letter-spacing:0;
+  color:#F7C65A;background:none;
+  -webkit-text-fill-color:#F7C65A;
   filter:drop-shadow(0 0 20px rgba(212,144,10,.3));
   white-space:nowrap;
 }
@@ -117,6 +117,7 @@ body::after{
 .hdr-clock{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--amber2);line-height:1.05;text-shadow:0 0 16px rgba(212,144,10,.45)}
 /* black glow on ALL header text for legibility over the sky */
 .header, .header *{ text-shadow:0 0 3px rgba(0,0,0,.95), 0 0 7px rgba(0,0,0,.85), 0 1px 2px rgba(0,0,0,1) !important; }
+.header .header-title{ text-shadow:0 1px 3px #000,0 0 14px rgba(247,198,90,.52) !important; }
 /* ...but NOT the clock or the emoji glyphs */
 .hdr-clock{ text-shadow:0 0 16px rgba(212,144,10,.5) !important; }
 .wx-ic{ text-shadow:none !important; }
@@ -586,6 +587,36 @@ body::after{
 .hg-water-glass:active{animation:hgWaterTap .35s cubic-bezier(.34,1.56,.64,1)}
 .hg-water-fill{transition:height .65s cubic-bezier(.22,1,.36,1)}
 .hg-pill{transition:all .3s ease}
+.almanac-focus{margin:0 0 18px}
+.almanac-focus-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:1px 2px 8px}
+.almanac-focus-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)}
+.almanac-focus-count{font-size:10px;color:#AAA2B8;font-family:'Lora',serif;white-space:nowrap}
+.almanac-current{background:linear-gradient(135deg,rgba(240,168,32,.14),rgba(15,14,20,.96));border:1px solid rgba(240,168,32,.42);border-left:4px solid var(--amber2);border-radius:8px;padding:15px 15px 14px;box-shadow:0 8px 24px rgba(0,0,0,.32)}
+.almanac-kicker{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber2);font-family:'Lora',serif;margin-bottom:9px}
+.almanac-task-row{display:flex;align-items:flex-start;gap:12px}
+.almanac-task-icon{font-size:25px;line-height:1;flex:0 0 30px;text-align:center}
+.almanac-task-copy{flex:1;min-width:0}
+.almanac-task-name{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--text);line-height:1.25}
+.almanac-task-detail{font-size:11.5px;color:#B5ADBF;font-family:'Lora',serif;line-height:1.5;margin-top:4px}
+.almanac-task-cue{font-size:10px;color:#F5C866;font-family:'Lora',serif;margin-top:7px}
+.almanac-lock{font-size:11px;color:#F5C866;background:rgba(240,168,32,.08);border:1px solid rgba(240,168,32,.25);border-radius:6px;padding:8px 9px;margin-top:10px;line-height:1.4}
+.almanac-actions{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:7px;margin-top:14px}
+.almanac-btn{min-height:42px;border-radius:7px;border:1px solid #464152;background:rgba(255,255,255,.055);color:#D7D0E0;font:600 11px 'Lora',serif;padding:7px 8px;cursor:pointer}
+.almanac-btn.done{background:#2DB870;border-color:#2DB870;color:#07120c;font-size:12px}
+.almanac-btn:disabled{opacity:.34;cursor:not-allowed}
+.almanac-next{display:flex;align-items:center;gap:11px;background:rgba(34,211,238,.055);border:1px solid rgba(34,211,238,.2);border-left:3px solid #22D3EE;border-radius:8px;padding:11px 13px;margin-top:8px}
+.almanac-next-label{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:#67E8F9;font-family:'Lora',serif;margin-bottom:3px}
+.almanac-next-name{font-family:'Playfair Display',serif;font-size:14px;color:var(--text);line-height:1.3}
+.almanac-next-detail{font-size:10.5px;color:#AAA2B8;font-family:'Lora',serif;line-height:1.4;margin-top:2px}
+.almanac-held{margin-top:9px;border-top:1px solid var(--border);padding-top:8px}
+.almanac-held-row{display:flex;align-items:center;gap:9px;padding:7px 2px}
+.almanac-held-copy{flex:1;min-width:0;font-size:11px;color:var(--text2);font-family:'Lora',serif;line-height:1.35}
+.almanac-resume{border:1px solid rgba(103,232,249,.28);background:rgba(34,211,238,.07);color:#67E8F9;border-radius:6px;padding:7px 9px;font:600 10px 'Lora',serif;cursor:pointer;white-space:nowrap}
+.almanac-complete{background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.3);border-left:4px solid #2DB870;border-radius:8px;padding:15px 16px}
+@media (max-width:430px){
+  .almanac-actions{grid-template-columns:1fr 1fr}
+  .almanac-task-name{font-size:18px}
+}
 .flow-just-done{animation:sinkIn .5s cubic-bezier(.34,1.56,.64,1),glowPulse 1.2s ease-out;border-radius:var(--rad)}
 /* ── 🔒 PASSWORD CURTAIN (privacy curtain, not security) ── */
 #curtain{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:#060d1c center/cover no-repeat}
@@ -679,7 +710,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 <div id="curtain">
   <div id="curtain-box" style="width:min(320px,84vw);background:linear-gradient(160deg,rgba(10,22,40,.88),rgba(6,13,28,.92));border:1px solid rgba(120,160,210,.25);border-radius:18px;padding:30px 26px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.55);backdrop-filter:blur(6px)">
     <div style="font-size:36px;margin-bottom:6px">🏔️</div>
-    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#EAF2FB;margin-bottom:18px">Home &amp; Garden</div>
+    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#EAF2FB;margin-bottom:18px">Almanac</div>
     <form onsubmit="return curtainTry(event)" style="margin:0">
       <input id="curtain-pass" type="password" autocomplete="off" autocapitalize="none" placeholder="password">
     </form>
@@ -690,7 +721,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 <div id="hg-login" style="display:none;position:fixed;inset:0;z-index:10001;align-items:center;justify-content:center;background:linear-gradient(rgba(4,10,22,.8),rgba(4,10,22,.9)),#060d1c">
   <div id="hg-login-box" style="width:min(330px,86vw);background:linear-gradient(160deg,rgba(10,22,40,.92),rgba(6,13,28,.95));border:1px solid rgba(120,160,210,.25);border-radius:18px;padding:30px 26px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.55)">
     <div style="font-size:36px;margin-bottom:6px">🏔️</div>
-    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#EAF2FB;margin-bottom:5px">Home &amp; Garden</div>
+    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#EAF2FB;margin-bottom:5px">Almanac</div>
     <div style="font-size:11.5px;color:#8fb6da;font-family:'Lora',serif;font-style:italic;margin-bottom:16px">Locked &amp; synced — sign in once per device</div>
     <form onsubmit="return hgLoginTry(event)" style="margin:0;display:flex;flex-direction:column;gap:10px">
       <input id="hg-login-email" type="email" autocomplete="username" autocapitalize="none" placeholder="email" style="width:100%;box-sizing:border-box;background:rgba(6,13,28,.75);border:1px solid rgba(120,160,210,.35);border-radius:12px;padding:13px 16px;color:#EAF2FB;font-size:15px;text-align:center;outline:none;font-family:'Lora',serif">
@@ -701,7 +732,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   </div>
 </div>
 
-<div id="fb-loading" style="position:fixed;inset:0;background:#06050A;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px"><div style="font-size:36px">📅</div><div style="font-size:13px;color:#6A6480;font-family:'Lora',serif;letter-spacing:.1em">Syncing your schedule…</div></div>
+<div id="fb-loading" style="position:fixed;inset:0;background:#06050A;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px"><div style="font-size:36px">📖</div><div style="font-size:13px;color:#6A6480;font-family:'Lora',serif;letter-spacing:.1em">Syncing Almanac…</div></div>
 <div class="header">
   <div class="header-bg" id="headerBg"></div>
   <div class="header-aurora"></div>
@@ -721,6 +752,10 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
         <div class="hdr-clock" id="hdr-clock">--:--</div>
         <div class="hdr-date" id="hdr-date"></div>
         <div class="hdr-fact" id="hdrFact"></div>
+      </div>
+      <div class="hdr-center">
+        <div class="header-eyebrow">Your living record</div>
+        <div class="header-title">Almanac</div>
       </div>
       <div class="hdr-right">
         <div class="hdr-weather" id="hdrWeather"></div>
@@ -778,16 +813,16 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260707085007-encoding"></script>
+<script src="./data.js?v=20260713002459-almanac"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
 // ═══════════════════════════════════════════════════════════════
 const CONFIG = {
-  title:   "Schedule",
-  eyebrow: "everything in its place",
-  emoji:   "📅",
+  title:   "Almanac",
+  eyebrow: "your living record",
+  emoji:   "📖",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
 // Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
@@ -853,6 +888,7 @@ let wishCustom = {}; // 💎 big-ticket wishlist: {t,done}   // 💰 finance sta
 let rollovers = {}; // 🔁 user rollover tasks {id:{label,created,done?}} — stay on Today until checked, carry forward daily
 let sleep = {};      // 😴 sleep log {YYYY-MM-DD(wake date):{bed,wake,mins,q,src}} + _prefs (reminders) — see v2-features.js
 let harvestLog = {}; // 📸 harvest journal {id:{ts,date,text,img?}} — see v2-features.js
+let almanacFlow = {}; // shared Current/Next state; desktop O.B. will mirror this later
 let trimOpen = {};
 let weedOpen = false;
 let currentTab = "today";
@@ -1791,6 +1827,146 @@ function habitsTodayHtml(){
   </div>`;
   return todays3+waterTile;
 }
+
+const ALMANAC_SNOOZE_MS=10*60*1000;
+const ALMANAC_SNOOZE_LIMIT=2;
+function almanacEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function almanacDayState(){
+  const d=todayKey();
+  if(!almanacFlow[d] || typeof almanacFlow[d]!=="object") almanacFlow[d]={};
+  if(!almanacFlow[d].tasks || typeof almanacFlow[d].tasks!=="object") almanacFlow[d].tasks={};
+  return almanacFlow[d];
+}
+function almanacStepState(id){
+  const day=almanacDayState();
+  if(!day.tasks[id] || typeof day.tasks[id]!=="object") day.tasks[id]={};
+  return day.tasks[id];
+}
+function almanacLogKey(id,d){
+  const keys={
+    bed:"morning-bed-", "outdoor-water":"morning-outdoor-water-", health:"morning-stretch-",
+    breakfast:"meal-breakfast-", walk:"morning-walk-", work:"morning-work-"
+  };
+  return (keys[id]||("morning-"+id+"-"))+d;
+}
+function almanacRoutineDone(id){ return !!laundry[almanacLogKey(id,todayKey())]; }
+function almanacOutdoorDue(){ return plantsDueOn(todayKey()).filter(function(p){ return p.loc==="outdoor"; }); }
+function almanacRoutineTasks(hc){
+  const due=almanacOutdoorDue();
+  const names=due.map(function(p){return p.name;});
+  const waterDetail=names.length
+    ? names.length+" due: "+names.slice(0,4).join(", ")+(names.length>4?" +"+(names.length-4)+" more":"")
+    : "Check the outdoor pots. Almanac has no outdoor watering due right now.";
+  let healthName="Light movement and mobility";
+  let healthDetail="Shoulder circles, thoracic rotations, hip-flexor stretch, and hamstring stretch for 5 minutes.";
+  if(hc&&hc.rescue){
+    healthName="Gentle recovery reset";
+    healthDetail="Easy breathing, shoulder circles, and gentle hip and hamstring stretches. No hard workout this morning.";
+  } else if(hc&&hc.strengthDay){
+    healthName="Strength-day mobility primer";
+    healthDetail="Five easy minutes: shoulder circles, thoracic rotations, hip-flexor stretch, and hamstring stretch. Strength stays later, after food and water.";
+  }
+  return ALMANAC_MORNING.map(function(t){
+    const x=Object.assign({},t);
+    if(t.id==="bed") x.detail="Straighten the bed before leaving the bedroom.";
+    if(t.id==="outdoor-water") x.detail=waterDetail;
+    if(t.id==="health"){ x.label=healthName; x.detail=healthDetail; }
+    if(t.id==="breakfast") x.detail="Make a protein breakfast and eat before moving on.";
+    if(t.id==="walk") x.detail="Take Zoey out after breakfast.";
+    if(t.id==="work") x.detail="At 8:00 AM, open work tools, check paid priorities, and begin paid work. Do not start early.";
+    return x;
+  });
+}
+function almanacMode(task,now){
+  if(almanacRoutineDone(task.id)) return "done";
+  const st=almanacStepState(task.id);
+  if(st.status==="blocked" || st.status==="later") return "held";
+  if(st.status==="snoozed" && Number(st.snoozedUntil||0)>now) return "held";
+  return "active";
+}
+function almanacPersist(extra){
+  const d=todayKey(), updates=extra||{};
+  almanacDayState().updatedAt=Date.now();
+  updates["almanacFlow/"+d]=almanacFlow[d];
+  try{ ST.update(updates); }catch(e){}
+}
+function almanacDone(id){
+  const task=ALMANAC_MORNING.find(function(x){return x.id===id;});
+  if(!task) return;
+  const now=new Date(), nowM=now.getHours()*60+now.getMinutes();
+  if(id==="work" && nowM<480){ toast("Work preparation unlocks at 8:00 AM. No unpaid work."); return; }
+  const d=todayKey(), st=almanacStepState(id), updates={};
+  st.status="done"; st.completedAt=Date.now(); delete st.snoozedUntil;
+  const logKey=almanacLogKey(id,d); laundry[logKey]=true; updates["laundry/"+logKey]=true;
+  if(id==="outdoor-water"){
+    almanacOutdoorDue().forEach(function(p){ watered[p.id]=d; updates["watered/"+p.id]=d; });
+  }
+  almanacPersist(updates);
+  renderAll();
+  toast(id==="work"?"Paid work started.":"Done. Next step is ready.");
+}
+function almanacHold(id,status){
+  const task=ALMANAC_MORNING.find(function(x){return x.id===id;}); if(!task) return;
+  const now=new Date(), nowM=now.getHours()*60+now.getMinutes();
+  if(id==="work" && nowM<480){ toast("Work stays waiting until 8:00 AM."); return; }
+  const st=almanacStepState(id);
+  if(status==="snoozed"){
+    const count=Number(st.snoozeCount||0);
+    if(count>=ALMANAC_SNOOZE_LIMIT){ toast("Two snoozes used. Choose Blocked or Move later."); return; }
+    st.status="snoozed"; st.snoozeCount=count+1; st.snoozedUntil=Date.now()+ALMANAC_SNOOZE_MS;
+  } else {
+    st.status=status; delete st.snoozedUntil;
+  }
+  st.updatedAt=Date.now(); almanacPersist(); renderAll();
+}
+function almanacResume(id){
+  const st=almanacStepState(id); st.status="active"; delete st.snoozedUntil; st.updatedAt=Date.now();
+  almanacPersist(); renderAll();
+}
+function almanacRoutineHtml(hc,nowM){
+  const now=Date.now(), tasks=almanacRoutineTasks(hc);
+  const done=tasks.filter(function(t){return almanacRoutineDone(t.id);});
+  const active=tasks.filter(function(t){return almanacMode(t,now)==="active";});
+  const held=tasks.filter(function(t){return almanacMode(t,now)==="held";});
+  clearTimeout(window.__almanacSnoozeTimer);
+  const snoozeTimes=held.map(function(t){return Number(almanacStepState(t.id).snoozedUntil||0);}).filter(function(v){return v>now;});
+  if(snoozeTimes.length){
+    const wake=Math.min.apply(null,snoozeTimes);
+    window.__almanacSnoozeTimer=setTimeout(function(){ if(currentTab==="today") renderToday(); },Math.max(250,wake-now+250));
+  }
+  let html='<section class="almanac-focus" aria-label="Morning routine"><div class="almanac-focus-head"><div><div class="almanac-kicker" style="margin-bottom:2px">Almanac</div><div class="almanac-focus-title">Morning routine</div></div><div class="almanac-focus-count">'+done.length+' of '+tasks.length+' complete</div></div>';
+  if(done.length===tasks.length){
+    return html+'<div class="almanac-complete"><div class="almanac-kicker" style="color:#4AD490;margin-bottom:5px">✓ Morning complete</div><div class="almanac-task-name" style="font-size:17px">You are ready for the flexible part of the day.</div></div></section>';
+  }
+  const current=active[0]||null, next=active[1]||null;
+  if(current){
+    const st=almanacStepState(current.id), locked=current.id==="work"&&nowM<480;
+    const snoozeUsed=Number(st.snoozeCount||0), doneLabel=current.id==="work"?"Begin paid work":"✓ Done";
+    html+='<div class="almanac-current"><div class="almanac-kicker">Current</div><div class="almanac-task-row"><div class="almanac-task-icon">'+current.emoji+'</div><div class="almanac-task-copy"><div class="almanac-task-name">'+almanacEsc(current.label)+'</div><div class="almanac-task-detail">'+almanacEsc(current.detail)+'</div><div class="almanac-task-cue">'+almanacEsc(current.cue)+'</div></div></div>';
+    if(locked) html+='<div class="almanac-lock">Available at 8:00 AM. Work preparation and work both happen on paid time.</div>';
+    html+='<div class="almanac-actions">'
+      +'<button class="almanac-btn done" onclick="almanacDone(\''+current.id+'\')"'+(locked?' disabled':'')+'>'+doneLabel+'</button>'
+      +'<button class="almanac-btn" onclick="almanacHold(\''+current.id+'\',\'blocked\')"'+(locked?' disabled':'')+'>Blocked</button>'
+      +'<button class="almanac-btn" onclick="almanacHold(\''+current.id+'\',\'snoozed\')"'+(locked||snoozeUsed>=ALMANAC_SNOOZE_LIMIT?' disabled':'')+'>Snooze 10m</button>'
+      +'<button class="almanac-btn" onclick="almanacHold(\''+current.id+'\',\'later\')"'+(locked?' disabled':'')+'>Move later</button></div></div>';
+  } else {
+    html+='<div class="almanac-current"><div class="almanac-kicker">Current</div><div class="almanac-task-name" style="font-size:17px">Routine paused</div><div class="almanac-task-detail">Resume one of the held steps below.</div></div>';
+  }
+  const nextLabel=next?next.label:(held.length?"Resume a held step":"Morning complete");
+  const nextDetail=next?next.detail:(held.length?"Nothing else advances until a held step returns.":"The rest of today stays flexible.");
+  html+='<div class="almanac-next"><div class="almanac-task-icon" style="font-size:20px">'+(next?next.emoji:"→")+'</div><div class="almanac-task-copy"><div class="almanac-next-label">Next</div><div class="almanac-next-name">'+almanacEsc(nextLabel)+'</div><div class="almanac-next-detail">'+almanacEsc(nextDetail)+'</div></div></div>';
+  if(held.length){
+    html+='<div class="almanac-held">';
+    held.forEach(function(t){
+      const st=almanacStepState(t.id); let status="Moved later";
+      if(st.status==="blocked") status="Blocked";
+      if(st.status==="snoozed") status="Snoozed until "+new Date(st.snoozedUntil).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+      html+='<div class="almanac-held-row"><div>'+t.emoji+'</div><div class="almanac-held-copy"><strong style="color:var(--text)">'+almanacEsc(t.label)+'</strong><br>'+almanacEsc(status)+'</div><button class="almanac-resume" onclick="almanacResume(\''+t.id+'\')">Resume</button></div>';
+    });
+    html+='</div>';
+  }
+  return html+'</section>';
+}
 function renderToday() {
   const el=document.getElementById("view-today"), today=todayKey();
   const dow=new Date().getDay();
@@ -1798,7 +1974,7 @@ function renderToday() {
   const _now=new Date(); const nowM=_now.getHours()*60+_now.getMinutes();
   const hc=healthCoachState(today,nowM,dow);
   const RESET_DAY="2026-06-06"; // 🔄 one-off sleep-reset day — flow items auto-expire after this date
-  let topHtml="";
+  let topHtml=almanacRoutineHtml(hc,nowM);
 
   // ── #1 PRIORITY — GET AN ALARM CLOCK (pinned at the very top until checked) ──
   if(!checked["get_alarm_clock"] && !hc.rescue){
@@ -4134,6 +4310,7 @@ ST.on('value', snap => {
   rollovers   = d.rollovers   || {};
   sleep       = d.sleep       || {};
   harvestLog  = d.harvestLog  || {};
+  almanacFlow = d.almanacFlow || {};
   // one-time idempotent migration: grocery is FOOD-ONLY (Jun 6 2026) — strip non-food strays
   try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false, ci=false;
     for(const k in grocCustom){ if(NF.test(String(grocCustom[k]))){ delete grocCustom[k]; ch=true; } }
@@ -4608,6 +4785,9 @@ function updateClock(){
   const g=document.getElementById("hdr-greeting"); if(g) g.textContent=greet;
   const c=document.getElementById("hdr-clock"); if(c) c.textContent=now.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
   const dd=document.getElementById("hdr-date"); if(dd) dd.textContent=now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+  const gate=todayKey()+"|"+(h>=8?"open":"locked");
+  if(window.__almanacGate && window.__almanacGate!==gate && currentTab==="today" && __dataStarted) renderToday();
+  window.__almanacGate=gate;
 }
 updateClock();
 setInterval(updateClock,30000);
@@ -4617,7 +4797,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260712234500',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260713002459',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
