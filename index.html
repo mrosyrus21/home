@@ -2410,7 +2410,7 @@ function plantsDueOn(dateStr, ignoreWx) {
     const days = Math.round((target - last) / 86400000);
     let need = p.days;
     if(wxOn && (p.loc==="outdoor"||p.loc==="greenhouse")){
-      if(WXF.hot) need = Math.max(need - 1, Math.min(2, p.days));              // heat: bring watering forward a day
+      if(WXF.hot || WXF.hotTom) need = Math.max(need - 1, Math.min(2, p.days)); // current/next-day heat: bring watering forward a day
       if(WXF.rainToday && p.loc==="outdoor") need = need + 2; // rain: let the sky water outdoor plants
     }
     return days >= need;
@@ -2495,13 +2495,13 @@ function renderGarden() {
     if (rainSet.size) html += `<div style="background:rgba(126,184,240,.08);border:1px solid #7EB8F0;border-radius:10px;padding:10px 13px;margin-bottom:12px;font-size:12.5px;color:#7EB8F0;font-family:'Lora',serif;line-height:1.5">🌧️ Rain (${WXF.pop}%) is covering ${rainSet.size} outdoor plant${rainSet.size>1?"s":""} today — auto-skipped from the due list. Water anyway if a light shower won't soak the pots.</div>`;
     if (dueSet.size) html += `<div onclick="waterAllDue()" style="background:rgba(45,184,112,.1);border:1px solid rgba(45,184,112,.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="font-size:18px">💧</div><div style="font-size:13px;font-weight:600;color:#4AD490">Mark all as watered today</div></div>`;
     else if (total) html += `<div style="background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">✅</div><div style="font-size:13px;color:#4AD490;font-style:italic">All watered today — nice work</div></div>`;
-    const POT_GROUP=["green_onion","potato","white_onion","ginger","turmeric"].filter(id=>PLANTS.some(p=>p.id===id));
+    const POT_GROUP=["green_onion","white_onion"].filter(id=>PLANTS.some(p=>p.id===id));
     const potDS=()=>{ var ds=POT_GROUP.map(id=>daysSinceWatered(id)); if(!ds.length||ds.some(d=>d===null)) return null; return Math.max.apply(null,ds); };
     const potDone=POT_GROUP.length>0 && POT_GROUP.every(id=>watered[id]===today);
     const potPushed=POT_GROUP.some(id=>waterPushed[id]&&waterPushed[id]>today);
     const potDue=POT_GROUP.some(id=>dueSet.has(id));
     const potRain=POT_GROUP.some(id=>rainSet.has(id));
-    const potP={id:"shared_pot",name:"Shared Pot · Onions, Potatoes, Ginger & Turmeric",emoji:"🪴",days:2,waterChip:"💧 every 2 days — evenly moist",freq:"The wide gray pot shared by the green onions, golden potatoes, white onion, ginger, and two turmeric roots — water them all together at the base every couple of days, keeping the soil evenly moist."};
+    const potP={id:"shared_pot",name:"Wide Gray Pot · Green & White Onions",emoji:"🪴",days:2,waterChip:"💧 check daily · water when top inch dries",freq:"Only the green onions and recovering white onion remain in the wide shallow gray pot. Check the top inch daily during the heat and water when it starts drying; keep water away from the white onion's exposed neck while it recovers from root rot."};
     const urg = p => { if(p.id==="shared_pot"){ if(potDone) return -1000; if(potPushed) return -500; var pd=potDS(); if(pd===null) return 1e9; return pd-2; } if(watered[p.id]===today) return -1000; if(waterPushed[p.id]&&waterPushed[p.id]>today) return -500; const dd=daysSinceWatered(p.id); if(dd===null) return 1e9; return dd-(p.days||7); };
     // strict water-need order: most overdue (and never-watered) on top, least (watered today / snoozed) on bottom. (removed the WATER_GROUP clustering, which was overriding this order)
     const inPot=id=>POT_GROUP.indexOf(id)>=0;
@@ -2516,8 +2516,8 @@ function renderGarden() {
         let pbody=hdr(p, pdd!==null?pdd+"d ago":"never");
         pbody+=chipRow(chip(p.waterChip,"#7EB8F0"));
         pbody+=sect("💧 When & how","#7EB8F0",p.freq);
-        pbody+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px;font-style:italic">🪴 Green Onions · Golden Potatoes · White Onion · Ginger · Turmeric — watered together. Harvest each on its own under 🌾 Harvest.</div>';
-        pbody+='<button class="water-btn '+bc+'" onclick="waterPlantGroup([\'green_onion\',\'potato\',\'white_onion\',\'ginger\',\'turmeric\'])" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">'+bl+'</button>';
+        pbody+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px;font-style:italic">🪴 Green Onions · recovering White Onion — watered together until they are moved out for the planned strawberry-only pot.</div>';
+        pbody+='<button class="water-btn '+bc+'" onclick="waterPlantGroup([\'green_onion\',\'white_onion\'])" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">'+bl+'</button>';
         html+=pcard(p,bTxt,bCol,pbody);
         return;
       }
@@ -4477,18 +4477,56 @@ function updateHeaderBg(){
 }
 let WXF={ready:false};
 function wxIcon(wc){return wc>=95?"⛈️":wc>=71?"❄️":wc>=51?"🌧️":wc>=45?"🌫️":wc>=3?"☁️":wc>=1?"🌤️":"☀️";}
+function nwsCode(label){
+  const s=String(label||"").toLowerCase();
+  if(s.includes("thunder")) return 95;
+  if(s.includes("snow")||s.includes("sleet")||s.includes("ice")) return 73;
+  if(s.includes("rain")||s.includes("shower")) return 61;
+  if(s.includes("drizzle")) return 51;
+  if(s.includes("fog")) return 45;
+  if(s.includes("mostly cloudy")||s.includes("overcast")) return 3;
+  if(s.includes("partly cloudy")||s.includes("partly sunny")) return 2;
+  if(s.includes("mostly clear")||s.includes("mostly sunny")) return 1;
+  return 0;
+}
+function nwsWindSpeed(label){
+  const nums=String(label||"").match(/\d+/g);
+  return nums?Math.max(...nums.map(Number)):0;
+}
 function loadWeather(){
-  fetch("https://api.open-meteo.com/v1/forecast?latitude=39.78&longitude=-104.75&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&hourly=weather_code,temperature_2m&daily=precipitation_probability_max,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FDenver&forecast_days=7")
-    .then(r=>r.json()).then(d=>{
+  fetch("https://api.weather.gov/points/39.78,-104.75",{headers:{Accept:"application/geo+json"}})
+    .then(r=>{if(!r.ok) throw new Error("NWS point lookup failed"); return r.json();})
+    .then(p=>fetch(p.properties.forecastHourly,{headers:{Accept:"application/geo+json"}}))
+    .then(r=>{if(!r.ok) throw new Error("NWS hourly forecast failed"); return r.json();})
+    .then(d=>{
+      const periods=(d.properties&&d.properties.periods)||[];
+      if(!periods.length) throw new Error("NWS forecast was empty");
+      const rows={};
+      periods.forEach(p=>{
+        const date=p.startTime.slice(0,10);
+        const row=rows[date]||(rows[date]={date,temps:[],pop:0,wind:0,code:0});
+        row.temps.push(Number(p.temperature));
+        row.pop=Math.max(row.pop,Number(p.probabilityOfPrecipitation&&p.probabilityOfPrecipitation.value)||0);
+        row.wind=Math.max(row.wind,nwsWindSpeed(p.windSpeed));
+        row.code=Math.max(row.code,nwsCode(p.shortForecast));
+      });
+      const days=Object.keys(rows).sort().slice(0,7).map(date=>{
+        const r=rows[date];
+        return {date,code:r.code,hi:Math.round(Math.max(...r.temps)),lo:Math.round(Math.min(...r.temps)),pop:r.pop,wind:r.wind};
+      });
+      const today=todayKey(), ti=Math.max(0,days.findIndex(x=>x.date===today));
+      const d0=days[ti]||days[0], d1=days[ti+1]||d0, now=periods[0];
       WXF={ ready:true,
-        temp:Math.round(d.current.temperature_2m), code:d.current.weather_code, wind:Math.round(d.current.wind_speed_10m),
-        hi:Math.round(d.daily.temperature_2m_max[0]), lo:Math.round(d.daily.temperature_2m_min[0]),
-        pop:d.daily.precipitation_probability_max[0], windMax:Math.round(d.daily.wind_speed_10m_max[0]),
-        popTom:d.daily.precipitation_probability_max[1], hiTom:Math.round(d.daily.temperature_2m_max[1]), loTom:Math.round(d.daily.temperature_2m_min[1]),
-        humidity:Math.round(d.current.relative_humidity_2m) };
-      WXF.days=(d.daily.time||[]).map((t,i)=>({date:t,code:d.daily.weather_code[i],hi:Math.round(d.daily.temperature_2m_max[i]),lo:Math.round(d.daily.temperature_2m_min[i]),pop:d.daily.precipitation_probability_max[i],wind:Math.round(d.daily.wind_speed_10m_max[i])}));
-      WXF.rainToday=WXF.pop>=60; WXF.rainTom=WXF.popTom>=60; WXF.hot=WXF.hi>=88; WXF.windy=WXF.windMax>=25; WXF.frost=WXF.lo<=35;
-      if(d.hourly&&d.hourly.time){ WXF.hourlyTime=d.hourly.time; WXF.hourlyCodes=d.hourly.weather_code; WXF.hourlyTemp=(d.hourly.temperature_2m||[]).map(t=>Math.round(t)); }
+        temp:Math.round(now.temperature), code:nwsCode(now.shortForecast), wind:nwsWindSpeed(now.windSpeed),
+        hi:d0.hi, lo:d0.lo, pop:d0.pop, windMax:d0.wind,
+        popTom:d1.pop, hiTom:d1.hi, loTom:d1.lo,
+        humidity:Math.round(Number(now.relativeHumidity&&now.relativeHumidity.value)||0), days:days.slice(ti) };
+      WXF.rainToday=WXF.pop>=60; WXF.rainTom=WXF.popTom>=60; WXF.hot=WXF.hi>=88; WXF.hotTom=WXF.hiTom>=88; WXF.windy=WXF.windMax>=25; WXF.frost=WXF.lo<=35;
+      WXF.hourlyTime=Array(24).fill(""); WXF.hourlyCodes=Array(24).fill(WXF.code); WXF.hourlyTemp=Array(24).fill(WXF.temp);
+      periods.filter(p=>p.startTime.slice(0,10)===today).forEach(p=>{
+        const h=Number(p.startTime.slice(11,13));
+        WXF.hourlyTime[h]=p.startTime; WXF.hourlyCodes[h]=nwsCode(p.shortForecast); WXF.hourlyTemp[h]=Math.round(p.temperature);
+      });
       renderHeaderWeather();
       if(typeof currentTab!=="undefined"){
         if(currentTab==="garden" && document.getElementById("view-garden")) renderGarden();
@@ -4531,7 +4569,7 @@ function renderForecast(){
       +'</div>';
   });
   html+='</div>';
-  html+='<div style="font-size:11px;color:var(--text3);font-family:\'Lora\',serif;text-align:center;padding:2px 0 10px">Auto-updates every 45 min · source: Open-Meteo</div>';
+  html+='<div style="font-size:11px;color:var(--text3);font-family:\'Lora\',serif;text-align:center;padding:2px 0 10px">Auto-updates every 45 min · source: National Weather Service</div>';
   el.innerHTML=html;
 }
 function wxAdvBox(m,c){ return m?'<div style="margin-top:8px;background:rgba(126,184,240,.07);border-left:3px solid '+c+';border-radius:6px;padding:7px 10px;font-size:12px;color:'+c+';font-family:\'Lora\',serif;line-height:1.45">'+m+'</div>':''; }
@@ -4541,6 +4579,7 @@ function wxWaterNote(p){
     if(WXF.rainToday) return wxAdvBox("🌧️ Rain likely today ("+WXF.pop+"%) — skip watering and let the sky do it.","#7EB8F0");
     if(WXF.rainTom) return wxAdvBox("🌦️ Rain likely tomorrow ("+WXF.popTom+"%) — a light drink today is plenty.","#7EB8F0");
     if(WXF.hot) return wxAdvBox("🔥 Hot today (high "+WXF.hi+"°) — water deeply this morning; pots may want a second drink tonight.","#E07070");
+    if(WXF.hotTom) return wxAdvBox("🔥 Hot tomorrow (high "+WXF.hiTom+"°) — check small pots tonight and water deeply early tomorrow if they are drying.","#E07070");
     if(WXF.windy) return wxAdvBox("💨 Breezy today (gusts ~"+WXF.windMax+" mph) — wind dries soil fast, so check it sooner.","#F0A820");
   }
   // greenhouse flap advisories removed Jun 6 2026 — the greenhouse is intentionally EMPTY all summer (see 🌡️ Greenhouse Plan on the Care page), so there is nothing inside to cook
@@ -4616,7 +4655,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260709073513',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260712213000',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
