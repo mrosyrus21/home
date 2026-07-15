@@ -98,10 +98,9 @@ body::after{
   background:radial-gradient(ellipse,rgba(34,211,238,.1) 0%,transparent 70%);
 }
 .header-inner{padding:16px 18px 0;position:relative;z-index:1}
-.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.header-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:flex-start;column-gap:24px}
 .hdr-left{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:1px}
-.hdr-center{flex:0 1 auto;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:1px}
-.hdr-right{flex:1 1 0;min-width:0;display:flex;justify-content:flex-end}
+.hdr-right{min-width:0;display:flex;justify-content:flex-end;padding-top:13px}
 .hdr-trackers{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:10px}
 .header-eyebrow{font-size:8px;letter-spacing:.32em;color:rgba(250,210,130,.98);text-transform:uppercase;font-family:'Lora',serif;font-style:italic;margin-bottom:5px;text-shadow:0 1px 3px rgba(0,0,0,.92),0 0 9px rgba(0,0,0,.6)}
 .header-title{
@@ -112,7 +111,7 @@ body::after{
   white-space:nowrap;
 }
 /* Ring stat on the right */
-.header-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right}
 .hdr-greeting{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(248,206,120,.98);font-family:'Lora',serif;font-style:italic;text-shadow:0 1px 3px rgba(0,0,0,.92),0 0 9px rgba(0,0,0,.6)}
 .hdr-clock{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--amber2);line-height:1.05;text-shadow:0 0 16px rgba(212,144,10,.45)}
 /* black glow on ALL header text for legibility over the sky */
@@ -145,7 +144,7 @@ body::after{
 .garden-tracker.trim{color:#c084fc;text-shadow:0 0 8px rgba(192,132,252,.4)}
 .garden-tracker.harvest{color:#4ADE80;text-shadow:0 0 8px rgba(74,222,128,.45)}
 .hdr-weather{font-family:'Lora',serif;text-align:right;line-height:1.46;background:none;border:none;border-radius:14px;padding:0}
-.wx-now{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#F3F1FA;text-shadow:0 0 14px rgba(34,211,238,.3);line-height:1.1}
+.wx-now{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:#F3F1FA;text-shadow:0 0 14px rgba(34,211,238,.3);line-height:1.05}
 .wx-now .wx-ic{font-size:17px;margin-right:3px}
 .wx-row{font-size:11.5px;color:#ECE7F4;letter-spacing:.02em;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap}
 .wx-tom{font-size:11px;color:#BBD6F2;margin-top:3px;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap}
@@ -552,20 +551,18 @@ body::after{
 /* ── Sticky nav: big header scrolls away, the tab bar pins to the top ── */
 .navbar{position:sticky;top:0;z-index:100;background:rgba(9,8,14,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.07);box-shadow:0 6px 20px rgba(0,0,0,.45)}
 
-/* ── MOBILE header fix (phones ≤560px): eyebrow on its own top line; greeting+clock+fact and weather share the row below ── */
+/* ── MOBILE header: keep time and temperature balanced on one row ── */
 @media (max-width:560px){
   .header-inner{padding:11px 14px 0}
-  .header-row{flex-wrap:wrap;gap:8px}
-  .hdr-center{order:-1;flex:1 1 100%;width:100%;align-items:center;padding-top:0}
-  .header-eyebrow{margin:0 0 9px;font-size:8px;letter-spacing:.2em;line-height:1.5}
-  .hdr-left{flex:1 1 55%;min-width:145px}
+  .header-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:12px}
+  .hdr-left{min-width:0}
   /* Jun 7 fix: weather card must be allowed to SHRINK (flex 0 1 + min-width:0), not just sit at auto width —
      with 3-digit temps/long wx rows it overflowed and shoved the greeting column into a wrap/overlap mess */
-  .hdr-right{flex:0 1 auto;min-width:0;margin-left:auto}
+  .hdr-right{min-width:0;padding-top:12px}
   .hdr-clock{font-size:27px}
   .hdr-fact{max-width:170px;font-size:10px;margin-top:34px}
-  .hdr-weather{padding:6px 0;max-width:100%}
-  .wx-now{font-size:18px}
+  .hdr-weather{padding:0;max-width:100%}
+  .wx-now{font-size:27px}
   .wx-row{font-size:10.5px}
   .wx-tom{font-size:10px}
   .hdr-trackers{gap:10px;margin-top:8px}
@@ -753,10 +750,6 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
         <div class="hdr-date" id="hdr-date"></div>
         <div class="hdr-fact" id="hdrFact"></div>
       </div>
-      <div class="hdr-center">
-        <div class="header-eyebrow">Your living record</div>
-        <div class="header-title">Almanac</div>
-      </div>
       <div class="hdr-right">
         <div class="hdr-weather" id="hdrWeather"></div>
       </div>
@@ -813,7 +806,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260714193922-jalapeno"></script>
+<script src="./data.js?v=20260714194843-header"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -2271,19 +2264,6 @@ function renderToday() {
   }
 
   // 🐕 Zoey transition tracker REMOVED Jun 6 — slow topper-style transition now lives on her recipe page (Zoey's Kitchen)
-
-  // Morning dog + garden
-  const dogDone=!!laundry["morning-walk-"+today];
-  add("walk",340,dogDone, (dogDone||nowM<720)
-    ? strip("🐕","Walk + play with Zoey",dogDone,"#4ADE80","toggleMorning('walk')","Morning","20–30 min")
-    : strip("🐕","Walk + play with Zoey",false,"#4ADE80","toggleMorning('walk')","Anytime","20–30 min",(nowM>=1080?"Evening walk = her favorite anyway — cooler pavement, all the day's smells to read. 🐾":"Morning slipped by — an afternoon or evening sniffy walk counts double for her. 🐾")));
-  const waterToday=plantsDueOn(today), trimToday=plantsTrimDueOn(today), gardenToday=gardenTasksOn(today);
-  if(waterToday.length||trimToday.length||gardenToday.length){
-    const gardenDone=(waterToday.length===0||waterToday.every(p=>watered[p.id]===today))&&(trimToday.length===0||trimToday.every(p=>trimmed[p.id]===today))&&(gardenToday.length===0||gardenToday.every(id=>!!checked[id]));
-    add("garden",350,gardenDone, (gardenDone||nowM<720)
-      ? strip("🌿","Garden care — head to the Garden tab",gardenDone,"#2DB870","switchTab('garden')","Morning","–")
-      : strip("🌿","Garden care — head to the Garden tab",false,"#2DB870","switchTab('garden')","Early evening","–","Morning window slipped — early evening (5–7) is the next best slot: leaves dry before dark, no midday scorch."));
-  }
 
   // Midday
   const _ln=MA.find(function(x){return x.id==='lunch';});
@@ -4798,7 +4778,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260714193922',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260714194843',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
