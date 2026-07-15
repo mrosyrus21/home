@@ -226,7 +226,6 @@ const TASKS = {
 
 const SCHEDULE = [
   // ── MOVING · FIRST NO-REGRET WEEK ─────────────────────────────────────────
-  { date:"2026-07-13", tasks:["heat_shade","move_stage"], note:"Protect the plants from the record heat, then make one clear landing zone for the move. No whole-house overhaul." },
   { date:"2026-07-14", tasks:["move_supplies","basil_beetles"], note:"Build the basic moving kit. The urgent basil protection can coexist with this one small moving task." },
   { date:"2026-07-15", tasks:["move_decor"],               note:"One box. Label it. Put it in the staging zone. Done." },
   { date:"2026-07-16", tasks:["move_clothes"],             note:"Pack only off-season clothing you will not need before move-out." },
