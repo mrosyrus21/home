@@ -226,13 +226,13 @@ const TASKS = {
 
 const SCHEDULE = [
   // ── MOVING · FIRST NO-REGRET WEEK ─────────────────────────────────────────
-  { date:"2026-07-14", tasks:["move_supplies","basil_beetles"], note:"Build the basic moving kit. The urgent basil protection can coexist with this one small moving task." },
   { date:"2026-07-15", tasks:["move_decor"],               note:"One box. Label it. Put it in the staging zone. Done." },
   { date:"2026-07-16", tasks:["move_clothes"],             note:"Pack only off-season clothing you will not need before move-out." },
   { date:"2026-07-17", tasks:["move_books"],               note:"One destination-safe box; no keep-or-discard decisions required." },
   { date:"2026-07-18", tasks:["move_kitchen"],             note:"Pack kitchen extras while leaving a small daily-use kit accessible." },
   { date:"2026-07-19", tasks:["move_reset"],               note:"Make the house tolerable, not perfect. No deep cleaning." },
   { date:"2026-07-20", tasks:["move_hobby"],               note:"One more no-regret box, then stop." },
+  { date:"2026-07-21", tasks:["move_stage"],               note:"Set up or refresh one labeled PACKED / DECISION HOLD / OPEN LAST area. Stop when the zone is usable." },
 
   // ── MOVING MILESTONES ─────────────────────────────────────────────────────
   { date:"2026-08-17", tasks:["move_checkpoint"],          note:"Mostly packed two weeks before move-out. Decision-hold items can stay unresolved until the destination is known." },
