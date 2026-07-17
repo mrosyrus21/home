@@ -806,7 +806,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260716080000-week"></script>
+<script src="./data.js?v=20260717090000-week"></script>
 <script src="./recipes.js?v=20260618180219"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1891,9 +1891,9 @@ function almanacDone(id){
   const d=todayKey(), st=almanacStepState(id), updates={};
   st.status="done"; st.completedAt=Date.now(); delete st.snoozedUntil;
   const logKey=almanacLogKey(id,d); laundry[logKey]=true; updates["laundry/"+logKey]=true;
-  if(id==="outdoor-water"){
-    almanacOutdoorDue().forEach(function(p){ watered[p.id]=d; updates["watered/"+p.id]=d; });
-  }
+  // Jul 17 2026 fix: marking the morning "outdoor water" step done no longer auto-marks every outdoor plant
+  // as watered — that was silently zeroing out the Watering tab. Watering is tracked explicitly in the
+  // Watering tab (tap a plant, or "Mark all as watered today") so the schedule stays accurate.
   almanacPersist(updates);
   renderAll();
   toast(id==="work"?"Paid work started.":"Done. Next step is ready.");
@@ -4959,7 +4959,7 @@ curtainInit();
 </style>
 <script>window.DAYARC_CONFIG={appendHost:'.header'};</script>
 <link rel="stylesheet" href="dayarc.css?v=20260626213000">
-<script src="dayarc.js?v=20260707085007-encoding"></script>
+<script src="dayarc.js?v=20260717090000-encoding"></script>
 <script>(function(){ function relocate(){ try{
   var tr=document.querySelector('.hdr-trackers'), hd=document.querySelector('.header'); if(tr&&hd&&tr.parentElement!==hd){ hd.appendChild(tr); }
  }catch(e){} } relocate(); setTimeout(relocate,500); setTimeout(relocate,1500); })();</script>
