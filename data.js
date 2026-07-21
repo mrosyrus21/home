@@ -226,13 +226,13 @@ const TASKS = {
 
 const SCHEDULE = [
   // ── MOVING · FIRST NO-REGRET WEEK ─────────────────────────────────────────
-  { date:"2026-07-16", tasks:["move_clothes"],             note:"Pack only off-season clothing you will not need before move-out." },
-  { date:"2026-07-17", tasks:["move_books"],               note:"One destination-safe box; no keep-or-discard decisions required." },
-  { date:"2026-07-18", tasks:["move_kitchen"],             note:"Pack kitchen extras while leaving a small daily-use kit accessible." },
-  { date:"2026-07-19", tasks:["move_reset"],               note:"Make the house tolerable, not perfect. No deep cleaning." },
-  { date:"2026-07-20", tasks:["move_hobby"],               note:"One more no-regret box, then stop." },
   { date:"2026-07-21", tasks:["move_stage"],               note:"Set up or refresh one labeled PACKED / DECISION HOLD / OPEN LAST area. Stop when the zone is usable." },
   { date:"2026-07-22", tasks:["move_decor"],               note:"Pack one labeled box of obvious nonessential decor you would move anywhere. Stop after one box." },
+  { date:"2026-07-23", tasks:["move_supplies"],            note:"Gather only the supplies and move paperwork you already have; keep documents and valuables accessible." },
+  { date:"2026-07-24", tasks:["move_clothes"],             note:"Pack one labeled box of off-season clothes; put destination-dependent choices in DECISION HOLD." },
+  { date:"2026-07-25", tasks:["move_books"],               note:"Pack one destination-safe box of books or media, then stop." },
+  { date:"2026-07-26", tasks:["move_reset"],               note:"Do one short trash, dishes, laundry, or walkway reset. No deep cleaning." },
+  { date:"2026-07-27", tasks:["move_kitchen"],             note:"Pack one labeled box of rarely used kitchen items; leave the daily-use kit accessible." },
 
   // ── MOVING MILESTONES ─────────────────────────────────────────────────────
   { date:"2026-08-17", tasks:["move_checkpoint"],          note:"Mostly packed two weeks before move-out. Decision-hold items can stay unresolved until the destination is known." },
