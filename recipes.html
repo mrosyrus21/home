@@ -53,7 +53,7 @@
     <div id="recipe-page" style="display:none"></div>
   </div>
 
-<script src="./recipes.js?v=20260611075715"></script>
+<script src="./recipes.js?v=20260726210151-trials"></script>
 <script>
 "use strict";
 // ── Source: the SAME recipes.js the app loads (RECIPES_BOX). Human recipes only — no dog, no drafts, no personal data. ──
@@ -101,6 +101,7 @@ function recipeCard(r, featured){
   var ph=r.photo;
   var meta=[r.time, r.difficulty, (r.servings?('🍽 '+r.servings):'')].filter(Boolean);
   var badges=meta.map(function(m){return '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(140,59,46,.1);color:#8C3B2E;border:1px solid rgba(140,59,46,.25);font-family:\'Lora\',serif">'+esc(m)+'</span>';}).join('');
+  if(r.trial) badges='<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(139,92,246,.14);color:#6D28D9;border:1px solid rgba(109,40,217,.35);font-family:\'Lora\',serif;font-weight:700">🧪 HAVEN\'T TRIED YET</span>'+badges;
   return '<div onclick="openRecipe(\''+r.id+'\')" style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;margin-bottom:14px;overflow:hidden;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35)">'
     +'<div style="height:6px;background:repeating-linear-gradient(45deg,#C44536,#C44536 7px,#F5ECD7 7px,#F5ECD7 14px)"></div>'
     +(ph?'<div style="height:'+(featured?170:130)+'px;overflow:hidden;border-bottom:1px solid #D9C39A;background:#e8dab9"><img src="'+esc(ph)+'" alt="'+esc(r.name)+'" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover"></div>':recipeHero(r))
@@ -124,8 +125,17 @@ function recipeListHtml(){
     }
     return '<div class="countline">'+matches.length+' match'+(matches.length===1?'':'es')+' across the whole box</div>'+matches.map(function(r){return recipeCard(r,false);}).join('');
   }
-  var feat=weeklyFeatured(HUMAN);
+  var feat=weeklyFeatured(HUMAN.filter(function(r){return !r.trial;}));
   var featHtml=feat?recipeCard(feat,true):'';
+  // ── TRIAL shelf ──
+  if(selCat==='__trial'){
+    var trialItems=HUMAN.filter(function(r){return r.trial;});
+    var trialOut=featHtml+recipeBackBar();
+    trialOut+='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:18px;font-weight:700;color:#6D28D9;margin:0 0 6px">🧪 Haven\'t Tried Yet <span style="font-size:12px;color:#8a6a3a">· '+trialItems.length+' on trial</span></div>';
+    trialOut+='<div class="countline">Make one, then it graduates to the trusted box or gets tossed.</div>';
+    trialOut+=trialItems.map(function(r){return recipeCard(r,false);}).join('');
+    return trialOut;
+  }
   // ── HOOMAN category drill-in ──
   if(selCat && selCat.indexOf('cat:')===0){
     var cn=selCat.slice(4);
@@ -136,8 +146,10 @@ function recipeListHtml(){
     return out;
   }
   // ── LANDING: Hooman category tiles + (disabled) Doggy tile ──
+  var trials=HUMAN.filter(function(r){return r.trial;});
   var counts={}; HUMAN.forEach(function(r){var c=recipeCategory(r); counts[c]=(counts[c]||0)+1;});
   var tiles=[];
+  if(trials.length) tiles.push(recipeTile("Haven't Tried Yet",'🧪',trials.length+' on trial',"recipeGo('__trial')",false));
   RECIPE_CATS.forEach(function(cm){ var c=cm[0]; if(counts[c]) tiles.push(recipeTile(c,cm[1],counts[c]+' recipe'+(counts[c]===1?'':'s'),"recipeGo('cat:"+c+"')",false)); });
   var out=featHtml;
   out+='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:16px;font-weight:700;color:#7a5230;margin:2px 0 10px">🧑 Hooman Food</div>';
@@ -219,7 +231,7 @@ function openRecipe(id, keep){
   var ing=(r.ingredients||[]).map(function(i){return '<li style="margin-bottom:6px;font-size:14px;color:var(--text);font-family:\'Lora\',serif;line-height:1.5">'+scaleIngredient(i,ratio)+'</li>';}).join('');
   var servCtl='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:10px 14px;background:rgba(212,144,10,.07);border:1px solid var(--aborder);border-radius:10px"><span style="font-family:\'Lora\',serif;font-size:13px;color:var(--text2)">🍽️ Servings</span><div style="display:flex;align-items:center;gap:14px;margin-left:auto"><button onclick="setServings(\''+r.id+'\',-1)" aria-label="fewer servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1">−</button><span style="font-family:\'Playfair Display\',serif;font-size:19px;color:var(--text);min-width:22px;text-align:center">'+serv+'</span><button onclick="setServings(\''+r.id+'\',1)" aria-label="more servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1">+</button></div></div>';
   var steps=(r.steps||[]).map(function(st,i){return '<div style="display:flex;gap:12px;margin-bottom:12px"><div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(212,144,10,.18);border:1px solid var(--amber);color:var(--amber2);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">'+(i+1)+'</div><div style="font-size:14px;color:var(--text);font-family:\'Lora\',serif;line-height:1.55;padding-top:3px">'+esc(st)+'</div></div>';}).join('');
-  var meta=[r.time&&('⏱️ '+r.time), r.difficulty&&('📊 '+r.difficulty), r.servings&&('🍽 '+r.servings), r.source&&('📖 '+r.source)].filter(Boolean);
+  var meta=[r.trial&&("🧪 HAVEN'T TRIED YET"), r.time&&((r.id==='r_trial_spicy_peanut_sesame_chicken'?'🍳 ':'⏱️ ')+r.time), r.difficulty&&('📊 '+r.difficulty), r.servings&&('🍽 '+r.servings), r.source&&('📖 '+r.source)].filter(Boolean);
   var html='<div style="max-width:560px;margin:0 auto;padding-top:14px">'
     +'<div onclick="closeRecipe()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 4px 14px;color:var(--amber2);font-family:\'Lora\',serif;font-size:14px;cursor:pointer">← Back to recipes</div>'
     +'<div style="position:relative;height:230px;border-radius:var(--rad);overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2417,#0f0e14);margin-bottom:14px">'

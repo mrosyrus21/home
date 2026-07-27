@@ -807,7 +807,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 </div>
 
 <script src="./data.js?v=20260723092651-today-cleanup"></script>
-<script src="./recipes.js?v=20260618180219"></script>
+<script src="./recipes.js?v=20260726210151-trials"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -2955,6 +2955,7 @@ function recipeCard(r, featured){
   const ph=r.photo;
   const meta=[(r.dog?'🐕 DOG FOOD':''), r.time, r.difficulty, (r.servings?('🍽 '+r.servings):'')].filter(Boolean);
   let badges=meta.map(m=>'<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(140,59,46,.1);color:#8C3B2E;border:1px solid rgba(140,59,46,.25);font-family:\'Lora\',serif">'+m+'</span>').join('');
+  if(r.trial) badges='<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(139,92,246,.14);color:#6D28D9;border:1px solid rgba(109,40,217,.35);font-family:\'Lora\',serif;font-weight:700">🧪 HAVEN\'T TRIED YET</span>'+badges;
   if(r.draft) badges='<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(245,184,48,.18);color:#8a6210;border:1px solid rgba(200,150,30,.6);font-family:\'Lora\',serif;font-weight:700">🕒 DRAFT · pending approval</span>'+badges;
   return '<div onclick="openRecipe(\''+r.id+'\')" style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;margin-bottom:14px;overflow:hidden;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35)">'
     +'<div style="height:6px;background:repeating-linear-gradient(45deg,#C44536,#C44536 7px,#F5ECD7 7px,#F5ECD7 14px)"></div>'
@@ -3038,6 +3039,15 @@ function recipeListHtml(){
     out+= dogs.length ? dogs.map(function(r){return recipeCard(r,false);}).join('') : '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:20px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No doggy recipes yet.</div>';
     return out;
   }
+  // ── TRIAL shelf: recipes Cyrus has saved but not cooked yet ──
+  if(recipeCat==='__trial'){
+    const items=human.filter(function(r){return r.trial;});
+    let out=recipeBackBar('recipeGo(null)');
+    out+='<div style="display:flex;align-items:center;gap:10px;margin:4px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#6D28D9">🧪 Haven\'t Tried Yet</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
+    out+='<div style="font-size:11.5px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Make one, then it graduates to the trusted box or gets tossed.</div>';
+    out+=items.map(function(r){return recipeCard(r,false);}).join('');
+    return out;
+  }
   // ── HOOMAN category drill-in ──
   if(recipeCat && recipeCat.indexOf('cat:')===0){
     const cn=recipeCat.slice(4);
@@ -3048,8 +3058,10 @@ function recipeListHtml(){
     return out;
   }
   // ── LANDING: Hooman category tiles + Doggy tile ──
+  const trials=human.filter(function(r){return r.trial;});
   const counts={}; human.forEach(function(r){var c=recipeCategory(r); counts[c]=(counts[c]||0)+1;});
   let tiles=[];
+  if(trials.length) tiles.push(recipeTile("Haven't Tried Yet",'🧪',trials.length+' on trial',"recipeGo('__trial')",false));
   RECIPE_CATS.forEach(function(cm){ var c=cm[0]; if(counts[c]) tiles.push(recipeTile(c,cm[1],counts[c]+' recipe'+(counts[c]===1?'':'s'),"recipeGo('cat:"+c+"')",false)); });
   let out='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:16px;font-weight:700;color:#7a5230;margin:2px 0 10px">🧑 Hooman Food</div>';
   out+=recipeTilesGrid(tiles);
@@ -3129,7 +3141,7 @@ function openRecipe(id, keepScroll){
   const ing=(r.ingredients||[]).map(i=>'<li style="margin-bottom:6px;font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.5">'+scaleIngredient(i,ratio)+'</li>').join('');
   const servCtl='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:10px 14px;background:rgba(212,144,10,.07);border:1px solid var(--aborder,rgba(212,144,10,.3));border-radius:10px"><span style="font-family:\'Lora\',serif;font-size:13px;color:var(--text2)">🍽️ Servings</span><div style="display:flex;align-items:center;gap:14px;margin-left:auto"><button onclick="setServings(\''+r.id+'\',-1)" aria-label="fewer servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">\u2212</button><span style="font-family:\'Playfair Display\',serif;font-size:19px;color:var(--text);min-width:22px;text-align:center">'+serv+'</span><button onclick="setServings(\''+r.id+'\',1)" aria-label="more servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">+</button></div></div>';
   const steps=(r.steps||[]).map((st,i)=>'<div style="display:flex;gap:12px;margin-bottom:12px"><div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(212,144,10,.18);border:1px solid var(--amber);color:var(--amber2);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">'+(i+1)+'</div><div style="font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.55;padding-top:3px">'+st+'</div></div>').join('');
-  const meta=[r.draft&&('🕒 DRAFT — pending approval'), r.time&&('⏱️ '+r.time), r.difficulty&&('📊 '+r.difficulty), r.source&&('📖 '+r.source)].filter(Boolean);
+  const meta=[r.trial&&("🧪 HAVEN'T TRIED YET"), r.draft&&('🕒 DRAFT — pending approval'), r.time&&((r.id==='r_trial_spicy_peanut_sesame_chicken'?'🍳 ':'⏱️ ')+r.time), r.difficulty&&('📊 '+r.difficulty), r.source&&('📖 '+r.source)].filter(Boolean);
   el.innerHTML='<div style="max-width:560px;margin:0 auto">'
     +'<div onclick="closeRecipe()" style="display:inline-flex;align-items:center;gap:6px;padding:10px 4px 14px;color:var(--text2);font-family:\'Lora\',serif;font-size:14px;cursor:pointer">← Back to recipes</div>'
     +'<div style="position:relative;height:240px;border-radius:var(--rad);overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2417,#0f0e14);margin-bottom:16px">'
@@ -4141,7 +4153,7 @@ function renderFinance(){
 // ═══ 📖 RECIPE BOX TAB + 🍳 TO COOK QUEUE ═══════════════════════════════════
 function renderRecipeBox(){ const el=document.getElementById('view-grocery'); if(!el||foodSub!=='recipebox') return;
   const all=(typeof RECIPES!=='undefined')?RECIPES:[];
-  const _fpool=(typeof RECIPES_BOX!=='undefined'?RECIPES_BOX:all).filter(function(r){return !r.dog && !r.draft;}); const feat=weeklyFeatured(_fpool)||all.filter(function(r){return !r.dog;})[0]; // 🔁 same weekly pick as the grid + recipes.html
+  const _fpool=(typeof RECIPES_BOX!=='undefined'?RECIPES_BOX:all).filter(function(r){return !r.dog && !r.draft && !r.trial;}); const feat=weeklyFeatured(_fpool)||all.filter(function(r){return !r.dog&&!r.trial;})[0]; // 🔁 trusted weekly pick; trials stay on their own shelf
   let out='';
   if(feat) out+='<div id="recipe-featured"><div class="section-label">⭐ Featured recipe</div>'+recipeCard(feat,true)+'</div>';
   out+=recipesHtml();
@@ -4293,11 +4305,10 @@ ST.on('value', snap => {
   harvestLog  = d.harvestLog  || {};
   almanacFlow = d.almanacFlow || {};
   // one-time idempotent migration: grocery is FOOD-ONLY (Jun 6 2026) — strip non-food strays
-  try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false, ci=false;
+  // Jul 26: do not delete anything from Kitchen Inventory; inventory updates are additive/merge-only.
+  try{ const NF=/vacuum\s*bag|alarm\s*clock/i; let ch=false;
     for(const k in grocCustom){ if(NF.test(String(grocCustom[k]))){ delete grocCustom[k]; ch=true; } }
-    for(const k in inventory){ if(inventory[k]&&NF.test(String(inventory[k].name||''))){ delete inventory[k]; ci=true; } }
     if(ch){ ST.child('grocCustom').set(grocCustom); }
-    if(ci){ ST.child('inventory').set(inventory); }
   }catch(e){}
   // one-time idempotent migration of any legacy localStorage pain entries up to Firebase
   try { const legacy = JSON.parse(localStorage.getItem("painlog")||"{}"); let added=false; for(const k in legacy){ if(painLog[k]==null){ painLog[k]=legacy[k]; added=true; } } if(added){ ST.child('painLog').set(painLog); } } catch(e){}
@@ -4357,6 +4368,56 @@ ST.on('value', snap => {
     ST.update({ watered: watered, waterPushed: waterPushed, 'flags/vacation-watering-jul2026-v3': 'done' });
     return;
   }
+  // One-time: Jul 26 2026 — add/merge Cyrus's current fridge/pantry/freezer list without deleting existing inventory.
+  if (!flags['food-inventory-jul26-v1']) {
+    const foodSeedJul26=[
+      ['Frozen chicken thighs, raw','🍗'],['Frozen chicken breast, raw','🍗'],
+      ['Mexican-style shredded cheese, large bag','🧀'],['Feta cheese (older but still okay)','🧀'],['Sour cream (expires 2026-07-29)','🥛'],['Ricotta, 16 oz','🧀'],['Greek nonfat yogurt, about 40 oz','🥛'],['Aged gouda','🧀'],['Cream cheese','🧀'],['Whole milk, 1 gallon','🥛'],['Unsalted butter','🧈'],['Cinnabon creamer','🥛'],['Butter crescent rolls, 16 oz','🥐'],['Crescent rolls, 16 oz','🥐'],['Eggs','🥚'],
+      ['Chicken breast (about half frozen)','🍗'],['Sriracha-marinated whole chicken breast, vacuum-sealed','🍗'],['Whole chicken breast with grapeseed oil + salt, vacuum-sealed','🍗'],['Halved chicken breasts with grapeseed oil + salt, vacuum-sealed','🍗'],['Pork sausage patties, 8','🥓'],['Frozen sausage links','🌭'],['Canned/pouched tuna','🐟'],
+      ['Orange chicken, boxed (use soon)','🍊'],['Roasted Hatch chiles, hot and medium','🌶️'],['Frozen mixed berries','🫐'],['Cooked pinto beans, frozen, need salt','🫘'],['Frozen sweet corn','🌽'],['Premade dumplings (freezer-burnt)','🥟'],['Ice cream','🍨'],['Healthy 21 whole-grain bread','🍞'],["McDonald's-style frozen hash-brown patties",'🥔'],['Frozen green onions','🌿'],
+      ['Black beans, 40 oz','🫘'],['Pinto beans, 40 oz','🫘'],['Dried black beans','🫘'],['Instant seasoned refried beans, 22 oz','🫘'],['Rosarita chiles verdes, 27 oz','🌶️'],['Diced green chile peppers, 4 oz x2','🌶️'],['California diced tomatoes in tomato juice, 14.5 oz','🍅'],['Cinnamon sliced pears, 15 oz','🍐'],['Green chile chicken pot-pie-style soup, canned','🥣'],["Bush's Best Maple & Cured Bacon baked beans, 16 oz",'🫘'],['Vlasic sauerkraut','🥬'],['Harry & David Classic Recipe Pepper & Onion Relish','🫙'],["Anita's enchilada sauce",'🌶️'],["Anita's green chile sauce",'🌶️'],['Pickles, about 4 remaining','🥒'],['Organic pesto, unopened older refrigerated bottle','🌿'],
+      ['White jasmine rice, about 18 oz','🍚'],['Long-grain rice','🍚'],['Extra-long enriched rice, 2 lb','🍚'],['Yellow rice packet, 5 oz','🍚'],['Egg noodles','🍜'],['Thai wheat noodles','🍜'],['Obaku organic dried udon','🍜'],['Homemade elbow macaroni','🍝'],['Gluten-free vegan macaroni','🍝'],['Leftover jumbo stuffed shells','🍝'],['Shin ramen, red/spicy, 2 to 3 packs','🍜'],
+      ['All-purpose enriched flour, about 24 oz','🌾'],['Additional unlabeled white flour','🌾'],['Masa harina','🌽'],['Rapid-rise instant yeast','🍞'],['Baking powder, 4 oz','🧂'],['Pure cane granulated sugar','🍚'],['English toffee sugar crystals','🍬'],['Salted caramel Swiss Miss','☕'],['Vanilla extract','🧁'],['Gluten-free pancake/baking mix, no added sugar','🥞'],['Cornstarch','🌽'],['Quick-cooking oats, 14 oz','🥣'],['Chia seeds','🌱'],['Nutella, about 20 oz','🍫'],['Natural creamy peanut butter, no-stir','🥜'],['Clover honey, crystallized, raw/unfiltered','🍯'],['Panko breadcrumbs, 6 oz','🍞'],['Italian breadcrumbs, 7 oz','🍞'],['Mini croutons','🍞'],['Corn tortilla chips','🌽'],['Cheesecloth','🧺'],['Ingredients for homemade gummy worms','🍬'],['Butter-flavored pancake syrup / butter syrup','🥞'],['Smoked paprika','🌶️'],['Italian seasoning','🌿'],['Red pepper flakes','🌶️'],['Salt','🧂'],['Black pepper','🧂'],
+      ['Avocado oil','🥑'],['Olive oil','🫒'],['Grapeseed oil','🍇'],['Dynasty Premium sesame oil','🌰'],['Balsamic vinegar','🍶'],['Red wine vinegar','🍷'],['White vinegar','🍶'],['Apple cider vinegar, multiple bottles','🍎'],['Rice vinegar','🍚'],
+      ['Soy sauce (not much left)','🍶'],['Hoisin sauce','🍶'],["Stubb's spicy BBQ sauce",'🍖'],['Cholula hot sauce','🌶️'],['Buffalo-style wing sauce','🌶️'],['Valentina hot sauce, large bottle','🌶️'],['Various other hot sauces','🌶️'],['Ketchup','🍅'],['Worcestershire sauce','🍶'],['Various marinades','🍶'],['Sweet relish, 9 oz','🥒'],["Newman's Italian dressing, 16 oz",'🥗'],['Knorr granulated chicken bouillon, 32 oz','🥣'],['Brown gravy packet','🥣'],['Hungry Jack butter-flavored pancake syrup','🥞'],['Real mayonnaise packets, 2.4 oz x2','🥪'],['Ramen chile topping','🌶️'],['Tajin Habanero seasoning','🌶️'],['Salad toppers, sea salt & cracked pepper / sprouted seed, 3 oz','🥗'],['Mustard (old, smell-test before use)','🌭'],
+      ['Bell peppers: red, orange, green','🫑'],['Broccoli, 2 medium heads','🥦'],['Russet potatoes, 4 medium','🥔'],['Garlic, lots of whole cloves','🧄'],['Yellow onion, 1 large','🧅'],['Green onions, lots fresh','🌿'],['Pink Lady apples (getting old/use soon)','🍎'],['Bananas, 4','🍌'],['Avocado, 1','🥑'],['Older lemons in refrigerator','🍋'],
+      ['Rosemary plant','🌿'],['Basil, 2 large plants','🌿'],['Curled parsley, about 10 oz harvestable','🌿'],['Dill has gone to seed (no usable dill currently)','🌿'],['Peppermint (previously died back / not usable)','🌿'],['Strawberry plant','🍓'],['Jalapeno plant','🌶️'],['Cherry tomato plant','🍅'],['Heirloom tomato plant','🍅'],
+      ['Oat & honey granola','🥣'],['Corn flake & granola cereal','🥣'],["Nature's Path Wildberry Acai toaster pastry, 1",'🫐'],["Nature's Bakery fig bars",'🍪'],['Cashew/cranberry/walnut trail mix with almonds + pumpkin seeds, about 6 oz','🥜'],['Unsalted almonds','🥜'],['Honey energy waffles','🧇'],["Carr's whole-wheat crackers, nearly full box",'🍘'],['Original ginger chews','🍬'],['Chai tea','☕'],['Coffee / espresso beans, lots','☕']
+    ];
+    inventory=inventory||{};
+    function invMergeBase(name){
+      return invKey(String(name||'').replace(/\([^)]*\)/g,'').replace(/,\s.*$/,''));
+    }
+    function invMergeKey(name){
+      const k=invKey(name); if(!k) return "";
+      if(inventory[k]) return k;
+      const base=invMergeBase(name), keys=Object.keys(inventory);
+      return keys.find(function(ik){
+        return base && invMergeBase((inventory[ik]&&inventory[ik].name)||ik)===base;
+      }) || k;
+    }
+    const foodUpdates={}, foodSeedTs=Date.now();
+    foodSeedJul26.forEach(function(p){
+      const k=invMergeKey(p[0]); if(!k) return;
+      const old=inventory[k]||{};
+      inventory[k]=Object.assign({},old,{name:p[0],emoji:p[1]||old.emoji||'🛒',inStock:true,ts:foodSeedTs});
+      foodUpdates['inventory/'+k+'/name']=inventory[k].name;
+      foodUpdates['inventory/'+k+'/emoji']=inventory[k].emoji;
+      foodUpdates['inventory/'+k+'/inStock']=true;
+      foodUpdates['inventory/'+k+'/ts']=foodSeedTs;
+    });
+    function grocHas(rx){ return Object.keys(grocCustom||{}).some(function(id){ return rx.test(String(grocCustom[id]||'')); }); }
+    if(!grocHas(/hot honey/i)){ grocCustom['gc-jul26-hothoney']='🍯 Hot honey'; foodUpdates['grocCustom/gc-jul26-hothoney']=grocCustom['gc-jul26-hothoney']; }
+    if(!grocHas(/\bbuns?\b/i)){ grocCustom['gc-jul26-buns']='🥯 Buns (if still needed)'; foodUpdates['grocCustom/gc-jul26-buns']=grocCustom['gc-jul26-buns']; }
+    foodUpdates['flags/food-inventory-jul26-v1']='done';
+    foodUpdates['flags/inventory-seed-v1']='done';
+    foodUpdates['flags/inventory-seed-v2']='done';
+    foodUpdates['flags/inv-seed-shells-jun8-v1']='done';
+    foodUpdates['flags/jun6-zoeygroc-v1']='done';
+    ST.update(foodUpdates);
+    return;
+  }
+
   // One-time: seed kitchen inventory with starting in-stock items
   if (!flags['inventory-seed-v1']) {
     const seed=[['green onions','🌿'],['yellow squash','🟡'],['zucchini','🥒'],['mushrooms','🍄'],['spinach','🥬'],['romaine lettuce','🥗']];
@@ -4778,7 +4839,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260723092651',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260726210151',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
@@ -4963,4 +5024,3 @@ curtainInit();
 
 </body>
 </html>
-
