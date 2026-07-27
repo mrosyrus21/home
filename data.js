@@ -13,7 +13,7 @@
 // Change any value and redeploy (or hand off) — nothing else needed.
 const ALMANAC_MORNING = [
   { id:"bed",           emoji:"🛏️", label:"Make the bed",                              cue:"Start here" },
-  { id:"outdoor-water", emoji:"🌱", label:"Go outside and water the plants due today",    cue:"Outside" },
+  { id:"outdoor-water", emoji:"🌱", label:"Check outdoor plants due today; water only if needed", cue:"Outside" },
   { id:"health",        emoji:"🧘", label:"Do the health coach activity",                 cue:"After watering" },
   { id:"breakfast",     emoji:"🍳", label:"Make and eat breakfast",                      cue:"After movement" },
   { id:"walk",          emoji:"🐕", label:"Walk Zoey",                                   cue:"After breakfast" },

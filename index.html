@@ -806,7 +806,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260723092651-today-cleanup"></script>
+<script src="./data.js?v=20260727090000-water-checks"></script>
 <script src="./recipes.js?v=20260726210151-trials"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1125,6 +1125,19 @@ function pushWatering(id){
   waterPushed[id]=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   saveWP(); renderAll();
 }
+function pushWateringGroup(ids){
+  const d=new Date(); d.setDate(d.getDate()+1);
+  const next=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  ids.forEach(function(id){ waterPushed[id]=next; });
+  saveWP(); renderAll();
+}
+function wateringUnitKeys(plants){
+  const keys=new Set();
+  (plants||[]).forEach(function(p){
+    keys.add((p.id==="green_onion"||p.id==="white_onion")?"shared_pot":p.id);
+  });
+  return keys;
+}
 
 // Max tasks allowed per day
 function getCapacity(ds) {
@@ -1280,8 +1293,9 @@ function updateHeader() {
   // Garden trackers
   const today=todayKey();
   const wDoneToday=PLANTS.filter(p=>watered[p.id]===today);
-  const wIds=new Set([...plantsDueOn(today).map(p=>p.id), ...wDoneToday.map(p=>p.id)]);
-  const wt=document.getElementById("waterTracker"); if(wt) wt.textContent = wIds.size ? ("💧 "+wDoneToday.length+"/"+wIds.size) : "💧 ✓ none due";
+  const wDueUnits=wateringUnitKeys(plantsDueOn(today)), wDoneUnits=wateringUnitKeys(wDoneToday);
+  const wIds=new Set([...wDueUnits, ...wDoneUnits]);
+  const wt=document.getElementById("waterTracker"); if(wt) wt.textContent = wIds.size ? ("💧 "+wDueUnits.size+" checks · "+wDoneUnits.size+" watered") : "💧 ✓ no checks";
   const tDoneToday=PLANTS.filter(p=>p.trimDays&&trimmed[p.id]===today);
   const tIds=new Set([...plantsTrimDueOn(today).map(p=>p.id), ...tDoneToday.map(p=>p.id)]);
   const tt=document.getElementById("trimTracker"); if(tt) tt.textContent = tIds.size ? ("❤️ "+tDoneToday.length+"/"+tIds.size) : "❤️ ✓ none due";
@@ -1843,13 +1857,20 @@ function almanacLogKey(id,d){
   return (keys[id]||("morning-"+id+"-"))+d;
 }
 function almanacRoutineDone(id){ return !!laundry[almanacLogKey(id,todayKey())]; }
-function almanacOutdoorDue(){ return plantsDueOn(todayKey()).filter(function(p){ return p.loc==="outdoor"; }); }
+function almanacOutdoorDue(){
+  const due=plantsDueOn(todayKey()).filter(function(p){ return p.loc==="outdoor"; });
+  const units=[], shared=due.some(function(p){return p.id==="green_onion"||p.id==="white_onion";});
+  due.forEach(function(p){ if(p.id!=="green_onion"&&p.id!=="white_onion") units.push(p); });
+  if(shared) units.push({id:"shared_pot",name:"Wide Gray Pot · Green & White Onions",loc:"outdoor"});
+  return units;
+}
 function almanacRoutineTasks(hc){
+  const dow=new Date(todayKey()+"T12:00:00").getDay();
   const due=almanacOutdoorDue();
   const names=due.map(function(p){return p.name;});
   const waterDetail=names.length
-    ? names.length+" due: "+names.slice(0,4).join(", ")+(names.length>4?" +"+(names.length-4)+" more":"")
-    : "Check the outdoor pots. Almanac has no outdoor watering due right now.";
+    ? names.length+" soil check"+(names.length===1?"":"s")+" due: "+names.slice(0,4).join(", ")+(names.length>4?" +"+(names.length-4)+" more":"")+". Water only where the soil or plant says it is needed."
+    : "No outdoor soil checks are due right now.";
   let healthName="Light movement and mobility";
   let healthDetail="Shoulder circles, thoracic rotations, hip-flexor stretch, and hamstring stretch for 5 minutes.";
   if(hc&&hc.rescue){
@@ -1859,7 +1880,9 @@ function almanacRoutineTasks(hc){
     healthName="Strength-day mobility primer";
     healthDetail="Five easy minutes: shoulder circles, thoracic rotations, hip-flexor stretch, and hamstring stretch. Strength stays later, after food and water.";
   }
-  return ALMANAC_MORNING.map(function(t){
+  return ALMANAC_MORNING.filter(function(t){
+    return !(t.id==="work" && (dow===0 || dow===6));
+  }).map(function(t){
     const x=Object.assign({},t);
     if(t.id==="bed") x.detail="Straighten the bed before leaving the bedroom.";
     if(t.id==="outdoor-water") x.detail=waterDetail;
@@ -1892,8 +1915,8 @@ function almanacDone(id){
   st.status="done"; st.completedAt=Date.now(); delete st.snoozedUntil;
   const logKey=almanacLogKey(id,d); laundry[logKey]=true; updates["laundry/"+logKey]=true;
   // Jul 17 2026 fix: marking the morning "outdoor water" step done no longer auto-marks every outdoor plant
-  // as watered — that was silently zeroing out the Watering tab. Watering is tracked explicitly in the
-  // Watering tab (tap a plant, or "Mark all as watered today") so the schedule stays accurate.
+  // as watered — that was silently zeroing out the Watering tab. Watering is logged per plant only,
+  // after checking the soil, so the saved dates stay accurate.
   almanacPersist(updates);
   renderAll();
   toast(id==="work"?"Paid work started.":"Done. Next step is ready.");
@@ -2552,29 +2575,19 @@ function renderRooms() {
   el.innerHTML=html;
 }
 
-function plantsDueOn(dateStr, ignoreWx) {
+function plantsDueOn(dateStr) {
   const target = new Date(dateStr+"T12:00:00");
-  // weather adjustment applies only to TODAY (the forecast horizon), never to future calendar dates
-  const wxOn = !ignoreWx && typeof todayKey==="function" && dateStr===todayKey() && typeof WXF!=="undefined" && WXF.ready;
   return PLANTS.filter(p => {
     if(waterPushed[p.id]&&waterPushed[p.id]>dateStr) return false;
     if (!watered[p.id]) return true;
     const last = new Date(watered[p.id]+"T12:00:00");
     const days = Math.round((target - last) / 86400000);
-    let need = p.days;
-    if(wxOn && p.loc==="outdoor"){
-      if(WXF.hot || WXF.hotTom) need = Math.max(need - 1, Math.min(2, p.days)); // current/next-day heat: bring watering forward a day
-      if(WXF.rainToday && p.loc==="outdoor") need = need + 2; // rain: let the sky water outdoor plants
-    }
-    return days >= need;
+    return days >= p.days;
   });
 }
-// outdoor plants that WOULD be due today but the forecast rain is covering (so they're auto-skipped)
+// Weather is advisory only. It never advances or defers the saved watering cadence.
 function rainDeferredPlants(){
-  if(typeof WXF==="undefined" || !WXF.ready || !WXF.rainToday) return [];
-  const today=todayKey();
-  const dueNow=new Set(plantsDueOn(today).map(p=>p.id));
-  return plantsDueOn(today,true).filter(p=>p.loc==="outdoor" && !dueNow.has(p.id));
+  return [];
 }
 
 function gardenTasksOn(dateStr) {
@@ -2584,12 +2597,6 @@ function gardenTasksOn(dateStr) {
 
 function waterPlantGroup(ids) {
   ids.forEach(id => { watered[id] = todayKey(); });
-  saveW(); renderAll();
-}
-
-function waterAllDue() {
-  const today = todayKey();
-  plantsDueOn(today).forEach(p => { watered[p.id] = today; });
   saveW(); renderAll();
 }
 
@@ -2647,11 +2654,11 @@ function renderGarden() {
     const dueSet = new Set(plantsDueOn(today).map(p=>p.id));
     const rainSet = new Set(rainDeferredPlants().map(p=>p.id));
     const doneArr = PLANTS.filter(p=>watered[p.id]===today);
-    const total = dueSet.size + doneArr.length, done = doneArr.length;
-    html += `<div class="section-label">💧 Watering — ${done}/${total} done today</div>`;
-    if (rainSet.size) html += `<div style="background:rgba(126,184,240,.08);border:1px solid #7EB8F0;border-radius:10px;padding:10px 13px;margin-bottom:12px;font-size:12.5px;color:#7EB8F0;font-family:'Lora',serif;line-height:1.5">🌧️ Rain (${WXF.pop}%) is covering ${rainSet.size} outdoor plant${rainSet.size>1?"s":""} today — auto-skipped from the due list. Water anyway if a light shower won't soak the pots.</div>`;
-    if (dueSet.size) html += `<div onclick="waterAllDue()" style="background:rgba(45,184,112,.1);border:1px solid rgba(45,184,112,.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="font-size:18px">💧</div><div style="font-size:13px;font-weight:600;color:#4AD490">Mark all as watered today</div></div>`;
-    else if (total) html += `<div style="background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">✅</div><div style="font-size:13px;color:#4AD490;font-style:italic">All watered today — nice work</div></div>`;
+    const dueUnits=wateringUnitKeys(PLANTS.filter(function(p){return dueSet.has(p.id);})), doneUnits=wateringUnitKeys(doneArr);
+    const total = dueUnits.size + doneUnits.size, done = doneUnits.size;
+    html += `<div class="section-label">💧 Watering log — ${done} watered today · ${dueUnits.size} soil check${dueUnits.size===1?"":"s"} due</div>`;
+    if (dueUnits.size) html += `<div style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.28);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#A5F3FC;font-family:'Lora',serif;line-height:1.5">👀 A due card means <b>check the soil and plant</b> — not automatic watering. Log only plants you actually water; if the soil is still damp, move that check to tomorrow.</div>`;
+    else if (total) html += `<div style="background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">✅</div><div style="font-size:13px;color:#4AD490;font-style:italic">No soil checks due right now</div></div>`;
     const POT_GROUP=["green_onion","white_onion"].filter(id=>PLANTS.some(p=>p.id===id));
     const potDS=()=>{ var ds=POT_GROUP.map(id=>daysSinceWatered(id)); if(!ds.length||ds.some(d=>d===null)) return null; return Math.max.apply(null,ds); };
     const potDone=POT_GROUP.length>0 && POT_GROUP.every(id=>watered[id]===today);
@@ -2667,24 +2674,27 @@ function renderGarden() {
       if(p.id==="shared_pot"){
         let pdd=potDS(), bTxt,bCol,bl,bc;
         if(potDone){bTxt="✓ Watered";bCol="#4AD490";bl="✓ Watered today";bc="ok";}
-        else if(potDue){bTxt="💧 Needs water";bCol="#E07070";bl="💧 Water the pot";bc="now";}
+        else if(potDue){bTxt="👀 Check soil";bCol="#22D3EE";bl="💧 Log watering";bc="now";}
+        else if(potPushed){bTxt="↪ Check tomorrow";bCol="#A5F3FC";bl="💧 Log watering";bc="ok";}
         else if(potRain){bTxt="🌧️ Rain’s got it";bCol="#7EB8F0";bl="💧 Water anyway";bc="ok";}
-        else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Water the pot";bc="ok";}
+        else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Log watering";bc="ok";}
         let pbody=hdr(p, pdd!==null?pdd+"d ago":"never");
         pbody+=chipRow(chip(p.waterChip,"#7EB8F0"));
         pbody+=sect("💧 When & how","#7EB8F0",p.freq);
         pbody+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px;font-style:italic">🪴 Green Onions · recovering White Onion — watered together until they are moved out for the planned strawberry-only pot.</div>';
         pbody+='<button class="water-btn '+bc+'" onclick="waterPlantGroup([\'green_onion\',\'white_onion\'])" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">'+bl+'</button>';
+        if(potDue) pbody+='<button class="water-btn" onclick="pushWateringGroup([\'green_onion\',\'white_onion\'])" style="width:100%;padding:9px 0;font-size:12px;margin-top:7px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.35);color:#A5F3FC">Soil still damp — check tomorrow</button>';
         html+=pcard(p,bTxt,bCol,pbody);
         return;
       }
-      const days=daysSinceWatered(p.id), doneT=watered[p.id]===today, needs=dueSet.has(p.id), st=waterStatus(p), wi=WATER_INFO[p.id]||{};
+      const days=daysSinceWatered(p.id), doneT=watered[p.id]===today, pushedT=waterPushed[p.id]&&waterPushed[p.id]>today, needs=dueSet.has(p.id), st=waterStatus(p), wi=WATER_INFO[p.id]||{};
       let bTxt,bCol,bl,bc;
       if(doneT){bTxt="✓ Watered";bCol="#4AD490";bl="✓ Watered today";bc="ok";}
-      else if(needs){bTxt="💧 Needs water";bCol="#E07070";bl="💧 Water now";bc="now";}
+      else if(pushedT){bTxt="↪ Check tomorrow";bCol="#A5F3FC";bl="💧 Log watered";bc="ok";}
+      else if(needs){bTxt="👀 Check soil";bCol="#22D3EE";bl="💧 Log watered";bc="now";}
       else if(rainSet.has(p.id)){bTxt="🌧️ Rain's got it";bCol="#7EB8F0";bl="💧 Water anyway";bc="ok";}
-      else if(st==="soon"){bTxt="⚠️ Due soon";bCol="#FBBF24";bl="💧 Water";bc="soon";}
-      else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Water";bc="ok";}
+      else if(st==="soon"){bTxt="⚠️ Check soon";bCol="#FBBF24";bl="💧 Log watered";bc="soon";}
+      else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Log watered";bc="ok";}
       let body=hdr(p, days!==null?days+"d ago":"never");
       body+=chipRow(chip(p.waterChip,"#7EB8F0"));
       body+=sect("💧 When & how","#7EB8F0",wi.when||p.freq);
@@ -2692,6 +2702,7 @@ function renderGarden() {
       body+=wxWaterNote(p);
       if(p.overwater) body+='<div style="margin-top:4px"><span class="overwater-badge">⚠️ overwater risk</span></div>';
       body+='<button class="water-btn '+bc+'" onclick="waterPlant(\''+p.id+'\')" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">'+bl+'</button>';
+      if(needs) body+='<button class="water-btn" onclick="pushWatering(\''+p.id+'\')" style="width:100%;padding:9px 0;font-size:12px;margin-top:7px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.35);color:#A5F3FC">Soil still damp — check tomorrow</button>';
       body+=factBox(dailyFact(p.id));
       html+=pcard(p,bTxt,bCol,body);
     });
@@ -4758,10 +4769,10 @@ function wxAdvBox(m,c){ return m?'<div style="margin-top:8px;background:rgba(126
 function wxWaterNote(p){
   if(!WXF.ready) return "";
   if(p.loc==="outdoor"){
-    if(WXF.rainToday) return wxAdvBox("🌧️ Rain likely today ("+WXF.pop+"%) — skip watering and let the sky do it.","#7EB8F0");
-    if(WXF.rainTom) return wxAdvBox("🌦️ Rain likely tomorrow ("+WXF.popTom+"%) — a light drink today is plenty.","#7EB8F0");
-    if(WXF.hot) return wxAdvBox("🔥 Hot today (high "+WXF.hi+"°) — water deeply this morning; pots may want a second drink tonight.","#E07070");
-    if(WXF.hotTom) return wxAdvBox("🔥 Hot tomorrow (high "+WXF.hiTom+"°) — check small pots tonight and water deeply early tomorrow if they are drying.","#E07070");
+    if(WXF.rainToday) return wxAdvBox("🌧️ Rain is possible today ("+WXF.pop+"%). Check the soil; skip watering only if rain actually soaks the pot.","#7EB8F0");
+    if(WXF.rainTom) return wxAdvBox("🌦️ Rain is possible tomorrow ("+WXF.popTom+"%). Follow the soil check today rather than watering for the forecast.","#7EB8F0");
+    if(WXF.hot) return wxAdvBox("🔥 Hot today (high "+WXF.hi+"°). Check soil this morning and recheck small pots later; water only where the card's soil cue says it is needed.","#E07070");
+    if(WXF.hotTom) return wxAdvBox("🔥 Hot tomorrow (high "+WXF.hiTom+"°). Check small pots tonight and again tomorrow morning; water only if they are drying.","#E07070");
     if(WXF.windy) return wxAdvBox("💨 Breezy today (gusts ~"+WXF.windMax+" mph) — wind dries soil fast, so check it sooner.","#F0A820");
   }
   return "";
@@ -4839,7 +4850,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260726210151',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260727090000',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
