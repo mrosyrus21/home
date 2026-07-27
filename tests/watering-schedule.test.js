@@ -31,24 +31,24 @@ assert.equal(queue.isFutureDateKey("2026-07-28", "2026-07-27"), true);
 
 const fixturePlants = [
   { id: "due", name: "Due", days: 1 },
-  { id: "green_onion", name: "Green", days: 2 },
-  { id: "white_onion", name: "White", days: 2 },
+  { id: "pot_a", name: "Pot A", days: 2 },
+  { id: "pot_b", name: "Pot B", days: 2 },
   { id: "done", name: "Done", days: 5 }
 ];
-const fixtureGroup = [{ id: "shared_pot", ids: ["green_onion", "white_onion"], plant: { id: "shared_pot", name: "Onions", days: 2 } }];
+const fixtureGroup = [{ id: "shared_planter", ids: ["pot_a", "pot_b"], plant: { id: "shared_planter", name: "Shared planter", days: 2 } }];
 const built = queue.build({
   dateKey: "2026-07-27",
   plants: fixturePlants,
-  watered: { due: "2026-07-25", green_onion: "2026-07-26", white_onion: "2026-07-26", done: "2026-07-27" },
+  watered: { due: "2026-07-25", pot_a: "2026-07-26", pot_b: "2026-07-26", done: "2026-07-27" },
   pushed: {},
   groups: fixtureGroup
 });
-assert.deepEqual(built.map(x => [x.id, x.state.key]), [["due", "due"], ["shared_pot", "soon"], ["done", "watered"]]);
-assert.equal(built.filter(x => x.id === "shared_pot").length, 1, "a shared pot must be one watering unit");
+assert.deepEqual(built.map(x => [x.id, x.state.key]), [["due", "due"], ["shared_planter", "soon"], ["done", "watered"]]);
+assert.equal(built.filter(x => x.id === "shared_planter").length, 1, "a shared planter must be one watering unit");
 const partialPot = queue.build({
   dateKey: "2026-07-27",
   plants: fixturePlants.slice(1, 3),
-  watered: { green_onion: "2026-07-27", white_onion: "2026-07-24" },
+  watered: { pot_a: "2026-07-27", pot_b: "2026-07-24" },
   pushed: {},
   groups: fixtureGroup
 });
@@ -56,8 +56,8 @@ assert.equal(partialPot[0].state.key, "due", "one watered member must not hide t
 const pushedPot = queue.build({
   dateKey: "2026-07-27",
   plants: fixturePlants.slice(1, 3),
-  watered: { green_onion: "2026-07-24", white_onion: "2026-07-24" },
-  pushed: { green_onion: "2026-07-28", white_onion: "2026-07-28" },
+  watered: { pot_a: "2026-07-24", pot_b: "2026-07-24" },
+  pushed: { pot_a: "2026-07-28", pot_b: "2026-07-28" },
   groups: fixtureGroup
 });
 assert.equal(pushedPot[0].state.key, "tomorrow");
@@ -73,6 +73,7 @@ assert.doesNotMatch(html, /child\(['"]watered['"]\)\.set\(watered\)/, "whole wat
 assert.doesNotMatch(html, /child\(['"]waterPushed['"]\)\.set\(waterPushed\)/, "whole deferral-history writes are forbidden");
 assert.doesNotMatch(html, /vacation-watering-jul2026|garden-init-v1|rain-2026-05-1[78]/, "retired watering migrations must not run in the browser");
 assert.doesNotMatch(html, /Mark all as watered/i, "bulk watering controls are forbidden");
+assert.doesNotMatch(html, /shared_pot|Wide Gray Pot · Green & White Onions/, "the removed shared onion pot must not return to live UI code");
 
 const inlineScripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
   .filter(match => !/\bsrc\s*=/.test(match[1]) && (!/\btype\s*=/.test(match[1]) || /javascript/i.test(match[1])));
@@ -82,8 +83,20 @@ for (const file of ["data.js", "sw.js", "watering-queue.js"]) {
   assert.doesNotThrow(() => new Function(source), `${file} must parse`);
 }
 const dataSource = fs.readFileSync(path.join(__dirname, "..", "data.js"), "utf8");
-const plants = new Function(dataSource + ";return PLANTS;")();
+const plantData = new Function(dataSource + ";return {PLANTS,PLANT_INFO,WATER_INFO,HARVEST_INFO};")();
+const plants = plantData.PLANTS;
 assert.equal(new Set(plants.map(p => p.id)).size, plants.length, "plant IDs must be unique");
 assert.equal(plants.every(p => Number.isInteger(p.days) && p.days > 0), true, "every plant needs a positive whole-day cadence");
+assert.equal(plants.some(p => p.id === "white_onion"), false, "the removed white onion must not be scheduled");
+assert.equal(queue.build({ dateKey: "2026-07-27", plants, watered: { white_onion: "2026-07-27" }, pushed: {} }).some(entry => entry.id === "white_onion"), false, "stale white-onion history must stay dormant");
+assert.equal(plants.find(p => p.id === "green_onion").days, 2, "green-onion cadence must stay unchanged");
+assert.equal(plants.find(p => p.id === "potato_sprout").days, 1, "second potato cadence must stay unchanged");
+assert.match(plants.find(p => p.id === "turmeric").name, /2 Plants/, "the turmeric card must represent both plants");
+assert.match(plantData.WATER_INFO.turmeric.when, /check both|both turmeric/i, "the shared turmeric record must require checking both plants");
+assert.equal(plantData.PLANT_INFO.potato_sprout.photo, plantData.PLANT_INFO.potato.photo, "both grow-bag potato cards must use the same photo");
+assert.equal(fs.existsSync(path.join(__dirname, "..", plantData.PLANT_INFO.turmeric.photo)), true, "the turmeric photo must exist");
+assert.match(plantData.PLANT_INFO.turmeric.photoCreditUrl || "", /^https:\/\/commons\.wikimedia\.org\//, "the turmeric example needs a source link");
+assert.doesNotMatch(plantData.WATER_INFO.green_onion.when, /shared|gray pot|white onion/i, "green-onion watering copy must describe its individual pots");
+assert.doesNotMatch(plantData.HARVEST_INFO.green_onion.how, /neighboring|potato|white onion/i, "green-onion harvest copy must describe its individual pots");
 
 console.log("watering schedule regression checks passed");
