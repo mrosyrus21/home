@@ -493,6 +493,36 @@ body::after{
 .water-btn.watered{background:rgba(59,130,246,.12);color:#7EB8F0;border:1px solid rgba(59,130,246,.2)}
 @keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(217,80,80,.3)}50%{box-shadow:0 0 0 5px rgba(217,80,80,0)}}
 
+.water-card-compact{
+  display:flex;align-items:center;gap:11px;min-height:58px;
+  background:linear-gradient(145deg,var(--s2),var(--s1));
+  border:1px solid var(--border);border-radius:12px;
+  padding:8px 10px;margin-bottom:7px;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+.water-card-compact[data-water-state="watered"]{opacity:.68}
+.water-card-compact-thumb{
+  width:42px;height:42px;border-radius:9px;overflow:hidden;position:relative;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:radial-gradient(circle at 50% 30%,rgba(45,184,112,.22),rgba(0,0,0,0) 70%),var(--s3);
+  font-size:22px;
+}
+.water-card-compact-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.water-card-compact-main{flex:1;min-width:0}
+.water-card-compact-name{font-family:'Playfair Display',serif;font-size:13.5px;font-weight:700;color:var(--text);line-height:1.25}
+.water-card-compact-meta{font-size:10.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px}
+.water-card-compact-side{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.water-card-compact-status{font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:20px;background:rgba(6,5,10,.45);font-family:'Lora',serif;white-space:nowrap}
+.water-card-compact-action{padding:5px 8px;font-size:9.5px}
+.water-card-compact-check{font-size:17px;color:#4AD490;padding:0 5px}
+@media(max-width:430px){
+  .water-card-compact{gap:8px;padding:8px}
+  .water-card-compact-thumb{width:38px;height:38px}
+  .water-card-compact-side{gap:5px}
+  .water-card-compact-status{font-size:9px;padding:3px 6px}
+  .water-card-compact-action{padding:5px 7px;font-size:9px}
+}
+
 .trim-toggle{
   font-size:11px;color:rgba(45,184,112,.6);cursor:pointer;
   margin-top:12px;display:block;border-top:1px solid var(--border);
@@ -807,6 +837,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 </div>
 
 <script src="./data.js?v=20260727090000-water-checks"></script>
+<script src="./watering-queue.js?v=20260727093000"></script>
 <script src="./recipes.js?v=20260726210151-trials"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -818,8 +849,6 @@ const CONFIG = {
   emoji:   "📖",
 };
 const EYEBROWS=["everything in its place","a place for everything","a spot for all, all in its spot","everything where it belongs","a home for everything","order in every corner","tidy spaces, clear mind","everything in its right place"];
-// Jun 20 2026 — keep these plants adjacent in the Watering list so they get watered in one pass (display order only; does NOT change watering frequency/due logic).
-const WATER_GROUP=["strawberry","tomato","raspberry","cherry_tomato","jalapeno","strawberry_pot"];
 // ═══════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════
@@ -856,6 +885,10 @@ let watered  = {};
 let gnat     = {};
 let pushed   = {};
 let waterPushed = {};
+let wateringStateLoaded = false;
+let wateringStateError = "";
+let wateringOnline = false;
+let wateringPending = {};
 let expanded = {};
 let trimmed  = {};
 let harvested = {};
@@ -900,11 +933,15 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const ST = db.ref('state');
 
+db.ref('.info/connected').on('value', function(snap){
+  const next=snap.val()===true, changed=next!==wateringOnline;
+  wateringOnline=next;
+  if(changed && document.getElementById('view-garden')) try{ renderAll(); }catch(_){ }
+});
+
 function save()       { ST.child('checked').set(checked); }
-function saveW()      { ST.child('watered').set(watered); }
 function saveG()      { ST.child('gnat').set(gnat); }
 function savePushed() { ST.child('pushed').set(pushed); }
-function saveWP()     { ST.child('waterPushed').set(waterPushed); }
 function saveLaundry(){ ST.child('laundry').set(laundry); }
 function savePain(){ ST.child('painLog').set(painLog); }
 function saveLit(){ ST.child('litfulo').set(litfulo); }
@@ -915,6 +952,33 @@ function saveHabits(){ try{ ST.child('habits').set(habits); }catch(e){} }
 function saveSleep(){ try{ ST.child('sleep').set(sleep); }catch(e){} }
 function saveHarvestLog(){ try{ ST.child('harvestLog').set(harvestLog); }catch(e){} }
 function saveWish(){ ST.child('wishCustom').set(wishCustom); }
+function validWaterPlantId(id){ return typeof id==="string" && PLANTS.some(function(p){ return p.id===id; }); }
+function wateringActionReady(){
+  if(!wateringStateLoaded){ try{ toast("Watering history is not loaded — nothing changed."); }catch(_){ } return false; }
+  if(!wateringOnline){ try{ toast("Offline — reconnect before logging watering."); }catch(_){ } return false; }
+  return true;
+}
+function writeWateringUpdates(updates,ids,kind){
+  const clean=[...new Set(ids||[])].filter(validWaterPlantId);
+  clean.forEach(function(id){ wateringPending[id]=kind||"saving"; });
+  renderAll();
+  try{
+    const pending=ST.update(updates);
+    if(pending&&typeof pending.then==="function") pending.then(function(){
+      clean.forEach(function(id){ delete wateringPending[id]; });
+      renderAll();
+    }).catch(function(err){
+      clean.forEach(function(id){ delete wateringPending[id]; });
+      console.error("Watering update failed",err); renderAll();
+      try{ toast("Watering update did not save — nothing was logged."); }catch(_){ }
+    });
+  }catch(err){
+    clean.forEach(function(id){ delete wateringPending[id]; });
+    console.error("Watering update failed",err);
+    renderAll();
+    try{ toast("Watering update did not save — nothing was logged."); }catch(_){ }
+  }
+}
 function addWish(){ const el=document.getElementById('wishInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; wishCustom['w-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={t:v,done:false}; el.value=''; saveWish(); renderPrint(); }
 function toggleWish(id){ if(!wishCustom[id]) return; wishCustom[id].done=!wishCustom[id].done; saveWish(); renderPrint(); }
 function removeWish(id){ delete wishCustom[id]; saveWish(); renderPrint(); }
@@ -1121,24 +1185,19 @@ function daysSinceTrimmed(id){ if(!trimmed[id]) return null; return Math.round((
 function plantsTrimDueOn(dateStr){ return PLANTS.filter(p=>p.trimDays&&(()=>{ if(!trimmed[p.id]) return true; const d=Math.round((new Date(dateStr+"T12:00:00")-new Date(trimmed[p.id]+"T12:00:00"))/86400000); return d>=p.trimDays; })()); }
 function trimAllDue(dateStr){ plantsTrimDueOn(dateStr).forEach(p=>{ trimmed[p.id]=dateStr; }); saveTrimmed(); renderAll(); }
 function pushWatering(id){
-  const d=new Date(); d.setDate(d.getDate()+1);
-  waterPushed[id]=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-  saveWP(); renderAll();
+  pushWateringGroup([id]);
 }
 function pushWateringGroup(ids){
-  const d=new Date(); d.setDate(d.getDate()+1);
+  if(!wateringActionReady()) return;
+  const clean=[...new Set(ids||[])].filter(validWaterPlantId);
+  if(!clean.length) return;
+  if(clean.some(function(id){return !!wateringPending[id];})){ try{ toast("That watering update is still saving."); }catch(_){ } return; }
+  const d=new Date(todayKey()+"T12:00:00"); d.setDate(d.getDate()+1);
   const next=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-  ids.forEach(function(id){ waterPushed[id]=next; });
-  saveWP(); renderAll();
+  const updates={};
+  clean.forEach(function(id){ updates["waterPushed/"+id]=next; });
+  writeWateringUpdates(updates,clean,"push");
 }
-function wateringUnitKeys(plants){
-  const keys=new Set();
-  (plants||[]).forEach(function(p){
-    keys.add((p.id==="green_onion"||p.id==="white_onion")?"shared_pot":p.id);
-  });
-  return keys;
-}
-
 // Max tasks allowed per day
 function getCapacity(ds) {
   const day=new Date(ds+"T12:00:00").getDay();
@@ -1198,7 +1257,9 @@ function isMon() { return new Date().getDay()===1; }
 function isWeekday() { const d=new Date().getDay(); return d>=1&&d<=5; }
 function toggle(id)  { checked[id]=!checked[id]; save(); renderAll(); }
 function toggleLaundry() { const k=todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
-function waterPlant(id)  { watered[id]=todayKey(); saveW(); renderAll(); }
+function waterPlant(id)  {
+  waterPlantGroup([id]);
+}
 
 const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
@@ -1208,17 +1269,8 @@ function nextSched()  { return SCHEDULE.find(s=>s.date>todayKey()&&!s.off&&s.tas
 
 function daysSinceWatered(id) {
   if(!watered[id]) return null;
-  // count calendar days (noon-to-noon) so "Nd ago" matches the due logic in plantsDueOn (was Math.floor from now, which under-counted by a day during the morning)
-  return Math.round((new Date(todayKey()+"T12:00:00")-new Date(watered[id]+"T12:00:00"))/86400000);
+  return WateringQueue.calendarDaysSince(watered[id],todayKey());
 }
-function waterStatus(p) {
-  const d=daysSinceWatered(p.id);
-  if(d===null) return "now";
-  if(d>=p.days) return "now";
-  if(d>=p.days-1) return "soon";
-  return "ok";
-}
-
 let gardenSub = "watering";
 let tankSub = "bluedream";
 let printSub = "todo";
@@ -1292,10 +1344,12 @@ function updateHeader() {
   const hp=document.getElementById("habitsPct"); if(hp) hp.textContent=dpct+"%";
   // Garden trackers
   const today=todayKey();
-  const wDoneToday=PLANTS.filter(p=>watered[p.id]===today);
-  const wDueUnits=wateringUnitKeys(plantsDueOn(today)), wDoneUnits=wateringUnitKeys(wDoneToday);
-  const wIds=new Set([...wDueUnits, ...wDoneUnits]);
-  const wt=document.getElementById("waterTracker"); if(wt) wt.textContent = wIds.size ? ("💧 "+wDueUnits.size+" checks · "+wDoneUnits.size+" watered") : "💧 ✓ no checks";
+  const wt=document.getElementById("waterTracker");
+  if(wt && !wateringStateLoaded) wt.textContent="💧 loading — do not use yet";
+  else if(wt){
+    const queue=buildWateringQueue(today), due=queue.filter(function(x){return x.state.key==="due";}).length, done=queue.filter(function(x){return x.state.key==="watered";}).length;
+    wt.textContent = due||done ? ("💧 "+due+" checks · "+done+" watered") : "💧 ✓ no checks";
+  }
   const tDoneToday=PLANTS.filter(p=>p.trimDays&&trimmed[p.id]===today);
   const tIds=new Set([...plantsTrimDueOn(today).map(p=>p.id), ...tDoneToday.map(p=>p.id)]);
   const tt=document.getElementById("trimTracker"); if(tt) tt.textContent = tIds.size ? ("❤️ "+tDoneToday.length+"/"+tIds.size) : "❤️ ✓ none due";
@@ -1868,9 +1922,11 @@ function almanacRoutineTasks(hc){
   const dow=new Date(todayKey()+"T12:00:00").getDay();
   const due=almanacOutdoorDue();
   const names=due.map(function(p){return p.name;});
-  const waterDetail=names.length
-    ? names.length+" soil check"+(names.length===1?"":"s")+" due: "+names.slice(0,4).join(", ")+(names.length>4?" +"+(names.length-4)+" more":"")+". Water only where the soil or plant says it is needed."
-    : "No outdoor soil checks are due right now.";
+  const waterDetail=!wateringStateLoaded
+    ? "Watering history is still loading. Do not use this reminder until the Plants tab connects."
+    : names.length
+      ? names.length+" soil check"+(names.length===1?"":"s")+" due: "+names.slice(0,4).join(", ")+(names.length>4?" +"+(names.length-4)+" more":"")+". Water only where the soil or plant says it is needed."
+      : "No outdoor soil checks are due right now.";
   let healthName="Light movement and mobility";
   let healthDetail="Shoulder circles, thoracic rotations, hip-flexor stretch, and hamstring stretch for 5 minutes.";
   if(hc&&hc.rescue){
@@ -2576,18 +2632,16 @@ function renderRooms() {
 }
 
 function plantsDueOn(dateStr) {
-  const target = new Date(dateStr+"T12:00:00");
-  return PLANTS.filter(p => {
-    if(waterPushed[p.id]&&waterPushed[p.id]>dateStr) return false;
-    if (!watered[p.id]) return true;
-    const last = new Date(watered[p.id]+"T12:00:00");
-    const days = Math.round((target - last) / 86400000);
-    return days >= p.days;
-  });
+  if(!wateringStateLoaded || WateringQueue.dateKeyDay(dateStr)===null) return [];
+  return PLANTS.filter(function(p){ return WateringQueue.plantDue(p,watered[p.id],waterPushed[p.id],dateStr); });
 }
-// Weather is advisory only. It never advances or defers the saved watering cadence.
-function rainDeferredPlants(){
-  return [];
+function buildWateringQueue(dateStr){
+  if(!wateringStateLoaded) return [];
+  const potP={id:"shared_pot",name:"Wide Gray Pot · Green & White Onions",emoji:"🪴",loc:"outdoor",days:2,waterChip:"💧 check daily · water when top inch dries",freq:"Only the green onions and recovering white onion remain in the wide shallow gray pot. Check the top inch daily during the heat and water when it starts drying; keep water away from the white onion's exposed neck while it recovers from root rot."};
+  return WateringQueue.build({
+    dateKey:dateStr,plants:PLANTS,watered:watered,pushed:waterPushed,
+    groups:[{id:"shared_pot",ids:["green_onion","white_onion"],plant:potP}]
+  });
 }
 
 function gardenTasksOn(dateStr) {
@@ -2596,8 +2650,13 @@ function gardenTasksOn(dateStr) {
 }
 
 function waterPlantGroup(ids) {
-  ids.forEach(id => { watered[id] = todayKey(); });
-  saveW(); renderAll();
+  if(!wateringActionReady()) return;
+  const clean=[...new Set(ids||[])].filter(validWaterPlantId);
+  if(!clean.length) return;
+  if(clean.some(function(id){return !!wateringPending[id];})){ try{ toast("That watering update is still saving."); }catch(_){ } return; }
+  const today=todayKey(), updates={};
+  clean.forEach(function(id){ updates["watered/"+id]=today; updates["waterPushed/"+id]=null; });
+  writeWateringUpdates(updates,clean,"water");
 }
 
 function renderGarden() {
@@ -2651,60 +2710,72 @@ function renderGarden() {
   const hdr = (p,right) => '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:24px">'+p.emoji+'</div><div style="flex:1;font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--text)">'+p.name+'</div>'+(right?'<div style="font-size:11px;color:var(--text2);font-family:\'Lora\',serif;font-style:italic;white-space:nowrap">'+right+'</div>':'')+'</div>';
 
   if (gardenSub === "watering") {
-    const dueSet = new Set(plantsDueOn(today).map(p=>p.id));
-    const rainSet = new Set(rainDeferredPlants().map(p=>p.id));
-    const doneArr = PLANTS.filter(p=>watered[p.id]===today);
-    const dueUnits=wateringUnitKeys(PLANTS.filter(function(p){return dueSet.has(p.id);})), doneUnits=wateringUnitKeys(doneArr);
-    const total = dueUnits.size + doneUnits.size, done = doneUnits.size;
-    html += `<div class="section-label">💧 Watering log — ${done} watered today · ${dueUnits.size} soil check${dueUnits.size===1?"":"s"} due</div>`;
-    if (dueUnits.size) html += `<div style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.28);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#A5F3FC;font-family:'Lora',serif;line-height:1.5">👀 A due card means <b>check the soil and plant</b> — not automatic watering. Log only plants you actually water; if the soil is still damp, move that check to tomorrow.</div>`;
-    else if (total) html += `<div style="background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">✅</div><div style="font-size:13px;color:#4AD490;font-style:italic">No soil checks due right now</div></div>`;
-    const POT_GROUP=["green_onion","white_onion"].filter(id=>PLANTS.some(p=>p.id===id));
-    const potDS=()=>{ var ds=POT_GROUP.map(id=>daysSinceWatered(id)); if(!ds.length||ds.some(d=>d===null)) return null; return Math.max.apply(null,ds); };
-    const potDone=POT_GROUP.length>0 && POT_GROUP.every(id=>watered[id]===today);
-    const potPushed=POT_GROUP.some(id=>waterPushed[id]&&waterPushed[id]>today);
-    const potDue=POT_GROUP.some(id=>dueSet.has(id));
-    const potRain=POT_GROUP.some(id=>rainSet.has(id));
-    const potP={id:"shared_pot",name:"Wide Gray Pot · Green & White Onions",emoji:"🪴",days:2,waterChip:"💧 check daily · water when top inch dries",freq:"Only the green onions and recovering white onion remain in the wide shallow gray pot. Check the top inch daily during the heat and water when it starts drying; keep water away from the white onion's exposed neck while it recovers from root rot."};
-    const urg = p => { if(p.id==="shared_pot"){ if(potDone) return -1000; if(potPushed) return -500; var pd=potDS(); if(pd===null) return 1e9; return pd-2; } if(watered[p.id]===today) return -1000; if(waterPushed[p.id]&&waterPushed[p.id]>today) return -500; const dd=daysSinceWatered(p.id); if(dd===null) return 1e9; return dd-(p.days||7); };
-    // strict water-need order: most overdue (and never-watered) on top, least (watered today / snoozed) on bottom. (removed the WATER_GROUP clustering, which was overriding this order)
-    const inPot=id=>POT_GROUP.indexOf(id)>=0;
-    const _ordered=[...PLANTS.filter(p=>!inPot(p.id)), potP].sort((x,y)=>urg(y)-urg(x));
-    _ordered.forEach(p=>{
-      if(p.id==="shared_pot"){
-        let pdd=potDS(), bTxt,bCol,bl,bc;
-        if(potDone){bTxt="✓ Watered";bCol="#4AD490";bl="✓ Watered today";bc="ok";}
-        else if(potDue){bTxt="👀 Check soil";bCol="#22D3EE";bl="💧 Log watering";bc="now";}
-        else if(potPushed){bTxt="↪ Check tomorrow";bCol="#A5F3FC";bl="💧 Log watering";bc="ok";}
-        else if(potRain){bTxt="🌧️ Rain’s got it";bCol="#7EB8F0";bl="💧 Water anyway";bc="ok";}
-        else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Log watering";bc="ok";}
-        let pbody=hdr(p, pdd!==null?pdd+"d ago":"never");
-        pbody+=chipRow(chip(p.waterChip,"#7EB8F0"));
-        pbody+=sect("💧 When & how","#7EB8F0",p.freq);
-        pbody+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px;font-style:italic">🪴 Green Onions · recovering White Onion — watered together until they are moved out for the planned strawberry-only pot.</div>';
-        pbody+='<button class="water-btn '+bc+'" onclick="waterPlantGroup([\'green_onion\',\'white_onion\'])" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">'+bl+'</button>';
-        if(potDue) pbody+='<button class="water-btn" onclick="pushWateringGroup([\'green_onion\',\'white_onion\'])" style="width:100%;padding:9px 0;font-size:12px;margin-top:7px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.35);color:#A5F3FC">Soil still damp — check tomorrow</button>';
-        html+=pcard(p,bTxt,bCol,pbody);
-        return;
-      }
-      const days=daysSinceWatered(p.id), doneT=watered[p.id]===today, pushedT=waterPushed[p.id]&&waterPushed[p.id]>today, needs=dueSet.has(p.id), st=waterStatus(p), wi=WATER_INFO[p.id]||{};
-      let bTxt,bCol,bl,bc;
-      if(doneT){bTxt="✓ Watered";bCol="#4AD490";bl="✓ Watered today";bc="ok";}
-      else if(pushedT){bTxt="↪ Check tomorrow";bCol="#A5F3FC";bl="💧 Log watered";bc="ok";}
-      else if(needs){bTxt="👀 Check soil";bCol="#22D3EE";bl="💧 Log watered";bc="now";}
-      else if(rainSet.has(p.id)){bTxt="🌧️ Rain's got it";bCol="#7EB8F0";bl="💧 Water anyway";bc="ok";}
-      else if(st==="soon"){bTxt="⚠️ Check soon";bCol="#FBBF24";bl="💧 Log watered";bc="soon";}
-      else{bTxt="✓ Good";bCol="#4ADE80";bl="💧 Log watered";bc="ok";}
-      let body=hdr(p, days!==null?days+"d ago":"never");
+    if(!wateringStateLoaded){
+      html += `<div class="section-label">💧 Watering schedule unavailable</div><div style="background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.4);border-radius:12px;padding:14px 15px;color:#FCA5A5;font-family:'Lora',serif;font-size:13px;line-height:1.55"><b>Do not water from this page yet.</b><br>${wateringStateError||"The saved watering history is still loading."} No due list is being guessed.</div>`;
+      el.innerHTML=html;
+      return;
+    }
+    const queue=buildWateringQueue(today);
+    const dueCount=queue.filter(function(x){return x.state.key==="due";}).length;
+    const doneCount=queue.filter(function(x){return x.state.key==="watered";}).length;
+    html += `<div class="section-label">💧 Watering log — ${doneCount} watered today · ${dueCount} soil check${dueCount===1?"":"s"} due</div>`;
+    if(!wateringOnline) html += `<div style="background:rgba(251,191,36,.09);border:1px solid rgba(251,191,36,.35);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#FCD34D;font-family:'Lora',serif;line-height:1.5"><b>Offline:</b> the list is read-only. Reconnect before logging watering or moving a check.</div>`;
+    if(dueCount) html += `<div style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.28);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#A5F3FC;font-family:'Lora',serif;line-height:1.5">👀 A full card means <b>check the soil and plant</b> — not automatic watering. Log only plants you actually water; if the soil is still damp, move that check to tomorrow.</div>`;
+    else html += `<div style="background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">✅</div><div style="font-size:13px;color:#4AD490;font-style:italic">No soil checks due right now. The compact cards below are not asking you to water.</div></div>`;
+
+    function entryPending(entry){ return entry.ids.some(function(id){return !!wateringPending[id];}); }
+    function entryCall(entry,fn){
+      return fn+'([\''+entry.ids.join("','")+'\'])';
+    }
+    function ageLabel(entry){
+      if(entry.state.key==="watered") return "logged today";
+      if(entry.warning) return entry.warning;
+      if(entry.days!==null) return entry.days+"d since watering";
+      return entry.ids.some(function(id){return !!watered[id];}) ? "watering date needs review" : "no saved watering date";
+    }
+    function compactWaterCard(entry){
+      const p=entry.p, ph=p.id==="shared_pot"?"":photo_(p.id), pending=entryPending(entry);
+      const badge=pending?"Saving…":entry.state.label, badgeColor=pending?"#FBBF24":entry.state.color;
+      let action="";
+      if(pending) action='<button class="water-btn water-card-compact-action soon" disabled>Saving…</button>';
+      else if(entry.state.key==="watered") action='<div class="water-card-compact-check" aria-label="Watered today">✓</div>';
+      else if(!wateringOnline) action='<button class="water-btn water-card-compact-action" disabled>Offline</button>';
+      else action='<button class="water-btn water-card-compact-action ok" onclick="'+entryCall(entry,"waterPlantGroup")+'">Log watered</button>';
+      return '<div class="water-card-compact" data-water-card="compact" data-water-size="compact" data-water-state="'+entry.state.key+'" data-water-id="'+entry.id+'">'
+        +'<div class="water-card-compact-thumb"><span>'+p.emoji+'</span>'+(ph?'<img src="'+ph+'" alt="" loading="lazy" style="object-position:'+photoPos_(p.id)+'" onerror="this.style.display=\'none\'"/>':'')+'</div>'
+        +'<div class="water-card-compact-main"><div class="water-card-compact-name">'+p.name+'</div><div class="water-card-compact-meta">'+ageLabel(entry)+'</div></div>'
+        +'<div class="water-card-compact-side"><span class="water-card-compact-status" style="border:1px solid '+badgeColor+'66;color:'+badgeColor+'">'+badge+'</span>'+action+'</div></div>';
+    }
+    function dueWaterButtons(entry){
+      const pending=entryPending(entry);
+      if(pending) return '<button class="water-btn soon" disabled style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">Saving…</button>';
+      if(!wateringOnline) return '<button class="water-btn" disabled style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">Offline — reconnect to log</button>';
+      return '<button class="water-btn now" onclick="'+entryCall(entry,"waterPlantGroup")+'" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">💧 Log watered</button>'
+        +'<button class="water-btn" onclick="'+entryCall(entry,"pushWateringGroup")+'" style="width:100%;padding:9px 0;font-size:12px;margin-top:7px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.35);color:#A5F3FC">Soil still damp — check tomorrow</button>';
+    }
+    function fullDueCard(entry){
+      const p=entry.p, pending=entryPending(entry), badge=pending?"Saving…":"👀 Check soil", badgeColor=pending?"#FBBF24":entry.state.color;
+      let body=hdr(p,ageLabel(entry));
       body+=chipRow(chip(p.waterChip,"#7EB8F0"));
-      body+=sect("💧 When & how","#7EB8F0",wi.when||p.freq);
-      if(wi.thirst) body+=sect("👀 Thirst check","#22D3EE",wi.thirst);
-      body+=wxWaterNote(p);
-      if(p.overwater) body+='<div style="margin-top:4px"><span class="overwater-badge">⚠️ overwater risk</span></div>';
-      body+='<button class="water-btn '+bc+'" onclick="waterPlant(\''+p.id+'\')" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">'+bl+'</button>';
-      if(needs) body+='<button class="water-btn" onclick="pushWatering(\''+p.id+'\')" style="width:100%;padding:9px 0;font-size:12px;margin-top:7px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.35);color:#A5F3FC">Soil still damp — check tomorrow</button>';
-      body+=factBox(dailyFact(p.id));
-      html+=pcard(p,bTxt,bCol,body);
+      body+=sect("💧 When & how","#7EB8F0",p.id==="shared_pot"?p.freq:((WATER_INFO[p.id]||{}).when||p.freq));
+      if(p.id==="shared_pot") body+='<div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:5px;font-style:italic">🪴 Green Onions · recovering White Onion — watered together until they are moved out for the planned strawberry-only pot.</div>';
+      else {
+        const wi=WATER_INFO[p.id]||{};
+        if(wi.thirst) body+=sect("👀 Thirst check","#22D3EE",wi.thirst);
+        body+=wxWaterNote(p);
+        if(p.overwater) body+='<div style="margin-top:4px"><span class="overwater-badge">⚠️ overwater risk</span></div>';
+      }
+      body+=dueWaterButtons(entry);
+      if(p.id!=="shared_pot") body+=factBox(dailyFact(p.id));
+      return '<div data-water-card="full" data-water-size="full" data-water-state="due" data-water-id="'+entry.id+'">'+pcard(p,badge,badgeColor,body)+'</div>';
+    }
+
+    let compactLabel=false, wateredLabel=false;
+    queue.forEach(function(entry){
+      if(entry.state.key==="due"){ html+=fullDueCard(entry); return; }
+      if(entry.state.key==="watered" && !wateredLabel){ html+='<div class="section-label" style="margin-top:18px">✓ Watered today</div>'; wateredLabel=true; }
+      else if(entry.state.key!=="watered" && !compactLabel){ html+='<div class="section-label" style="margin-top:16px">Not due now · compact</div>'; compactLabel=true; }
+      html+=compactWaterCard(entry);
     });
     const tks=gardenTasksOn(today);
     if(tks.length){ html+=`<div class="section-label">📋 Tasks Today</div>`+groupedCardHTML(tks,""); }
@@ -4287,6 +4358,8 @@ fbTimeout = setTimeout(showApp, 6000);
 
 ST.on('value', snap => {
   const d = snap.val() || {};
+  wateringStateLoaded=!!d.watered && typeof d.watered==="object" && !Array.isArray(d.watered);
+  wateringStateError=wateringStateLoaded?"":"The saved watering history could not be found.";
   checked     = d.checked     || {};
   laundry     = d.laundry     || {};
   watered     = d.watered     || {};
@@ -4324,61 +4397,6 @@ ST.on('value', snap => {
   // one-time idempotent migration of any legacy localStorage pain entries up to Firebase
   try { const legacy = JSON.parse(localStorage.getItem("painlog")||"{}"); let added=false; for(const k in legacy){ if(painLog[k]==null){ painLog[k]=legacy[k]; added=true; } } if(added){ ST.child('painLog').set(painLog); } } catch(e){}
   const flags = d.flags       || {};
-
-  // One-time: initial plant watering baseline
-  if (!flags['garden-init-v1']) {
-    PLANTS.forEach(p => { if (!watered[p.id]) watered[p.id] = '2026-05-13'; });
-    ST.update({ watered, 'flags/garden-init-v1': 'done' });
-    return;
-  }
-  // One-time: rain 2026-05-17
-  if (!flags['rain-2026-05-17']) {
-    PLANTS.filter(p => p.loc === "outdoor").forEach(p => { if (!watered[p.id] || watered[p.id] < "2026-05-17") watered[p.id] = "2026-05-17"; });
-    ST.update({ watered, 'flags/rain-2026-05-17': '1' });
-    return;
-  }
-  // One-time: rain 2026-05-18
-  if (!flags['rain-2026-05-18']) {
-    PLANTS.filter(p => p.loc === "outdoor").forEach(p => { watered[p.id] = "2026-05-18"; });
-    ST.update({ watered, 'flags/rain-2026-05-18': '1' });
-    return;
-  }
-  // One-time: Jul 2026 vacation watering catch-up.
-  // Outdoor + greenhouse plants were watered before leaving Thu Jul 2 and again Sat Jul 4.
-  // All plants got a Mon Jul 6 return-home drink; Fittonia perked back up after that drink.
-  if (!flags['vacation-watering-jul2026-v1']) {
-    PLANTS.forEach(p => { watered[p.id] = "2026-07-06"; delete waterPushed[p.id]; });
-    watered.fittonia = "2026-07-06";
-    delete waterPushed.fittonia;
-    ST.update({ watered: watered, waterPushed: waterPushed, 'flags/vacation-watering-jul2026-v1': 'done' });
-    return;
-  }
-  // One-time correction: the first vacation catch-up was too broad.
-  if (!flags['vacation-watering-jul2026-v2']) {
-    Object.assign(watered, {
-      fittonia:"2026-07-07", croton:"2026-05-31", jade:"2026-05-26",
-      basil1:"2026-05-31", basil2:"2026-05-31", parsley:"2026-06-01", mint:"2026-06-01", dill:"2026-06-01", rosemary:"2026-06-02", ristra:"2026-06-02",
-      strawberry:"2026-07-07", strawberry_pot:"2026-07-07", tomato:"2026-07-07", cherry_tomato:"2026-07-07",
-      jalapeno:"2026-07-06", raspberry:"2026-07-06", green_onion:"2026-07-06", potato:"2026-07-06", white_onion:"2026-07-06", ginger:"2026-07-06", turmeric:"2026-07-06",
-      dianthus:"2026-07-06", daisy:"2026-07-06", candytuft:"2026-07-06"
-    });
-    waterPushed = {};
-    ST.update({ watered: watered, waterPushed: waterPushed, 'flags/vacation-watering-jul2026-v2': 'done' });
-    return;
-  }
-  // One-time correction v3: v2 used stale backup dates for indoor/greenhouse plants.
-  if (!flags['vacation-watering-jul2026-v3']) {
-    Object.assign(watered, {
-      fittonia:"2026-07-07", croton:"2026-07-02", jade:"2026-07-02",
-      basil1:"2026-07-06", basil2:"2026-07-06", parsley:"2026-07-06", mint:"2026-07-06", dill:"2026-07-06", rosemary:"2026-07-06", ristra:"2026-07-06",
-      strawberry:"2026-07-07", strawberry_pot:"2026-07-07", tomato:"2026-07-07", cherry_tomato:"2026-07-07",
-      jalapeno:"2026-07-06", raspberry:"2026-07-06", green_onion:"2026-07-06", potato:"2026-07-06", white_onion:"2026-07-06", ginger:"2026-07-06", turmeric:"2026-07-06",
-      dianthus:"2026-07-06", daisy:"2026-07-06", candytuft:"2026-07-06"
-    });
-    waterPushed = {};
-    ST.update({ watered: watered, waterPushed: waterPushed, 'flags/vacation-watering-jul2026-v3': 'done' });
-    return;
-  }
   // One-time: Jul 26 2026 — add/merge Cyrus's current fridge/pantry/freezer list without deleting existing inventory.
   if (!flags['food-inventory-jul26-v1']) {
     const foodSeedJul26=[
@@ -4589,6 +4607,8 @@ ST.on('value', snap => {
 
 ST.on('value', () => {}, err => {
   console.warn('Firebase error:', err);
+  wateringStateLoaded=false;
+  wateringStateError="Firebase could not load the saved watering history.";
   clearTimeout(fbTimeout);
   showApp();
 });
@@ -4850,7 +4870,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260727090000',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260727093000',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
