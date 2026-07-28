@@ -225,14 +225,14 @@ const TASKS = {
 
 
 const SCHEDULE = [
-  // ── MOVING · FIRST NO-REGRET WEEK ─────────────────────────────────────────
-  { date:"2026-07-22", tasks:["move_decor"],               note:"Pack one labeled box of obvious nonessential decor you would move anywhere. Stop after one box." },
-  { date:"2026-07-23", tasks:["move_supplies"],            note:"Gather only the supplies and move paperwork you already have; keep documents and valuables accessible." },
-  { date:"2026-07-24", tasks:["move_clothes"],             note:"Pack one labeled box of off-season clothes; put destination-dependent choices in DECISION HOLD." },
-  { date:"2026-07-25", tasks:["move_books"],               note:"Pack one destination-safe box of books or media, then stop." },
-  { date:"2026-07-26", tasks:["move_reset"],               note:"Do one short trash, dishes, laundry, or walkway reset. No deep cleaning." },
-  { date:"2026-07-27", tasks:["move_kitchen"],             note:"Pack one labeled box of rarely used kitchen items; leave the daily-use kit accessible." },
+  // ── MOVING · ROLLING NO-REGRET WEEK ────────────────────────────────────────
   { date:"2026-07-28", tasks:["move_hobby"],               note:"Pack one labeled box of hobby or office extras you will not use before moving; keep work essentials accessible." },
+  { date:"2026-07-29", tasks:["move_stage"],               note:"Spend ten minutes restoring the labeled PACKED / DECISION HOLD / OPEN LAST staging area. Stop when boxes have a clear place." },
+  { date:"2026-07-30", tasks:["move_decor"],               note:"Pack one labeled box of obvious nonessential decor you would move anywhere. Stop after one box." },
+  { date:"2026-07-31", tasks:["move_supplies"],            note:"Do one short moving-supply and document check. Keep IDs, valuables, lease papers, and the marker accessible." },
+  { date:"2026-08-01", tasks:["move_reset"],               note:"Do one short trash, dishes, laundry, or walkway reset. No deep cleaning." },
+  { date:"2026-08-02", tasks:["move_clothes"],             note:"Pack one labeled box of off-season clothes; put destination-dependent choices in DECISION HOLD." },
+  { date:"2026-08-03", tasks:["move_books"],               note:"Pack one destination-safe box of books or media, then stop." },
 
   // ── MOVING MILESTONES ─────────────────────────────────────────────────────
   { date:"2026-08-17", tasks:["move_checkpoint"],          note:"Mostly packed two weeks before move-out. Decision-hold items can stay unresolved until the destination is known." },
