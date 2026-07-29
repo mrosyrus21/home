@@ -836,9 +836,9 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260728110000-schedule"></script>
+<script src="./data.js?v=20260729010000-user-batch"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20260726210151-trials"></script>
+<script src="./recipes.js?v=20260729010000-approved"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -900,7 +900,7 @@ let grocPurchased = {};
 let recipeServ = {};
 let recipeQuery = "";
 let recipeCat = null; // 🍴 transient Recipe Box nav: null=tiles, "__doggy", or "cat:<Category>"
-const GROC_BUILTIN=[{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'}];
+const GROC_BUILTIN=[{id:'groc-greenonion',label:'🌿 Green onion'},{id:'groc-eggs',label:'🥚 Eggs'},{id:'groc-croissants',label:'🥐 Croissants'},{id:'groc-masa-harina',label:'🌽 Masa harina'},{id:'groc-parmesan',label:'🧀 Parmesan'},{id:'groc-lemons',label:'🍋 Lemons'},{id:'groc-unsalted-roasted-peanuts',label:'🥜 Unsalted roasted peanuts'}];
 let printCustom = {};
 let taskCustom = {};
 let scheduleCustom = {};
@@ -1261,7 +1261,7 @@ function waterPlant(id)  {
   waterPlantGroup([id]);
 }
 
-const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
+const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","mixing_supplies","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -2088,8 +2088,6 @@ function renderToday() {
   // ── THE DAY, IN ORDER — one chronological flow; checked items sink to the done pile ──
   const flow=[];
   function add(key,order,done,html,passive){ flow.push({key,order,done:!!done,html,passive:!!passive}); }
-  const wakeWaterDone=waterCount(today)>0;
-  add("wakewater",281,wakeWaterDone,strip("💧","Wake water — before anything else",wakeWaterDone,"#38BDF8","waterAdd()",RY.waterWake||RY.wake||"Wake","1 glass","Food and hydration are priority tasks now."),false);
   if(hc.rescue){
     add("healthrescue",5,false,healthRescueCard(hc),false);
   } else {
@@ -2272,13 +2270,6 @@ function renderToday() {
 
   // ── 🍽️ MEAL ANCHORS + 💊 pill bundle — eat on a clock; nag (pin + gentle escalate) until checked (added Jun 9 2026) ──
   const MA=(typeof MEAL_ANCHORS!=='undefined')?MEAL_ANCHORS:[];
-  const litDone=!!laundry["well-litfulo-"+today];
-  // 💊 pills bundled onto breakfast: when breakfast is due, the pill check sits right under it (one trigger: eat → pills)
-  const _bk=MA.find(function(x){return x.id==='breakfast';});
-  const _pillTop=(_bk && nowM>=_bk.min && !litDone);
-  add("lit",_pillTop?7:311,litDone, litDone
-    ? strip("💊","Litfulo + vitamins",true,"#6366F1","toggleWellness('litfulo')","With breakfast","","")
-    : strip("💊","Litfulo + vitamins — take with breakfast",false,"#6366F1","toggleWellness('litfulo')","With breakfast","","One trigger: eat → pills. Logs to the Health tab too."));
   // 📞 FINANCIAL MONDAY — Mondays only: the house-rest day gets exactly ONE focused money task (added Jun 6 2026)
   if(dow===1 && typeof FINANCE!=='undefined' && FINANCE.mondays){
     fin.monday=fin.monday||{};
@@ -4443,6 +4434,24 @@ ST.on('value', snap => {
     return;
   }
 
+  // One-time: Jul 28 2026 — add today's purchased fried chicken without deleting inventory.
+  if (!flags['fried-chicken-jul28-v1']) {
+    const friedName='Prepared fried chicken, 6 mixed pieces (spicy and crispy; purchased 2026-07-28)';
+    const friedKey=Object.keys(inventory).find(function(k){
+      return /fried chicken/i.test(String((inventory[k]&&inventory[k].name)||k));
+    }) || invKey(friedName);
+    const friedOld=inventory[friedKey]||{};
+    inventory[friedKey]=Object.assign({},friedOld,{name:friedName,emoji:friedOld.emoji||'🍗',inStock:true,ts:Date.now()});
+    const friedUpdates={};
+    friedUpdates['inventory/'+friedKey+'/name']=inventory[friedKey].name;
+    friedUpdates['inventory/'+friedKey+'/emoji']=inventory[friedKey].emoji;
+    friedUpdates['inventory/'+friedKey+'/inStock']=true;
+    friedUpdates['inventory/'+friedKey+'/ts']=inventory[friedKey].ts;
+    friedUpdates['flags/fried-chicken-jul28-v1']='done';
+    ST.update(friedUpdates);
+    return;
+  }
+
   // One-time: seed kitchen inventory with starting in-stock items
   if (!flags['inventory-seed-v1']) {
     const seed=[['green onions','🌿'],['yellow squash','🟡'],['zucchini','🥒'],['mushrooms','🍄'],['spinach','🥬'],['romaine lettuce','🥗']];
@@ -4866,7 +4875,7 @@ curtainInit();
   var __hgReloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260728110000',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=20260729010000',{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
       document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
     }).catch(function(){});
@@ -5044,7 +5053,7 @@ curtainInit();
 </style>
 <script>window.DAYARC_CONFIG={appendHost:'.header'};</script>
 <link rel="stylesheet" href="dayarc.css?v=20260626213000">
-<script src="dayarc.js?v=20260717090000-encoding"></script>
+<script src="dayarc.js?v=20260729010000-user-batch"></script>
 <script>(function(){ function relocate(){ try{
   var tr=document.querySelector('.hdr-trackers'), hd=document.querySelector('.header'); if(tr&&hd&&tr.parentElement!==hd){ hd.appendChild(tr); }
  }catch(e){} } relocate(); setTimeout(relocate,500); setTimeout(relocate,1500); })();</script>

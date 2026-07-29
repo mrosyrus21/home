@@ -58,7 +58,6 @@
     var RY=(typeof RHYTHM!=="undefined"&&RHYTHM)?RHYTHM:{waterWake:"8:00 AM",breakfast:"8:00 AM",lunch:"12:30 PM",hydration:"3:30 PM",workout:"5:30 PM",dinner:"6:30 PM",windDown:"10:00 PM",lightsOut:"11:00 PM"};
     function pc(s,f){var v=parseClock(s);return v==null?f:v;}
     return [
-      {m:pc(RY.waterWake||RY.wake,480), ic:"\u{1F4A7}", label:"Wake water", color:"#38BDF8", find:"wake"},
       {m:pc(RY.breakfast,480), ic:"\u{1F373}", label:"Breakfast", color:"#C084FC", find:"breakfast"},
       {m:pc(RY.lunch,750),     ic:"\u{1F957}", label:"Lunch",     color:"#2DB870", find:"lunch"},
       {m:pc(RY.hydration,930), ic:"\u{1F4A7}", label:"Hydration", color:"#38BDF8", find:"hydration"},

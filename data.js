@@ -96,6 +96,7 @@ const TASKS = {
   errand1:        { room:"priority", label:"Go get distilled water", level:"easy" },
   errand2:        { room:"priority", label:"Go get food", level:"easy" },
   vacuum_bags:    { room:"priority", label:"Buy 8-inch vacuum bags", level:"easy", note:"Moved off the grocery list (grocery is food-only now). Grab them with the next errand run." },
+  mixing_supplies:{ room:"priority", label:"Buy: bottles ×2 (same as already have), mixing bottle, funnel", level:"easy" },
   claude_rules:   { room:"priority", label:"Have Claude rebuild Claude's rules in settings menu", level:"easy", note:"Refresh/rewrite Claude's custom rules in the settings menu." },
   auth_lock:      { room:"priority", label:"🔒 Big project: real app lock — Firebase Auth + locked database rules", level:"hard", note:"The password curtain on the app is cosmetic — the page AND the Firebase data are still publicly readable by anyone with the URL. The real fix: Firebase Authentication sign-in + database security rules locked to that account. Curtain password lives in CURTAIN_PASSWORD at the top of index.html." },
   rx_setup:       { room:"priority", label:"Set up esomeprazole at King Soopers (use GoodRx)", level:"easy", note:"Open GoodRx, search esomeprazole for the King Soopers pharmacy, grab the coupon price, and send or transfer the prescription there. Show the GoodRx coupon at the counter on pickup." },
@@ -226,13 +227,13 @@ const TASKS = {
 
 const SCHEDULE = [
   // ── MOVING · ROLLING NO-REGRET WEEK ────────────────────────────────────────
-  { date:"2026-07-28", tasks:["move_hobby"],               note:"Pack one labeled box of hobby or office extras you will not use before moving; keep work essentials accessible." },
   { date:"2026-07-29", tasks:["move_stage"],               note:"Spend ten minutes restoring the labeled PACKED / DECISION HOLD / OPEN LAST staging area. Stop when boxes have a clear place." },
   { date:"2026-07-30", tasks:["move_decor"],               note:"Pack one labeled box of obvious nonessential decor you would move anywhere. Stop after one box." },
   { date:"2026-07-31", tasks:["move_supplies"],            note:"Do one short moving-supply and document check. Keep IDs, valuables, lease papers, and the marker accessible." },
   { date:"2026-08-01", tasks:["move_reset"],               note:"Do one short trash, dishes, laundry, or walkway reset. No deep cleaning." },
   { date:"2026-08-02", tasks:["move_clothes"],             note:"Pack one labeled box of off-season clothes; put destination-dependent choices in DECISION HOLD." },
   { date:"2026-08-03", tasks:["move_books"],               note:"Pack one destination-safe box of books or media, then stop." },
+  { date:"2026-08-04", tasks:["move_kitchen"],             note:"Pack one labeled box of rarely used kitchen items you would move anywhere. Keep the daily cooking kit accessible." },
 
   // ── MOVING MILESTONES ─────────────────────────────────────────────────────
   { date:"2026-08-17", tasks:["move_checkpoint"],          note:"Mostly packed two weeks before move-out. Decision-hold items can stay unresolved until the destination is known." },
