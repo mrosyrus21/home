@@ -66,19 +66,22 @@ var recipeQuery = '';
 var selCat = null; // 🍴 transient nav: null=tiles, or "cat:<Category>"
 var SERV = {};
 // 🍴 category mapper + landing tiles — same buckets as the in-app Recipe Box (human recipes only here).
-var RECIPE_CATS=[['Italian','🍝'],['French','🥐'],['Mexican','🌮'],['Breakfast','🍳'],['Seafood','🦐'],['Pasta','🍜'],['Sides & Veg','🥗'],['Desserts','🍰'],['American / Mains','🍔']];
+var RECIPE_CATS=[['Breakfast','🍳'],['Mexican','🌮'],['Italian & Pasta','🍝'],['Asian-Inspired','🥢'],['Chicken','🍗'],['Beef & Venison','🥩'],['Pork & Sausage','🥓'],['Seafood','🦐'],['Soups, Stews & Chili','🥣'],['Sides & Vegetables','🥗'],['Baking & Sweets','🥐'],['Kitchen Favorites','🍽️']];
 function recipeCategory(r){
   var t=((r&&r.tags)||[]).map(function(x){return String(x).toLowerCase();}); var nm=String((r&&r.name)||'').toLowerCase();
   function has(){for(var i=0;i<arguments.length;i++){if(t.indexOf(arguments[i])!==-1)return true;}return false;}
-  if(has('italian')) return 'Italian';
-  if(has('french')) return 'French';
-  if(has('mexican')) return 'Mexican';
+  if(has('mexican')||/quesabirria|barbacoa|enchilada|\btacos?\b|\bnachos?\b|mole poblano|chile relleno/.test(nm)) return 'Mexican';
+  if(has('italian','pasta')||/pasta|spaghetti|lasagna|pappardelle|macaroni|five-cheese bake/.test(nm)) return 'Italian & Pasta';
+  if(has('asian','stir fry')||/potsticker|orange chicken|sesame (beef|chicken)|sweet and sour|peanut-sesame|stir[- ]fry/.test(nm)) return 'Asian-Inspired';
   if(has('breakfast')||/pancake|waffle|omelet|frittata|french toast|breakfast/.test(nm)) return 'Breakfast';
-  if(has('seafood','fish','shrimp','salmon','trout','tuna')) return 'Seafood';
-  if(has('pasta')||/pasta|spaghetti|noodle|lasagna/.test(nm)) return 'Pasta';
-  if(has('side','vegetarian','veg','salad')) return 'Sides & Veg';
-  if(has('dessert','sweet','baking')) return 'Desserts';
-  return 'American / Mains';
+  if(has('seafood','fish','shrimp','salmon','trout','tuna')||/shrimp|salmon|trout|tuna/.test(nm)) return 'Seafood';
+  if(has('chili','soup','stew')||/\bchili\b|\bstew\b|\bsoup\b/.test(nm)) return 'Soups, Stews & Chili';
+  if(has('chicken','turkey')||/chicken|turkey/.test(nm)) return 'Chicken';
+  if(has('beef','steak','venison')||/beef|steak|venison|corned/.test(nm)) return 'Beef & Venison';
+  if(has('pork','sausage','ham','bacon')||/pork|sausage|\bribs?\b|carnitas?/.test(nm)) return 'Pork & Sausage';
+  if(has('dessert','sweet','baking','bread')||/bread|pie|danish|pinwheel|twist|crescent|muffin/.test(nm)) return 'Baking & Sweets';
+  if(has('side','vegetarian','veg','salad')||/potato|asparagus|salad|pinto beans|tian/.test(nm)) return 'Sides & Vegetables';
+  return 'Kitchen Favorites';
 }
 function recipeCatEmoji(c){ for(var i=0;i<RECIPE_CATS.length;i++){ if(RECIPE_CATS[i][0]===c) return RECIPE_CATS[i][1]; } return '🍽️'; }
 function recipeTile(label,emoji,sub,onclick,disabled){
