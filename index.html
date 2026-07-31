@@ -1694,7 +1694,7 @@ function clockMin(s,fb){
   if(ap==="AM"&&h===12) h=0;
   return h*60+mn;
 }
-function hcCfg(){ return (typeof HEALTH_COACH!=="undefined"&&HEALTH_COACH)?HEALTH_COACH:{rescueMeals:[],workouts:{strengthDays:[2,4,6],strength:[],recovery:[]}}; }
+function hcCfg(){ return (typeof HEALTH_COACH!=="undefined"&&HEALTH_COACH)?HEALTH_COACH:{rescueMeals:[],workouts:{strengthDays:[1,3,5],strength:[],recovery:[]}}; }
 function mealDoneOn(id,d){ return !!laundry["meal-"+id+"-"+d]; }
 function healthCoachState(today,nowM,dow){
   const cfg=hcCfg(), RY=(typeof RHYTHM!=="undefined")?RHYTHM:{lightsOut:"11:00 PM"};
@@ -1708,7 +1708,7 @@ function healthCoachState(today,nowM,dow){
   const pastBed=nowM>=bedtime;
   const late=nowM>=1290;
   const rescue=(pastBed||late)&&(underfed||lowWater||missedDinner);
-  const strengthDays=(cfg.workouts&&cfg.workouts.strengthDays)||[2,4,6];
+  const strengthDays=(cfg.workouts&&cfg.workouts.strengthDays)||[1,3,5];
   const strengthDay=strengthDays.indexOf(dow)>=0;
   const workoutDone=!!laundry["well-workout-"+today]||!!laundry["health-workout-"+today];
   const workoutAllowed=!rescue&&!underfed&&!lowWater&&meals>=2&&wc>=1&&nowM<bedtime;
@@ -1731,29 +1731,162 @@ function hydrationCard(kind,done,label,sub,order){
   return { key:"hyd-"+kind, order:order, done:done, html:strip("💧",label,done,"#38BDF8","waterAdd()","Checkpoint","",sub) };
 }
 function workoutCard(st,today){
-  const cfg=st.cfg, wo=cfg.workouts||{}, list=(st.strengthDay?wo.strength:wo.recovery)||[];
-  const title=st.strengthDay?(wo.strengthTitle||"Dumbbell strength"):(wo.recoveryTitle||"Light movement / mobility");
-  const detail=list.map(x=>'<div style="display:flex;gap:8px;padding:3px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:#34D399">•</span><span>'+x+'</span></div>').join('');
-  if(st.workoutDone) return strip(st.strengthDay?"🏋️":"🚶",title,true,"#34D399","toggleWellness('workout')","Done","","");
-  if(!st.workoutAllowed){
-    const why=st.rescue?"rescue mode is on":(st.underfed?"food comes first":(st.lowWater?"water comes first":"bedtime is protected"));
-    return `<div style="background:linear-gradient(135deg,rgba(52,211,153,.08),rgba(56,189,248,.03));border:1px solid rgba(52,211,153,.24);border-left:4px solid #34D399;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">
-      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#34D399;font-family:'Lora',serif;margin-bottom:5px">${st.strengthDay?"Strength day":"Movement day"} · gated</div>
-      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text)">Workout waits: ${why}.</div>
-      <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:4px">No training before water + protein. Recovery counts today.</div>
-    </div>`;
-  }
-  return `<div onclick="toggleWellness('workout')" style="background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(52,211,153,.03));border:1px solid rgba(52,211,153,.35);border-left:4px solid #34D399;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;cursor:pointer">
+  const plan=fitnessMonth1PlanForDate(today), list=plan.list||[];
+  const isStrength=plan.type==="strength", icon=isStrength?"\uD83C\uDFCB\uFE0F":"\uD83D\uDEB6";
+  const status=fitnessGateMessage(st), color=st.workoutAllowed?"#34D399":"#F5B830";
+  const detail=list.map(function(x){return '<div style="display:flex;gap:8px;padding:3px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("");
+  if(st.workoutDone) return strip(icon,plan.title,true,"#34D399","toggleWellness('workout')","Done","","");
+  return `<div onclick="toggleWellness('workout')" style="background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(52,211,153,.03));border:1px solid ${color}66;border-left:4px solid ${color};border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;cursor:pointer">
     <div style="display:flex;align-items:flex-start;gap:13px">
-      <div style="font-size:23px;flex-shrink:0">${st.strengthDay?"🏋️":"🚶"}</div>
+      <div style="font-size:23px;flex-shrink:0">${icon}</div>
       <div style="flex:1;min-width:0">
-        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text)">${title}</div>${timePill("After food + water","20–35 min")}</div>
-        <div style="font-size:11.5px;color:#A7F3D0;font-family:'Lora',serif;font-style:italic;margin:3px 0 6px">Every day can move; only 3 days are hard training.</div>
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text)">${almanacEsc(plan.title)}</div>${timePill(plan.badge,plan.duration)}</div>
+        <div style="font-size:11.5px;color:${color};font-family:'Lora',serif;font-style:italic;margin:3px 0 2px">${almanacEsc(status)}</div>
+        <div style="font-size:11.5px;color:#A7F3D0;font-family:'Lora',serif;font-style:italic;margin:0 0 6px">${almanacEsc(plan.rpe)}. ${almanacEsc(plan.coach)}</div>
         ${detail}
       </div>
-      <div style="width:28px;height:28px;border-radius:50%;border:2px solid #34D399;background:transparent;flex-shrink:0"></div>
+      <div style="width:28px;height:28px;border-radius:50%;border:2px solid ${color};background:transparent;flex-shrink:0"></div>
     </div>
   </div>`;
+}
+
+function fitnessDateAtNoon(ds){
+  const k=ds||todayKey();
+  return new Date(k+"T12:00:00");
+}
+function fitnessMonth1Cfg(){
+  const cfg=hcCfg(), wo=cfg.workouts||{}, m=wo.month1||{};
+  return {cfg:cfg,wo:wo,m:m};
+}
+function fitnessWeekNumber(ds){
+  const m=fitnessMonth1Cfg().m;
+  const start=fitnessDateAtNoon(m.startDate||"2026-07-31");
+  const cur=fitnessDateAtNoon(ds);
+  const days=Math.max(0,Math.floor((cur-start)/86400000));
+  return Math.max(1,Math.min(4,Math.floor(days/7)+1));
+}
+function fitnessDoseForWeek(week){
+  if(week<=1) return "1 easy round. Usually 6-8 reps. Stop while it still feels too easy.";
+  if(week===2) return "1-2 easy rounds. Add the second only if joints and energy feel good.";
+  if(week===3) return "2 rounds. Optional tiny add-on only if you are recovering well.";
+  return "2 rounds. Friday is easier. Finish fresh, not fried.";
+}
+function fitnessRpeForDate(ds,dow){
+  const m=fitnessMonth1Cfg().m, week=fitnessWeekNumber(ds);
+  const rpe=(m.rpe||[])[Math.min(week-1,(m.rpe||[]).length-1)]||("Week "+week+": easy effort");
+  if(dow===5 && week===4) return "Week 4 Friday: RPE 5-6, easier day";
+  return rpe;
+}
+function fitnessExerciseText(name){
+  const map={
+    "Goblet Squat":"Goblet squat - hold one dumbbell at chest; sit hips down/back; stand tall.",
+    "Dumbbell Floor Press":"Dumbbell floor press - lie on the floor; press dumbbells up; lower elbows gently.",
+    "One-Arm Dumbbell Row":"One-arm dumbbell row - one hand supported; pull dumbbell toward ribs; lower slow.",
+    "Dumbbell Romanian Deadlift":"Dumbbell Romanian deadlift - soft knees; push hips back; feel hamstrings; stand tall.",
+    "Farmer Carry":"Farmer carry - hold dumbbells at your sides and walk tall.",
+    "Dead Bug":"Dead bug - lie on back; brace belly; slowly tap one heel down, then switch.",
+    "Chair Squat or Reverse Lunge Supported":"Chair squat or supported reverse lunge - use a chair/counter for balance; slow easy reps.",
+    "Standing Dumbbell Overhead Press":"Standing dumbbell overhead press - brace belly; press dumbbells overhead without leaning back.",
+    "Supported One-Arm Dumbbell Row":"Supported one-arm dumbbell row - hand on chair/couch; pull toward ribs; no twisting.",
+    "Glute Bridge":"Glute bridge - lie on back, knees bent; squeeze glutes and lift hips.",
+    "Dumbbell Curl":"Dumbbell curl - elbows near sides; curl slowly; lower with control.",
+    "Side Plank":"Side plank - knees down is allowed; keep ribs and hips stacked.",
+    "Split Squat Supported or Goblet Squat":"Supported split squat or goblet squat - hold support; small range is fine.",
+    "Incline Pushup":"Incline pushup - hands on counter; body straight-ish; move feet closer to make it easier.",
+    "Bird Dog":"Bird dog - hands and knees; reach opposite arm/leg; keep hips quiet."
+  };
+  return map[name]||name;
+}
+function fitnessJawItems(){
+  const jaw=(fitnessMonth1Cfg().m||{}).jaw||{};
+  const out=[];
+  if(jaw.title||jaw.text) out.push((jaw.title||"Jaw exerciser finisher")+" - "+(jaw.text||"Easiest level, slow controlled reps, no pain."));
+  (jaw.cautions||[]).forEach(function(x){ out.push(x); });
+  return out;
+}
+function fitnessWorkoutList(key){
+  const c=fitnessMonth1Cfg(), wo=c.wo, m=c.m;
+  let items=((m&&m[key])||(key==="recovery"?wo.recovery:wo.strength)||[]).map(fitnessExerciseText);
+  if(/^strength/.test(key)) items=items.concat(fitnessJawItems());
+  return items;
+}
+function fitnessMonth1PlanForDate(ds){
+  const c=fitnessMonth1Cfg(), wo=c.wo, m=c.m;
+  const d=fitnessDateAtNoon(ds), dow=d.getDay(), week=fitnessWeekNumber(ds);
+  const dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const dayName=dayNames[dow], rpe=fitnessRpeForDate(ds,dow), firstDay=ds===(m.startDate||"2026-07-31");
+  let type="mobility", title=wo.recoveryTitle||"Light movement / mobility", key="recovery", duration="10-20 min";
+  let coach="Easy movement counts. No max-effort work.";
+  let list=(wo.recovery||[]).map(fitnessExerciseText);
+  if(dow===1){
+    type="strength"; key="strengthA"; title="Strength A"; duration=week<=1?"8-20 min":"20-35 min";
+    coach=fitnessDoseForWeek(week);
+    list=fitnessWorkoutList("strengthA");
+  } else if(dow===3){
+    type="strength"; key="strengthB"; title="Strength B"; duration=week<=1?"8-20 min":"20-35 min";
+    coach=fitnessDoseForWeek(week);
+    list=fitnessWorkoutList("strengthB");
+  } else if(dow===5){
+    type="strength"; key=(week%2===0)?"strengthC":"strengthA"; title=(key==="strengthC")?"Strength C":"Strength A";
+    if(week===4) title+=" - easier Friday";
+    duration=week<=1?"8-20 min":"20-30 min";
+    coach=week===4?"Keep Friday easier. Practice the pattern and leave extra energy.":fitnessDoseForWeek(week);
+    list=fitnessWorkoutList(key);
+  } else if(dow===2 || dow===4){
+    title="Walk + mobility"; duration="10-30 min";
+    coach="Recovery day: walk, loosen up, and protect tomorrow's strength.";
+    list=["Walk 10-20 minutes easy. You should be able to talk.","Shoulder circles: 10 forward + 10 back.","Hip flexor stretch: 30 seconds each side.","Hamstring stretch: 30 seconds each side.","Easy breathing. No max effort."];
+  } else if(dow===6){
+    title="Optional longer walk"; duration="20-45 min";
+    coach="Optional means optional. A gentle walk or hike counts; skip if sore, underfed, or dehydrated.";
+    list=["Walk outside at an easy pace.","Keep it conversational, not a test.","Bring water if it is hot or you feel depleted.","Mobility for hips and shoulders after if stiff."];
+  } else {
+    title="Recovery + tiny reset"; duration="5-15 min";
+    coach="Sunday is for recovery and setting up the next week.";
+    list=["Five easy minutes of mobility.","Fill water bottle and pick Monday breakfast/lunch.","Tiny kitchen reset only if it helps food tomorrow.","No hard workout today."];
+  }
+  if(firstDay) coach="First workout back: one easy round, then stop while it still feels easy.";
+  return {type:type,title:title,workoutKey:key,week:week,dayName:dayName,badge:(firstDay?"Day 1 · ":"")+"Week "+week,rpe:rpe,dose:fitnessDoseForWeek(week),duration:duration,coach:coach,list:list};
+}
+function fitnessGateMessage(st){
+  if(st.rescue) return "Recovery first - rescue mode is on.";
+  if(st.pastBed) return "Plan visible - bedtime is protected. Do this tomorrow.";
+  if(st.wc<1 && st.meals<1) return "Plan visible - water + protein before starting.";
+  if(st.wc<1) return "Plan visible - drink water before starting.";
+  if(st.meals<1) return "Plan visible - eat something with protein before starting.";
+  if(st.lowWater) return "Plan visible - catch up on water before starting.";
+  if(st.underfed || st.meals<2) return "Plan visible - have another protein meal before starting.";
+  return "Ready when you are.";
+}
+function fitnessFullScheduleHtml(today){
+  const c=fitnessMonth1Cfg(), m=c.m, plan=fitnessMonth1PlanForDate(today||todayKey());
+  const week=plan.week, friday=(week%2===0)?"Strength C":"Strength A";
+  const rows=[
+    ["Monday","Strength A + jaw finisher"],["Tuesday","Walk + mobility"],["Wednesday","Strength B + jaw finisher"],
+    ["Thursday","Walk + mobility"],["Friday",friday+(week===4?" easier":"")+" + jaw finisher"],
+    ["Saturday","Optional longer walk"],["Sunday","Recovery + tiny reset"]
+  ];
+  const rules=(m.rules||[]).map(function(x){return '<div style="display:flex;gap:8px;padding:3px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:#F5B830">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("");
+  const schedule=rows.map(function(r){
+    const on=r[0]===plan.dayName;
+    return '<div style="display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;background:'+(on?'rgba(52,211,153,.12)':'rgba(255,255,255,.03)')+';border:1px solid '+(on?'rgba(52,211,153,.38)':'rgba(255,255,255,.07)')+'"><div style="width:82px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:'+(on?'#34D399':'var(--text3)')+';font-family:\'Lora\',serif">'+almanacEsc(r[0])+'</div><div style="flex:1;min-width:0;font-size:12.5px;color:var(--text);font-family:\'Lora\',serif">'+almanacEsc(r[1])+'</div></div>';
+  }).join("");
+  const jaw=m.jaw||{};
+  const jawNote=jaw.title?'<div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.28);border-left:3px solid #A78BFA;border-radius:10px;padding:10px 12px;margin-top:9px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#A78BFA;font-family:\'Lora\',serif;font-weight:700;margin-bottom:4px">'+almanacEsc(jaw.title)+'</div><div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5">'+almanacEsc(jaw.schedule||"Strength days only")+'. '+almanacEsc(jaw.text||"Easiest level, slow controlled reps, no pain.")+'</div></div>':'';
+  const block=function(title,key,color){
+    return '<details style="background:rgba(0,0,0,.16);border:1px solid '+color+'33;border-radius:10px;padding:10px 12px;margin-top:8px" '+(plan.workoutKey===key?'open':'')+'><summary style="cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:'+color+';font-family:\'Lora\',serif;font-weight:700">'+almanacEsc(title)+'</summary><div style="margin-top:7px">'+fitnessWorkoutList(key).map(function(x){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("")+'</div></details>';
+  };
+  return '<div style="background:rgba(0,0,0,.16);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:12px;margin-top:11px">'
+    +'<div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#34D399;font-family:\'Lora\',serif;font-weight:700;margin-bottom:5px">Month 1 workout schedule</div>'
+    +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">Today: '+almanacEsc(plan.dayName)+' - '+almanacEsc(plan.title)+'</div>'
+    +'<div style="font-size:11.5px;color:#A7F3D0;font-family:\'Lora\',serif;font-style:italic;line-height:1.45;margin-bottom:8px">'+almanacEsc(plan.badge)+' - '+almanacEsc(plan.rpe)+' - '+almanacEsc(plan.dose)+'</div>'
+    +rules
+    +'<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">'+schedule+'</div>'
+    +jawNote
+    +block("Strength A", "strengthA", "#34D399")
+    +block("Strength B", "strengthB", "#7DD3FC")
+    +block("Strength C", "strengthC", "#A78BFA")
+    +'</div>';
 }
 
 // ── 💧🍴💊 HABITS ENGINE — water counter, forgiving streak, "Today's 3" (added Jun 9 2026) ──
@@ -2211,15 +2344,6 @@ function renderToday() {
     add("flipscan",284,fsDone, fsDone
       ? strip("🔍","Flip scan — done for today",true,"#38BDF8","toggleReminder('flipscan',true)",FLIP_SCAN.at,"","Reappears tomorrow morning")
       : reminderCardHtml("🔍",FLIP_SCAN.label,"","toggleReminder('flipscan',true)",fsExtra));
-  }
-
-  // ── 🦷 JAW EXERCISER — daily habit card (date-keyed → reappears each day). Safe cadence baked in. (added Jun 15 2026) ──
-  {
-    const jawDone=!!laundry["rem-jaw-"+today];
-    const jawSub="2 sets of 12 slow, controlled bites on the lowest strength, every other day (about 3x a week) — keep each session under 10 minutes. STOP and rest extra if you feel any clicking, jaw pain, or headache. Stay on the starting strength about 4 weeks, and only move up a level when it feels easy and pain-free. Skip it entirely if you have jaw (TMJ) issues, gum disease, braces, or recent dental work.";
-    add("jaw",287,jawDone, jawDone
-      ? strip("🦷","Jaw exerciser — done for today",true,"#A78BFA","toggleReminder('jaw',true)","Daily","","Reappears tomorrow")
-      : strip("🦷","Jaw exerciser — 2×12 slow bites, lowest level (every other day)",false,"#A78BFA","toggleReminder('jaw',true)","Daily","",jawSub));
   }
 
   // 🔔 dated + standing reminders
@@ -3688,12 +3812,8 @@ function medMini(key,name,timing,desc,color){
     +'</div></div>';
 }
 function healthCoachSectionHtml(){
-  const cfg=hcCfg(), wo=cfg.workouts||{};
+  const cfg=hcCfg();
   const chip=s=>'<span style="display:inline-block;margin:3px 4px 3px 0;padding:4px 8px;border-radius:999px;background:rgba(245,184,48,.10);border:1px solid rgba(245,184,48,.24);color:#FBE8C0;font-size:11px">'+s+'</span>';
-  const row=(title,items,color)=>`<div style="background:rgba(0,0,0,.16);border:1px solid ${color}33;border-radius:10px;padding:10px 12px;margin-top:9px">
-    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:${color};font-family:'Lora',serif;font-weight:700;margin-bottom:5px">${title}</div>
-    ${(items||[]).map(x=>`<div style="display:flex;gap:8px;padding:3px 0;font-size:11.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.45"><span style="color:${color}">•</span><span>${x}</span></div>`).join("")}
-  </div>`;
   return `<div class="section-label">💪 Health Coach</div>
   <div style="background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(56,189,248,.04));border:1px solid rgba(52,211,153,.28);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">
     <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#A7F3D0;margin-bottom:6px">3-month home base layer</div>
@@ -3702,22 +3822,13 @@ function healthCoachSectionHtml(){
       <div style="background:rgba(245,184,48,.08);border:1px solid rgba(245,184,48,.24);border-radius:10px;padding:10px 11px"><div style="font-size:10px;color:#F5B830;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Food</div><div style="font-size:12px;color:var(--text2);line-height:1.45;margin-top:3px">${cfg.proteinRange||"3 protein eating events first."}</div></div>
       <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.24);border-radius:10px;padding:10px 11px"><div style="font-size:10px;color:#7DD3FC;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Hydration</div><div style="font-size:12px;color:var(--text2);line-height:1.45;margin-top:3px">${cfg.hydrationRange||"2-3 liters/day to start."}</div></div>
     </div>
-    ${row("Strength days · Tue / Thu / Sat",wo.strength||[],"#34D399")}
-    ${row("Other days · recovery movement",wo.recovery||[],"#7DD3FC")}
+    ${fitnessFullScheduleHtml(todayKey())}
     <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;font-weight:700;margin:12px 0 5px">Rescue meals</div>
     <div>${(cfg.rescueMeals||[]).map(chip).join("")}</div>
   </div>`;
 }
 function fitnessPlanForDate(ds){
-  const cfg=hcCfg(), wo=cfg.workouts||{};
-  const dow=new Date(ds+"T12:00:00").getDay();
-  const strengthDays=wo.strengthDays||[2,4,6];
-  const strength=strengthDays.indexOf(dow)>=0;
-  return {
-    strength:strength,
-    title:strength?(wo.strengthTitle||"Strength"):(wo.recoveryTitle||"Recovery movement"),
-    list:(strength?(wo.strength||[]):(wo.recovery||[]))
-  };
+  return fitnessMonth1PlanForDate(ds);
 }
 function fitnessSectionHtml(today){
   const dow=new Date(today+"T12:00:00").getDay();
@@ -3725,14 +3836,11 @@ function fitnessSectionHtml(today){
   const st=healthCoachState(today,nowM,dow);
   const plan=fitnessPlanForDate(today);
   const done=!!laundry["well-workout-"+today]||!!laundry["health-workout-"+today];
-  const blocked=st.rescue||st.underfed||st.lowWater||st.pastBed;
+  const ready=st.workoutAllowed;
   const wc=waterCount(today), meals=mealsEaten(today);
-  let next=plan.strength?"Strength is available":"Recovery movement";
-  if(blocked) next="Water + protein first";
-  else if(wc===0) next="Drink water first";
-  else if(meals<1) next="Eat protein first";
-  const color=blocked?"#F5B830":"#34D399";
-  const items=(plan.list||[]).map(function(x){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">•</span><span>'+x+'</span></div>';}).join("");
+  const next=ready?(plan.title+" is ready"):fitnessGateMessage(st);
+  const color=ready?"#34D399":"#F5B830";
+  const items=(plan.list||[]).map(function(x){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("");
   return `<div class="section-label">Fitness</div>
   <div style="background:linear-gradient(135deg,rgba(52,211,153,.11),rgba(56,189,248,.04));border:1px solid rgba(52,211,153,.3);border-radius:var(--rad);padding:15px 16px;margin-bottom:14px">
     <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:${color};font-family:'Lora',serif;margin-bottom:5px">Next action</div>
@@ -3743,7 +3851,7 @@ function fitnessSectionHtml(today){
     </div>
     <div onclick="toggleWellness('workout')" style="display:flex;align-items:flex-start;gap:12px;background:rgba(0,0,0,.16);border:1px solid ${color}44;border-left:4px solid ${color};border-radius:10px;padding:12px;cursor:pointer">
       <div style="width:28px;height:28px;border-radius:50%;border:2px solid ${done?'#10B981':color};background:${done?'#10B981':'transparent'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0">${done?'✓':''}</div>
-      <div style="flex:1;min-width:0"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${done?'var(--text3)':'var(--text)'};${done?'text-decoration:line-through':''}">${plan.title}</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin:3px 0 6px">${blocked?'Do the food/water rescue first.':'Stay easy and leave energy in the tank.'}</div>${items}</div>
+      <div style="flex:1;min-width:0"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${done?'var(--text3)':'var(--text)'};${done?'text-decoration:line-through':''}">${almanacEsc(plan.title)}</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin:3px 0 2px">${almanacEsc(plan.badge)} · ${almanacEsc(plan.rpe)}</div><div style="font-size:11.5px;color:${color};font-family:'Lora',serif;margin:0 0 6px">${almanacEsc(fitnessGateMessage(st))}</div>${items}</div>
     </div>
   </div>`;
 }

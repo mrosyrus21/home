@@ -59,15 +59,15 @@ const HEALTH_COACH = {
     "Frozen meal plus extra protein"
   ],
   workouts: {
-    strengthDays: [2,4,6],
-    strengthTitle: "Dumbbell strength — two 20 lb dumbbells",
+    strengthDays: [1,3,5],
+    strengthTitle: "Month 1 dumbbell strength",
     strength: [
-      "Push-ups or floor press — 3 sets",
-      "One-arm dumbbell row — 3 sets each side",
-      "Dumbbell overhead press — 3 sets",
-      "Goblet squat or split squat — 3 sets",
-      "Curl + triceps extension superset — 2 sets",
-      "Dead bug or plank — 2 sets"
+      "Goblet squat or supported split squat",
+      "Dumbbell floor press or incline pushup",
+      "One-arm dumbbell row",
+      "Dumbbell Romanian deadlift",
+      "Farmer carry",
+      "Dead bug, side plank, or bird dog"
     ],
     recoveryTitle: "Light movement / mobility",
     recovery: [
@@ -75,7 +75,40 @@ const HEALTH_COACH = {
       "Shoulder circles + thoracic rotations",
       "Hip flexor stretch + hamstring stretch",
       "Easy breathing, no max-effort work"
-    ]
+    ],
+    month1: {
+      startDate: "2026-07-31",
+      rules: [
+        "First workout back: one easy round only, RPE 4-5, then stop while it still feels easy.",
+        "No failure, max reps, or soreness hunting.",
+        "Food, water, sleep, and rescue mode override the workout schedule.",
+        "No THC before workouts while form is being rebuilt.",
+        "Jaw exerciser rides with strength days only: easiest level first, slow controlled reps, no pain."
+      ],
+      jaw: {
+        title: "Jaw exerciser finisher",
+        schedule: "Strength days only (Mon / Wed / Fri)",
+        text: "Easiest level: 2 sets of 12 slow controlled bites. Rest 30-60 seconds between sets. Stay on the easiest level about 4 weeks, then move up only when it feels easy and pain-free.",
+        cautions: [
+          "Do it after lifting or seated during long rests; do not chew while bracing under load.",
+          "Stop for clicking, jaw pain, headache, tooth pain, or gum pain.",
+          "Skip if TMJ issues, gum disease, braces, or recent dental work are active."
+        ]
+      },
+      rpe: ["Week 1: RPE 5", "Week 2: RPE 6", "Week 3: RPE 6-7", "Week 4: RPE 6-7, Friday easier"],
+      schedule: [
+        ["Monday", "Strength A"],
+        ["Tuesday", "Walk + mobility"],
+        ["Wednesday", "Strength B"],
+        ["Thursday", "Walk + mobility"],
+        ["Friday", "Strength A or C"],
+        ["Saturday", "Optional longer walk"],
+        ["Sunday", "Recovery + tiny reset"]
+      ],
+      strengthA: ["Goblet Squat", "Dumbbell Floor Press", "One-Arm Dumbbell Row", "Dumbbell Romanian Deadlift", "Farmer Carry", "Dead Bug"],
+      strengthB: ["Chair Squat or Reverse Lunge Supported", "Standing Dumbbell Overhead Press", "Supported One-Arm Dumbbell Row", "Glute Bridge", "Dumbbell Curl", "Side Plank"],
+      strengthC: ["Split Squat Supported or Goblet Squat", "Incline Pushup", "Dumbbell Romanian Deadlift", "One-Arm Dumbbell Row", "Farmer Carry", "Bird Dog"]
+    }
   }
 };
 
