@@ -251,6 +251,13 @@ const TASKS = {
   move_kitchen:   { room:"priority", label:"Pack one labeled box of rarely used kitchen items", level:"easy", note:"Pack extras you will not need before August 31. Leave a small daily cooking kit accessible." },
   move_hobby:     { room:"priority", label:"Pack one labeled box of hobby or office extras", level:"easy", note:"Choose supplies you will not use before the move. Keep work essentials and current projects accessible." },
   move_reset:     { room:"priority", label:"Tolerable-house reset: trash, dishes, laundry, walkway", level:"easy", note:"No deep cleaning. Remove trash, contain dishes and laundry, and clear one safe walking path. Stop when the house feels usable." },
+  move_books_aug03:  { room:"priority", label:"Pack one labeled box of books or media", level:"easy", note:"One destination-safe box only. Label the room and contents, then stop." },
+  move_kitchen_aug04:{ room:"priority", label:"Pack one labeled box of rarely used kitchen items", level:"easy", note:"Pack only obvious nonessentials you would move anywhere. Keep the daily cooking kit accessible." },
+  move_hobby_aug05:  { room:"priority", label:"Pack one labeled box of hobby or office extras", level:"easy", note:"Choose supplies you will not use before the move. Keep work essentials and current projects accessible." },
+  move_stage_aug06:  { room:"priority", label:"Restore the moving staging area", level:"easy", note:"Spend ten minutes restoring the labeled PACKED / DECISION HOLD / OPEN LAST sections. Stop when every box has a clear place." },
+  move_decor_aug07:  { room:"priority", label:"Pack one labeled box of decor and display items", level:"easy", note:"Pack only obvious nonessentials you would move anywhere. Label the room and contents, then stop." },
+  move_reset_aug08:  { room:"priority", label:"Tolerable-house reset: trash, dishes, laundry, walkway", level:"easy", note:"No deep cleaning. Spend ten minutes making the house usable, then stop." },
+  move_linens_aug09: { room:"priority", label:"Pack one labeled box of spare linens", level:"easy", note:"Pack spare towels, sheets, or blankets you will not need before moving. Keep one working set accessible." },
   move_checkpoint:{ room:"priority", label:"Mostly-packed checkpoint", level:"moderate", note:"Target: everything except daily essentials, current work gear, plant care, and final-cleaning supplies is packed and labeled by August 17." },
   move_last_week: { room:"priority", label:"Build the final-week essentials kit and pack everything else", level:"moderate", note:"Keep out only seven days of clothes, medicines, toiletries, chargers, basic dishes, documents, pet supplies, plant care, and cleaning supplies." },
   move_final:     { room:"priority", label:"Final pack, trash removal, and clean emptied areas", level:"moderate", note:"Finish open boxes, remove obvious trash, clean only the cleared surfaces and floors, and keep the move-out essentials together." },
@@ -260,13 +267,13 @@ const TASKS = {
 
 const SCHEDULE = [
   // ── MOVING · ROLLING NO-REGRET WEEK ────────────────────────────────────────
-  { date:"2026-08-02", tasks:["move_clothes"],             note:"Pack one labeled box of off-season clothes; put destination-dependent choices in DECISION HOLD." },
-  { date:"2026-08-03", tasks:["move_books"],               note:"Pack one destination-safe box of books or media, then stop." },
-  { date:"2026-08-04", tasks:["move_kitchen"],             note:"Pack one labeled box of rarely used kitchen items you would move anywhere. Keep the daily cooking kit accessible." },
-  { date:"2026-08-05", tasks:["move_hobby"],               note:"Pack one labeled box of hobby or office extras you would move anywhere. Keep work essentials and current projects accessible." },
-  { date:"2026-08-06", tasks:["move_stage"],               note:"Spend ten minutes restoring the labeled PACKED / DECISION HOLD / OPEN LAST staging area. Stop when boxes have a clear place." },
-  { date:"2026-08-07", tasks:["move_decor"],               note:"Pack one labeled box of obvious nonessential decor you would move anywhere. Label the room and contents, then stop." },
-  { date:"2026-08-08", tasks:["move_reset"],               note:"Do one ten-minute trash, dishes, laundry, or walkway reset. No deep cleaning; stop when the house feels usable." },
+  { date:"2026-08-03", tasks:["move_books_aug03"],        note:"Pack one destination-safe box of books or media, then stop." },
+  { date:"2026-08-04", tasks:["move_kitchen_aug04"],      note:"Pack one labeled box of rarely used kitchen items you would move anywhere. Keep the daily cooking kit accessible." },
+  { date:"2026-08-05", tasks:["move_hobby_aug05"],        note:"Pack one labeled box of hobby or office extras you would move anywhere. Keep work essentials and current projects accessible." },
+  { date:"2026-08-06", tasks:["move_stage_aug06"],        note:"Spend ten minutes restoring the labeled PACKED / DECISION HOLD / OPEN LAST staging area. Stop when boxes have a clear place." },
+  { date:"2026-08-07", tasks:["move_decor_aug07"],        note:"Pack one labeled box of obvious nonessential decor you would move anywhere. Label the room and contents, then stop." },
+  { date:"2026-08-08", tasks:["move_reset_aug08"],        note:"Do one ten-minute trash, dishes, laundry, or walkway reset. No deep cleaning; stop when the house feels usable." },
+  { date:"2026-08-09", tasks:["move_linens_aug09"],       note:"Pack one labeled box of spare linens you will not need before moving. Keep one working set accessible." },
 
   // ── MOVING MILESTONES ─────────────────────────────────────────────────────
   { date:"2026-08-17", tasks:["move_checkpoint"],          note:"Mostly packed two weeks before move-out. Decision-hold items can stay unresolved until the destination is known." },

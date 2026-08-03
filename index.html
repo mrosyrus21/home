@@ -1261,7 +1261,7 @@ function waterPlant(id)  {
   waterPlantGroup([id]);
 }
 
-const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","mixing_supplies","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure"]);
+const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","mixing_supplies","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure","move_books_aug03","move_kitchen_aug04","move_hobby_aug05","move_stage_aug06","move_decor_aug07","move_reset_aug08","move_linens_aug09"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -1579,7 +1579,8 @@ function agendaHtml(items){
   return out;
 }
 // ── ONE-TASK-PER-DAY ENGINE (Today rhythm redesign) ──────────────────────────
-// Mon = rest (no house task). Tue–Fri = one EASY task. Sat/Sun = one MEDIUM-to-HARD.
+// The explicit rolling schedule wins. Without one, Mon = rest, Tue–Fri = one
+// EASY task, and Sat/Sun = one MEDIUM-to-HARD task.
 // Room-by-room toward 100%: kitchen first, then down the list — stay in the first
 // unfinished room. If the day type has no matching level in that room, take the
 // easiest remaining there so progress never stalls. Pure given (dateStr,isDone),
@@ -1587,6 +1588,10 @@ function agendaHtml(items){
 const RHYTHM_ROOM_ORDER=["kitchen","living","bathroom","bedroom","office","garage","backyard"];
 function oneTaskForDate(dateStr,isDone){
   isDone=isDone||(id=>!!checked[id]);
+  const base=SCHEDULE.find(s=>s.date===dateStr&&!s.off);
+  const scheduled=effectiveTasksForDate(dateStr).filter(id=>TASKS[id]||taskCustom[id]);
+  if(scheduled.length) return scheduled[0];
+  if(base?.tasks?.length) return null; // a pushed-away rolling task is not replaced
   const dow=new Date(dateStr+"T12:00:00").getDay();
   if(dow===1) return null; // Monday = rest day
   const wknd=(dow===0||dow===6);
@@ -2459,14 +2464,14 @@ function renderToday() {
   add("movement",clockMin(RY.workout,1050),hc.workoutDone,workoutCard(hc,today),false);
 
   // The ONE house task — weekend mornings have energy; weekdays it sits after lunch
-  const oneId=(dow===1)?null:oneTaskForDate(today);
+  const oneId=oneTaskForDate(today);
   const taskOrder=(dow===0||dow===6)?500:800;
   if(hc.rescue){
     add("healthprotect",taskOrder,false,`<div style="background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(124,58,237,.03));border:1px solid rgba(124,58,237,.3);border-left:4px solid #7C3AED;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">
       <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#DDD6FE">House/admin tasks paused tonight.</div>
       <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:3px">This is the guardrail: eat, drink, bathroom, teeth, bed. Tomorrow gets a cleaner handoff.</div>
     </div>`,true);
-  } else if(dow===1){
+  } else if(dow===1 && !oneId){
     add("rest",taskOrder,false,`<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.03));border:1px solid rgba(139,92,246,.3);border-left:4px solid #8B5CF6;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;text-align:center">
       <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#DDD6FE">🛋️ Monday — rest day. No house task.</div>
       <div style="font-size:11.5px;color:var(--text2);font-style:italic;margin-top:3px;font-family:'Lora',serif">The house can wait — recharge. Pool league tonight. 🎱</div>
@@ -2476,7 +2481,10 @@ function renderToday() {
     const r=ROOMS[t.room]||ROOMS.kitchen;
     const all=roomTaskEntries(t.room);
     const rDone=all.filter(([id])=>checked[id]).length, rTotal=all.length;
-    add("task",taskOrder,!!checked[oneId],`<div style="font-size:10px;color:${r.color};font-family:'Lora',serif;letter-spacing:.12em;text-transform:uppercase;margin:2px 2px 5px">🏡 Today's one thing · ${r.emoji} ${r.name} ${rDone}/${rTotal}</div>`+planCard(oneId)+(checked[oneId]?"":`<div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin:-4px 2px 12px">${(dow===0||dow===6)?"The weekend pick — a bigger one, but it is the only one. 💪":"Just this one thing today. That is the whole plan. 🌱"}</div>`));
+    const scheduled=effectiveTasksForDate(today).some(id=>id===oneId&&(TASKS[id]||taskCustom[id]));
+    const heading=scheduled?"📦 Moving · today's one thing":`🏡 Today's one thing · ${r.emoji} ${r.name} ${rDone}/${rTotal}`;
+    const footer=scheduled?"Just this one small moving task today. Stop when it is done. 🌱":((dow===0||dow===6)?"The weekend pick — a bigger one, but it is the only one. 💪":"Just this one thing today. That is the whole plan. 🌱");
+    add("task",taskOrder,!!checked[oneId],`<div style="font-size:10px;color:${r.color};font-family:'Lora',serif;letter-spacing:.12em;text-transform:uppercase;margin:2px 2px 5px">${heading}</div>`+planCard(oneId)+(checked[oneId]?"":`<div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin:-4px 2px 12px">${footer}</div>`));
   }
 
   const schedToday=scheduleTaskIdsForDate(today);
@@ -2580,7 +2588,7 @@ function renderTimeline() {
   const pctH=totalH?Math.round(doneH/totalH*100):0;
 
   // Project forward with the SAME one-task-per-day engine the Today tab uses:
-  // Mon = rest, Tue–Fri = one easy, Sat/Sun = one medium-to-hard, kitchen first.
+  // The rolling schedule wins; an unscheduled Monday remains a rest day.
   const sim=new Set();
   const isDoneSim=id=>!!checked[id]||sim.has(id);
   const fmtD=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
@@ -2588,16 +2596,14 @@ function renderTimeline() {
   let cur=new Date(today+"T12:00:00"), guard=0;
   while(guard++<400 && anyHouseTaskLeft(isDoneSim)){
     const ds=fmtD(cur);
-    if(cur.getDay()===1){
+    const id=oneTaskForDate(ds,isDoneSim);
+    if(id){
+      sim.add(id);
+      const t=taskById(id);
+      const roomLeft=roomTaskEntries(t.room).some(([tid])=>!isDoneSim(tid)&&!NO_PROGRESS.has(tid));
+      days.push({date:ds, id, roomId:t.room, finishesRoom:!roomLeft});
+    } else if(cur.getDay()===1){
       days.push({date:ds, rest:true});
-    } else {
-      const id=oneTaskForDate(ds,isDoneSim);
-      if(id){
-        sim.add(id);
-        const t=taskById(id);
-        const roomLeft=roomTaskEntries(t.room).some(([tid])=>!isDoneSim(tid)&&!NO_PROGRESS.has(tid));
-        days.push({date:ds, id, roomId:t.room, finishesRoom:!roomLeft});
-      }
     }
     cur.setDate(cur.getDate()+1);
   }
