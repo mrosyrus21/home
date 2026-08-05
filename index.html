@@ -5044,13 +5044,55 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
+  var HG_BUILD_STAMP='20260804205730';
   var __hgReloaded=false;
+  var __hgBuildProbeBusy=false;
+  var __hgBuildRetryTimer=0;
+  var __hgBuildRetryDelay=5000;
+  function hgBuildStamp(src){
+    var match=String(src||'').match(/(?:HG_BUILD_STAMP|REFRESH_STAMP)\s*=\s*['"](\d{14})['"]/);
+    return match?match[1]:'';
+  }
+  function hgScheduleBuildRetry(){
+    if(__hgBuildRetryTimer) return;
+    var delay=__hgBuildRetryDelay;
+    __hgBuildRetryDelay=Math.min(delay*2,300000);
+    __hgBuildRetryTimer=setTimeout(function(){ __hgBuildRetryTimer=0; hgCheckLatestBuild(); },delay);
+  }
+  function hgCheckLatestBuild(){
+    if(__hgBuildProbeBusy) return;
+    if(__hgBuildRetryTimer){ clearTimeout(__hgBuildRetryTimer); __hgBuildRetryTimer=0; }
+    __hgBuildProbeBusy=true;
+    fetch('sw.js?hg-version='+Date.now(),{cache:'no-store'}).then(function(res){return res.ok?res.text():'';}).then(function(src){
+      var workerStamp=hgBuildStamp(src);
+      if(!workerStamp || workerStamp<=HG_BUILD_STAMP){ __hgBuildProbeBusy=false; __hgBuildRetryDelay=5000; return null; }
+      var checkUrl=new URL('./',window.location.href);
+      checkUrl.searchParams.set('hg-build-check',workerStamp);
+      checkUrl.searchParams.set('t',Date.now());
+      return fetch(checkUrl.href,{cache:'no-store'}).then(function(res){return res.ok?res.text():'';}).then(function(pageSrc){
+        var pageStamp=hgBuildStamp(pageSrc);
+        if(pageStamp && pageStamp>=workerStamp && pageStamp>HG_BUILD_STAMP){
+          var url=new URL(window.location.href);
+          url.searchParams.set('hg-refresh',pageStamp);
+          window.location.replace(url.href);
+          return;
+        }
+        __hgBuildProbeBusy=false;
+        hgScheduleBuildRetry();
+      });
+    }).catch(function(){ __hgBuildProbeBusy=false; hgScheduleBuildRetry(); });
+  }
   navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=20260731000500',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v='+HG_BUILD_STAMP,{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
-      document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} } });
+      document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ reg.update(); }catch(e){} hgCheckLatestBuild(); } });
     }).catch(function(){});
+    window.addEventListener('focus',hgCheckLatestBuild);
+    window.addEventListener('pageshow',hgCheckLatestBuild);
+    window.addEventListener('online',hgCheckLatestBuild);
+    setInterval(hgCheckLatestBuild,300000);
+    hgCheckLatestBuild();
   });
 }</script>
 <div id="recipe-page" style="display:none;position:fixed;inset:0;z-index:400;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-y;padding:16px 16px calc(40px + env(safe-area-inset-bottom,0px));--text:#4a3526;--text2:#7c5c39;--text3:#9c7c50;--border:#dcc69a;--amber:#a85a23;--amber2:#8c3f17;--aborder:rgba(168,90,35,.30);background-color:#efe1c2;background-image:repeating-linear-gradient(0deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px),repeating-linear-gradient(90deg,rgba(176,72,56,.07) 0 16px,rgba(176,72,56,0) 16px 32px)"></div>
