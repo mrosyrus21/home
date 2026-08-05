@@ -27,6 +27,11 @@ for (let i = 0; i < rolling.length; i += 1) {
 assert.equal(new Set(rolling.flatMap(item => item.tasks)).size, rolling.length, "rolling task IDs must be date-safe and unique");
 assert.deepEqual(SCHEDULE.find(item => item.date === "2026-08-04").tasks, ["move_books_aug03"], "today must retain the books task Cyrus pushed here");
 assert.doesNotMatch(dataSource, /move_kitchen_aug04/, "the disliked kitchen starter must be removed from the active data");
+assert.equal(TASKS.move_kitchen, undefined, "kitchen packing must not remain available as a rolling starter");
+assert.equal(rolling.some(item => item.tasks.some(id => /kitchen/i.test(id + " " + TASKS[id].label))), false, "the rolling week must contain no kitchen packing task");
+assert.match(TASKS.move_last_week.note, /Keep the kitchen fully usable until the final pack/, "the final week must preserve the usable kitchen");
+assert.match(TASKS.move_final.label, /Pack the kitchen last/, "the final packing milestone must lock in Cyrus's kitchen-last preference");
+assert.match(SCHEDULE.find(item => item.date === "2026-08-30").note, /Pack the kitchen last/, "August 30 must carry the kitchen-last instruction");
 assert.equal(rolling.some(item => item.date >= "2026-05-29" && item.date <= "2026-07-10"), false, "the obsolete whole-house plan must stay absent");
 for (const milestone of ["2026-08-17", "2026-08-24", "2026-08-30", "2026-08-31"]) {
   assert.ok(SCHEDULE.some(item => item.date === milestone), `missing move milestone ${milestone}`);
