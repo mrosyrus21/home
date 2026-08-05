@@ -650,9 +650,26 @@ const BURN_CARE = {
   siliconeDate:"2026-06-24"                     // from here on, nudge the silicone-gel switch until checked once
 };
 
-// ── 📺 TV FOLLOW-UP — date-keyed daily reminder. The legacy constant and completion key stay stable
-// so existing daily reminder history is preserved while Cyrus deals with the TV already found.
-const FLIP_SCAN = {
+// ── 🔎 PAUSED FLIP SCAN — saved for later, never rendered or scheduled while moving and house hunting
+const PAUSED_FLIP_SCAN = {
+  paused:true,
+  pausedOn:"2026-08-04",
+  resume:"No date chosen. Cyrus will decide when moving and house hunting are no longer taking priority.",
+  label:"Morning flip scan — free TVs, mowers, curb alerts",
+  at:"~7:15 AM",
+  links:[
+    ["🆓 All free","https://denver.craigslist.org/search/zip"],
+    ["📺 TVs","https://denver.craigslist.org/search/zip?query=tv"],
+    ["🛻 Curb alerts","https://denver.craigslist.org/search/zip?query=curb+alert"],
+    ["🚜 Mowers","https://denver.craigslist.org/search/zip?query=mower"],
+    ["💦 Pressure washers","https://denver.craigslist.org/search/zip?query=pressure+washer"]
+  ],
+  tip:"Free stuff gets 100s of messages — reply in minutes with an exact same-day pickup time."
+};
+
+// ── 📺 TV FOLLOW-UP — separate move-relevant reminder. The legacy completion key stays stable so
+// existing daily reminder history is preserved while Cyrus deals with the TV already found.
+const TV_FOLLOWUP = {
   label:"Fix or get rid of the TV I found",
   at:"Morning",
   links:[],

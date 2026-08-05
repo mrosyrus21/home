@@ -7,7 +7,7 @@ const path = require("node:path");
 const root = path.join(__dirname, "..");
 const dataSource = fs.readFileSync(path.join(root, "data.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
-const { SCHEDULE, TASKS, FLIP_SCAN } = new Function(dataSource + ";return {SCHEDULE,TASKS,FLIP_SCAN};")();
+const { SCHEDULE, TASKS, PAUSED_FLIP_SCAN, TV_FOLLOWUP } = new Function(dataSource + ";return {SCHEDULE,TASKS,PAUSED_FLIP_SCAN,TV_FOLLOWUP};")();
 
 const rolling = SCHEDULE.filter(item => item.date < "2026-08-17");
 assert.equal(rolling.length, 7, "the rolling window must contain exactly seven days");
@@ -56,9 +56,14 @@ assert.equal(oneTaskForDate("2026-08-10"), "move_docs_aug10", "the Monday rollin
 pushed.move_docs_aug10 = "2026-08-11";
 assert.equal(oneTaskForDate("2026-08-10"), null, "a pushed-away task must not be replaced by unrelated housework");
 
-assert.equal(FLIP_SCAN.label, "Fix or get rid of the TV I found", "the morning reminder must focus on the TV already found");
-assert.deepEqual(FLIP_SCAN.links, [], "the TV follow-up must not keep deal-hunting links");
-assert.doesNotMatch(dataSource, /Morning flip scan — free TVs, mowers, curb alerts/, "the old flip-scan prompt must stay removed");
+assert.equal(PAUSED_FLIP_SCAN.paused, true, "the flip scan must remain paused while Cyrus moves and house hunts");
+assert.equal(PAUSED_FLIP_SCAN.label, "Morning flip scan — free TVs, mowers, curb alerts", "the paused idea must be saved intact for later");
+assert.equal(PAUSED_FLIP_SCAN.links.length, 5, "the paused search links must remain saved without rendering");
+assert.match(PAUSED_FLIP_SCAN.resume, /No date chosen/, "the paused idea must not invent a restart date");
+assert.equal(TV_FOLLOWUP.label, "Fix or get rid of the TV I found", "the separate move-relevant reminder must focus on the TV already found");
+assert.deepEqual(TV_FOLLOWUP.links, [], "the TV follow-up must not inherit paused deal-hunting links");
+assert.doesNotMatch(html, /PAUSED_FLIP_SCAN/, "the paused flip scan must not be rendered on Today or Timeline");
+assert.match(html, /TV_FOLLOWUP/, "the move-relevant TV follow-up must remain separate from the paused idea");
 assert.match(html, /TV follow-up — done for today/, "the completed TV reminder must retain its compact state");
 
 console.log("schedule keeper regression checks passed");

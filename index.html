@@ -2375,14 +2375,14 @@ function renderToday() {
   }
   // Burn care removed Jun 27 2026 — wounds fully healed (per Cyrus).
   // ── 📺 TV FOLLOW-UP — date-keyed so the reminder reappears each day; legacy key preserves history. ──
-  if(typeof FLIP_SCAN!=='undefined'){
+  if(typeof TV_FOLLOWUP!=='undefined'){
     const fsDone=!!laundry["rem-flipscan-"+today];
-    const fsLinks=FLIP_SCAN.links.map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#7DD3FC;text-decoration:underline;white-space:nowrap">'+l[0]+'</a>';}).join(' · ');
+    const fsLinks=TV_FOLLOWUP.links.map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#7DD3FC;text-decoration:underline;white-space:nowrap">'+l[0]+'</a>';}).join(' · ');
     const fsExtra=(fsLinks?'<div style="margin-top:7px;font-size:12px;line-height:1.9;font-family:\'Lora\',serif">'+fsLinks+'</div>':'')
-      +'<div style="font-size:11px;color:rgba(125,211,252,.8);font-style:italic;margin-top:5px;font-family:\'Lora\',serif">'+FLIP_SCAN.tip+'</div>';
+      +'<div style="font-size:11px;color:rgba(125,211,252,.8);font-style:italic;margin-top:5px;font-family:\'Lora\',serif">'+TV_FOLLOWUP.tip+'</div>';
     add("flipscan",284,fsDone, fsDone
-      ? strip("📺","TV follow-up — done for today",true,"#38BDF8","toggleReminder('flipscan',true)",FLIP_SCAN.at,"","Reappears tomorrow morning")
-      : reminderCardHtml("📺",FLIP_SCAN.label,"","toggleReminder('flipscan',true)",fsExtra));
+      ? strip("📺","TV follow-up — done for today",true,"#38BDF8","toggleReminder('flipscan',true)",TV_FOLLOWUP.at,"","Reappears tomorrow morning")
+      : reminderCardHtml("📺",TV_FOLLOWUP.label,"","toggleReminder('flipscan',true)",fsExtra));
   }
 
   // 🔔 dated + standing reminders
@@ -2667,7 +2667,7 @@ function renderTimeline() {
     REMINDERS.forEach(function(r){ if(r.date && r.date>=today){ (tlRem[r.date]=tlRem[r.date]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } });
     REMINDERS.forEach(function(r){ if(r.standing && !reminderDone(r.id,false)){ (tlRem[today]=tlRem[today]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } }); // standing errands surface near-term (today)
   }
-  if(typeof FLIP_SCAN!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"📺",text:FLIP_SCAN.label+" · morning",account:""}); }
+  if(typeof TV_FOLLOWUP!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"📺",text:TV_FOLLOWUP.label+" · morning",account:""}); }
   if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
   // 📞 TG Meeting — recurring every Wednesday on the timeline
   if(typeof TG_MEETING!=='undefined'){
