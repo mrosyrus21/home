@@ -229,6 +229,7 @@ body::after{
 
 /* ── CONTENT ── */
 .content{padding:16px 18px;max-width:580px;margin:0 auto}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .view-animate{animation:fadeUp .35s ease}
 
@@ -614,6 +615,30 @@ body::after{
 .hg-water-glass:active{animation:hgWaterTap .35s cubic-bezier(.34,1.56,.64,1)}
 .hg-water-fill{transition:height .65s cubic-bezier(.22,1,.36,1)}
 .hg-pill{transition:all .3s ease}
+.today-win{position:relative;overflow:hidden;display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,rgba(16,185,129,.16),rgba(56,189,248,.06));border:1px solid rgba(74,212,144,.42);border-left:4px solid #4AD490;border-radius:var(--rad);padding:14px 16px;margin-bottom:12px;box-shadow:0 0 24px rgba(74,212,144,.15);animation:todayWinClear .95s cubic-bezier(.22,1,.36,1) forwards}
+.today-win::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.16) 48%,transparent 70%);transform:translateX(-120%);animation:todayWinShine .75s ease-out forwards}
+.today-win-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(74,212,144,.16);border:1px solid rgba(74,212,144,.5);font-size:20px;flex-shrink:0;box-shadow:0 0 16px rgba(74,212,144,.2)}
+.today-win-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#A7F3D0;line-height:1.2}
+.today-win-sub{font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:3px;line-height:1.4}
+@keyframes todayWinClear{0%{opacity:0;transform:scale(.98)}18%{opacity:1;transform:scale(1.01)}72%{opacity:1;transform:scale(1)}100%{opacity:0;transform:translateY(-7px) scale(.985)}}
+@keyframes todayWinShine{to{transform:translateX(120%)}}
+.today-daily-card{background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:var(--rad);padding:13px 15px;margin-bottom:11px}
+.today-daily-head{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.today-daily-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-family:'Lora',serif}
+.today-daily-count{margin-left:auto;font-size:10.5px;color:var(--text2);font-family:'Lora',serif}
+.today-water-steps{display:grid;grid-template-columns:repeat(var(--water-cols,3),minmax(0,1fr));gap:7px;margin:10px 0}
+.today-water-step{height:34px;padding:0;border-radius:9px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.05);display:flex;align-items:center;justify-content:center;color:#64748B;font:700 11px 'Lora',serif;transition:background .25s,border-color .25s,transform .25s,box-shadow .25s;appearance:none;cursor:default}
+.today-water-step.done{background:linear-gradient(135deg,#3B82F6,#2563EB);border-color:#60A5FA;color:#fff;box-shadow:0 3px 11px rgba(59,130,246,.22)}
+.today-water-step.next{border-color:#60A5FA;color:#93C5FD;box-shadow:0 0 0 2px rgba(59,130,246,.1);cursor:pointer}
+.today-agenda-head{margin:5px 2px 10px}
+.today-lane{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);font-family:'Lora',serif;margin:14px 2px 7px;display:flex;align-items:center;gap:8px}
+.today-lane::after{content:"";height:1px;flex:1;background:rgba(255,255,255,.07)}
+.today-lane.now{color:#F5B830}
+.today-done-toggle{width:100%;display:flex;align-items:center;gap:9px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:10px 12px;margin:16px 0 8px;color:#A7F3D0;cursor:pointer;font:600 11.5px 'Lora',serif;text-align:left}
+.today-done-toggle span:last-child{margin-left:auto;color:var(--text2)}
+.today-done-details{border-left:2px solid rgba(16,185,129,.23);padding-left:8px;margin-bottom:12px}
+.today-done-daily{display:flex;align-items:center;gap:8px;padding:6px 8px;color:var(--text2);font:11.5px 'Lora',serif}
+.today-done-daily button{margin-left:auto;border:1px solid rgba(125,211,252,.25);background:rgba(125,211,252,.07);color:#7DD3FC;border-radius:14px;padding:4px 8px;font:600 9.5px 'Lora',serif;cursor:pointer}
 .almanac-focus{margin:0 0 18px}
 .almanac-focus-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:1px 2px 8px}
 .almanac-focus-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)}
@@ -720,7 +745,10 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   filter:drop-shadow(0 0 6px rgba(167,139,250,.7)); -webkit-tap-highlight-color:transparent; }
 .hg-moon.on{ opacity:1; transform:scale(1.12); }
 
-@media (prefers-reduced-motion:reduce){ .view-animate{ animation:none; } }
+@media (prefers-reduced-motion:reduce){
+  .view-animate,.today-win,.today-win::after,.flow-just-done,.hg-water-glass:active{animation:none!important}
+  .plan-fill,.hg-pill,.hg-water-fill,.today-water-step{transition:none!important}
+}
 @media (max-width:560px){
   .tab-secondary{ font-size:10px; letter-spacing:.05em; }
   .v2-bn .lb{ font-size:9px; }
@@ -824,6 +852,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 </div>
 
 <div class="content">
+  <div id="today-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <div id="view-today"></div>
   <div id="view-timeline" style="display:none"></div>
   <div id="view-rooms" style="display:none"></div>
@@ -1261,7 +1290,7 @@ function waterPlant(id)  {
   waterPlantGroup([id]);
 }
 
-const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","mixing_supplies","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure","move_books_aug03","move_kitchen_aug04","move_hobby_aug05","move_stage_aug06","move_decor_aug07","move_reset_aug08","move_linens_aug09"]);
+const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","mixing_supplies","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure","move_books_aug03","move_kitchen_aug04","move_hobby_aug05","move_stage_aug06","move_decor_aug07","move_reset_aug08","move_linens_aug09","move_docs_aug10"]);
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -1555,25 +1584,21 @@ function _dedupeAdjColors(items){
   return items;
 }
 
-function agendaHtml(items){
-  const buckets=[["Morning",0,700],["Midday",700,840],["Afternoon",840,1060],["Evening",1060,1240],["Night",1240,1e9]];
-  const bidx=o=>{ const i=buckets.findIndex(x=>o>=x[1]&&o<x[2]); return i<0?buckets.length:i; };
-  // Smarter ordering: keep time buckets in order, but float incomplete items
-  // to the top of each bucket and sink completed ones to the bottom.
-  items.sort((a,b)=>{
-    const oa=a.order||999, ob=b.order||999, ba=bidx(oa), bb=bidx(ob);
-    if(ba!==bb) return ba-bb;
-    const da=a.done?1:0, db=b.done?1:0;
-    if(da!==db) return da-db;
-    return oa-ob;
-  });
-  const h=new Date().getHours();
-  const nowName = h<11?"Morning":h<13?"Midday":h<17?"Afternoon":h<21?"Evening":"Night";
-  let out="", cur=null;
-  items.forEach(it=>{
-    const i=bidx(it.order||999);
-    const name=i<buckets.length?buckets[i][0]:"Anytime";
-    if(name!==cur){ cur=name; out+=`<div class="agenda-h">${name}${name===nowName?' <span style="font-size:9px;letter-spacing:.15em;color:#F5B830;border:1px solid #F5B83055;border-radius:10px;padding:1px 7px;margin-left:7px;vertical-align:middle">📍 NOW</span>':''}</div>`; }
+function agendaHtml(items,nowM){
+  nowM=Number(nowM==null?(new Date().getHours()*60+new Date().getMinutes()):nowM);
+  function lane(it){
+    const order=Number(it.order||999);
+    if(it.key==="ro-add") return {rank:4,name:"Add or adjust",cls:""};
+    if(order<=25) return {rank:0,name:"Do now",cls:"now"};
+    if(order<nowM-45) return {rank:1,name:"Open from earlier",cls:""};
+    if(order<=nowM+75) return {rank:2,name:"Now",cls:"now"};
+    return {rank:3,name:"Later",cls:""};
+  }
+  items.sort(function(a,b){ const la=lane(a),lb=lane(b); return la.rank-lb.rank || (a.order||999)-(b.order||999); });
+  let out="", current="";
+  items.forEach(function(it){
+    const group=lane(it);
+    if(group.name!==current){ current=group.name; out+=`<div class="today-lane ${group.cls}">${group.name}</div>`; }
     out+=it.html;
   });
   return out;
@@ -1895,30 +1920,53 @@ function fitnessFullScheduleHtml(today){
 }
 
 // ── 💧🍴💊 HABITS ENGINE — water counter, forgiving streak, "Today's 3" (added Jun 9 2026) ──
+const TODAY_CLEAR_MS=950;
+function todaySectionStep(previous,done,now){
+  const prev=previous||null;
+  if(!prev) return {state:{done:!!done,until:0},mode:done?"hidden":"active",entered:false};
+  if(!done) return {state:{done:false,until:0},mode:"active",entered:false};
+  if(!prev.done) return {state:{done:true,until:now+TODAY_CLEAR_MS},mode:"celebrate",entered:true};
+  if(Number(prev.until||0)>now) return {state:{done:true,until:Number(prev.until)},mode:"celebrate",entered:false};
+  return {state:{done:true,until:0},mode:"hidden",entered:false};
+}
+function todaySectionBox(){
+  const date=todayKey();
+  if(!window.__todaySections || window.__todaySections.date!==date){
+    if(window.__todaySections&&window.__todaySections.timer) clearTimeout(window.__todaySections.timer);
+    window.__todaySections={date:date,items:{},timer:null};
+    window.__todayDoneOpen=false;
+  }
+  return window.__todaySections;
+}
+function todaySectionSchedule(){
+  const box=todaySectionBox(), now=Date.now();
+  const next=Object.values(box.items).map(function(x){return Number(x.until||0);}).filter(function(x){return x>now;}).sort(function(a,b){return a-b;})[0];
+  clearTimeout(box.timer);
+  box.timer=next?setTimeout(function(){ if(currentTab==="today") renderToday(); },Math.max(20,next-now+20)):null;
+}
+function todaySectionState(key,done){
+  if(!window.__stateHydrated) return {mode:done?"hidden":"active",entered:false};
+  const box=todaySectionBox(), result=todaySectionStep(box.items[key],!!done,Date.now());
+  box.items[key]=result.state;
+  if(result.mode==="celebrate") todaySectionSchedule();
+  return result;
+}
+function todayAnnounce(message){
+  const el=document.getElementById("today-status");
+  if(!el) return;
+  el.textContent="";
+  requestAnimationFrame(function(){ el.textContent=message; });
+}
+function todayWinHtml(icon,title,sub){
+  return `<div class="today-win"><div class="today-win-icon">${icon}</div><div><div class="today-win-title">${title}</div><div class="today-win-sub">${sub}</div></div></div>`;
+}
+function toggleTodayDone(){ window.__todayDoneOpen=!window.__todayDoneOpen; renderToday(); }
 function _hd(dt){ return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
 function isoWkH(d){ d=d||new Date(); const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=dt.getUTCDay()||7; dt.setUTCDate(dt.getUTCDate()+4-day); const ys=new Date(Date.UTC(dt.getUTCFullYear(),0,1)); return dt.getUTCFullYear()+"-W"+String(Math.ceil((((dt-ys)/86400000)+1)/7)).padStart(2,"0"); }
 function waterGoal(){ return Math.max(1, habits.waterGoal||3); }  // bottles · default 3 (≈96 oz)
 function waterServing(){ return Math.max(1, habits.waterServing||1); }  // bottles per tap · default 1 (=32 oz)
 function waterCount(d){ d=d||todayKey(); return (habits.water&&habits.water[d])||0; }
-// 💧 splash burst — droplets fly out from the tap point when a bottle is added (added Jun 13 2026)
-var __waterPt=null;
-try{ document.addEventListener('pointerdown',function(e){ if(e&&typeof e.clientX==='number') __waterPt={x:e.clientX,y:e.clientY}; },true); }catch(_e){}
-function splashBurst(){
-  try{
-    var p=__waterPt||{x:window.innerWidth/2,y:window.innerHeight*0.4};
-    var drops=['\u{1F4A7}','\u{1F4A6}'];
-    for(var i=0;i<9;i++){ (function(){
-      var el=document.createElement('div');
-      el.textContent=drops[Math.floor(Math.random()*drops.length)];
-      el.style.cssText='position:fixed;left:'+p.x+'px;top:'+p.y+'px;font-size:'+(13+Math.random()*13)+'px;line-height:1;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:transform .75s cubic-bezier(.15,.6,.25,1),opacity .75s ease-out;opacity:1;will-change:transform,opacity';
-      document.body.appendChild(el);
-      var dx=(Math.random()*2-1)*70, dy=-(35+Math.random()*75), rot=Math.random()*60-30;
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.style.transform='translate(-50%,-50%) translate('+dx+'px,'+dy+'px) rotate('+rot+'deg) scale(.5)'; el.style.opacity='0'; }); });
-      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },820);
-    })(); }
-  }catch(_e){}
-}
-function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{splashBurst();}catch(_e){} try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful 🎉":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
+function waterAdd(n){ habits.water=habits.water||{}; const k=todayKey(); n=n||waterServing(); habits.water[k]=Math.max(0,(habits.water[k]||0)+n); saveHabits(); renderAll(); try{ const c=waterCount(),g=waterGoal(); toast(c>=g?"💧 Goal met — "+(g*32)+" oz, beautiful":"💧 "+c+" of "+g+" bottles ("+(c*32)+" oz)"); }catch(e){} }
 function waterUndo(){ habits.water=habits.water||{}; const k=todayKey(); habits.water[k]=Math.max(0,(habits.water[k]||0)-waterServing()); saveHabits(); renderAll(); }
 function waterSetGoal(){ const v=prompt("Your daily water goal, in BOTTLES (1 bottle = 32 oz). It counts ALL fluids — water, tea, coffee, juice. No magic number; ~3 bottles (~96 oz) is a solid daily target:", waterGoal()); const n=parseInt(v,10); if(n>0){ habits.waterGoal=n; saveHabits(); renderAll(); } }
 function waterSetServing(){ const v=prompt("How many bottles per tap? (1 bottle = 32 oz)", waterServing()); const n=parseInt(v,10); if(n>0){ habits.waterServing=n; saveHabits(); renderAll(); } }
@@ -1945,86 +1993,72 @@ function habitStats(){
   const yMiss=(function(){ const y=new Date(today+"T12:00:00"); y.setDate(y.getDate()-1); return !dayWin(_hd(y)); })();
   return { streak:streak, freezesLeft:Math.max(0,tokens-forgiven), consistDays:win30, consistPct:Math.round(win30/30*100), totalWins:totalWins, todayScore:habitDone(today).score, yesterdayMiss:yMiss };
 }
-function habitsTodayHtml(){
-  if(typeof habits==='undefined') return "";
+function habitsTodayCards(){
+  if(typeof habits==='undefined') return {today3:"",water:"",today3Done:false,waterDone:false,wc:0,goal:0};
   ensureFreeze();
-  const today=todayKey();
-  const nowM=new Date().getHours()*60+new Date().getMinutes();
-  const hd=habitDone(today), st=habitStats();
-  const goal=waterGoal(), wc=waterCount(), pct=Math.min(100,Math.round(wc/goal*100));
-  const good=hd.score>=2;
-  // ── streak ring ──
-  const R=26, CIRC=2*Math.PI*R, off=CIRC*(1-st.consistPct/100);
-  const ring=`<svg width="74" height="74" viewBox="0 0 74 74" style="flex-shrink:0">
-    <circle cx="37" cy="37" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
-    <circle cx="37" cy="37" r="${R}" fill="none" stroke="url(#hgring)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${CIRC.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 37 37)" style="transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1)"/>
-    <text x="37" y="35" text-anchor="middle" font-family="'Playfair Display',serif" font-size="21" font-weight="700" fill="#F5B830">${st.streak}</text>
-    <text x="37" y="49" text-anchor="middle" font-size="8" letter-spacing=".05em" fill="#8a8499">DAY${st.streak===1?'':'S'}</text>
-    <defs><linearGradient id="hgring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B830"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs>
-  </svg>`;
-  // ── three habit pills ──
-  function pill(emoji,label,doneB,frac,onclick){
-    const c=doneB?'#34D399':'#6A6480';
-    return `<div onclick="${onclick}" style="flex:1;text-align:center;padding:9px 4px;border-radius:11px;border:1px solid ${doneB?'rgba(52,211,153,.4)':'var(--border)'};background:${doneB?'rgba(52,211,153,.1)':'rgba(255,255,255,.02)'};cursor:pointer" class="hg-pill">
-      <div style="font-size:20px;line-height:1">${emoji}</div>
+  const today=todayKey(), now=new Date(), nowM=now.getHours()*60+now.getMinutes();
+  const hd=habitDone(today), goal=waterGoal(), wc=waterCount();
+  const today3Done=hd.score===3, waterDone=wc>=goal, left=Math.max(0,3-hd.score), undoN=Math.min(waterServing(),wc);
+  function pill(emoji,label,doneB,frac,onclick,ariaLabel){
+    const c=doneB?'#34D399':'#8A8499';
+    const tag=onclick?'button':'div';
+    return `<${tag} ${onclick?'type="button" onclick="'+onclick+'" aria-label="'+ariaLabel+'"':''} class="hg-pill" style="flex:1;text-align:center;padding:8px 4px;border-radius:10px;border:1px solid ${doneB?'rgba(52,211,153,.38)':'var(--border)'};background:${doneB?'rgba(52,211,153,.09)':'rgba(255,255,255,.02)'};color:inherit;font:inherit;appearance:none;${onclick?'cursor:pointer':''}">
+      <div style="font-size:18px;line-height:1">${emoji}</div>
       <div style="font-size:10px;color:${c};font-family:'Lora',serif;margin-top:3px;font-weight:600">${label}</div>
       <div style="font-size:10px;color:${doneB?'#34D399':'var(--text2)'};margin-top:1px">${doneB?'✓':frac}</div>
-    </div>`;
+    </${tag}>`;
   }
-  const pills=`<div style="display:flex;gap:8px;margin-top:4px">
-    ${pill('💧','Water',hd.water,wc+'/'+goal,'waterAdd()')}
-    ${pill('💊','Vitamins',hd.vit,'tap','toggleWellness(\'litfulo\')')}
-    ${pill('🍴','Meals',hd.meals,hd.mealsN+'/3','switchTab(\'today\')')}
+  const dailyCopy=hd.score===0
+    ? "Three clear targets. Pick one and make the page lighter."
+    : hd.score===1
+      ? "One cleared · two left."
+      : "Good day banked · one left for the full clear.";
+  const todays3Active=`<div class="today-daily-card" style="${hd.score>=2?'border-color:rgba(52,211,153,.32);box-shadow:0 0 18px rgba(52,211,153,.07)':''}">
+    <div class="today-daily-head"><span class="today-daily-label" style="color:#F5B830">✨ Today's 3</span><span class="today-daily-count">${hd.score} of 3 · ${left} left</span></div>
+    <div class="plan-bar" style="margin:0 0 10px"><div class="plan-fill" style="width:${Math.round(hd.score/3*100)}%;background:linear-gradient(90deg,#F5B830,#34D399)"></div></div>
+    <div style="display:flex;gap:8px">
+      ${pill('💧','Water',hd.water,wc+'/'+goal,hd.water?'':'waterAdd()','Log '+waterServing()+' water bottle'+(waterServing()===1?'':'s'))}
+      ${pill('💊','Vitamins',hd.vit,'tap','toggleWellness(\'litfulo\')',hd.vit?'Undo vitamins for today':'Mark vitamins complete for today')}
+      ${pill('🍴','Meals',hd.meals,hd.mealsN+'/3','')}
+    </div>
+    <div style="font-size:11.5px;color:${hd.score>=2?'#A7F3D0':'var(--text2)'};font-family:'Lora',serif;font-style:italic;margin-top:9px;line-height:1.45">${dailyCopy}</div>
   </div>`;
-  // ── compassionate / encouraging copy ──
-  let copy;
-  if(st.yesterdayMiss){ copy="One missed day doesn't slow you down — today's the one that counts. 🌱"; }
-  else if(good && st.streak>0){ copy="That's a good day banked. "+st.streak+"-day rhythm going. ✨"; }
-  else if(hd.score===1){ copy="One down — two of three makes today a win. You're close."; }
-  else { copy="Small steps. Tap one thing to start the day off right. 🌱"; }
-  // ── weekly regularity dots (last 7 days) ──
-  let dots='';
-  for(let i=6;i>=0;i--){ const dt=new Date(today+"T12:00:00"); dt.setDate(dt.getDate()-i); const dd=_hd(dt); const sc=habitDone(dd).score; const isT=(dd===today);
-    const col= sc>=3?'#34D399':(sc===2?'#FBBF24':(sc===1?'#F59E0B':'rgba(255,255,255,.10)'));
-    dots+=`<div style="text-align:center;flex:1"><div style="width:18px;height:18px;border-radius:50%;background:${col};margin:0 auto;${isT?'box-shadow:0 0 0 2px var(--amber2)':''}"></div><div style="font-size:8px;color:var(--text2);margin-top:3px">${dt.toLocaleDateString('en-US',{weekday:'narrow'})}</div></div>`;
+
+  let waterSteps="";
+  for(let i=0;i<goal;i++){
+    const done=i<wc, next=!done&&i===wc;
+    waterSteps+=next
+      ? `<button type="button" class="today-water-step next" onclick="waterAdd()" aria-label="Log ${waterServing()} water bottle${waterServing()===1?'':'s'}">${i+1}</button>`
+      : `<div class="today-water-step${done?' done':''}" aria-hidden="true">${done?'✓':i+1}</div>`;
   }
-  const todays3=`<div class="h3-card" style="background:linear-gradient(135deg,${good?'rgba(52,211,153,.10)':'var(--s2)'},var(--s1));border:1px solid ${good?'rgba(52,211,153,.3)':'var(--border2)'};border-radius:var(--rad);padding:15px 16px 13px;margin-bottom:12px;${good?'box-shadow:0 0 22px rgba(52,211,153,.10)':''}">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif">✨ Today's 3</span><span style="font-size:10px;color:var(--text2);font-family:'Lora',serif;margin-left:auto">${st.consistDays} of 30 days · ${st.totalWins} total${st.freezesLeft>0?' · ❄️ '+st.freezesLeft+' freeze'+(st.freezesLeft===1?'':'s'):''}</span></div>
-    <div style="display:flex;align-items:center;gap:14px">
-      ${ring}
-      <div style="flex:1;min-width:0">${pills}</div>
+  let waterNudge="";
+  if(nowM>=930 && wc<goal){
+    waterNudge=`<div style="font-size:10.8px;color:#93C5FD;font-family:'Lora',serif;background:rgba(59,130,246,.07);border-radius:8px;padding:7px 9px;margin-top:8px;line-height:1.4">Afternoon checkpoint: water now; add electrolytes if you feel weak, had caffeine, exercised, or were outside.</div>`;
+  }
+  const waterActive=`<div class="today-daily-card" style="border-color:rgba(59,130,246,.28);background:linear-gradient(135deg,rgba(59,130,246,.08),var(--s1))">
+    <div class="today-daily-head"><span class="today-daily-label" style="color:#7EB8F0">💧 Water</span><span class="today-daily-count">${wc} of ${goal} · ${Math.max(0,goal-wc)} left</span></div>
+    <div class="today-water-steps" style="--water-cols:${Math.min(goal,6)}">${waterSteps}</div>
+    <div style="display:flex;gap:7px;align-items:center">
+      <button onclick="waterAdd()" style="flex:1;border:0;border-radius:9px;padding:9px;background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 3px 11px rgba(59,130,246,.25)">+${waterServing()} bottle${waterServing()===1?'':'s'}</button>
+      ${wc>0?'<button onclick="waterUndo()" aria-label="Undo '+undoN+' water bottle'+(undoN===1?'':'s')+'" style="border:1px solid var(--border);border-radius:9px;padding:9px 12px;background:rgba(255,255,255,.04);color:var(--text2);font-size:12px;cursor:pointer">↶</button>':''}
     </div>
-    <div style="font-size:11.5px;color:${good?'#A7F3D0':'var(--text2)'};font-family:'Lora',serif;font-style:italic;margin-top:11px;line-height:1.5">${copy}</div>
-    <div style="display:flex;gap:5px;margin-top:12px;align-items:flex-end">${dots}</div>
+    <div style="display:flex;gap:13px;margin-top:8px;flex-wrap:wrap"><button onclick="waterSetGoal()" style="border:0;background:none;padding:0;color:var(--text2);font:10px 'Lora',serif;cursor:pointer">Goal ${goal} ✏️</button><button onclick="waterSetServing()" style="border:0;background:none;padding:0;color:var(--text2);font:10px 'Lora',serif;cursor:pointer">Per tap ${waterServing()} ✏️</button><span style="margin-left:auto;color:var(--text3);font:10px 'Lora',serif">32 oz each · all fluids count</span></div>
+    ${waterNudge}
   </div>`;
-  // ── water tile (fills as he taps) ──
-  let nudge='';
-  if(nowM>=840 && nowM<=1020 && wc < goal*0.5){ nudge=`<div style="font-size:11px;color:#7EB8F0;font-family:'Lora',serif;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:9px;padding:7px 10px;margin-top:10px;line-height:1.45">You're at ${wc} of ${goal} — good window to catch up before dinner. 💧</div>`; }
-  const glass=`<div onclick="waterAdd()" class="hg-water-glass" style="position:relative;width:78px;height:112px;border:3px solid rgba(59,130,246,.55);border-radius:13px 13px 19px 19px;overflow:hidden;background:rgba(59,130,246,.05);cursor:pointer;flex-shrink:0">
-    <div class="hg-water-fill" style="position:absolute;left:0;right:0;bottom:0;height:${pct}%;background:linear-gradient(180deg,#60A5FA,#3B82F6);box-shadow:0 -2px 10px rgba(59,130,246,.5)"></div>
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.5)">${wc}</div><div style="font-size:9px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5)">of ${goal}</div></div>
-  </div>`;
-  const waterTile=`<div class="h3-card" style="background:linear-gradient(135deg,rgba(59,130,246,.08),var(--s1));border:1px solid rgba(59,130,246,.25);border-radius:var(--rad);padding:15px 16px;margin-bottom:12px">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7EB8F0;font-family:'Lora',serif">💧 Water</span><span style="font-size:10px;color:var(--text2);font-family:'Lora',serif;margin-left:auto">1 bottle = 32 oz · counts all fluids</span></div>
-    <div style="display:flex;align-items:center;gap:16px">
-      ${glass}
-      <div style="flex:1;min-width:0">
-        <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--text)">${wc} of ${goal} bottle${goal===1?'':'s'} ${wc>=goal?'🎉':''}</div>
-        <div style="font-size:10.5px;color:#7EB8F0;font-family:'Lora',serif;margin-top:2px">1 bottle = 32 oz · goal ~${goal*32} oz</div>
-        <div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;line-height:1.5">${wc>=goal?'Goal met for today — anything more is a bonus.':((new Date().getHours()>=18)?(wc===0?'Evening and the glass is still empty — one bottle with dinner still counts. Start the count now. 💧':'Evening top-up — '+(goal-wc)+' to go. Getting close still counts.'):'Tap the glass to add '+waterServing()+' bottle'+(waterServing()===1?'':'s')+'. Every sip is progress.')}</div>
-        <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
-          <div onclick="waterAdd()" style="flex:1;min-width:90px;text-align:center;padding:10px;border-radius:10px;background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 3px 12px rgba(59,130,246,.3)">+${waterServing()} bottle${waterServing()===1?'':'s'}</div>
-          <div onclick="waterUndo()" style="padding:10px 13px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer">↶</div>
-        </div>
-        <div style="display:flex;gap:14px;margin-top:9px">
-          <div onclick="waterSetGoal()" style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;cursor:pointer">⚙️ Goal: ${goal} ✏️</div>
-          <div onclick="waterSetServing()" style="font-size:10.5px;color:var(--text2);font-family:'Lora',serif;cursor:pointer">Per tap: ${waterServing()} bottle${waterServing()===1?'':'s'} ✏️</div>
-        </div>
-        ${nudge}
-      </div>
-    </div>
-  </div>`;
-  return todays3+waterTile;
+
+  const today3State=todaySectionState("today3",today3Done);
+  const waterState=todaySectionState("water",waterDone);
+  let today3Html="", waterHtml="";
+  if(today3State.mode==="celebrate" && waterState.mode==="celebrate"){
+    today3Html=todayWinHtml("✨","Today's 3 complete","Water goal met too. The flexible part of the day just got lighter.");
+    if(today3State.entered||waterState.entered) todayAnnounce("Today's 3 complete. Water goal met too.");
+  } else {
+    today3Html=today3State.mode==="active"?todays3Active:(today3State.mode==="celebrate"?todayWinHtml("✨","Today's 3 complete","Three real wins recorded. The full card can get out of your way."):"");
+    waterHtml=waterState.mode==="active"?waterActive:(waterState.mode==="celebrate"?todayWinHtml("💧","Water goal complete",wc+" of "+goal+" bottles recorded. Nicely done."):"");
+    if(today3State.entered) todayAnnounce("Today's 3 complete. Three of three recorded.");
+    else if(waterState.entered) todayAnnounce("Water goal complete. "+wc+" of "+goal+" bottles recorded.");
+  }
+  return {today3:today3Html,water:waterHtml,today3Done:today3Done,waterDone:waterDone,wc:wc,goal:goal};
 }
 
 const ALMANAC_SNOOZE_MS=10*60*1000;
@@ -2108,8 +2142,10 @@ function almanacDone(id){
   // as watered — that was silently zeroing out the Watering tab. Watering is logged per plant only,
   // after checking the soil, so the saved dates stay accurate.
   almanacPersist(updates);
+  const morningFinished=almanacRoutineTasks().every(function(x){return almanacRoutineDone(x.id);});
   renderAll();
-  toast(id==="work"?"Paid work started.":"Done. Next step is ready.");
+  toast(morningFinished?"Morning complete — flexible day unlocked.":(id==="work"?"Paid work started.":"Done. Next step is ready."));
+  if(morningFinished&&typeof hgCheer==="function") hgCheer("task");
 }
 function almanacHold(id,status){
   const task=ALMANAC_MORNING.find(function(x){return x.id===id;}); if(!task) return;
@@ -2140,10 +2176,12 @@ function almanacRoutineHtml(hc,nowM){
     const wake=Math.min.apply(null,snoozeTimes);
     window.__almanacSnoozeTimer=setTimeout(function(){ if(currentTab==="today") renderToday(); },Math.max(250,wake-now+250));
   }
-  let html='<section class="almanac-focus" aria-label="Morning routine"><div class="almanac-focus-head"><div><div class="almanac-kicker" style="margin-bottom:2px">Almanac</div><div class="almanac-focus-title">Morning routine</div></div><div class="almanac-focus-count">'+done.length+' of '+tasks.length+' complete</div></div>';
-  if(done.length===tasks.length){
-    return html+'<div class="almanac-complete"><div class="almanac-kicker" style="color:#4AD490;margin-bottom:5px">✓ Morning complete</div><div class="almanac-task-name" style="font-size:17px">You are ready for the flexible part of the day.</div></div></section>';
+  const morningComplete=done.length===tasks.length, morningState=todaySectionState("morning",morningComplete);
+  if(morningComplete){
+    if(morningState.entered) todayAnnounce("Morning complete. You are ready for the flexible part of the day.");
+    return morningState.mode==="celebrate"?todayWinHtml("✓","Morning complete","You are ready for the flexible part of the day."):"";
   }
+  let html='<section class="almanac-focus" aria-label="Morning routine"><div class="almanac-focus-head"><div><div class="almanac-kicker" style="margin-bottom:2px">Almanac</div><div class="almanac-focus-title">Morning routine</div></div><div class="almanac-focus-count">'+done.length+' of '+tasks.length+' complete</div></div>';
   const current=active[0]||null, next=active[1]||null;
   if(current){
     const st=almanacStepState(current.id), locked=current.id==="work"&&nowM<480;
@@ -2180,11 +2218,13 @@ function renderToday() {
   const _now=new Date(); const nowM=_now.getHours()*60+_now.getMinutes();
   const hc=healthCoachState(today,nowM,dow);
   const RESET_DAY="2026-06-06"; // 🔄 one-off sleep-reset day — flow items auto-expire after this date
-  let topHtml=almanacRoutineHtml(hc,nowM);
+  let topHtml=wxAlerts()+almanacRoutineHtml(hc,nowM);
+  const flow=[];
+  function add(key,order,done,html,passive){ flow.push({key,order,done:!!done,html,passive:!!passive}); }
 
-  // ── #1 PRIORITY — GET AN ALARM CLOCK (pinned at the very top until checked) ──
+  // ── #1 PRIORITY — GET AN ALARM CLOCK ──
   if(!checked["get_alarm_clock"] && !hc.rescue){
-    topHtml+=`<div style="background:linear-gradient(135deg,rgba(245,184,48,.16),rgba(245,184,48,.04));border:1px solid rgba(245,184,48,.45);border-left:4px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,184,48,.12)" onclick="toggle('get_alarm_clock')">
+    add("alarm",250,false,`<div style="background:linear-gradient(135deg,rgba(245,184,48,.16),rgba(245,184,48,.04));border:1px solid rgba(245,184,48,.45);border-left:4px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 0 24px rgba(245,184,48,.12)" onclick="toggle('get_alarm_clock')">
       <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,184,48,.5),transparent)"></div>
       <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#F5B830;margin-bottom:6px;font-family:'Lora',serif">⭐ Priority #1</div>
       <div style="display:flex;align-items:center;gap:14px">
@@ -2195,10 +2235,12 @@ function renderToday() {
         </div>
         <div style="width:30px;height:30px;border-radius:50%;border:2px solid #F5B830;background:transparent;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0"></div>
       </div>
-    </div>`;
+    </div>`,false);
   }
-  topHtml+=wxAlerts();
-  topHtml+=habitsTodayHtml();
+
+  const habitCards=habitsTodayCards(), habitOrder=Math.max(330,nowM-30);
+  if(habitCards.today3) add("today3",habitOrder,false,habitCards.today3,true);
+  if(habitCards.water) add("water",habitOrder+1,false,habitCards.water,true);
 
   // ── Still-open one-off pins (compact, until done) ─────────────────────────────
   const PIN_OPEN=[
@@ -2207,9 +2249,9 @@ function renderToday() {
       sub:"Root ends in a glass with an inch of water, bright windowsill.",
       steps:["Save the white root ends, about 1 to 2 inches long, roots intact.","Stand them root-down in a glass with about 1 inch of water.","Bright windowsill — indirect light is fine.","Change the water every 1 to 2 days.","Snip new green tops as they regrow; they keep going for weeks.","Optional: pot into soil for sturdier growth."] },
   ];
-  PIN_OPEN.filter(p=>!checked[p.id]&&!hc.rescue).forEach(p=>{
+  PIN_OPEN.filter(p=>!checked[p.id]&&!hc.rescue).forEach((p,i)=>{
     const open=!!expanded[p.id];
-    topHtml+=`<div style="display:flex;flex-direction:column;background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid ${p.hex};border-radius:var(--rad);padding:11px 16px;margin-bottom:8px">
+    add("pin-"+p.id,315+i,false,`<div style="display:flex;flex-direction:column;background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-left:4px solid ${p.hex};border-radius:var(--rad);padding:11px 16px;margin-bottom:8px">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="font-size:18px;flex-shrink:0">${p.emoji}</div>
         <div style="flex:1;min-width:0">
@@ -2220,20 +2262,12 @@ function renderToday() {
         <div onclick="toggle('${p.id}')" style="width:26px;height:26px;border-radius:50%;border:2px solid ${p.hex};background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer"></div>
       </div>
       ${p.steps&&open?`<div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.07);padding-top:8px">${p.steps.map((s,i)=>`<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;color:var(--text2);font-family:'Lora',serif;line-height:1.5"><span style="color:${p.hex};font-weight:700;flex-shrink:0">${i+1}.</span><span>${s}</span></div>`).join("")}</div>`:""}
-    </div>`;
+    </div>`,false);
   });
 
-  // ── THE DAY, IN ORDER — one chronological flow; checked items sink to the done pile ──
-  const flow=[];
-  function add(key,order,done,html,passive){ flow.push({key,order,done:!!done,html,passive:!!passive}); }
+  // ── THE DAY, IN ORDER — one chronological flow ──
   if(hc.rescue){
     add("healthrescue",5,false,healthRescueCard(hc),false);
-  } else {
-    const afternoonDone=waterCount(today)>=Math.max(2,Math.ceil(waterGoal()*0.66));
-    if(nowM>=clockMin(RY.hydration,930) || hc.lowWater){
-      const h=hydrationCard("afternoon",afternoonDone,"Afternoon water / electrolyte checkpoint",afternoonDone?"Checkpoint handled":"If fluids have been low, feel weak, had caffeine, exercised, or went outside: water + electrolytes.",clockMin(RY.hydration,930));
-      add(h.key,h.order,h.done,h.html,false);
-    }
   }
 
   // Call DT — morning anchor
@@ -2291,7 +2325,7 @@ function renderToday() {
   if(laundry["dtmust-"+today]){
     const testDone=!!laundry["dttest-"+today];
     if(!testDone){
-      add("dttest",301,false,`<div onclick="toggleDTTest()" style="background:linear-gradient(135deg,rgba(245,184,48,.2),rgba(245,184,48,.05));border:1.5px solid #F5B830;border-left:5px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;cursor:pointer;position:relative;overflow:hidden;animation:dtTestPulse 2.2s ease-in-out infinite">
+      add("dttest",20,false,`<div onclick="toggleDTTest()" style="background:linear-gradient(135deg,rgba(245,184,48,.2),rgba(245,184,48,.05));border:1.5px solid #F5B830;border-left:5px solid #F5B830;border-radius:var(--rad);padding:16px 18px;margin-bottom:12px;cursor:pointer;position:relative;overflow:hidden;animation:dtTestPulse 2.2s ease-in-out infinite">
         <div style="font-size:9px;text-transform:uppercase;letter-spacing:.22em;color:#F5B830;margin-bottom:6px;font-family:'Lora',serif">🚨 Test Day — Time-Sensitive</div>
         <div style="display:flex;align-items:center;gap:14px">
           <div style="font-size:30px;flex-shrink:0">🧪</div>
@@ -2303,7 +2337,7 @@ function renderToday() {
         </div>
       </div>`);
     } else {
-      add("dttest",301,true,strip("🧪","Go take the test",true,"#F5B830","toggleDTTest()","","","Test day handled ✔"));
+      add("dttest",20,true,strip("🧪","Go take the test",true,"#F5B830","toggleDTTest()","","","Test day handled ✔"));
     }
   }
 
@@ -2340,15 +2374,15 @@ function renderToday() {
     }
   }
   // Burn care removed Jun 27 2026 — wounds fully healed (per Cyrus).
-  // ── 🔍 FLIP SCAN — daily morning deal-hunt card (date-keyed → reappears each day). Links live in FLIP_SCAN (data.js). (added Jun 12 2026) ──
+  // ── 📺 TV FOLLOW-UP — date-keyed so the reminder reappears each day; legacy key preserves history. ──
   if(typeof FLIP_SCAN!=='undefined'){
     const fsDone=!!laundry["rem-flipscan-"+today];
     const fsLinks=FLIP_SCAN.links.map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#7DD3FC;text-decoration:underline;white-space:nowrap">'+l[0]+'</a>';}).join(' · ');
-    const fsExtra='<div style="margin-top:7px;font-size:12px;line-height:1.9;font-family:\'Lora\',serif">'+fsLinks+'</div>'
+    const fsExtra=(fsLinks?'<div style="margin-top:7px;font-size:12px;line-height:1.9;font-family:\'Lora\',serif">'+fsLinks+'</div>':'')
       +'<div style="font-size:11px;color:rgba(125,211,252,.8);font-style:italic;margin-top:5px;font-family:\'Lora\',serif">'+FLIP_SCAN.tip+'</div>';
     add("flipscan",284,fsDone, fsDone
-      ? strip("🔍","Flip scan — done for today",true,"#38BDF8","toggleReminder('flipscan',true)",FLIP_SCAN.at,"","Reappears tomorrow morning")
-      : reminderCardHtml("🔍",FLIP_SCAN.label,"","toggleReminder('flipscan',true)",fsExtra));
+      ? strip("📺","TV follow-up — done for today",true,"#38BDF8","toggleReminder('flipscan',true)",FLIP_SCAN.at,"","Reappears tomorrow morning")
+      : reminderCardHtml("📺",FLIP_SCAN.label,"","toggleReminder('flipscan',true)",fsExtra));
   }
 
   // 🔔 dated + standing reminders
@@ -2530,37 +2564,55 @@ function renderToday() {
     add("winddown",1300,true,strip("🌙","Wind-down done — reading, lights out, phone away",true,"#7C3AED","toggleWindDown()",RY.lightsOut,"","Sleep well 🌙"));
   }
 
-  // ── Sink-to-bottom: unchecked flow first (chronological), done pile at the very bottom ──
+  // ── Completed cards briefly glow in place, then clear into one collapsed drawer. ──
+  if(window.__flowBaselineDate!==today){
+    window.__flowBaselineDate=today;
+    window.__flowBaselineReady=false;
+    window.__flowPrev={};
+    window.__flowClearUntil={};
+  }
   window.__flowPrev=window.__flowPrev||{};
+  window.__flowClearUntil=window.__flowClearUntil||{};
+  const flowNow=Date.now();
+  const canCelebrateFlow=!!window.__stateHydrated&&!!window.__flowBaselineReady;
   let justDoneKey=null;
-  flow.forEach(it=>{ if(it.done&&window.__flowPrev[it.key]===false) justDoneKey=it.key; });
-  const wrap=it=>(it.key===justDoneKey?`<div class="flow-just-done">${it.html}</div>`:it.html);
-  const active=_dedupeAdjColors(flow.filter(i=>!i.done).sort((a,b)=>a.order-b.order));
-  const pile=_dedupeAdjColors(flow.filter(i=>i.done).sort((a,b)=>a.order-b.order));
-  const checkables=flow.filter(i=>!i.passive);
-  const fDone=checkables.filter(i=>i.done).length, fTotal=checkables.length;
+  flow.forEach(function(it){
+    if(canCelebrateFlow&&it.done&&window.__flowPrev[it.key]===false){ window.__flowClearUntil[it.key]=flowNow+TODAY_CLEAR_MS; justDoneKey=it.key; }
+    if(!it.done) delete window.__flowClearUntil[it.key];
+  });
+  const isClearing=function(it){return it.done&&Number(window.__flowClearUntil[it.key]||0)>flowNow;};
+  const clearingUntil=flow.filter(isClearing).map(function(it){return Number(window.__flowClearUntil[it.key]);}).sort(function(a,b){return a-b;})[0];
+  clearTimeout(window.__flowClearTimer);
+  if(clearingUntil) window.__flowClearTimer=setTimeout(function(){ if(currentTab==="today") renderToday(); },Math.max(20,clearingUntil-flowNow+20));
+  const wrap=function(it){return isClearing(it)?`<div class="flow-just-done">${it.html}</div>`:it.html;};
+  const active=_dedupeAdjColors(flow.filter(function(it){return !it.done||isClearing(it);}).map(function(it){return Object.assign({},it,{html:wrap(it)});}));
+  const pile=_dedupeAdjColors(flow.filter(function(it){return it.done&&!isClearing(it);}).sort(function(a,b){return a.order-b.order;}));
+  const checkables=flow.filter(function(it){return !it.passive;});
+  const morningDone=almanacRoutineTasks(hc).every(function(x){return almanacRoutineDone(x.id);});
+  const dailySections=[morningDone,habitCards.today3Done,habitCards.waterDone];
+  const fDone=checkables.filter(function(it){return it.done;}).length+dailySections.filter(Boolean).length;
+  const fTotal=checkables.length+dailySections.length, fLeft=Math.max(0,fTotal-fDone);
 
   let html=topHtml;
-  html+=`<div style="margin:4px 2px 12px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:var(--text2);font-family:'Lora',serif">Today, in order — tap things off as you go</span><span style="font-size:11px;color:#F5B830;font-family:'Lora',serif">${fDone} of ${fTotal}</span></div>
-    <div class="plan-bar"><div class="plan-fill" style="width:${fTotal?Math.round(fDone/fTotal*100):0}%;background:linear-gradient(90deg,#F5B830,#8B5CF6)"></div></div>
+  html+=`<div class="today-agenda-head">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11px;color:var(--text2);font-family:'Lora',serif">Today · ${fLeft} left</span><span style="font-size:11px;color:#F5B830;font-family:'Lora',serif">${fDone} cleared</span></div>
+    <div class="plan-bar" style="margin-bottom:0"><div class="plan-fill" style="width:${fTotal?Math.round(fDone/fTotal*100):0}%;background:linear-gradient(90deg,#F5B830,#34D399)"></div></div>
   </div>`;
-  html+=active.map(wrap).join("");
-  if(pile.length){
-    const cheers=["Look at that pile grow. ✨","Every one of these was a choice. Nice. 🌱","That is momentum. 💛","Quietly crushing it. 🌙"];
-    html+=`<div style="display:flex;align-items:center;gap:10px;margin:20px 0 10px"><div style="flex:1;height:1px;background:rgba(16,185,129,.25)"></div><div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#10B981;font-family:'Lora',serif">✨ Done — ${pile.length} today</div><div style="flex:1;height:1px;background:rgba(16,185,129,.25)"></div></div>`;
-    html+=pile.map(wrap).join("");
-    html+=`<div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;text-align:center;margin:6px 0 10px">${cheers[pile.length%cheers.length]}</div>`;
+  html+=agendaHtml(active,nowM);
+
+  const dailyWins=[];
+  if(morningDone) dailyWins.push('<div class="today-done-daily"><span>✓</span><span>Morning routine</span></div>');
+  if(habitCards.waterDone){ const undoWater=Math.min(waterServing(),habitCards.wc); dailyWins.push('<div class="today-done-daily"><span>💧</span><span>Water goal · '+habitCards.wc+' bottle'+(habitCards.wc===1?'':'s')+'</span><button onclick="waterUndo()">Undo '+undoWater+'</button></div>'); }
+  if(habitCards.today3Done) dailyWins.push('<div class="today-done-daily"><span>✨</span><span>Today\'s 3 · 3 of 3</span></div>');
+  const completedCount=pile.length+dailyWins.length;
+  if(completedCount){
+    const doneOpen=!!window.__todayDoneOpen;
+    html+=`<button class="today-done-toggle" onclick="toggleTodayDone()" aria-expanded="${doneOpen?'true':'false'}"><span>✨ Completed today</span><span>${completedCount} ${doneOpen?'▲':'▼'}</span></button>`;
+    if(doneOpen) html+=`<div class="today-done-details">${dailyWins.join("")}${pile.map(function(it){return it.html;}).join("")}</div>`;
   }
-  if(fTotal&&fDone===fTotal){
-    html+=`<div style="background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(16,185,129,.03));border:1px solid rgba(16,185,129,.3);border-radius:var(--rad);padding:16px;margin:10px 0 12px;text-align:center">
-      <div style="font-size:26px;margin-bottom:4px">🌙</div>
-      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#A7F3D0">Day complete</div>
-      <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:4px;font-family:'Lora',serif">Everything that mattered today got done. Sleep well.</div>
-    </div>`;
-  }
-  if(justDoneKey){ try{ const msgs=["Nice. ✓","One less thing. ✨","Done and dusted. 🌱","That felt good, right? 💛","Onward. 🌙"]; toast(msgs[Math.floor(Math.random()*msgs.length)]); }catch(e){} }
-  flow.forEach(it=>{ window.__flowPrev[it.key]=it.done; });
+  if(justDoneKey){ try{ const msgs=["Nice. ✓","One less thing. ✨","Done and dusted. 🌱","That moved the day forward. 💛","Onward. 🌙"]; toast(msgs[Math.floor(Math.random()*msgs.length)]); }catch(e){} }
+  flow.forEach(function(it){window.__flowPrev[it.key]=it.done;});
+  if(window.__stateHydrated) window.__flowBaselineReady=true;
   el.innerHTML=html;
 }
 
@@ -2615,7 +2667,7 @@ function renderTimeline() {
     REMINDERS.forEach(function(r){ if(r.date && r.date>=today){ (tlRem[r.date]=tlRem[r.date]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } });
     REMINDERS.forEach(function(r){ if(r.standing && !reminderDone(r.id,false)){ (tlRem[today]=tlRem[today]||[]).push({icon:r.emoji,text:r.text,account:r.account||""}); } }); // standing errands surface near-term (today)
   }
-  if(typeof FLIP_SCAN!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"🔍",text:"Morning flip scan · ~7:15 AM",account:""}); }
+  if(typeof FLIP_SCAN!=='undefined' && typeof reminderDone==='function' && !reminderDone('flipscan',true)){ (tlRem[today]=tlRem[today]||[]).push({icon:"📺",text:FLIP_SCAN.label+" · morning",account:""}); }
   if(typeof dmvApptDate==='function'){ const da=dmvApptDate(); if(da>=today){ (tlRem[da]=tlRem[da]||[]).push({icon:"📅",text:"DMV appointment",account:"",appt:true}); } }
   // 📞 TG Meeting — recurring every Wednesday on the timeline
   if(typeof TG_MEETING!=='undefined'){
@@ -2646,7 +2698,7 @@ function renderTimeline() {
     html+=`<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:var(--rad);padding:13px 16px;margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:'Lora',serif;font-size:12px;color:var(--text2)">Whole-house progress</span><span style="font-family:'Playfair Display',serif;font-weight:700;color:#F5B830">${doneH}/${totalH} · ${pctH}%</span></div>
       <div class="plan-bar"><div class="plan-fill" style="width:${pctH}%;background:linear-gradient(90deg,#F5B830,#818CF8)"></div></div>
-      <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:8px">${workDays} task day${workDays>1?"s":""} · one task a day, Mondays off · finish by ${finish.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} 🏆</div>
+      <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:8px">${workDays} task day${workDays>1?"s":""} · one small task a day · finish by ${finish.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} 🏆</div>
     </div>`;
     let lastWeek="";
     days.forEach((dy,idx)=>{
@@ -2682,7 +2734,7 @@ function renderTimeline() {
   <div style="text-align:center;margin-bottom:16px">
     <div style="font-size:9px;letter-spacing:.25em;color:#818CF8;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:5px">☀️ Your Game Plan</div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#F5B830,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">Timeline</div>
-    <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">One task a day · Mondays off · weekends for the bigger jobs — all the way to 100% 🏆</div>
+    <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic">One small task a day · the rolling schedule decides the next useful step 🏆</div>
   </div>`+html;
 }
 
@@ -4455,6 +4507,7 @@ function showApp() {
 // starts instantly, exactly like before. Locked rules → sign-in screen first.
 let fbTimeout = null;
 let __dataStarted = false;
+window.__stateHydrated = false;
 function startData() {
 if (__dataStarted) return; __dataStarted = true;
 // Fallback: show app after 6 seconds even if Firebase is slow
@@ -4723,6 +4776,7 @@ ST.on('value', snap => {
     return;
   }
 
+  window.__stateHydrated = true;
   clearTimeout(fbTimeout);
   showApp();
 });
@@ -4731,6 +4785,7 @@ ST.on('value', () => {}, err => {
   console.warn('Firebase error:', err);
   wateringStateLoaded=false;
   wateringStateError="Firebase could not load the saved watering history.";
+  window.__stateHydrated = true;
   clearTimeout(fbTimeout);
   showApp();
 });
@@ -5088,7 +5143,7 @@ curtainInit();
     o=o||{}; var c=at(), x=c.x, y=c.y, me=o.emoji;
     buzz(kind==="meal-complete"||kind==="water-goal"||kind==="streak" ? [10,40,18] : 12);
     if(kind==="water")          spawn(x,y,{glyphs:["💧","💧","💦"],count:5,rise:true,spread:54,color:"#38BDF8"});
-    else if(kind==="water-goal"){ spawn(x,y,{glyphs:["💧","💦","✨","💧"],count:14,spread:98,up:30,color:"#38BDF8",ring:true,ringSize:92,pop:"💧",popSize:40}); say("💧 Water goal met — nicely hydrated"); }
+    else if(kind==="water-goal"){ spawn(x,y,{glyphs:["💧","💦","✨","💧"],count:14,spread:98,up:30,color:"#38BDF8",ring:true,ringSize:92,pop:"💧",popSize:40}); }
     else if(kind==="meal-ontime"){ spawn(x,y,{glyphs:["✨","🌟",me||"🍽️","✨"],count:11,spread:90,up:24,color:"#F5B830",ring:true,ringSize:86,pop:me||"🍽️",popSize:34}); say("🍽️ Right on time — that's the rhythm"); }
     else if(kind==="meal-late"){ spawn(x,y,{glyphs:["✨","🌱"],count:5,rise:true,spread:50,color:"#B47C14"}); say("🌱 Logged — every meal counts"); }
     else if(kind==="meal-complete"){ spawn(x,y,{glyphs:["🎉","✨","🌟",me||"🍽️","💛"],count:18,spread:122,up:42,color:"#F5B830",ring:true,ringSize:112,pop:"🎉",popSize:42}); say("🎉 All three meals today — beautifully done"); }
@@ -5110,7 +5165,7 @@ curtainInit();
 
   wrap("waterAdd",
     function(c){ try{ c.before=waterCount(); }catch(e){ c.before=0; } },
-    function(c){ try{ var a=waterCount(), g=waterGoal(); if(a>c.before) hgCheer(a===g?"water-goal":"water"); }catch(e){} });
+    function(c){ try{ var a=waterCount(), g=waterGoal(); if(a>c.before) hgCheer(a>=g&&c.before<g?"water-goal":"water"); }catch(e){} });
 
   wrap("toggleMeal",
     function(c){ var m=c.args[0]; c.k="meal-"+m+"-"+key(); c.was=!!laundry[c.k]; c.meal=m; },
