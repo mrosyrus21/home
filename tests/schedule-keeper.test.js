@@ -11,8 +11,8 @@ const { SCHEDULE, TASKS, PAUSED_FLIP_SCAN, TV_FOLLOWUP } = new Function(dataSour
 
 const rolling = SCHEDULE.filter(item => item.date < "2026-08-17");
 assert.equal(rolling.length, 7, "the rolling window must contain exactly seven days");
-assert.equal(rolling[0].date, "2026-08-04", "the rolling window must start today");
-assert.equal(rolling[rolling.length - 1].date, "2026-08-10", "the rolling window must cover seven days");
+assert.equal(rolling[0].date, "2026-08-10", "the rolling window must start today");
+assert.equal(rolling[rolling.length - 1].date, "2026-08-16", "the rolling window must cover seven days through the final pre-checkpoint day");
 
 for (let i = 0; i < rolling.length; i += 1) {
   assert.equal(rolling[i].tasks.length, 1, `expected one task on ${rolling[i].date}`);
@@ -25,10 +25,12 @@ for (let i = 0; i < rolling.length; i += 1) {
 }
 
 assert.equal(new Set(rolling.flatMap(item => item.tasks)).size, rolling.length, "rolling task IDs must be date-safe and unique");
-assert.deepEqual(SCHEDULE.find(item => item.date === "2026-08-04").tasks, ["move_books_aug03"], "today must retain the books task Cyrus pushed here");
+assert.deepEqual(SCHEDULE.find(item => item.date === "2026-08-10").tasks, ["move_docs_aug10"], "today must retain the current documents and valuables task");
 assert.doesNotMatch(dataSource, /move_kitchen_aug04/, "the disliked kitchen starter must be removed from the active data");
 assert.equal(TASKS.move_kitchen, undefined, "kitchen packing must not remain available as a rolling starter");
 assert.equal(rolling.some(item => item.tasks.some(id => /kitchen/i.test(id + " " + TASKS[id].label))), false, "the rolling week must contain no kitchen packing task");
+assert.match(TASKS.move_openlast_aug16.note, /Keep the actual essentials accessible/, "the final rolling task must not pack daily essentials early");
+assert.equal(rolling.some(item => /discard|donate|sell/i.test(TASKS[item.tasks[0]].label + " " + TASKS[item.tasks[0]].note)), false, "the rolling week must not force destination-dependent disposal decisions");
 assert.match(TASKS.move_last_week.note, /Keep the kitchen fully usable until the final pack/, "the final week must preserve the usable kitchen");
 assert.match(TASKS.move_final.label, /Pack the kitchen last/, "the final packing milestone must lock in Cyrus's kitchen-last preference");
 assert.match(SCHEDULE.find(item => item.date === "2026-08-30").note, /Pack the kitchen last/, "August 30 must carry the kitchen-last instruction");

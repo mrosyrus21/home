@@ -44,7 +44,11 @@ result = todaySectionStep(result.state, true, 1400);
 assert.equal(result.mode, "celebrate", "a later genuine re-completion may celebrate again");
 assert.equal(result.entered, true);
 
-assert.match(html, /const today3Done=hd\.score===3/, "Today's 3 may clear only at three of three");
+assert.doesNotMatch(html, /Today's 3/, "the redundant Today's 3 card and completion copy must stay removed");
+assert.match(html, /const vitaminDone=!!hd\.vit/, "the replacement reminder must use the existing saved vitamin completion state");
+assert.match(html, /💊 Vitamin reminder/, "Today must show one focused vitamin reminder");
+assert.match(html, /type="button" onclick="toggleWellness\('litfulo'\)" aria-label="Mark vitamins complete for today"/, "the vitamin reminder must retain the existing history key and keyboard control");
+assert.match(html, /todaySectionState\("vitamins",vitaminDone\)/, "the vitamin reminder must use the standard completion-and-collapse controller");
 assert.match(html, /waterDone=wc>=goal/, "Water may clear only after the actual bottle goal");
 assert.doesNotMatch(html, /function habitsTodayHtml/, "the old oversized habits block must stay removed");
 assert.doesNotMatch(html, /hydrationCard\("afternoon"/, "the duplicate afternoon hydration card must stay removed");
@@ -58,8 +62,8 @@ assert.match(html, /if\(window\.__stateHydrated\) window\.__flowBaselineReady=tr
 assert.match(html, /prefers-reduced-motion:reduce[\s\S]*?\.today-win/, "completion motion must honor reduced-motion preferences");
 assert.match(html, /Completed today/, "cleared items need one collapsed undo/history drawer");
 assert.doesNotMatch(html, /Day complete/, "Today must not make an unsafe all-day completion claim");
-assert.match(html, /const dailySections=\[morningDone,habitCards\.today3Done,habitCards\.waterDone\]/, "the honest day meter must include all three clearing sections");
-assert.match(html, /const tag=onclick\?'button':'div'/, "actionable Today’s 3 cells must be real keyboard controls");
+assert.match(html, /const dailySections=\[morningDone,habitCards\.vitaminDone,habitCards\.waterDone\]/, "the honest day meter must include Morning, Vitamins, and Water");
+assert.match(html, /if\(habitCards\.vitaminDone\)[\s\S]{0,220}?<span>Vitamins<\/span>/, "completed vitamins must move into the collapsed completion drawer");
 assert.match(html, /<button type="button" class="today-water-step next"[^>]*aria-label=/, "the next water cell must be a labeled keyboard control");
 assert.match(html, /undoN=Math\.min\(waterServing\(\),wc\)/, "active Water undo copy must match the configured per-tap amount");
 assert.match(html, /undoWater=Math\.min\(waterServing\(\),habitCards\.wc\)/, "collapsed Water undo copy must match the amount it removes");
