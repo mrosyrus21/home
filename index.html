@@ -1289,7 +1289,8 @@ function waterPlant(id)  {
   waterPlantGroup([id]);
 }
 
-const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","mixing_supplies","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure","move_books_aug03","move_kitchen_aug04","move_hobby_aug05","move_stage_aug06","move_decor_aug07","move_reset_aug08","move_linens_aug09","move_docs_aug10"]);
+const NO_PROGRESS=new Set(["get_alarm_clock","vacuum_bags","mixing_supplies","proj_greenonion","proj_romaine","proj_ladybugs","proj_bioactive","fix_smart_start","errand1","errand2","vacuum","herb_pinch1","herb_pinch2","gard_fertilize","gard_repot","gard_mulch","gnat_check","gnat_buy","gnat_traps","gnat_tea","gnat_apply","gnat_nuke","gnat_sand","gnat_check2","parse_harv","bk_powerwash","meshlab_workflow","leca_measure","move_books_aug03","move_kitchen_aug04","move_hobby_aug05","move_stage_aug06","move_decor_aug07","move_reset_aug08","move_linens_aug09","move_docs_aug10","xfinity_call","find_desk"]);
+if(typeof MOVE_LAUNCH_IDS!=="undefined") MOVE_LAUNCH_IDS.forEach(function(id){NO_PROGRESS.add(id);});
 function totalTasks() { return Object.keys(TASKS).filter(id=>!NO_PROGRESS.has(id)).length; }
 function doneTasks()  { return Object.entries(checked).filter(([id,v])=>v&&!NO_PROGRESS.has(id)).length; }
 function todaySched() { return SCHEDULE.find(s=>s.date===todayKey()); }
@@ -1450,7 +1451,7 @@ function getOverdueTasks() {
   SCHEDULE.forEach(s=>{
     if(s.date>=today||s.off) return;
     s.tasks.forEach(id=>{
-      if(id==="find_desk"||todayIds.has(id)||seen.has(id)) return;
+      if(todayIds.has(id)||seen.has(id)) return;
       if(pushed[id]&&pushed[id]>today) return; // already pushed to future
       if(TASKS[id]&&!checked[id]){ overdue.push(id); seen.add(id); }
     });
@@ -1668,6 +1669,26 @@ function planCard(id){
   c+='</div>';
   c+='<div onclick="toggle(\''+id+'\')" style="width:28px;height:28px;border-radius:50%;border:2px solid '+(isDone?'#10B981':r.color)+';background:'+(isDone?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0;cursor:pointer;transition:all .25s cubic-bezier(.34,1.56,.64,1)">'+(isDone?'✓':'')+'</div>';
   c+='</div></div>';
+  return c;
+}
+function moveLaunchCompletedToday(id){ return checked[id]===todayKey(); }
+function toggleMoveLaunch(id){
+  if(checked[id]) delete checked[id];
+  else checked[id]=todayKey();
+  save(); renderAll();
+}
+function movePriorityCard(id,item,onclick){
+  if(!item) return "";
+  const open=!!expanded["move-launch-"+id];
+  const color="#F5B830", steps=item.steps||[];
+  let c='<div class="priority-alert" style="cursor:default;align-items:flex-start">';
+  c+='<div class="alert-icon">'+(item.emoji||'⭐')+'</div><div class="alert-body">';
+  c+='<div class="alert-tag">'+(item.tag||'🚨 Move launch · high priority')+'</div>';
+  c+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap"><div class="alert-title" style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700">'+item.label+'</div>'+timePill(item.todayTime||item.time||'High priority',item.todayDuration||'')+'</div>';
+  if(item.note) c+='<div class="alert-sub" style="line-height:1.55">'+item.note+'</div>';
+  if(steps.length&&open) c+='<div style="margin-top:9px;border-top:1px solid rgba(245,184,48,.16);padding-top:7px">'+steps.map(function(step,i){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5"><span style="color:'+color+';font-weight:700;flex-shrink:0">'+(i+1)+'.</span><span>'+step+'</span></div>';}).join('')+'</div>';
+  if(steps.length) c+='<button type="button" onclick="event.stopPropagation();toggleExpand(\'move-launch-'+id+'\')" style="margin-top:8px;padding:4px 9px;border-radius:16px;border:1px solid rgba(245,184,48,.3);background:rgba(245,184,48,.07);color:#F5B830;font:600 10px \'Lora\',serif;cursor:pointer">'+(open?'▲ Hide steps':'▼ Show steps')+'</button>';
+  c+='</div><button type="button" onclick="event.stopPropagation();'+onclick+'" aria-label="Mark '+item.label.replace(/"/g,'&quot;')+' complete" style="width:30px;height:30px;border-radius:50%;border:2px solid '+color+';background:transparent;flex-shrink:0;cursor:pointer"></button></div>';
   return c;
 }
 function wxAlerts(){
@@ -2215,6 +2236,29 @@ function renderToday() {
   const habitCards=habitsTodayCards(), habitOrder=Math.max(330,nowM-30);
   if(habitCards.vitamin) add("vitamin",habitOrder,false,habitCards.vitamin,true);
   if(habitCards.water) add("water",habitOrder+1,false,habitCards.water,true);
+
+  // ── 🚨 MOVE LAUNCH — urgent persistent checklist without changing the one-task rolling schedule ──
+  if(!hc.rescue && typeof MOVE_LAUNCH_IDS!=="undefined"){
+    const moveOpen=MOVE_LAUNCH_IDS.filter(function(id){return !checked[id];});
+    if(moveOpen.length) add("move-launch-head",303,false,`<div style="display:flex;align-items:center;gap:10px;margin:4px 2px 8px;padding:9px 12px;border-radius:9px;background:rgba(245,184,48,.08);border:1px solid rgba(245,184,48,.24);color:#F5B830;font:700 11px 'Lora',serif"><span>🚨 Move launch · high priority</span><span style="margin-left:auto;color:var(--text2);font-weight:400">${moveOpen.length} left · clear one at a time</span></div>`,true);
+    MOVE_LAUNCH_IDS.forEach(function(id,i){
+      const t=TASKS[id]; if(!t) return;
+      const done=!!checked[id], doneToday=moveLaunchCompletedToday(id);
+      if(done&&!doneToday) return;
+      add("move-launch-"+id,304+i,done,done
+        ? strip(t.emoji||"⭐",t.label,true,"#F5B830","toggleMoveLaunch('"+id+"')",t.todayTime||"","","Tap to undo")
+        : movePriorityCard(id,t,"toggleMoveLaunch('"+id+"')"),true);
+    });
+  }
+  if(!hc.rescue && typeof MOVE_DAILY!=="undefined"){
+    MOVE_DAILY.forEach(function(item,i){
+      if(today<item.start||today>item.end) return;
+      const done=reminderDone(item.id,true);
+      add("move-daily-"+item.id,314+i,done,done
+        ? strip(item.emoji,item.label,true,"#F59E0B","toggleReminder('"+item.id+"',true)",item.time||"","","Returns tomorrow")
+        : movePriorityCard("daily-"+item.id,item,"toggleReminder('"+item.id+"',true)"),true);
+    });
+  }
 
   // ── Still-open one-off pins (compact, until done) ─────────────────────────────
   const PIN_OPEN=[
@@ -4004,7 +4048,7 @@ function finCancelToggle(id){ fin.cancel=fin.cancel||{}; if(fin.cancel[id]) dele
 function finTodoToggle(id){ fin.todoDone=fin.todoDone||{}; if(fin.todoDone[id]) delete fin.todoDone[id]; else fin.todoDone[id]=true; saveFin(); renderFinance(); try{renderToday();}catch(e){} }
 function finMondayToggle(id){ fin.monday=fin.monday||{}; if(fin.monday[id]) delete fin.monday[id]; else { fin.monday[id]=todayKey(); try{toast('📞 Handled — the Monday queue advances');}catch(e){} } saveFin(); renderFinance(); renderToday(); }
 // ── 📞 Mondays ⇄ ✅ To-dos single-source bridge (Jun 8 2026): a Monday card whose task also lives on the master ✅ To-dos list reflects THAT list's done state (finTaskDone) instead of carrying its own independent checkbox. fin.todoDone[ft] is the source of truth; legacy fin.monday[mon] is still honored, and the queue still paces one item a week. ──
-const MON_FT={ mon_latefee:'ft_latefee', mon_xfinity:'ft_xfinity', mon_family:'ft_family', mon_amazon:'ft_prime', mon_farmersdog:'ft_farmersdog', mon_carwash:'ft_carwash', mon_gamepass:'ft_gamepass', mon_disney:'ft_disney', mon_crunchy:'ft_crunchy', mon_uberone:'ft_uberone' };
+const MON_FT={ mon_latefee:'ft_latefee', mon_family:'ft_family', mon_amazon:'ft_prime', mon_farmersdog:'ft_farmersdog', mon_carwash:'ft_carwash', mon_gamepass:'ft_gamepass', mon_disney:'ft_disney', mon_crunchy:'ft_crunchy', mon_uberone:'ft_uberone' };
 function finTaskDone(id){ fin.todoDone=fin.todoDone||{}; fin.monday=fin.monday||{}; if(fin.todoDone[id]) return true; if(fin.monday[id]) return true; var ft=MON_FT[id]; if(ft&&fin.todoDone[ft]) return true; for(var mk in MON_FT){ if(MON_FT[mk]===id&&fin.monday[mk]) return true; } return false; }
 function finTaskToggle(id){ var ft=MON_FT[id]; if(ft){ finTodoToggle(ft); } else { finMondayToggle(id); } }
 function finMondayKey(offset){ const d=new Date(); const shift=(1-d.getDay()+7)%7; d.setDate(d.getDate()+shift+offset*7); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); } // 0 = today if Monday, else next Monday
@@ -4062,7 +4106,7 @@ function renderFinance(){
     +'<div style="font-family:\'Playfair Display\',serif;font-size:38px;font-weight:800;color:'+(pos?G:R)+';line-height:1">'+(pos?'+':'')+finFmt(gap,true)+'<span style="font-size:14px;color:var(--text2);font-weight:400;font-family:\'Lora\',serif"> / month</span></div>'
     +'<div style="font-size:12px;color:var(--text2);font-family:\'Lora\',serif;margin-top:8px">In ~'+finFmt(FINANCE.incomeMonthly,true)+' · committed out ~'+finFmt(committed,true)+(cancelGot>0?' <span style="color:'+G+'">(already trimmed '+finFmt(cancelGot,true)+' ✂️)</span>':'')+'</div>'
     +(pos?'<div style="font-size:12.5px;color:'+G+';font-family:\'Lora\',serif;font-style:italic;margin-top:8px">You\'re above water — every verified cancellation widens the margin. 🎉</div>'
-        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b>'+(!(fin.cancel||{}).farmersdog?'<br>🐕 Farmer\'s Dog $215/mo — <b>~6 weeks out</b>: use up the shipment, then the 12-day switch <b style="color:#4AD490">(the big one)</b>':'')+'<br>✂️ '+finFmt(cancelLeft-((fin.cancel||{}).farmersdog?0:215.05),true)+'/mo of smaller subscriptions left to verify (now on ✅ To-dos)<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)<br>📡 Xfinity retention call (+~$50)</div>')
+        :'<div style="font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;margin-top:10px;line-height:1.75"><b style="color:var(--text)">Path to positive:</b>'+(!(fin.cancel||{}).farmersdog?'<br>🐕 Farmer\'s Dog $215/mo — <b>~6 weeks out</b>: use up the shipment, then the 12-day switch <b style="color:#4AD490">(the big one)</b>':'')+'<br>✂️ '+finFmt(cancelLeft-((fin.cancel||{}).farmersdog?0:215.05),true)+'/mo of smaller subscriptions left to verify (now on ✅ To-dos)<br>👨‍👩‍👧 family $400 → $200 (+$200 — ask staged)</div>')
     +'<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:var(--text)">💰 Next paycheck: <b>'+(left===0?'today! 🎉':pdLabel+' — '+(left===1?'tomorrow':'in '+left+' days'))+'</b> <span style="color:var(--text2)">(~$2,250, every other Thursday)</span></div>'
   +'</div>';
 
@@ -4201,7 +4245,7 @@ function renderFinance(){
   const monAll=(FINANCE.mondays||[]).map(function(m){return {id:m.id,label:m.label,note:m.note||'',deadline:m.deadline||'',linked:MON_FT[m.id]||'',done:finTaskDone(m.id),doneStamp:fin.monday[m.id]||''};});
   const monOpen=monAll.filter(function(m){return !m.done;}), monDone=monAll.filter(function(m){return m.done;});
   out+='<div class="section-label">📞 Financial Mondays — one thing a week</div>';
-  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:12px 15px;margin-bottom:12px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">Monday is the money day — ONE retention call or cancellation, then you\'re done. No piles, no overwhelm. Check one off and the next slides into next Monday automatically.</div>';
+  out+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--rad);padding:12px 15px;margin-bottom:12px;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6">Monday is the money day — ONE money call or cancellation, then you\'re done. No piles, no overwhelm. Check one off and the next slides into next Monday automatically.</div>';
   if(!monOpen.length){
     out+='<div style="background:rgba(74,212,144,.07);border:1px solid rgba(74,212,144,.3);border-radius:var(--rad);padding:16px;text-align:center;font-size:13.5px;color:#4AD490;font-family:\'Lora\',serif;margin-bottom:14px">🏁 Queue cleared — every call made, every cancel verified. That\'s real money back.</div>';
   }
@@ -5018,7 +5062,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20260810074835';
+  var HG_BUILD_STAMP='20260811011705';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;
