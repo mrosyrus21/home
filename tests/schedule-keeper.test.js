@@ -10,9 +10,9 @@ const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const { SCHEDULE, TASKS, PAUSED_FLIP_SCAN, TV_FOLLOWUP } = new Function(dataSource + ";return {SCHEDULE,TASKS,PAUSED_FLIP_SCAN,TV_FOLLOWUP};")();
 
 const rolling = SCHEDULE.filter(item => item.date < "2026-08-17");
-assert.equal(rolling.length, 7, "the rolling window must contain exactly seven days");
-assert.equal(rolling[0].date, "2026-08-10", "the rolling window must start today");
-assert.equal(rolling[rolling.length - 1].date, "2026-08-16", "the rolling window must cover seven days through the final pre-checkpoint day");
+assert.equal(rolling.length, 6, "the final pre-checkpoint runway must contain August 11 through 16 only");
+assert.equal(rolling[0].date, "2026-08-11", "the active rolling window must start today in America/Denver");
+assert.equal(rolling[rolling.length - 1].date, "2026-08-16", "the active window must stop at the final pre-checkpoint day");
 
 for (let i = 0; i < rolling.length; i += 1) {
   assert.equal(rolling[i].tasks.length, 1, `expected one task on ${rolling[i].date}`);
@@ -25,7 +25,8 @@ for (let i = 0; i < rolling.length; i += 1) {
 }
 
 assert.equal(new Set(rolling.flatMap(item => item.tasks)).size, rolling.length, "rolling task IDs must be date-safe and unique");
-assert.deepEqual(SCHEDULE.find(item => item.date === "2026-08-10").tasks, ["move_docs_aug10"], "today must retain the current documents and valuables task");
+assert.deepEqual(SCHEDULE.find(item => item.date === "2026-08-11").tasks, ["move_supplies_aug11"], "today must retain the current moving-supplies check");
+assert.equal(SCHEDULE.some(item => item.date === "2026-08-10"), false, "expired August 10 must not remain active");
 assert.doesNotMatch(dataSource, /move_kitchen_aug04/, "the disliked kitchen starter must be removed from the active data");
 assert.equal(TASKS.move_kitchen, undefined, "kitchen packing must not remain available as a rolling starter");
 assert.equal(rolling.some(item => item.tasks.some(id => /kitchen/i.test(id + " " + TASKS[id].label))), false, "the rolling week must contain no kitchen packing task");
@@ -59,9 +60,9 @@ const oneTaskForDate = new Function("SCHEDULE", "TASKS", "pushed", `
   ${oneTaskSource}
   return oneTaskForDate;
 `)(SCHEDULE, TASKS, pushed);
-assert.equal(oneTaskForDate("2026-08-10"), "move_docs_aug10", "the Monday rolling task must appear instead of rest");
-pushed.move_docs_aug10 = "2026-08-11";
-assert.equal(oneTaskForDate("2026-08-10"), null, "a pushed-away task must not be replaced by unrelated housework");
+assert.equal(oneTaskForDate("2026-08-11"), "move_supplies_aug11", "today's rolling task must appear");
+pushed.move_supplies_aug11 = "2026-08-12";
+assert.equal(oneTaskForDate("2026-08-11"), null, "a pushed-away task must not be replaced by unrelated housework");
 
 assert.equal(PAUSED_FLIP_SCAN.paused, true, "the flip scan must remain paused while Cyrus moves and house hunts");
 assert.equal(PAUSED_FLIP_SCAN.label, "Morning flip scan — free TVs, mowers, curb alerts", "the paused idea must be saved intact for later");
