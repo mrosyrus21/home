@@ -278,8 +278,6 @@ const TASKS = {
 
 const SCHEDULE = [
   // ── MOVING · ROLLING NO-REGRET WEEK ────────────────────────────────────────
-  { date:"2026-08-11", tasks:["move_supplies_aug11"],     note:"Spend ten minutes gathering boxes, tape, markers, labels, and bags into the staging area. Replace only clearly missing supplies." },
-  { date:"2026-08-12", tasks:["move_clothes_aug12"],      note:"Pack one labeled box of off-season clothes. Keep current-week clothing accessible and put uncertain items in DECISION HOLD." },
   { date:"2026-08-13", tasks:["move_books_aug13"],        note:"Pack one destination-safe box of books or media. Label it clearly, place it in PACKED, then stop." },
   { date:"2026-08-14", tasks:["move_stage_aug14"],        note:"Spend ten minutes restoring the PACKED / DECISION HOLD / OPEN LAST staging area. Leave anything that still needs new-house measurements in DECISION HOLD." },
   { date:"2026-08-15", tasks:["move_decor_aug15"],        note:"Pack one labeled box of obvious nonessential decor you would move anywhere. Stop after that box." },
