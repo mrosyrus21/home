@@ -1,9 +1,9 @@
 // sw.js — network-first service worker.
 // Fixes "deploys don't show up": always fetches the latest from the network when
 // online, caches a copy for offline use, and falls back to cache only when offline.
-const CACHE = 'hg-cache-20260814231019';
+const CACHE = 'hg-cache-20260815180130';
 const REFRESH_PARAM = 'hg-refresh';
-const REFRESH_STAMP = '20260814231019';
+const REFRESH_STAMP = '20260815180130';
 
 self.addEventListener('install', (e) => {
   // take over immediately, don't wait for old SW to release

@@ -278,7 +278,6 @@ const TASKS = {
 
 const SCHEDULE = [
   // ── MOVING · ROLLING NO-REGRET WEEK ────────────────────────────────────────
-  { date:"2026-08-14", tasks:["move_stage_aug14"],        note:"Spend ten minutes restoring the PACKED / DECISION HOLD / OPEN LAST staging area. Leave anything that still needs new-house measurements in DECISION HOLD." },
   { date:"2026-08-15", tasks:["move_decor_aug15"],        note:"Pack one labeled box of obvious nonessential decor you would move anywhere. Stop after that box." },
   { date:"2026-08-16", tasks:["move_openlast_aug16"],     note:"Label one OPEN LAST bin and make a short essentials list. Keep daily essentials, the usable kitchen, and final-cleaning supplies accessible." },
 
