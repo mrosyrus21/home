@@ -278,8 +278,6 @@ const TASKS = {
 
 const SCHEDULE = [
   // ── MOVING · ROLLING NO-REGRET WEEK ────────────────────────────────────────
-  { date:"2026-08-16", tasks:["move_openlast_aug16"],     note:"Label one OPEN LAST bin and make a short essentials list. Keep daily essentials, the usable kitchen, and final-cleaning supplies accessible." },
-
   // ── MOVING MILESTONES ─────────────────────────────────────────────────────
   { date:"2026-08-17", tasks:["move_checkpoint"],          note:"Mostly packed two weeks before move-out, with the kitchen still usable. Use new-house measurements to resolve fit-dependent items; anything still uncertain may remain in DECISION HOLD." },
   { date:"2026-08-24", tasks:["move_last_week"],           note:"Switch to the open-last essentials kit and pack remaining non-kitchen items. Leave the kitchen for the final pack." },
