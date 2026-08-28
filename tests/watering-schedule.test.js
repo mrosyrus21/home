@@ -91,8 +91,8 @@ assert.equal(plants.some(p => p.id === "white_onion"), false, "the removed white
 assert.equal(queue.build({ dateKey: "2026-07-27", plants, watered: { white_onion: "2026-07-27" }, pushed: {} }).some(entry => entry.id === "white_onion"), false, "stale white-onion history must stay dormant");
 assert.equal(plants.find(p => p.id === "green_onion").days, 2, "green-onion cadence must stay unchanged");
 assert.equal(plants.find(p => p.id === "potato_sprout").days, 1, "second potato cadence must stay unchanged");
-assert.match(plants.find(p => p.id === "turmeric").name, /2 Plants/, "the turmeric card must represent both plants");
-assert.match(plantData.WATER_INFO.turmeric.when, /check both|both turmeric/i, "the shared turmeric record must require checking both plants");
+assert.equal(plants.some(p => p.id === "turmeric"), false, "removed turmeric must not be scheduled");
+assert.equal(queue.build({ dateKey: "2026-08-28", plants, watered: { turmeric: "2026-08-27" }, pushed: {} }).some(entry => entry.id === "turmeric"), false, "stale turmeric history must stay dormant");
 assert.equal(plantData.PLANT_INFO.potato_sprout.photo, plantData.PLANT_INFO.potato.photo, "both grow-bag potato cards must use the same photo");
 assert.equal(fs.existsSync(path.join(__dirname, "..", plantData.PLANT_INFO.turmeric.photo)), true, "the turmeric photo must exist");
 assert.match(plantData.PLANT_INFO.turmeric.photoCreditUrl || "", /^https:\/\/commons\.wikimedia\.org\//, "the turmeric example needs a source link");
