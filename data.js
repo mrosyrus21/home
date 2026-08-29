@@ -44,20 +44,35 @@ const MEAL_ANCHORS = [
 ];
 
 const HEALTH_COACH = {
-  proteinRange: "130–170 g/day eventually; right now the win is 3 protein eating events.",
-  hydrationRange: "2–3 liters/day to start, plus extra after caffeine, exercise, heat, outside time, or depletion.",
+  goal: "Build a lean, healthy, capable body and durable habits; strength supports the goal without chasing bodybuilding size.",
+  installation: "Treat the first 90 days as habit installation, not a pass/fail streak.",
+  litfuloActive: true,
+  proteinRange: "120–150 g/day; aim for roughly 30–45 g at each of 3 meals.",
+  hydrationRange: "2–3 liters/day, with extra fluids or electrolytes after heat, sweating, moving, hiking, yard work, or depletion.",
   rescueMeals: [
-    "Greek yogurt + granola/fruit",
+    "Greek yogurt + granola + berries",
     "Protein shake + banana",
-    "Eggs + toast",
     "Cottage cheese + crackers/fruit",
     "Turkey/chicken sandwich",
     "Peanut butter toast + milk",
     "Leftovers microwaved",
     "Cereal + milk + Greek yogurt",
-    "Rice/pasta/ramen + eggs or meat",
-    "Frozen meal plus extra protein"
+    "Frozen meal plus extra protein",
+    "Quesadilla + avocado, hot sauce, green chile, or enchilada sauce"
   ],
+  restart: {
+    moveDate: "2026-08-30",
+    minimumDate: "2026-08-31",
+    onRampStart: "2026-09-01",
+    onRampEnd: "2026-09-06",
+    formalStart: "2026-09-07",
+    anchors: ["Water on waking", "Dog/property walk", "Plant check or harvest", "Hygiene", "Protein breakfast", "Mandatory lunch", "Movement matched to readiness", "Dinner", "Evening shutdown"],
+    morningMinimum: ["Water", "Brush teeth, wash face, deodorant", "Feed and briefly walk Zoey", "Protein breakfast + Litfulo", "Start work"],
+    hygieneMorning: ["Brush teeth", "Wash face", "Deodorant", "Hair/scalp check", "Clean clothes", "Litfulo with breakfast"],
+    hygieneEvening: ["Brush teeth", "Rinse or wash face", "Stage tomorrow's hygiene items", "Put the water bottle in place"],
+    tutorialStrength: ["Chair stand-ups — 6–8 reps", "Counter pushups — 6–8 reps", "Hip hinge practice — 8 reps", "Supported one-arm dumbbell row — 6 each side", "Suitcase carry — 20 seconds each side", "Lying knee taps — 5 each side"],
+    readiness: ["No strength workout when underfed, dehydrated, exhausted, sick, injured, or past bedtime", "Poor sleep or low energy: reduce volume 20–30% or walk", "Joint pain: substitute or skip the loaded movement", "Work interruptions are expected; pause and resume without penalty"]
+  },
   workouts: {
     strengthDays: [1,3,5],
     strengthTitle: "Month 1 dumbbell strength",
@@ -77,11 +92,11 @@ const HEALTH_COACH = {
       "Easy breathing, no max-effort work"
     ],
     month1: {
-      startDate: "2026-07-31",
+      startDate: "2026-09-07",
       rules: [
-        "First workout back: one easy round only, RPE 4-5, then stop while it still feels easy.",
+        "Week 1 starts with one easy round at RPE 5; stop with energy left.",
         "No failure, max reps, or soreness hunting.",
-        "Food, water, sleep, and rescue mode override the workout schedule.",
+        "Food, water, sleep, illness, injury, and rescue mode override the workout schedule.",
         "No THC before workouts while form is being rebuilt.",
         "Jaw exerciser rides with strength days only: easiest level first, slow controlled reps, no pain."
       ],
@@ -91,8 +106,8 @@ const HEALTH_COACH = {
         text: "Easiest level: 2 sets of 12 slow controlled bites. Rest 30-60 seconds between sets. Stay on the easiest level about 4 weeks, then move up only when it feels easy and pain-free.",
         cautions: [
           "Do it after lifting or seated during long rests; do not chew while bracing under load.",
-          "Stop for clicking, jaw pain, headache, tooth pain, or gum pain.",
-          "Skip if TMJ issues, gum disease, braces, or recent dental work are active."
+          "Stop for clicking, jaw pain, headache, tooth pain, gum pain, or dizziness.",
+          "Skip if TMJ issues, braces or retainers, or recent dental work are active."
         ]
       },
       rpe: ["Week 1: RPE 5", "Week 2: RPE 6", "Week 3: RPE 6-7", "Week 4: RPE 6-7, Friday easier"],
@@ -105,9 +120,9 @@ const HEALTH_COACH = {
         ["Saturday", "Optional longer walk"],
         ["Sunday", "Recovery + tiny reset"]
       ],
-      strengthA: ["Goblet Squat", "Dumbbell Floor Press", "One-Arm Dumbbell Row", "Dumbbell Romanian Deadlift", "Farmer Carry", "Dead Bug"],
-      strengthB: ["Chair Squat or Reverse Lunge Supported", "Standing Dumbbell Overhead Press", "Supported One-Arm Dumbbell Row", "Glute Bridge", "Dumbbell Curl", "Side Plank"],
-      strengthC: ["Split Squat Supported or Goblet Squat", "Incline Pushup", "Dumbbell Romanian Deadlift", "One-Arm Dumbbell Row", "Farmer Carry", "Bird Dog"]
+      strengthA: ["Goblet Squat", "Dumbbell Floor Press or Counter Pushup", "One-Arm Dumbbell Row", "Dumbbell Romanian Deadlift", "Farmer Carry", "Lying Knee Taps or Dead Bug"],
+      strengthB: ["Chair Squat or Supported Reverse Lunge", "Standing Dumbbell Overhead Press if Arm Feels Normal", "Supported One-Arm Dumbbell Row", "Glute Bridge", "Dumbbell Curl", "Side Plank"],
+      strengthC: ["Supported Split Squat or Goblet Squat", "Incline Pushup", "Dumbbell Romanian Deadlift", "One-Arm Dumbbell Row", "Farmer Carry", "Bird Dog"]
     }
   }
 };
@@ -132,7 +147,6 @@ const TASKS = {
   mixing_supplies:{ room:"priority", label:"Buy: bottles ×2 (same as already have), mixing bottle, funnel", level:"easy" },
   claude_rules:   { room:"priority", label:"Have Claude rebuild Claude's rules in settings menu", level:"easy", note:"Refresh/rewrite Claude's custom rules in the settings menu." },
   auth_lock:      { room:"priority", label:"🔒 Big project: real app lock — Firebase Auth + locked database rules", level:"hard", note:"The password curtain on the app is cosmetic — the page AND the Firebase data are still publicly readable by anyone with the URL. The real fix: Firebase Authentication sign-in + database security rules locked to that account. Curtain password lives in CURTAIN_PASSWORD at the top of index.html." },
-  rx_setup:       { room:"priority", label:"Set up esomeprazole at King Soopers (use GoodRx)", level:"easy", note:"Open GoodRx, search esomeprazole for the King Soopers pharmacy, grab the coupon price, and send or transfer the prescription there. Show the GoodRx coupon at the counter on pickup." },
   measure_printer:{ room:"office",   label:"Measure the 3D printer — width, depth, height + room for spools and cables", level:"easy", note:"Do this before buying a desk so you know exactly what fits." },
   move_bath_water_damage: { room:"priority", label:"Protect the deposit: bathroom-sink water damage", level:"moderate", emoji:"💧", todayTime:"Start now", todayDuration:"document first", note:"Old house. Document everything, stop an active leak only when it is safe, notify management in writing, and dry or repair only with clear approval. Do not conceal damage.", steps:["Photograph or video the sink, cabinet, floor, leak source, and water damage before touching anything.","If water is actively leaking, use a tray or towels and close the under-sink shutoff only if it turns easily and is safely reachable.","Report the leak and damage in writing. Check the lease and get written approval before replacing plumbing, cabinet material, drywall, or flooring.","After the leak is stopped and the area is electrically safe, empty the cabinet and dry it with airflow or a dehumidifier.","Save messages, receipts, and before-and-after photos. Do not paint over, caulk over, or hide damage.","Stop and use maintenance or a plumber if a valve is stuck, water is near electricity, a pressurized line or sewage is involved, material is soft or swollen, or visible or musty mold is present."] },
   move_new_condition: { room:"priority", label:"Document the new house + make a fragile landing zone", level:"easy", emoji:"📸", todayTime:"Before more moving", todayDuration:"15 min", note:"Protect yourself and make the first fragile loads easy: record the condition before cleaning or moving more items, then choose one dry, secure landing area.", steps:["Photograph or video each room, the floors, and any existing marks or damage before cleaning or moving more items in.","Record accessible utility-meter readings and keep a dated copy of the photos.","Choose one dry, lockable or otherwise secure area where TVs, framed art, and empty aquariums can land safely.","Measure rooms, doorways, stairs, and tight turns while you are there so furniture purchases fit."] },

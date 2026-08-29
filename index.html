@@ -244,6 +244,9 @@ body::after{
 .section-label::before{background:linear-gradient(90deg,transparent,rgba(212,144,10,.35))}
 .section-label::after{background:linear-gradient(270deg,transparent,rgba(212,144,10,.35))}
 .section-label:first-child{padding-top:4px}
+#view-wellness .health-card{background:linear-gradient(145deg,rgba(12,11,18,.96),rgba(18,17,28,.92))!important;backdrop-filter:blur(8px)}
+#view-wellness .health-card [style*="color:var(--text2)"]{color:#C8BED8!important}
+#view-wellness .health-card [style*="color:var(--text3)"]{color:#9E94AE!important}
 
 /* ── HABIT STRIP ── */
 .habit-strip{
@@ -864,7 +867,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260729010000-user-batch"></script>
+<script src="./data.js?v=20260829071746-health-restart"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
 <script src="./recipes.js?v=20260729010000-approved"></script>
 <script>
@@ -1229,7 +1232,7 @@ function pushWateringGroup(ids){
 // Max tasks allowed per day
 function getCapacity(ds) {
   const day=new Date(ds+"T12:00:00").getDay();
-  if(day===1) return 0;       // Monday — pool league
+  if(day===1) return 0;       // Monday — no scheduled house task
   if(day===3) return 1;       // Wednesday — 7pm commitment
   if(day===0||day===6) return 3; // Weekend
   return 2;                   // Tue, Thu, Fri
@@ -1783,7 +1786,7 @@ function hydrationCard(kind,done,label,sub,order){
 function workoutCard(st,today){
   const plan=fitnessMonth1PlanForDate(today), list=plan.list||[];
   const isStrength=plan.type==="strength", icon=isStrength?"\uD83C\uDFCB\uFE0F":"\uD83D\uDEB6";
-  const status=fitnessGateMessage(st), color=st.workoutAllowed?"#34D399":"#F5B830";
+  const allowed=fitnessPlanAllowed(st,plan), status=fitnessGateMessage(st,plan), color=allowed?"#34D399":"#F5B830";
   const detail=list.map(function(x){return '<div style="display:flex;gap:8px;padding:3px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("");
   if(st.workoutDone) return strip(icon,plan.title,true,"#34D399","toggleWellness('workout')","Done","","");
   return `<div onclick="toggleWellness('workout')" style="background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(52,211,153,.03));border:1px solid ${color}66;border-left:4px solid ${color};border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;cursor:pointer">
@@ -1810,7 +1813,7 @@ function fitnessMonth1Cfg(){
 }
 function fitnessWeekNumber(ds){
   const m=fitnessMonth1Cfg().m;
-  const start=fitnessDateAtNoon(m.startDate||"2026-07-31");
+  const start=fitnessDateAtNoon(m.startDate||"2026-09-07");
   const cur=fitnessDateAtNoon(ds);
   const days=Math.max(0,Math.floor((cur-start)/86400000));
   return Math.max(1,Math.min(4,Math.floor(days/7)+1));
@@ -1831,17 +1834,22 @@ function fitnessExerciseText(name){
   const map={
     "Goblet Squat":"Goblet squat - hold one dumbbell at chest; sit hips down/back; stand tall.",
     "Dumbbell Floor Press":"Dumbbell floor press - lie on the floor; press dumbbells up; lower elbows gently.",
+    "Dumbbell Floor Press or Counter Pushup":"Dumbbell floor press or counter pushup - use the version that feels steady and pain-free.",
     "One-Arm Dumbbell Row":"One-arm dumbbell row - one hand supported; pull dumbbell toward ribs; lower slow.",
     "Dumbbell Romanian Deadlift":"Dumbbell Romanian deadlift - soft knees; push hips back; feel hamstrings; stand tall.",
     "Farmer Carry":"Farmer carry - hold dumbbells at your sides and walk tall.",
     "Dead Bug":"Dead bug - lie on back; brace belly; slowly tap one heel down, then switch.",
+    "Lying Knee Taps or Dead Bug":"Lying knee taps or dead bug - brace gently and use the version you can control.",
     "Chair Squat or Reverse Lunge Supported":"Chair squat or supported reverse lunge - use a chair/counter for balance; slow easy reps.",
+    "Chair Squat or Supported Reverse Lunge":"Chair squat or supported reverse lunge - use a chair/counter for balance; slow easy reps.",
     "Standing Dumbbell Overhead Press":"Standing dumbbell overhead press - brace belly; press dumbbells overhead without leaning back.",
+    "Standing Dumbbell Overhead Press if Arm Feels Normal":"Standing dumbbell overhead press only if the arm and shoulder feel normal; otherwise skip or substitute.",
     "Supported One-Arm Dumbbell Row":"Supported one-arm dumbbell row - hand on chair/couch; pull toward ribs; no twisting.",
     "Glute Bridge":"Glute bridge - lie on back, knees bent; squeeze glutes and lift hips.",
     "Dumbbell Curl":"Dumbbell curl - elbows near sides; curl slowly; lower with control.",
     "Side Plank":"Side plank - knees down is allowed; keep ribs and hips stacked.",
     "Split Squat Supported or Goblet Squat":"Supported split squat or goblet squat - hold support; small range is fine.",
+    "Supported Split Squat or Goblet Squat":"Supported split squat or goblet squat - hold support; small range is fine.",
     "Incline Pushup":"Incline pushup - hands on counter; body straight-ish; move feet closer to make it easier.",
     "Bird Dog":"Bird dog - hands and knees; reach opposite arm/leg; keep hips quiet."
   };
@@ -1860,11 +1868,62 @@ function fitnessWorkoutList(key){
   if(/^strength/.test(key)) items=items.concat(fitnessJawItems());
   return items;
 }
+function fitnessRestartCfg(){
+  const cfg=hcCfg(), r=cfg.restart||{}, m=((cfg.workouts||{}).month1||{});
+  return {
+    moveDate:r.moveDate||"2026-08-30",
+    minimumDate:r.minimumDate||"2026-08-31",
+    onRampStart:r.onRampStart||"2026-09-01",
+    onRampEnd:r.onRampEnd||"2026-09-06",
+    formalStart:r.formalStart||m.startDate||"2026-09-07",
+    tutorialStrength:r.tutorialStrength||[]
+  };
+}
+function fitnessTransitionPlanForDate(ds){
+  const r=fitnessRestartCfg();
+  if(ds>=r.formalStart) return null;
+  const d=fitnessDateAtNoon(ds), dow=d.getDay();
+  const dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const base={phase:true,week:0,dayName:dayNames[dow],rpe:"RPE 4-5",dose:"Stop with energy left.",duration:"5-20 min",workoutKey:"transition",trackable:true};
+  if(ds<r.moveDate) return Object.assign(base,{
+    type:"mobility",title:"Install the new-house anchors now",badge:"Fresh-start setup",coach:"Water, hygiene, Zoey, plants, meals, and five easy minutes of mobility. Moving prep already counts as physical work.",
+    list:["Water on waking.","Brush teeth, wash face, deodorant, and get dressed.","Walk Zoey and check or harvest plants.","Eat protein at breakfast, lunch, and dinner.","Five easy minutes of mobility; no formal strength before move day."]
+  });
+  if(ds===r.moveDate) return Object.assign(base,{
+    type:"move",title:"Move day counts as exercise",badge:"Sunday · move day",duration:"All day",coach:"Protect fuel, hydration, and your body. No separate workout.",
+    list:["Protein breakfast before loading.","Keep water active all day.","Lunch happens even if it is inconvenient.","Use electrolytes if sweaty, headachey, weak, or depleted.","Eat dinner before the crash. No formal workout."]
+  });
+  if(ds===r.minimumDate) return Object.assign(base,{
+    type:"mobility",title:"Minimum-viable health day",badge:"Monday · recovery logistics",coach:"Keep the identity alive without forcing a workout.",
+    list:["Water on waking.","Hygiene minimum.","Protein breakfast and mandatory lunch.","Walk Zoey on the property for 10 minutes.","Five minutes of mobility. Strength is optional only if the day unexpectedly feels easy."]
+  });
+  if(ds>=r.onRampStart&&ds<=r.onRampEnd){
+    if(dow===3||dow===5) return Object.assign(base,{
+      type:"strength",workoutKey:"tutorial",title:"Tutorial strength · one easy round",badge:"On-ramp week",duration:"10-15 min",coach:"Work interruptions are fine: pause, then resume. One controlled round is the whole win.",
+      list:r.tutorialStrength.slice()
+    });
+    if(dow===6) return Object.assign(base,{
+      type:"mobility",title:"Health setup + optional property walk",badge:"On-ramp week",duration:"10-30 min",coach:"Stage the environment so next week is easier.",
+      list:["Put the water bottle in its home.","Keep walking shoes and dumbbells visible.","Set up easy breakfast and lunch ingredients.","Optional longer property walk if energy is good."]
+    });
+    if(dow===0) return Object.assign(base,{
+      type:"mobility",title:"Recovery + weekly reset",badge:"On-ramp week",duration:"5-20 min",coach:"Recover, remove one friction point, and start formal Month 1 tomorrow.",
+      list:["Five easy minutes of mobility.","Stage water, hygiene items, and Monday food.","Check energy, soreness, and joint pain.","No hard workout today."]
+    });
+    return Object.assign(base,{
+      type:"mobility",title:"Property walk + mobility",badge:"On-ramp week",duration:"10-25 min",coach:"Prove the routine before increasing training load.",
+      list:["Walk Zoey on the property for 10-20 minutes.","Do five easy minutes of mobility.","Keep breakfast, lunch, water, and hygiene anchored."]
+    });
+  }
+  return Object.assign(base,{type:"mobility",title:"Fresh-start anchors",badge:"Transition",coach:"Keep the minimum version alive.",list:["Water.","Hygiene.","Protein meals.","Walk Zoey."]});
+}
 function fitnessMonth1PlanForDate(ds){
+  const transition=fitnessTransitionPlanForDate(ds);
+  if(transition) return transition;
   const c=fitnessMonth1Cfg(), wo=c.wo, m=c.m;
   const d=fitnessDateAtNoon(ds), dow=d.getDay(), week=fitnessWeekNumber(ds);
   const dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  const dayName=dayNames[dow], rpe=fitnessRpeForDate(ds,dow), firstDay=ds===(m.startDate||"2026-07-31");
+  const dayName=dayNames[dow], rpe=fitnessRpeForDate(ds,dow), firstDay=ds===(m.startDate||"2026-09-07");
   let type="mobility", title=wo.recoveryTitle||"Light movement / mobility", key="recovery", duration="10-20 min";
   let coach="Easy movement counts. No max-effort work.";
   let list=(wo.recovery||[]).map(fitnessExerciseText);
@@ -1898,9 +1957,19 @@ function fitnessMonth1PlanForDate(ds){
   if(firstDay) coach="First workout back: one easy round, then stop while it still feels easy.";
   return {type:type,title:title,workoutKey:key,week:week,dayName:dayName,badge:(firstDay?"Day 1 · ":"")+"Week "+week,rpe:rpe,dose:fitnessDoseForWeek(week),duration:duration,coach:coach,list:list};
 }
-function fitnessGateMessage(st){
+function fitnessGateMessage(st,plan){
   if(st.rescue) return "Recovery first - rescue mode is on.";
   if(st.pastBed) return "Plan visible - bedtime is protected. Do this tomorrow.";
+  if(plan&&plan.type==="move"){
+    if(st.wc<1&&st.meals<1) return "Water + protein breakfast before loading.";
+    if(st.wc<1) return "Drink water before loading.";
+    if(st.meals<1) return "Eat protein breakfast before loading.";
+    return "Move day is the workout. Keep water and meals active all day.";
+  }
+  if(plan&&plan.type!=="strength"&&plan.type!=="move"){
+    if(st.wc<1) return "Drink water first, then easy movement is available.";
+    return "Easy movement is available; keep it conversational.";
+  }
   if(st.wc<1 && st.meals<1) return "Plan visible - water + protein before starting.";
   if(st.wc<1) return "Plan visible - drink water before starting.";
   if(st.meals<1) return "Plan visible - eat something with protein before starting.";
@@ -1908,9 +1977,16 @@ function fitnessGateMessage(st){
   if(st.underfed || st.meals<2) return "Plan visible - have another protein meal before starting.";
   return "Ready when you are.";
 }
+function fitnessPlanAllowed(st,plan){
+  if(st.rescue||st.pastBed) return false;
+  if(plan&&plan.type==="move") return st.wc>=1&&st.meals>=1;
+  if(plan&&plan.type!=="strength"&&plan.type!=="move") return st.wc>=1;
+  return !!st.workoutAllowed;
+}
 function fitnessFullScheduleHtml(today){
   const c=fitnessMonth1Cfg(), m=c.m, plan=fitnessMonth1PlanForDate(today||todayKey());
-  const week=plan.week, friday=(week%2===0)?"Strength C":"Strength A";
+  const restart=fitnessRestartCfg(), formalStarted=(today||todayKey())>=restart.formalStart;
+  const week=formalStarted?plan.week:1, friday=(week%2===0)?"Strength C":"Strength A";
   const rows=[
     ["Monday","Strength A + jaw finisher"],["Tuesday","Walk + mobility"],["Wednesday","Strength B + jaw finisher"],
     ["Thursday","Walk + mobility"],["Friday",friday+(week===4?" easier":"")+" + jaw finisher"],
@@ -1918,7 +1994,7 @@ function fitnessFullScheduleHtml(today){
   ];
   const rules=(m.rules||[]).map(function(x){return '<div style="display:flex;gap:8px;padding:3px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:#F5B830">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("");
   const schedule=rows.map(function(r){
-    const on=r[0]===plan.dayName;
+    const on=formalStarted&&r[0]===plan.dayName;
     return '<div style="display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;background:'+(on?'rgba(52,211,153,.12)':'rgba(255,255,255,.03)')+';border:1px solid '+(on?'rgba(52,211,153,.38)':'rgba(255,255,255,.07)')+'"><div style="width:82px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:'+(on?'#34D399':'var(--text3)')+';font-family:\'Lora\',serif">'+almanacEsc(r[0])+'</div><div style="flex:1;min-width:0;font-size:12.5px;color:var(--text);font-family:\'Lora\',serif">'+almanacEsc(r[1])+'</div></div>';
   }).join("");
   const jaw=m.jaw||{};
@@ -1926,9 +2002,11 @@ function fitnessFullScheduleHtml(today){
   const block=function(title,key,color){
     return '<details style="background:rgba(0,0,0,.16);border:1px solid '+color+'33;border-radius:10px;padding:10px 12px;margin-top:8px" '+(plan.workoutKey===key?'open':'')+'><summary style="cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:'+color+';font-family:\'Lora\',serif;font-weight:700">'+almanacEsc(title)+'</summary><div style="margin-top:7px">'+fitnessWorkoutList(key).map(function(x){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("")+'</div></details>';
   };
+  const runway=!formalStarted?'<div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.28);border-left:3px solid #38BDF8;border-radius:10px;padding:10px 12px;margin-bottom:10px"><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7DD3FC;font-family:\'Lora\',serif;font-weight:700;margin-bottom:4px">New-house restart runway</div><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text)">'+almanacEsc(plan.title)+'</div><div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5;margin-top:3px">Move day Aug 30 · minimum day Aug 31 · on-ramp Sep 1-6 · formal Month 1 Sep 7.</div></div>':'';
   return '<div style="background:rgba(0,0,0,.16);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:12px;margin-top:11px">'
-    +'<div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#34D399;font-family:\'Lora\',serif;font-weight:700;margin-bottom:5px">Month 1 workout schedule</div>'
-    +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">Today: '+almanacEsc(plan.dayName)+' - '+almanacEsc(plan.title)+'</div>'
+    +runway
+    +'<div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#34D399;font-family:\'Lora\',serif;font-weight:700;margin-bottom:5px">Formal Month 1 · starts Sep 7</div>'
+    +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">'+(formalStarted?'Today: ':'Current runway: ')+almanacEsc(plan.dayName)+' - '+almanacEsc(plan.title)+'</div>'
     +'<div style="font-size:11.5px;color:#A7F3D0;font-family:\'Lora\',serif;font-style:italic;line-height:1.45;margin-bottom:8px">'+almanacEsc(plan.badge)+' - '+almanacEsc(plan.rpe)+' - '+almanacEsc(plan.dose)+'</div>'
     +rules
     +'<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">'+schedule+'</div>'
@@ -2525,8 +2603,8 @@ function renderToday() {
     </div>`,true);
   } else if(dow===1 && !oneId){
     add("rest",taskOrder,false,`<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.03));border:1px solid rgba(139,92,246,.3);border-left:4px solid #8B5CF6;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;text-align:center">
-      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#DDD6FE">🛋️ Monday — rest day. No house task.</div>
-      <div style="font-size:11.5px;color:var(--text2);font-style:italic;margin-top:3px;font-family:'Lora',serif">The house can wait — recharge. Pool league tonight. 🎱</div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#DDD6FE">🛋️ Monday house-task break</div>
+      <div style="font-size:11.5px;color:var(--text2);font-style:italic;margin-top:3px;font-family:'Lora',serif">No moving or cleanup task is scheduled. Your health plan still follows today's card.</div>
     </div>`,true);
   } else if(oneId){
     const t=taskById(oneId);
@@ -3845,9 +3923,9 @@ function logRefill(n){ litfulo={startDate:todayKey(),startDoses:n,reorderAt:7}; 
 function clearRefill(){ litfulo={}; saveLit(); renderAll(); }
 function litRefillHtml(){
   const lit=litfulo||{};
-  const wrap=(inner)=>`<div style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:var(--rad);padding:13px 16px;margin:-6px 0 14px">${inner}</div>`;
+  const wrap=(inner)=>`<div class="health-card" style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:var(--rad);padding:13px 16px;margin:-6px 0 14px">${inner}</div>`;
   if(!(lit.startDate&&lit.startDoses)){
-    return wrap(`<div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;margin-bottom:9px">📦 <b style="color:var(--text)">Refill tracking</b> — not set. Log a refill to start the countdown.</div>
+    return wrap(`<div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;margin-bottom:9px">📦 <b style="color:var(--text)">Refill received.</b> Add the bottle count only if you want a reorder countdown.</div>
       <div style="display:flex;gap:8px">
         <button onclick="logRefill(30)" style="flex:1;padding:9px 0;border-radius:9px;background:rgba(99,102,241,.14);border:1px solid rgba(99,102,241,.4);color:#A5B4FC;cursor:pointer;font-family:'Lora',serif;font-size:12.5px;font-weight:600">Log 30-day refill</button>
         <button onclick="logRefill(90)" style="flex:1;padding:9px 0;border-radius:9px;background:rgba(99,102,241,.14);border:1px solid rgba(99,102,241,.4);color:#A5B4FC;cursor:pointer;font-family:'Lora',serif;font-size:12.5px;font-weight:600">Log 90-day refill</button>
@@ -3887,19 +3965,53 @@ function medMini(key,name,timing,desc,color){
     +'<div style="width:24px;height:24px;border-radius:50%;border:2px solid '+(done?'#10B981':color)+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0">'+(done?'✓':'')+'</div>'
     +'</div></div>';
 }
-function healthCoachSectionHtml(){
-  const cfg=hcCfg();
-  const chip=s=>'<span style="display:inline-block;margin:3px 4px 3px 0;padding:4px 8px;border-radius:999px;background:rgba(245,184,48,.10);border:1px solid rgba(245,184,48,.24);color:#FBE8C0;font-size:11px">'+s+'</span>';
-  return `<div class="section-label">💪 Health Coach</div>
-  <div style="background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(56,189,248,.04));border:1px solid rgba(52,211,153,.28);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">
-    <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#A7F3D0;margin-bottom:6px">3-month home base layer</div>
-    <div style="font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.6">Food, water, sleep, and basic movement are priority tasks. Training only happens after water + protein; late-night rescue mode means no workout, cooking project, cleaning, or planning spiral.</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px">
-      <div style="background:rgba(245,184,48,.08);border:1px solid rgba(245,184,48,.24);border-radius:10px;padding:10px 11px"><div style="font-size:10px;color:#F5B830;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Food</div><div style="font-size:12px;color:var(--text2);line-height:1.45;margin-top:3px">${cfg.proteinRange||"3 protein eating events first."}</div></div>
-      <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.24);border-radius:10px;padding:10px 11px"><div style="font-size:10px;color:#7DD3FC;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Hydration</div><div style="font-size:12px;color:var(--text2);line-height:1.45;margin-top:3px">${cfg.hydrationRange||"2-3 liters/day to start."}</div></div>
+function healthMiniToggle(key,emoji,label,sub,color){
+  const done=!!laundry["well-"+key+"-"+todayKey()];
+  return `<button type="button" onclick="toggleWellness('${key}')" aria-pressed="${done?'true':'false'}" style="width:100%;display:flex;align-items:flex-start;gap:10px;text-align:left;background:${done?'rgba(16,185,129,.08)':'rgba(0,0,0,.16)'};border:1px solid ${done?'rgba(16,185,129,.32)':color+'44'};border-radius:10px;padding:10px 11px;color:inherit;cursor:pointer">
+    <span style="font-size:19px;line-height:1.2">${done?'✅':emoji}</span><span style="flex:1;min-width:0"><span style="display:block;font-family:'Playfair Display',serif;font-size:13.5px;font-weight:700;color:${done?'var(--text3)':'var(--text)'};${done?'text-decoration:line-through':''}">${almanacEsc(label)}</span><span style="display:block;font:11px/1.45 'Lora',serif;color:var(--text2);margin-top:2px">${almanacEsc(sub)}</span></span>
+  </button>`;
+}
+function healthDailyAnchorsHtml(today){
+  const wc=waterCount(today), goal=waterGoal(), meals=["breakfast","lunch","dinner"];
+  const mealNames={breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner"};
+  const mealButtons=meals.map(function(id){
+    const done=mealDoneOn(id,today);
+    return `<button type="button" onclick="toggleMeal('${id}')" aria-pressed="${done?'true':'false'}" style="flex:1;min-width:82px;border:1px solid ${done?'rgba(16,185,129,.35)':'rgba(245,184,48,.28)'};background:${done?'rgba(16,185,129,.1)':'rgba(245,184,48,.06)'};border-radius:9px;padding:8px 6px;color:${done?'#6EE7B7':'var(--text2)'};font:600 11px 'Lora',serif;cursor:pointer">${done?'✓ ':''}${mealNames[id]}</button>`;
+  }).join("");
+  return `<div class="section-label">Today’s health anchors</div>
+  <div class="health-card" style="background:linear-gradient(135deg,rgba(56,189,248,.1),rgba(52,211,153,.04));border:1px solid rgba(56,189,248,.3);border-radius:var(--rad);padding:14px 15px;margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:9px;margin-bottom:9px">
+      <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:10px;padding:10px 11px"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><div style="font:700 10px 'Lora',serif;letter-spacing:.13em;text-transform:uppercase;color:#7DD3FC">Water · first anchor</div><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--text);margin-top:2px">${wc} of ${goal} bottles</div><div style="font:10.5px 'Lora',serif;color:var(--text2)">${wc*32} oz · all fluids count</div></div><button type="button" onclick="waterAdd()" aria-label="Log ${waterServing()} water bottle${waterServing()===1?'':'s'}" style="border:1px solid rgba(56,189,248,.45);background:rgba(56,189,248,.14);color:#7DD3FC;border-radius:9px;padding:8px 9px;font:700 11px 'Lora',serif;cursor:pointer">+${waterServing()}</button></div></div>
+      <div style="background:rgba(245,184,48,.07);border:1px solid rgba(245,184,48,.24);border-radius:10px;padding:10px 11px"><div style="font:700 10px 'Lora',serif;letter-spacing:.13em;text-transform:uppercase;color:#F5B830">Protein meals</div><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--text);margin-top:2px">${mealsEaten(today)} of 3</div><div style="font:10.5px/1.4 'Lora',serif;color:var(--text2)">Lunch is mandatory.</div></div>
     </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px">${mealButtons}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${healthMiniToggle('hygiene-am','🪥','Morning hygiene','Teeth · face · deodorant · hair/scalp · clean clothes','#A78BFA')}
+      ${healthMiniToggle('hygiene-pm','🌙','Evening hygiene','Teeth · face · stage tomorrow · bottle in place','#A78BFA')}
+    </div>
+    <details style="margin-top:9px;background:rgba(0,0,0,.13);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px 10px"><summary style="cursor:pointer;font:700 10.5px 'Lora',serif;color:var(--text2);letter-spacing:.08em;text-transform:uppercase">Food-structure log</summary><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">${healthMiniToggle('mealprep','🍳','Prepared food','Cooking or meal-prep action done.','#F5B830')}${healthMiniToggle('emergencymeal','🛟','Emergency meal used','Rescue food counts; no guilt.','#F5B830')}</div></details>
+  </div>`;
+}
+function healthCoachSectionHtml(){
+  const cfg=hcCfg(), r=cfg.restart||{};
+  const chip=s=>'<span style="display:inline-block;margin:3px 4px 3px 0;padding:4px 8px;border-radius:999px;background:rgba(245,184,48,.10);border:1px solid rgba(245,184,48,.24);color:#FBE8C0;font-size:11px">'+almanacEsc(s)+'</span>';
+  const rows=(items,color)=>'<div>'+((items||[]).map(function(x){return '<div style="display:flex;gap:8px;padding:3px 0;font:11.5px/1.5 \'Lora\',serif;color:var(--text2)"><span style="color:'+color+'">•</span><span>'+almanacEsc(x)+'</span></div>';}).join(""))+'</div>';
+  const sunday=new Date(todayKey()+"T12:00:00").getDay()===0;
+  return `<div class="section-label">💪 Health Coach</div>
+  <div class="health-card" style="background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(56,189,248,.04));border:1px solid rgba(52,211,153,.28);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">
+    <div style="font:700 9px 'Lora',serif;letter-spacing:.2em;text-transform:uppercase;color:#34D399;margin-bottom:5px">90-day habit installation</div>
+    <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#A7F3D0;margin-bottom:6px">Healthy, capable, and consistent</div>
+    <div style="font:12.5px/1.6 'Lora',serif;color:var(--text2)">${almanacEsc(cfg.goal||"Build durable health habits.")} ${almanacEsc(cfg.installation||"")}</div>
+    <div style="margin-top:9px">${(r.anchors||[]).map(chip).join("")}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px">
+      <div style="background:rgba(245,184,48,.08);border:1px solid rgba(245,184,48,.24);border-radius:10px;padding:10px 11px"><div style="font:700 10px 'Lora',serif;color:#F5B830;text-transform:uppercase;letter-spacing:.12em">Food</div><div style="font:12px/1.45 'Lora',serif;color:var(--text2);margin-top:3px">${almanacEsc(cfg.proteinRange||"3 protein meals.")}</div></div>
+      <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.24);border-radius:10px;padding:10px 11px"><div style="font:700 10px 'Lora',serif;color:#7DD3FC;text-transform:uppercase;letter-spacing:.12em">Hydration</div><div style="font:12px/1.45 'Lora',serif;color:var(--text2);margin-top:3px">${almanacEsc(cfg.hydrationRange||"2-3 liters/day.")}</div></div>
+    </div>
+    <details style="background:rgba(0,0,0,.16);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:10px 12px;margin-top:9px"><summary style="cursor:pointer;font:700 11px 'Lora',serif;color:#C4B5FD;letter-spacing:.1em;text-transform:uppercase">Morning + hygiene minimums</summary><div style="margin-top:7px"><div style="font:700 11px 'Lora',serif;color:#A78BFA">Rushed morning</div>${rows(r.morningMinimum,"#A78BFA")}<div style="font:700 11px 'Lora',serif;color:#A78BFA;margin-top:7px">Evening hygiene</div>${rows(r.hygieneEvening,"#A78BFA")}</div></details>
+    <details style="background:rgba(0,0,0,.16);border:1px solid rgba(245,184,48,.25);border-radius:10px;padding:10px 12px;margin-top:8px"><summary style="cursor:pointer;font:700 11px 'Lora',serif;color:#F5B830;letter-spacing:.1em;text-transform:uppercase">Readiness rules</summary><div style="margin-top:7px">${rows(r.readiness,"#F5B830")}</div></details>
     ${fitnessFullScheduleHtml(todayKey())}
-    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#F5B830;font-family:'Lora',serif;font-weight:700;margin:12px 0 5px">Rescue meals</div>
+    <details ${sunday?'open':''} style="background:rgba(0,0,0,.16);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:10px 12px;margin-top:9px"><summary style="cursor:pointer;font:700 11px 'Lora',serif;color:#34D399;letter-spacing:.1em;text-transform:uppercase">Sunday weekly review</summary><div style="margin-top:7px">${rows(["Strength workouts completed?","Days with 3 eating events and mandatory lunch?","Average energy, soreness, and joint pain from 1-10?","Morning and evening hygiene completed?","Biggest friction point, and what should be staged differently?","Choose: maintain, reduce volume, or progress slightly."],"#34D399")}</div></details>
+    <div style="font:700 11px 'Lora',serif;letter-spacing:.12em;text-transform:uppercase;color:#F5B830;margin:12px 0 5px">Emergency meals still count</div>
     <div>${(cfg.rescueMeals||[]).map(chip).join("")}</div>
   </div>`;
 }
@@ -3912,22 +4024,19 @@ function fitnessSectionHtml(today){
   const st=healthCoachState(today,nowM,dow);
   const plan=fitnessPlanForDate(today);
   const done=!!laundry["well-workout-"+today]||!!laundry["health-workout-"+today];
-  const ready=st.workoutAllowed;
-  const wc=waterCount(today), meals=mealsEaten(today);
-  const next=ready?(plan.title+" is ready"):fitnessGateMessage(st);
+  const ready=fitnessPlanAllowed(st,plan);
+  const next=plan.title;
   const color=ready?"#34D399":"#F5B830";
   const items=(plan.list||[]).map(function(x){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("");
-  return `<div class="section-label">Fitness</div>
-  <div style="background:linear-gradient(135deg,rgba(52,211,153,.11),rgba(56,189,248,.04));border:1px solid rgba(52,211,153,.3);border-radius:var(--rad);padding:15px 16px;margin-bottom:14px">
+  return `<div class="section-label">Movement plan</div>
+  <div class="health-card" style="background:linear-gradient(135deg,rgba(52,211,153,.11),rgba(56,189,248,.04));border:1px solid rgba(52,211,153,.3);border-radius:var(--rad);padding:15px 16px;margin-bottom:14px">
     <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:${color};font-family:'Lora',serif;margin-bottom:5px">Next action</div>
     <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);line-height:1.15">${next}</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0">
-      <div style="background:rgba(245,184,48,.08);border:1px solid rgba(245,184,48,.24);border-radius:10px;padding:9px 10px"><div style="font-size:10px;color:#F5B830;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Meals</div><div style="font-size:13px;color:var(--text);margin-top:2px">${meals}/3</div></div>
-      <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.24);border-radius:10px;padding:9px 10px"><div style="font-size:10px;color:#7DD3FC;text-transform:uppercase;letter-spacing:.12em;font-family:'Lora',serif">Water</div><div style="font-size:13px;color:var(--text);margin-top:2px">${wc*32} oz</div></div>
-    </div>
+    <div style="font:11.5px/1.5 'Lora',serif;color:${color};margin:4px 0 2px">${almanacEsc(fitnessGateMessage(st,plan))}</div>
+    <div style="font:11.5px/1.5 'Lora',serif;color:var(--text2);margin:0 0 10px">${almanacEsc(plan.badge)} · ${almanacEsc(plan.duration)} · ${almanacEsc(plan.rpe)}. ${almanacEsc(plan.coach)}</div>
     <div onclick="toggleWellness('workout')" style="display:flex;align-items:flex-start;gap:12px;background:rgba(0,0,0,.16);border:1px solid ${color}44;border-left:4px solid ${color};border-radius:10px;padding:12px;cursor:pointer">
       <div style="width:28px;height:28px;border-radius:50%;border:2px solid ${done?'#10B981':color};background:${done?'#10B981':'transparent'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0">${done?'✓':''}</div>
-      <div style="flex:1;min-width:0"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${done?'var(--text3)':'var(--text)'};${done?'text-decoration:line-through':''}">${almanacEsc(plan.title)}</div><div style="font-size:11.5px;color:var(--text2);font-family:'Lora',serif;margin:3px 0 2px">${almanacEsc(plan.badge)} · ${almanacEsc(plan.rpe)}</div><div style="font-size:11.5px;color:${color};font-family:'Lora',serif;margin:0 0 6px">${almanacEsc(fitnessGateMessage(st))}</div>${items}</div>
+      <div style="flex:1;min-width:0"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${done?'var(--text3)':'var(--text)'};${done?'text-decoration:line-through':''}">${almanacEsc(plan.title)}</div>${items}</div>
     </div>
   </div>`;
 }
@@ -3936,29 +4045,28 @@ function renderWellness() {
   const today = todayKey();
   const log   = painLog;
   let out = "";
-  // 😴 Sleep first — the current priority (v2-features.js)
+  out += healthDailyAnchorsHtml(today);
+  out += fitnessSectionHtml(today);
   try{ out += hgSleepSectionHtml(today); }catch(e){}
   out += healthCoachSectionHtml();
-  out += fitnessSectionHtml(today);
 
   // ── Litfulo med reminder ──
   const litDone = !!laundry["well-litfulo-"+today];
   const litStk = streakOf("well-litfulo-");
   out += `<div class="section-label" id="vitamins-meds">💊 Vitamins & Meds</div>
-  <div onclick="toggleWellness('litfulo')" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.${litDone?"15":"3"});border-radius:var(--rad);padding:16px 18px;margin-bottom:14px;cursor:pointer;transition:all .2s;box-shadow:0 2px 12px rgba(99,102,241,.08)">
+  <div class="health-card" onclick="toggleWellness('litfulo')" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.${litDone?"15":"3"});border-radius:var(--rad);padding:16px 18px;margin-bottom:14px;cursor:pointer;transition:all .2s;box-shadow:0 2px 12px rgba(99,102,241,.08)">
     <div style="display:flex;align-items:center;gap:14px">
       <div style="font-size:30px;flex-shrink:0">${litDone?"✅":"💊"}</div>
       <div style="flex:1">
         <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${litDone?"var(--text3)":"var(--text)"};${litDone?"text-decoration:line-through":""}">Litfulo (ritlecitinib)${litStk>=2?` <span style="font-size:11px;color:#FB923C;border:1px solid #FB923C55;border-radius:10px;padding:1px 7px;margin-left:6px;vertical-align:middle">🔥 ${litStk}d</span>`:""}</div>
-        <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;margin-top:3px">Take daily · JAK inhibitor for alopecia areata · Currently refilling</div>
-        <div style="font-size:11px;color:rgba(99,102,241,.7);font-family:'Lora',serif;margin-top:3px;font-style:italic">Missing doses may worsen symptoms — stay consistent when refill arrives</div>
+        <div style="font-size:12px;color:var(--text2);font-family:'Lora',serif;margin-top:3px">Take daily with breakfast · JAK inhibitor for alopecia areata · Refill received</div>
+        <div style="font-size:11px;color:rgba(99,102,241,.7);font-family:'Lora',serif;margin-top:3px;font-style:italic">Keep dermatologist and lab monitoring current; watch for infection symptoms.</div>
       </div>
       <div style="width:26px;height:26px;border-radius:50%;border:2px solid ${litDone?"#10B981":"rgba(99,102,241,.5)"};background:${litDone?"#10B981":"transparent"};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0;transition:all .25s cubic-bezier(.34,1.56,.64,1)">${litDone?"✓":""}</div>
     </div>
   </div>`;
   out += litRefillHtml();
   // ── 🕐 Daily vitamin & med lineup (finalized Jun 6 2026) — times matter ──
-  const litHere = !!((litfulo||{}).startDate);
   const zincDay = [1,3,5].indexOf(new Date().getDay()) !== -1;
   const vmRow = (key,emoji,time,title,sub,color) => {
     const d = !!laundry["well-"+key+"-"+today];
@@ -3974,29 +4082,27 @@ function renderWellness() {
       <div style="width:24px;height:24px;border-radius:50%;border:2px solid ${d?'#10B981':color};background:${d?'#10B981':'transparent'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0">${d?'✓':''}</div>
     </div>`;
   };
-  out += `<div style="background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.22);border-radius:var(--rad);padding:14px 16px;margin-bottom:12px">
-    <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#38BDF8;font-family:'Lora',serif;margin-bottom:4px">🕐 The daily lineup — times matter</div>`
-    + vmRow('eso','🌅','8:00 AM · wake','Esomeprazole — ALONE',
-        'Take it solo, 30–60 min before breakfast — nothing else with it. Bottle lives by the coffee maker.','#22D3EE')
+  out += `<div class="health-card" style="background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.22);border-radius:var(--rad);padding:14px 16px;margin-bottom:12px">
+    <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#38BDF8;font-family:'Lora',serif;margin-bottom:4px">🕐 Daily lineup · caffeine after water + food</div>`
     + vmRow('litfulo','🍳','~8:45 AM · breakfast',
-        `Litfulo${litHere?'':' <span style="font-size:10px;color:#FB923C;border:1px solid #FB923C55;border-radius:10px;padding:1px 7px;vertical-align:middle">📦 pending pickup</span>'} · Fish Oil 1200mg · Biotin 5000mcg${zincDay?' · Zinc 50mg':''}`,
-        `With food. Zinc 50mg on Mon / Wed / Fri only${zincDay?' — <b style="color:#4AD490">today ✓</b>':' (not a zinc day today)'}.${litHere?'':' Litfulo joins the stack the day you pick it up.'}`,'#6366F1')
+        `Litfulo · Fish Oil 1200mg · Biotin 5000mcg${zincDay?' · Zinc 50mg':''}`,
+        `With food. Zinc 50mg on Mon / Wed / Fri only${zincDay?' — <b style="color:#4AD490">today ✓</b>':' (not a zinc day today)'}.`,'#6366F1')
     + vmRow('fiber','🥪','Noon · lunch','Metamucil fiber gummies',
         'With a BIG glass of water — kept away from the morning meds so nothing binds.','#FACC15')
-    + vmRow('melatonin','🌙','10:00 PM · screens-off','Melatonin 3mg + L-theanine',
-        'Training wheels for the sleep rebuild — revisit once the cycle holds on its own.','#A78BFA')
-    + `<div style="font-size:11.5px;color:#FBBF24;font-family:'Lora',serif;line-height:1.55;margin-top:10px">⚠️ <b>Skip biotin 2–3 days before any blood draw</b> — it skews lab results, and Litfulo comes with lab monitoring. And run this whole lineup past the pharmacist at Litfulo pickup.</div>
+    + vmRow('bedwind','🌙','10:00 PM · wind-down','Screens off, bathroom, teeth, bed',
+        'No melatonin or L-theanine assumption. A simple shutdown protects tomorrow.','#A78BFA')
+    + `<div style="font-size:11.5px;color:#FBBF24;font-family:'Lora',serif;line-height:1.55;margin-top:10px">⚠️ <b>Skip biotin 2–3 days before any blood draw.</b> Keep Litfulo labs current, watch for infection symptoms, and avoid live vaccines unless the prescriber clears them.</div>
   </div>`;
 
   // 📦 Weekly case-loading guide — Sunday-night ritual; anchor target for the Sunday Today item
-  out += `<div id="vitamin-case-guide" style="background:linear-gradient(135deg,rgba(74,212,144,.08),rgba(74,212,144,.02));border:1px solid rgba(74,212,144,.3);border-radius:var(--rad);padding:15px 17px;margin-bottom:10px">
+  out += `<div id="vitamin-case-guide" class="health-card" style="background:linear-gradient(135deg,rgba(74,212,144,.08),rgba(74,212,144,.02));border:1px solid rgba(74,212,144,.3);border-radius:var(--rad);padding:15px 17px;margin-bottom:10px">
     <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#A7F3D0;margin-bottom:8px">📦 Sunday night: load the case — 2 min</div>
     ${[
-      ["1.",`All 7 breakfast slots: 1 fish oil + 1 biotin${litHere?' + 1 Litfulo':' (+ 1 Litfulo once you have it)'}`],
+      ["1.","All 7 breakfast slots: 1 fish oil + 1 biotin + 1 Litfulo"],
       ["2.","Mon / Wed / Fri slots: add 1 zinc"],
-      ["3.","Esomeprazole stays in its bottle by the coffee maker — it is taken solo at wake"],
-      ["4.","Melatonin bottle lives with your book — the bottle next to the book IS the 10 PM reminder"],
-      ["5.","Metamucil gummies stay in the kitchen for lunch (gummies melt and stick in cases)"],
+      ["3.","Metamucil gummies stay in the kitchen for lunch (gummies melt and stick in cases)"],
+      ["4.","No bedtime supplements assumed — screens off, bathroom, teeth, bed is the shutdown"],
+      ["5.","Keep caffeine after water + food, never as a meal replacement"],
       ["6.","While loading: any bottle under about a week left → add it to the grocery list"],
       ["7.","Labs this week? Pull the biotin from the next 2–3 days of slots"]
     ].map(([n,t])=>`<div style="display:flex;gap:9px;padding:4px 0;font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.55"><span style="color:#4AD490;font-weight:700;flex-shrink:0">${n}</span><span>${t}</span></div>`).join("")}
@@ -4006,14 +4112,14 @@ function renderWellness() {
   // ── Get Outside guide ──
   const outsideDone = !!laundry["well-outside-"+today];
   out += `<div class="section-label">🌳 Get Outside</div>
-  <div style="background:linear-gradient(135deg,rgba(45,184,112,.12),rgba(132,204,22,.04));border:1px solid rgba(45,184,112,.3);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">
+  <div class="health-card" style="background:linear-gradient(135deg,rgba(45,184,112,.12),rgba(132,204,22,.04));border:1px solid rgba(45,184,112,.3);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px">
     <div onclick="toggleWellness('outside')" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:12px">
       <div style="width:26px;height:26px;border-radius:50%;border:2px solid ${outsideDone?'#10B981':'#4AD490'};background:${outsideDone?'#10B981':'transparent'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:13px;flex-shrink:0">${outsideDone?'✓':''}</div>
       <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:${outsideDone?'var(--text3)':'var(--text)'};${outsideDone?'text-decoration:line-through':''}">${outsideDone?'Got outside today — nice 🌞':'Get outside today'}</div>
     </div>
     <div style="font-size:12.5px;color:var(--text2);font-family:'Lora',serif;line-height:1.6;margin-bottom:12px">Even 10–20 minutes outdoors lifts your mood, steadies your energy, and helps you sleep. Pick one:</div>
     ${[
-      ["🏃","Run with Zoey","Start with one short loop — she gets her walk, you get cardio and sun. Build up as it feels good."],
+      ["🐕","Walk the property with Zoey","At the new house, loop the six acres. Before move day, a normal short walk still counts."],
       ["🌅","Morning sunlight","Get light in your eyes within 30 min of waking — sets your body clock for better sleep and mood."],
       ["🌿","Tend the garden","Watering, harvesting, checking the ladybugs all count. You're already out there — linger a bit."],
       ["🚶","After-dinner walk","10–15 minutes helps digestion and winds you down before bed."],
@@ -5062,7 +5168,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20260828085816';
+  var HG_BUILD_STAMP='20260829071746';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;
