@@ -867,7 +867,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260829071746-health-restart"></script>
+<script src="./data.js?v=20260829150106-beauty-care"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
 <script src="./recipes.js?v=20260729010000-approved"></script>
 <script>
@@ -924,6 +924,7 @@ let expanded = {};
 let trimmed  = {};
 let harvested = {};
 let shopping  = {};
+let beautyPurchased = {}; // ✨ personal-care purchases; deliberately separate from Food/Groceries
 let funPrints = {};
 let grocCustom = {};
 let inventory = {};
@@ -1013,6 +1014,27 @@ function writeWateringUpdates(updates,ids,kind){
 function addWish(){ const el=document.getElementById('wishInput'); if(!el) return; const v=(el.value||'').trim(); if(!v) return; wishCustom['w-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)]={t:v,done:false}; el.value=''; saveWish(); renderPrint(); }
 function toggleWish(id){ if(!wishCustom[id]) return; wishCustom[id].done=!wishCustom[id].done; saveWish(); renderPrint(); }
 function removeWish(id){ delete wishCustom[id]; saveWish(); renderPrint(); }
+function beautyItems(){ return (typeof BEAUTY_CARE!=="undefined"&&Array.isArray(BEAUTY_CARE.products))?BEAUTY_CARE.products:[]; }
+function toggleBeautyProduct(id){
+  const item=beautyItems().find(function(x){return x.id===id;});
+  if(!item) return;
+  const previous=beautyPurchased[id]||null, next=previous?null:todayKey();
+  if(next) beautyPurchased[id]=next; else delete beautyPurchased[id];
+  renderAll();
+  try{
+    const ref=ST.child('beautyPurchased').child(id);
+    const write=next?ref.set(next):ref.remove();
+    if(write&&typeof write.catch==="function") write.catch(function(err){
+      if(previous) beautyPurchased[id]=previous; else delete beautyPurchased[id];
+      console.error("Beauty purchase update failed",err); renderAll(); toast("That beauty-list change did not save.");
+    });
+    toast(next?"✓ Bought: "+item.label:"Returned to the beauty products list");
+  }catch(err){
+    if(previous) beautyPurchased[id]=previous; else delete beautyPurchased[id];
+    console.error("Beauty purchase update failed",err); renderAll(); toast("That beauty-list change did not save.");
+  }
+}
+function goBeautyCare(){ switchTab('wellness'); setTimeout(function(){ const el=document.getElementById('beauty-care'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },60); }
 function zoeyStart(){ zoey={startDate:todayKey()}; saveZoey(); laundry['zoey-feed-'+todayKey()]=true; saveLaundry(); renderAll(); }
 function zoeyHold(){ if(!zoey.startDate) return; const d=new Date(zoey.startDate+'T12:00:00'); d.setDate(d.getDate()+1); zoey.startDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); saveZoey(); toast('Holding this mix an extra day. 🐕'); renderAll(); }
 function toggleZoeyFeed(){ const k='zoey-feed-'+todayKey(); laundry[k]=!laundry[k]; saveLaundry(); renderAll(); }
@@ -2314,6 +2336,7 @@ function renderToday() {
   const habitCards=habitsTodayCards(), habitOrder=Math.max(330,nowM-30);
   if(habitCards.vitamin) add("vitamin",habitOrder,false,habitCards.vitamin,true);
   if(habitCards.water) add("water",habitOrder+1,false,habitCards.water,true);
+  add("beautyshop",habitOrder+2,false,beautyShoppingTodayHtml(),true);
 
   // ── 🚨 MOVE LAUNCH — urgent persistent checklist without changing the one-task rolling schedule ──
   if(!hc.rescue && typeof MOVE_LAUNCH_IDS!=="undefined"){
@@ -3965,6 +3988,48 @@ function medMini(key,name,timing,desc,color){
     +'<div style="width:24px;height:24px;border-radius:50%;border:2px solid '+(done?'#10B981':color)+';background:'+(done?'#10B981':'transparent')+';display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0">'+(done?'✓':'')+'</div>'
     +'</div></div>';
 }
+function beautyShoppingTodayHtml(){
+  const items=beautyItems(), open=items.filter(function(x){return !beautyPurchased[x.id];}), done=items.filter(function(x){return !!beautyPurchased[x.id];});
+  const row=function(item,isDone){
+    const color=isDone?'#34D399':(item.stage.indexOf('Starter')===0?'#F472B6':'#C4B5FD');
+    return `<button type="button" onclick="toggleBeautyProduct('${item.id}')" aria-pressed="${isDone?'true':'false'}" style="width:100%;display:flex;align-items:flex-start;gap:10px;text-align:left;border:0;border-top:1px solid rgba(255,255,255,.055);background:transparent;padding:10px 1px;color:inherit;cursor:pointer;${isDone?'opacity:.62':''}">
+      <span style="width:24px;height:24px;border-radius:50%;border:2px solid ${color};background:${isDone?'#34D399':'transparent'};display:flex;align-items:center;justify-content:center;color:#062617;font-weight:900;font-size:11px;flex-shrink:0">${isDone?'✓':''}</span>
+      <span style="flex:1;min-width:0"><span style="display:block;font:700 13px 'Lora',serif;color:${isDone?'var(--text3)':'var(--text)'};${isDone?'text-decoration:line-through':''}">${almanacEsc(item.label)}</span><span style="display:block;font:700 9px 'Lora',serif;color:${color};letter-spacing:.09em;text-transform:uppercase;margin-top:3px">${almanacEsc(item.stage)}</span><span style="display:block;font:11px/1.45 'Lora',serif;color:var(--text2);margin-top:2px">${almanacEsc(item.note)}</span></span>
+    </button>`;
+  };
+  const starter=open.filter(function(x){return x.stage.indexOf('Starter')===0;}), later=open.filter(function(x){return x.stage.indexOf('Starter')!==0;});
+  return `<div class="today-daily-card" style="border-color:rgba(244,114,182,.32);background:linear-gradient(135deg,rgba(244,114,182,.09),rgba(139,92,246,.04),var(--s1))">
+    <div class="today-daily-head"><span class="today-daily-label" style="color:#F9A8D4">✨ Beauty products to buy</span><span class="today-daily-count">${done.length} of ${items.length} bought</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-2px 0 7px"><span style="font:700 9px 'Lora',serif;color:#F9A8D4;letter-spacing:.13em;text-transform:uppercase">Personal care · not groceries</span><button type="button" onclick="goBeautyCare()" style="border:1px solid rgba(244,114,182,.28);background:rgba(244,114,182,.06);color:#FBCFE8;border-radius:8px;padding:5px 8px;font:700 10px 'Lora',serif;cursor:pointer">Health guide →</button></div>
+    ${items.length&&open.length===0?'<div style="font:700 13px/1.5 \'Lora\',serif;color:#86EFAC;padding:10px 0">Starter and later-treatment products are all recorded as bought. ✓</div>':''}
+    ${starter.map(function(x){return row(x,false);}).join('')}
+    ${later.length?`<details style="margin-top:5px;background:rgba(0,0,0,.12);border:1px solid rgba(196,181,253,.18);border-radius:9px;padding:8px 9px"><summary style="cursor:pointer;font:700 10.5px 'Lora',serif;color:#DDD6FE">Later treatments · ${later.length} still needed</summary><div style="margin-top:3px">${later.map(function(x){return row(x,false);}).join('')}</div></details>`:''}
+    ${done.length?`<details style="margin-top:7px"><summary style="cursor:pointer;font:700 10.5px 'Lora',serif;color:#6EE7B7">Bought · ${done.length}</summary><div style="margin-top:3px">${done.map(function(x){return row(x,true);}).join('')}</div></details>`:''}
+  </div>`;
+}
+function beautyCareSectionHtml(){
+  if(typeof BEAUTY_CARE==="undefined") return "";
+  const cfg=BEAUTY_CARE, core=['cleanser','moisturizer','sunscreen'], coreDone=core.filter(function(id){return !!beautyPurchased[id];}).length;
+  const lines=function(items,color){return (items||[]).map(function(x){return `<div style="display:flex;gap:8px;padding:3px 0;font:11.5px/1.5 'Lora',serif;color:var(--text2)"><span style="color:${color}">•</span><span>${almanacEsc(x)}</span></div>`;}).join('');};
+  const phaseHtml=(cfg.phases||[]).map(function(p,i){return `<details ${i===0?'open':''} style="background:rgba(0,0,0,.15);border:1px solid rgba(244,114,182,.2);border-radius:10px;padding:10px 11px;margin-top:8px"><summary style="cursor:pointer;font:700 11px 'Lora',serif;color:${i===0?'#F9A8D4':'#DDD6FE'}">${almanacEsc(p.title)}</summary><div style="margin-top:6px">${lines(p.steps,'#F472B6')}</div></details>`;}).join('');
+  return `<div id="beauty-care" class="section-label">✨ Face + skin care</div>
+  <div class="health-card" style="background:linear-gradient(135deg,rgba(244,114,182,.11),rgba(139,92,246,.04));border:1px solid rgba(244,114,182,.3);border-radius:var(--rad);padding:16px 17px;margin-bottom:14px">
+    <div style="font:700 9px 'Lora',serif;letter-spacing:.18em;text-transform:uppercase;color:#F9A8D4;margin-bottom:5px">Simple · consistent · low-irritation</div>
+    <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#FCE7F3">Healthier-looking skin without a giant project</div>
+    <div style="font:12px/1.55 'Lora',serif;color:var(--text2);margin-top:5px">${almanacEsc(cfg.goal)}</div>
+    <div style="background:rgba(244,114,182,.07);border:1px solid rgba(244,114,182,.2);border-radius:9px;padding:9px 10px;margin-top:10px;font:11.5px/1.5 'Lora',serif;color:${coreDone===3?'#A7F3D0':'#FBCFE8'}">${coreDone===3?'Starter products are ready. Install the Weeks 1-2 baseline before adding an active.':'Starter kit: '+coreDone+' of 3 bought. Begin with cleanser, moisturizer, and SPF; treatment products wait.'}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px">
+      <div style="background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px"><div style="font:700 10px 'Lora',serif;color:#F9A8D4;text-transform:uppercase;letter-spacing:.1em">Morning minimum</div>${lines(cfg.minimum.morning,'#F472B6')}</div>
+      <div style="background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px"><div style="font:700 10px 'Lora',serif;color:#C4B5FD;text-transform:uppercase;letter-spacing:.1em">Night minimum</div>${lines(cfg.minimum.night,'#A78BFA')}</div>
+    </div>
+    <div style="font:italic 10.5px/1.45 'Lora',serif;color:var(--text3);margin-top:8px">The Morning and Evening hygiene checkboxes above include these face steps. On a rough day, the night wash alone still counts.</div>
+    ${phaseHtml}
+    <div style="background:rgba(251,113,133,.07);border:1px solid rgba(251,113,133,.25);border-left:3px solid #FB7185;border-radius:9px;padding:9px 10px;margin-top:8px;font:11.5px/1.5 'Lora',serif;color:#FECDD3">Litfulo safety: ${almanacEsc(cfg.stopRule)}</div>
+    <details style="background:rgba(0,0,0,.15);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:10px 11px;margin-top:8px"><summary style="cursor:pointer;font:700 11px 'Lora',serif;color:#C4B5FD">Long-term rhythm</summary><div style="margin-top:6px">${lines(cfg.longTerm,'#A78BFA')}</div></details>
+    <details style="background:rgba(0,0,0,.15);border:1px solid rgba(56,189,248,.2);border-radius:10px;padding:10px 11px;margin-top:8px"><summary style="cursor:pointer;font:700 11px 'Lora',serif;color:#7DD3FC">Full routine + weekly reset</summary><div style="font:700 10px 'Lora',serif;color:#7DD3FC;margin-top:7px">Morning</div>${lines(cfg.fullMorning,'#38BDF8')}<div style="font:700 10px 'Lora',serif;color:#C4B5FD;margin-top:7px">Night</div>${lines(cfg.fullNight,'#A78BFA')}<div style="font:700 10px 'Lora',serif;color:#86EFAC;margin-top:7px">Weekly</div>${lines(cfg.weekly,'#34D399')}</details>
+    <details style="background:rgba(0,0,0,.15);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px 11px;margin-top:8px"><summary style="cursor:pointer;font:700 11px 'Lora',serif;color:#FBBF24">Optional DIY + what to avoid</summary><div style="font:700 10px 'Lora',serif;color:#FBBF24;margin-top:7px">Optional, rinse-off or targeted only</div>${lines(cfg.optional,'#FBBF24')}<div style="font:700 10px 'Lora',serif;color:#FCA5A5;margin-top:7px">Avoid</div>${lines(cfg.avoid,'#FB7185')}</details>
+  </div>`;
+}
 function healthMiniToggle(key,emoji,label,sub,color){
   const done=!!laundry["well-"+key+"-"+todayKey()];
   return `<button type="button" onclick="toggleWellness('${key}')" aria-pressed="${done?'true':'false'}" style="width:100%;display:flex;align-items:flex-start;gap:10px;text-align:left;background:${done?'rgba(16,185,129,.08)':'rgba(0,0,0,.16)'};border:1px solid ${done?'rgba(16,185,129,.32)':color+'44'};border-radius:10px;padding:10px 11px;color:inherit;cursor:pointer">
@@ -3986,8 +4051,8 @@ function healthDailyAnchorsHtml(today){
     </div>
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px">${mealButtons}</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      ${healthMiniToggle('hygiene-am','🪥','Morning hygiene','Teeth · face · deodorant · hair/scalp · clean clothes','#A78BFA')}
-      ${healthMiniToggle('hygiene-pm','🌙','Evening hygiene','Teeth · face · stage tomorrow · bottle in place','#A78BFA')}
+      ${healthMiniToggle('hygiene-am','🪥','Morning hygiene + face','Teeth · face routine · deodorant · hair/scalp · clean clothes','#A78BFA')}
+      ${healthMiniToggle('hygiene-pm','🌙','Evening hygiene + face','Teeth · face routine · stage tomorrow · bottle in place','#A78BFA')}
     </div>
     <details style="margin-top:9px;background:rgba(0,0,0,.13);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px 10px"><summary style="cursor:pointer;font:700 10.5px 'Lora',serif;color:var(--text2);letter-spacing:.08em;text-transform:uppercase">Food-structure log</summary><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">${healthMiniToggle('mealprep','🍳','Prepared food','Cooking or meal-prep action done.','#F5B830')}${healthMiniToggle('emergencymeal','🛟','Emergency meal used','Rescue food counts; no guilt.','#F5B830')}</div></details>
   </div>`;
@@ -4049,6 +4114,7 @@ function renderWellness() {
   out += fitnessSectionHtml(today);
   try{ out += hgSleepSectionHtml(today); }catch(e){}
   out += healthCoachSectionHtml();
+  out += beautyCareSectionHtml();
 
   // ── Litfulo med reminder ──
   const litDone = !!laundry["well-litfulo-"+today];
@@ -4651,6 +4717,7 @@ ST.on('value', snap => {
   trimmed     = d.trimmed     || {};
   harvested   = d.harvested   || {};
   shopping    = d.shopping    || {};
+  beautyPurchased = d.beautyPurchased || {};
   funPrints   = d.funPrints   || {};
   grocCustom  = d.grocCustom  || {};
   inventory   = d.inventory   || {};
@@ -5168,7 +5235,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20260829071746';
+  var HG_BUILD_STAMP='20260829150106';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;

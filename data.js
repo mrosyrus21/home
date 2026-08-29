@@ -127,6 +127,37 @@ const HEALTH_COACH = {
   }
 };
 
+// ── ✨ FACE + SKIN CARE — Beauty handoff, 2026-08-29 ──────────
+// Product IDs feed a dedicated Today checklist. This state never enters Food/Groceries.
+const BEAUTY_CARE = {
+  updated: "2026-08-29",
+  goal: "Healthier-looking skin, less visible clogged pores, and a simple anti-aging routine that becomes automatic.",
+  profile: "Minor clogged pores and likely sebaceous filaments across the face, worst around the nose edges; some blackheads; almost no current face-washing routine; mustache, goatee, and soul patch; no major product sensitivity reported.",
+  minimum: {
+    morning: ["Brush teeth", "Rinse or gently wash face", "Moisturizer", "SPF 30+ when outside, driving, doing yard work, walking Zoey, or near bright windows"],
+    night: ["Brush teeth", "Wash face gently for 45-60 seconds", "Moisturizer"]
+  },
+  products: [
+    { id:"cleanser", label:"Gentle facial cleanser", stage:"Starter · buy first", note:"Fragrance-free, non-comedogenic, and no gritty scrub beads." },
+    { id:"moisturizer", label:"Lightweight facial moisturizer", stage:"Starter · buy first", note:"Fragrance-free and non-comedogenic; ceramides, glycerin, niacinamide, or panthenol are good signs." },
+    { id:"sunscreen", label:"Broad-spectrum sunscreen SPF 30+", stage:"Starter · buy first", note:"Non-comedogenic or oil-free. Mineral zinc oxide is the natural-leaning option; do not make sunscreen at home." },
+    { id:"bha", label:"Leave-on 2% salicylic acid / BHA", stage:"Later · before Week 3", note:"Liquid or gel for clogged areas. Buy now if convenient, but do not start during Weeks 1-2." },
+    { id:"retinoid", label:"Choose ONE: adapalene 0.1% gel OR gentle retinol", stage:"Later · before Week 5", note:"Do not buy both. Adapalene is the stronger OTC option; retinol is the gentler start. Choice remains open." }
+  ],
+  phases: [
+    { title:"Weeks 1-2 · install the baseline", steps:["Morning: rinse or gentle cleanse, moisturize, and use SPF for light exposure.", "Night: gentle cleanser, then moisturizer.", "No acids, retinoids, scrubs, or aggressive masks yet."] },
+    { title:"Weeks 3-4 · add pore treatment", steps:["Add 2% salicylic acid / BHA once weekly at night.", "After two calm uses, increase to two nights per week.", "Cleanse, BHA, then moisturize; stop if skin becomes irritated."] },
+    { title:"Weeks 5-8 · add texture + aging treatment", steps:["Add adapalene 0.1% OR gentle retinol one night per week.", "Keep BHA and the retinoid on different nights at first.", "If calm, slowly build the retinoid toward two to four nights per week; keep moisturizer-only nights."] }
+  ],
+  longTerm: ["BHA one or two nights per week", "Adapalene or retinol two to four nights per week if calm", "Clay mask zero or one time per week", "Moisturizer-only nights whenever skin feels dry, tight, irritated, or overworked"],
+  fullMorning: ["Use cleanser if sweaty or oily; use lukewarm water if dry or tight.", "Moisturize with a lightweight, fragrance-free product.", "Apply SPF to face, ears, neck, back of neck, and exposed scalp or hairline.", "Keep beard oil or balm away from clogged nose-edge skin."],
+  fullNight: ["Massage gentle cleanser for 45-60 seconds at nose edges, chin, forehead, and facial-hair borders; do not scrub.", "Use a treatment only on its scheduled night.", "Moisturize after cleansing or treatment.", "While on Litfulo, do not pick painful bumps, spreading redness, pus, an unusual rash, cold sores, shingles-like pain or blisters, or folliculitis; contact the clinician if it looks infected or spreads quickly."],
+  stopRule: "If clogged pores worsen, painful acne appears, or folliculitis or a rash appears after restarting Litfulo, pause new actives and ask the dermatologist.",
+  weekly: ["Wash the pillowcase and face towel.", "Clean the trimmer guard and any sponges or brushes.", "Trim mustache and goatee edges; check brows, ears, nose hair, nails, scalp, and skin.", "Refill the visible bathroom station: cleanser, moisturizer, sunscreen, floss, and deodorant."],
+  optional: ["Kaolin or bentonite clay powder for a rinse-off mask, at most weekly", "Colloidal oatmeal for a 5-10 minute soothing mask", "Plain petroleum jelly for isolated dry or cracked areas only", "Simple beard detailer and floss picks or a water flosser if useful"],
+  avoid: ["Picking, squeezing, scraping, regular pore strips, or harsh physical scrubs", "Lemon juice, apple cider vinegar, baking soda, toothpaste, peroxide, or essential oils on the face", "Coconut or olive oil on clogged areas, homemade sunscreen, or at-home dermarolling / microneedling", "Starting BHA and a retinoid together or stacking actives because the mirror is annoying that day"]
+};
+
 const ROOMS = {
   priority: { name:"Priority",   emoji:"⭐", color:"#C8860A" },
   kitchen:  { name:"Kitchen",    emoji:"🍳", color:"#EF4444", reward:"Meal prep feels effortless — cooking is actually fun" },
