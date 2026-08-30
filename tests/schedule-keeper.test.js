@@ -34,7 +34,9 @@ assert.match(TASKS.move_final.label, /Pack the kitchen last/, "the final packing
 assert.match(SCHEDULE.find(item => item.date === "2026-08-30").note, /Pack the kitchen last/, "August 30 must carry the kitchen-last instruction");
 assert.equal(rolling.some(item => item.date >= "2026-05-29" && item.date <= "2026-07-10"), false, "the obsolete whole-house plan must stay absent");
 for (const milestone of ["2026-08-17", "2026-08-24", "2026-08-30", "2026-08-31"]) {
-  assert.ok(SCHEDULE.some(item => item.date === milestone), `missing move milestone ${milestone}`);
+  const row = SCHEDULE.find(item => item.date === milestone);
+  assert.ok(row, `missing move milestone ${milestone}`);
+  assert.equal(row.fixed, true, `move milestone ${milestone} must stay on its original date`);
 }
 
 const oneTaskStart = html.indexOf("function oneTaskForDate");
@@ -58,6 +60,17 @@ const oneTaskForDate = new Function("SCHEDULE", "TASKS", "pushed", `
   return oneTaskForDate;
 `)(SCHEDULE, TASKS, pushed);
 assert.equal(oneTaskForDate("2026-08-16"), null, "the expired final runway task must not remain active");
+assert.equal(oneTaskForDate("2026-08-29"), null, "the move-closeout window must not invent a whole-house fallback task between milestones");
+assert.equal(oneTaskForDate("2026-08-30"), "move_final", "the explicit August 30 final-pack milestone must still win");
+assert.equal(oneTaskForDate("2026-08-31"), "move_out", "the explicit August 31 move-out milestone must still win");
+assert.equal(oneTaskForDate("2026-09-01"), null, "the obsolete whole-house picker must not restart after move-out");
+assert.match(html, /if\(s\.date>=today\|\|s\.off\|\|s\.fixed\) return;/, "fixed milestones must not auto-carry or appear as overdue work");
+assert.match(html, /d===ds&&!fixedScheduleDate\(id\)/, "stale push state must not move a fixed milestone onto another date");
+assert.match(html, /row\.fixed\|\|!pushed\[id\]/, "fixed milestones must remain visible on their original date even if stale push state exists");
+assert.match(html, /fixedMilestoneToday\?302/, "today's fixed move milestone must appear before the optional move cards");
+assert.match(html, /closeoutMode\?fmtD\(cur\)<=MOVE_CLOSEOUT_END:anyHouseTaskLeft/, "Timeline must stop the move plan at August 31");
+assert.match(html, /No old whole-house tasks will be added/, "Timeline must explain that the obsolete plan will not restart");
+assert.doesNotMatch(dataSource + html, /(?:It r|R)eturns tomorrow/, "the final booster day must not promise a nonexistent tomorrow card");
 
 assert.equal(PAUSED_FLIP_SCAN.paused, true, "the flip scan must remain paused while Cyrus moves and house hunts");
 assert.equal(PAUSED_FLIP_SCAN.label, "Morning flip scan — free TVs, mowers, curb alerts", "the paused idea must be saved intact for later");

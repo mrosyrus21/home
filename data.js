@@ -324,10 +324,10 @@ const TASKS = {
 const SCHEDULE = [
   // ── MOVING · ROLLING NO-REGRET WEEK ────────────────────────────────────────
   // ── MOVING MILESTONES ─────────────────────────────────────────────────────
-  { date:"2026-08-17", tasks:["move_checkpoint"],          note:"Mostly packed two weeks before move-out, with the kitchen still usable. Use new-house measurements to resolve fit-dependent items; anything still uncertain may remain in DECISION HOLD." },
-  { date:"2026-08-24", tasks:["move_last_week"],           note:"Switch to the open-last essentials kit and pack remaining non-kitchen items. Leave the kitchen for the final pack." },
-  { date:"2026-08-30", tasks:["move_final"],               note:"Pack the kitchen last, finish packing, and clean only what is already empty." },
-  { date:"2026-08-31", tasks:["move_out"],                 note:"Move-out deadline." }];
+  { date:"2026-08-17", tasks:["move_checkpoint"], fixed:true, note:"Mostly packed two weeks before move-out, with the kitchen still usable. Use new-house measurements to resolve fit-dependent items; anything still uncertain may remain in DECISION HOLD." },
+  { date:"2026-08-24", tasks:["move_last_week"],  fixed:true, note:"Switch to the open-last essentials kit and pack remaining non-kitchen items. Leave the kitchen for the final pack." },
+  { date:"2026-08-30", tasks:["move_final"],      fixed:true, note:"Pack the kitchen last, finish packing, and clean only what is already empty." },
+  { date:"2026-08-31", tasks:["move_out"],        fixed:true, note:"Move-out deadline." }];
 
 // ── MOVE LAUNCH — persistent Today priorities, separate from the one-small-task rolling schedule.
 // Checked state stays in the existing `checked` store. Today writes a completion date for these new
@@ -345,7 +345,7 @@ const MOVE_LAUNCH_IDS = [
 
 // Optional daily boosters: date-keyed so doing one load or sell sprint clears it only for that day.
 const MOVE_DAILY = [
-  { id:"move-sell", start:"2026-08-11", end:"2026-08-30", emoji:"💸", tag:"Move lighter · daily option", time:"20 minutes", label:"Sell sprint — photograph and list up to 3 approved items", note:"Start with bulky or high-value things you already want gone; price for pickup. Keep daily essentials, moving and final-cleaning gear, and anything you have not decided about. It returns tomorrow." },
+  { id:"move-sell", start:"2026-08-11", end:"2026-08-30", emoji:"💸", tag:"Move lighter · daily option", time:"20 minutes", label:"Sell sprint — photograph and list up to 3 approved items", note:"Start with bulky or high-value things you already want gone; price for pickup. Keep daily essentials, moving and final-cleaning gear, and anything you have not decided about. Available through August 30, then this card retires." },
   { id:"move-fragile", start:"2026-08-11", end:"2026-08-30", emoji:"📺", tag:"Opportunity load · only if today fits", time:"slow workday or Monday route", label:"Move one small secured load of fragile items", note:"TVs upright and padded; empty aquariums supported under the entire base, never the rim; framed art vertical between padding. Do not leave visible valuables or glass unattended or in extreme car temperatures." }
 ];
 

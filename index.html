@@ -867,7 +867,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260829150106-beauty-care"></script>
+<script src="./data.js?v=20260829180423-move-closeout"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
 <script src="./recipes.js?v=20260729010000-approved"></script>
 <script>
@@ -1264,10 +1264,15 @@ function findOriginalDate(id) {
   const s=SCHEDULE.find(s=>s.tasks&&s.tasks.includes(id));
   return s?s.date:null;
 }
+function fixedScheduleDate(id) {
+  const s=SCHEDULE.find(s=>s.fixed&&s.tasks&&s.tasks.includes(id));
+  return s?s.date:null;
+}
 // Effective task list for a date (base schedule + push overrides)
 function effectiveTasksForDate(ds) {
-  const base=(SCHEDULE.find(s=>s.date===ds)?.tasks||[]).filter(id=>!pushed[id]||pushed[id]===ds);
-  const here=Object.entries(pushed).filter(([id,d])=>d===ds).map(([id])=>id);
+  const row=SCHEDULE.find(s=>s.date===ds);
+  const base=(row?.tasks||[]).filter(id=>row.fixed||!pushed[id]||pushed[id]===ds);
+  const here=Object.entries(pushed).filter(([id,d])=>d===ds&&!fixedScheduleDate(id)).map(([id])=>id);
   const manual=scheduleTaskIdsForDate(ds);
   return [...new Set([...base,...here,...manual])].filter(id=>taskById(id));
 }
@@ -1284,6 +1289,7 @@ function findNextSlot(taskId,fromDs) {
 }
 // Push a task to the next available slot
 function pushTask(taskId) {
+  if(fixedScheduleDate(taskId)) return;
   const from=pushed[taskId]||findOriginalDate(taskId)||todayKey();
   const next=findNextSlot(taskId,from);
   if(next){ pushed[taskId]=next; savePushed(); renderAll(); }
@@ -1295,7 +1301,7 @@ function autoCarryOverdue() {
   const yd=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   let changed=false;
   SCHEDULE.forEach(s=>{
-    if(s.date>=today||s.off) return;
+    if(s.date>=today||s.off||s.fixed) return;
     (s.tasks||[]).forEach(id=>{
       if(!checked[id]&&!pushed[id]){
         const next=findNextSlot(id,yd);
@@ -1448,7 +1454,7 @@ function taskItemHTML(id, color) {
   return `<div class="task-item" style="--c:${color}">
     <div class="checkbox" onclick="toggle('${id}')"><span class="checkmark">✓</span></div>
     <div style="flex:1"><div class="task-text">${t.label}</div>${extra}</div>
-    <button class="push-btn" onclick="event.stopPropagation();pushTask('${id}')">↷ Push</button>
+    ${fixedScheduleDate(id)?"":`<button class="push-btn" onclick="event.stopPropagation();pushTask('${id}')">↷ Push</button>`}
     ${levelBadge(t.level)}
   </div>`;
 }
@@ -1474,7 +1480,7 @@ function groupedCardHTML(taskIds, badgeType) {
 function getOverdueTasks() {
   const today=todayKey(),seen=new Set(),todayIds=new Set(effectiveTasksForDate(today)),overdue=[];
   SCHEDULE.forEach(s=>{
-    if(s.date>=today||s.off) return;
+    if(s.date>=today||s.off||s.fixed) return;
     s.tasks.forEach(id=>{
       if(todayIds.has(id)||seen.has(id)) return;
       if(pushed[id]&&pushed[id]>today) return; // already pushed to future
@@ -1642,6 +1648,9 @@ function oneTaskForDate(dateStr,isDone){
   const scheduled=effectiveTasksForDate(dateStr).filter(id=>TASKS[id]||taskCustom[id]);
   if(scheduled.length) return scheduled[0];
   if(base?.tasks?.length) return null; // a pushed-away rolling task is not replaced
+  // The move-closeout window is milestone-only. Do not let the old whole-house
+  // room picker invent a deep-cleaning or decluttering job between milestones.
+  if(dateStr>="2026-08-17") return null;
   const dow=new Date(dateStr+"T12:00:00").getDay();
   if(dow===1) return null; // Monday = rest day
   const wknd=(dow===0||dow===6);
@@ -2356,7 +2365,7 @@ function renderToday() {
       if(today<item.start||today>item.end) return;
       const done=reminderDone(item.id,true);
       add("move-daily-"+item.id,314+i,done,done
-        ? strip(item.emoji,item.label,true,"#F59E0B","toggleReminder('"+item.id+"',true)",item.time||"","","Returns tomorrow")
+        ? strip(item.emoji,item.label,true,"#F59E0B","toggleReminder('"+item.id+"',true)",item.time||"","","")
         : movePriorityCard("daily-"+item.id,item,"toggleReminder('"+item.id+"',true)"),true);
     });
   }
@@ -2618,7 +2627,8 @@ function renderToday() {
 
   // The ONE house task — weekend mornings have energy; weekdays it sits after lunch
   const oneId=oneTaskForDate(today);
-  const taskOrder=(dow===0||dow===6)?500:800;
+  const fixedMilestoneToday=!!oneId&&fixedScheduleDate(oneId)===today;
+  const taskOrder=fixedMilestoneToday?302:((dow===0||dow===6)?500:800);
   if(hc.rescue){
     add("healthprotect",taskOrder,false,`<div style="background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(124,58,237,.03));border:1px solid rgba(124,58,237,.3);border-left:4px solid #7C3AED;border-radius:var(--rad);padding:13px 16px;margin-bottom:10px">
       <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#DDD6FE">House/admin tasks paused tonight.</div>
@@ -2763,9 +2773,9 @@ function renderTimeline() {
   const sim=new Set();
   const isDoneSim=id=>!!checked[id]||sim.has(id);
   const fmtD=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-  const days=[];
+  const days=[], closeoutMode=today>="2026-08-17", MOVE_CLOSEOUT_END="2026-08-31";
   let cur=new Date(today+"T12:00:00"), guard=0;
-  while(guard++<400 && anyHouseTaskLeft(isDoneSim)){
+  while(guard++<400 && (closeoutMode?fmtD(cur)<=MOVE_CLOSEOUT_END:anyHouseTaskLeft(isDoneSim))){
     const ds=fmtD(cur);
     const id=oneTaskForDate(ds,isDoneSim);
     if(id){
@@ -2809,16 +2819,20 @@ function renderTimeline() {
     </div>`;
   }
   if(!days.length){
-    html+=`<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — nothing left to schedule. Maintenance mode from here.</div></div>`;
+    html+=closeoutMode
+      ? `<div class="done-card"><span class="done-icon">📦</span><div class="done-title">The fixed move schedule has ended.</div><div class="done-sub">Nothing new was invented after August 31. Add a future task only when you want it.</div></div>`
+      : `<div class="done-card"><span class="done-icon">🏆</span><div class="done-title">Every room is 100%!</div><div class="done-sub">The whole house is organized — nothing left to schedule. Maintenance mode from here.</div></div>`;
   } else {
     const _taskDays=days.filter(d=>d.id);
     const workDays=_taskDays.length;
     const finish=new Date((_taskDays.length?_taskDays[_taskDays.length-1].date:days[days.length-1].date)+"T12:00:00");
-    html+=`<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:var(--rad);padding:13px 16px;margin-bottom:16px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:'Lora',serif;font-size:12px;color:var(--text2)">Whole-house progress</span><span style="font-family:'Playfair Display',serif;font-weight:700;color:#F5B830">${doneH}/${totalH} · ${pctH}%</span></div>
-      <div class="plan-bar"><div class="plan-fill" style="width:${pctH}%;background:linear-gradient(90deg,#F5B830,#818CF8)"></div></div>
-      <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:8px">${workDays} task day${workDays>1?"s":""} · one small task a day · finish by ${finish.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} 🏆</div>
-    </div>`;
+    html+=closeoutMode
+      ? `<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:var(--rad);padding:13px 16px;margin-bottom:16px"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#F5B830">📦 Move closeout</div><div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:6px">${workDays} fixed milestone${workDays===1?"":"s"} remain in this view. No old whole-house tasks will be added.</div></div>`
+      : `<div style="background:linear-gradient(135deg,var(--s2),var(--s1));border:1px solid var(--border2);border-radius:var(--rad);padding:13px 16px;margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:'Lora',serif;font-size:12px;color:var(--text2)">Whole-house progress</span><span style="font-family:'Playfair Display',serif;font-weight:700;color:#F5B830">${doneH}/${totalH} · ${pctH}%</span></div>
+          <div class="plan-bar"><div class="plan-fill" style="width:${pctH}%;background:linear-gradient(90deg,#F5B830,#818CF8)"></div></div>
+          <div style="font-size:11px;color:var(--text2);font-family:'Lora',serif;font-style:italic;margin-top:8px">${workDays} task day${workDays>1?"s":""} · one small task a day · finish by ${finish.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} 🏆</div>
+        </div>`;
     let lastWeek="";
     days.forEach((dy,idx)=>{
       const d=new Date(dy.date+"T12:00:00");
@@ -5235,7 +5249,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20260829150106';
+  var HG_BUILD_STAMP='20260829180423';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;
