@@ -47,7 +47,7 @@ assert.equal(result.entered, true);
 assert.doesNotMatch(html, /Today's 3/, "the redundant Today's 3 card and completion copy must stay removed");
 assert.match(html, /const vitaminDone=!!hd\.vit/, "the replacement reminder must use the existing saved vitamin completion state");
 assert.match(html, /💊 Vitamin reminder/, "Today must show one focused vitamin reminder");
-assert.match(html, /type="button" onclick="toggleWellness\('litfulo'\)" aria-label="Mark vitamins complete for today"/, "the vitamin reminder must retain the existing history key and keyboard control");
+assert.match(html, /type="button" onclick="toggleWellness\('litfulo'\)" aria-label="Record morning Litfulo and vitamins taken"/, "the morning reminder must retain the existing history key, describe it accurately, and support keyboard control");
 assert.match(html, /todaySectionState\("vitamins",vitaminDone\)/, "the vitamin reminder must use the standard completion-and-collapse controller");
 assert.match(html, /waterDone=wc>=goal/, "Water may clear only after the actual bottle goal");
 assert.doesNotMatch(html, /function habitsTodayHtml/, "the old oversized habits block must stay removed");
@@ -62,11 +62,12 @@ assert.match(html, /if\(window\.__stateHydrated\) window\.__flowBaselineReady=tr
 assert.match(html, /prefers-reduced-motion:reduce[\s\S]*?\.today-win/, "completion motion must honor reduced-motion preferences");
 assert.match(html, /Completed today/, "cleared items need one collapsed undo/history drawer");
 assert.doesNotMatch(html, /Day complete/, "Today must not make an unsafe all-day completion claim");
-assert.match(html, /const dailySections=\[morningDone,habitCards\.vitaminDone,habitCards\.waterDone\]/, "the honest day meter must include Morning, Vitamins, and Water");
-assert.match(html, /if\(habitCards\.vitaminDone\)[\s\S]{0,220}?<span>Vitamins<\/span>/, "completed vitamins must move into the collapsed completion drawer");
+assert.match(html, /const visibleFlow=flow\.filter/, "completion handling must use only the chosen Today cards");
+assert.doesNotMatch(html.slice(html.indexOf("function renderToday"), html.indexOf("// Build a full date-indexed map", html.indexOf("function renderToday"))), /today-agenda-head|agendaHtml\(active,nowM\)/, "the removed day meter and time lanes must not clutter Today");
+assert.match(html, /if\(habitCards\.vitaminDone\)[\s\S]{0,220}?<span>Morning lineup<\/span>/, "completed morning lineup must move into the collapsed completion drawer");
 assert.match(html, /<button type="button" class="today-water-step next"[^>]*aria-label=/, "the next water cell must be a labeled keyboard control");
 assert.match(html, /undoN=Math\.min\(waterServing\(\),wc\)/, "active Water undo copy must match the configured per-tap amount");
 assert.match(html, /undoWater=Math\.min\(waterServing\(\),habitCards\.wc\)/, "collapsed Water undo copy must match the amount it removes");
-assert.match(html, /add\("rest",taskOrder,false,[\s\S]{0,650}?`,true\);/, "Monday rest must remain passive rather than blocking progress");
+assert.match(html, /add\("newhome",800,newHomeDone,strip\(/, "Today's new-house one thing must use its own completion state");
 
 console.log("Today completion regression checks passed");

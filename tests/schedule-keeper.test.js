@@ -44,7 +44,7 @@ const oneTaskEnd = html.indexOf("function anyHouseTaskLeft", oneTaskStart);
 const oneTaskSource = html.slice(oneTaskStart, oneTaskEnd);
 assert.match(oneTaskSource, /effectiveTasksForDate\(dateStr\)/, "pushed rolling tasks must retain their effective date");
 assert.ok(oneTaskSource.indexOf("if(scheduled.length) return scheduled[0]") < oneTaskSource.indexOf("if(dow===1) return null"), "scheduled tasks must win before Monday rest");
-assert.match(html, /else if\(dow===1 && !oneId\)/, "Monday may rest only when no rolling task exists");
+assert.match(html, /add\("newhome",800,newHomeDone,/, "Today uses a new-house one thing rather than reviving old rolling tasks");
 assert.doesNotMatch(html, /const oneId=\(dow===1\)\?null:oneTaskForDate/, "Today must not discard Monday's rolling task");
 
 const pushed = {};
@@ -67,7 +67,7 @@ assert.equal(oneTaskForDate("2026-09-01"), null, "the obsolete whole-house picke
 assert.match(html, /if\(s\.date>=today\|\|s\.off\|\|s\.fixed\) return;/, "fixed milestones must not auto-carry or appear as overdue work");
 assert.match(html, /d===ds&&!fixedScheduleDate\(id\)/, "stale push state must not move a fixed milestone onto another date");
 assert.match(html, /row\.fixed\|\|!pushed\[id\]/, "fixed milestones must remain visible on their original date even if stale push state exists");
-assert.match(html, /fixedMilestoneToday\?302/, "today's fixed move milestone must appear before the optional move cards");
+assert.doesNotMatch(html.slice(html.indexOf("function renderToday"), html.indexOf("// Build a full date-indexed map", html.indexOf("function renderToday"))), /fixedMilestoneToday\?302/, "old fixed move milestones must not reappear in the new-house Today view");
 assert.match(html, /closeoutMode\?fmtD\(cur\)<=MOVE_CLOSEOUT_END:anyHouseTaskLeft/, "Timeline must stop the move plan at August 31");
 assert.match(html, /No old whole-house tasks will be added/, "Timeline must explain that the obsolete plan will not restart");
 assert.doesNotMatch(dataSource + html, /(?:It r|R)eturns tomorrow/, "the final booster day must not promise a nonexistent tomorrow card");
