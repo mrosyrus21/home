@@ -1,35 +1,80 @@
 "use strict";
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const root = path.join(__dirname, '..');
+const source = fs.readFileSync(path.join(root, 'today-checklist.js'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const transition = html.slice(html.indexOf('function todaySectionStep'), html.indexOf('function todaySectionBox'));
 
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
+function fixture(date = '2026-09-24', hour = 8) {
+  const view = {innerHTML:''}, laundry = {}, sections = {}, steps = {}, writes = [], announcements = [];
+  let clock = new Date(date + 'T' + String(hour).padStart(2,'0') + ':00:00').getTime();
+  class TestDate extends Date { constructor(...args) { super(...(args.length ? args : [clock])); } static now() { return clock; } }
+  const c = {Date:TestDate, TODAY_CLEAR_MS:950, laundry, wateringStateLoaded:true, beautyPurchased:{}, __stateHydrated:true,
+    document:{getElementById:() => view}, todayKey:() => date,
+    ALMANAC_MORNING:['bed','outdoor-water','health','breakfast','walk','work'].map(id => ({id})),
+    almanacEsc:s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),
+    almanacLogKey:(id,d) => 'morning-' + id + '-' + d,
+    almanacRoutineDone:id => !!laundry['morning-' + id + '-' + date],
+    almanacRoutineTasks:() => c.ALMANAC_MORNING.filter(t => t.id !== 'work' || ![0,6].includes(new TestDate().getDay())).map(t => ({...t,label:t.id,detail:t.id === 'outdoor-water' ? 'Check the soil; water only if needed.' : 'One simple step.'})),
+    almanacStepState:id => steps[id] || (steps[id] = {}),
+    almanacPersist:x => writes.push(x),
+    almanacDone:id => {laundry['morning-' + id + '-' + date] = true; writes.push({morning:id});c.renderAll();},
+    waterCount:() => c.water, waterGoal:() => 3, waterServing:() => 1, water:0,
+    waterAdd:() => {c.water++;c.renderAll();}, waterUndo:() => {c.water=Math.max(0,c.water-1);c.renderAll();},
+    healthCoachState:() => ({workoutDone:!!laundry['well-workout-' + date] || !!laundry['health-workout-' + date]}),
+    fitnessMonth1PlanForDate:() => ({type:[1,3,5].includes(new TestDate().getDay())?'strength':'mobility', title:'Strength B', list:['One exercise'],coach:'Easy practice.',duration:'20–30 min'}),
+    fitnessGateMessage:() => 'Ready when you are.', windDownDone:() => !!laundry['winddown-' + date],
+    toggleWellness:id => {const key='well-'+id+'-'+date;laundry[key]=!laundry[key];c.renderAll();},
+    toggleMeal:id => {const key='meal-'+id+'-'+date;laundry[key]=!laundry[key];c.renderAll();},
+    toggleNewHomeOneThing:() => {const key='newhome-one-'+date;laundry[key]=!laundry[key];c.renderAll();},
+    toggleWindDown:() => {laundry['winddown-'+date]=!laundry['winddown-'+date];c.renderAll();},
+    ST:{update:x => writes.push(x)}, toast:() => {}, todayAnnounce:x => announcements.push(x),
+    beautyItems:() => [{id:'cleanser'},{id:'sunscreen'}], beautyShoppingTodayHtml:() => '<div>Shopping contents</div>',
+  };
+  c.window=c;
+  vm.createContext(c);vm.runInContext(transition,c);
+  c.todaySectionState=(key,done) => {
+    if(!c.__stateHydrated) return {mode:done?'hidden':'active',entered:false};
+    const result=c.todaySectionStep(sections[key],done,clock);sections[key]=result.state;return result;
+  };
+  vm.runInContext(source,c);c.renderAll=() => c.renderTodayChecklist();
+  return {c,view,laundry,writes,announcements,advance:ms => {clock+=ms;c.renderAll();}};
+}
 
-const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
-const start = html.indexOf("function renderToday() {");
-const end = html.indexOf("// Build a full date-indexed map", start);
-assert.ok(start >= 0 && end > start, "Today renderer must exist");
-const source = html.slice(start, end);
-
-const order = new Function(source.match(/const todayOrder=(\{[^;]+\});/)?.[0] + " return todayOrder;")();
-assert.deepEqual(Object.keys(order), ["vitamin", "water", "beautyshop", "lunch", "newhome", "movement", "dinner", "winddown"], "Today must render only the requested eight cards after Morning routine");
-assert.deepEqual(Object.values(order), [100, 200, 300, 400, 500, 600, 700, 800], "Today cards must stay in Cyrus's requested order");
-const selectVisible = new Function("flow", "todayOrder", "return " + source.match(/flow\.filter\(function\(it\)\{return Object\.prototype\.hasOwnProperty\.call\(todayOrder,it\.key\);\}\)\s*\.map\(function\(it\)\{return Object\.assign\(\{\},it,\{order:todayOrder\[it\.key\]\}\);\}\)/)?.[0] + ";");
-const allCards = ["move-launch", "dttest", "alarm", "vitamin", "task", "water", "beautyshop", "lunch", "newhome", "movement", "dinner", "winddown", "ro-add"].map(key => ({ key, done:false }));
-assert.deepEqual(selectVisible(allCards, order).sort((a,b) => a.order-b.order).map(x => x.key), Object.keys(order), "old-house, test, and admin cards must not leak into Today or its completion drawer");
-assert.match(source, /let topHtml=almanacRoutineHtml\(hc,nowM\)/, "Morning routine must be the sole top section");
-assert.doesNotMatch(source, /let topHtml=wxAlerts\(\)/, "weather banners belong in Forecast, not Today");
-assert.match(source, /visibleFlow=flow\.filter\(function\(it\)\{return Object\.prototype\.hasOwnProperty\.call\(todayOrder,it\.key\);\}\)/, "old move, room, reminder, and admin cards must be hidden without deleting their saved state");
-assert.match(source, /active\.sort\(function\(a,b\)\{return a\.order-b\.order;\}\)/, "the visible cards must not be re-sorted into time lanes");
-assert.match(source, /add\("movement",clockMin\(RY\.workout,1050\),hc\.workoutDone,workoutCard\(hc,today\),false\)/, "keep the existing workout plan, including Strength C on scheduled days");
-assert.match(source, /const _ln=MA\.find\(function\(x\)\{return x\.id==='lunch';\}\)/, "Protein lunch must remain");
-assert.match(source, /add\("newhome",800,newHomeDone,strip\("🏡","Today's one thing — make one new-house spot usable"/, "Today's one thing must reflect the new house, not the old move-out plan");
-assert.match(html, /function toggleNewHomeOneThing\(\)[\s\S]{0,180}newhome-one-/, "new-house one thing must have its own daily completion history");
-assert.match(source, /const _dn=MA\.find\(function\(x\)\{return x\.id==='dinner';\}\)/, "Dinner must remain");
-assert.match(source, /Phone to the other room/, "phone-away must remain");
-assert.match(source, /const pile=_dedupeAdjColors\(visibleFlow\.filter/, "only retained cards may enter Completed today");
-assert.match(source, /visibleFlow\.forEach\(function\(it\)\{window\.__flowPrev\[it\.key\]=it\.done;\}\)/, "the retained completion animation must remain scoped to visible cards");
-assert.match(html, /This button records the lineup together/, "the vitamin reminder must disclose that it also records Litfulo");
-assert.match(html, /Mark morning lineup taken/, "the medication toggle must not say it records vitamins alone");
-assert.doesNotMatch(html, /Test day — added to the top of your flow/, "hidden test-day cards must not be promised in Today");
-
-console.log("Today focus regression checks passed");
+function run() {
+  const f=fixture();f.c.renderAll();
+  assert.equal(f.writes.length,0,'rendering must never record completion');
+  assert.match(f.view.innerHTML,/Morning routine/);
+  assert.match(f.view.innerHTML,/Begin paid work/);
+  assert.doesNotMatch(f.view.innerHTML,/data-task="movement"/,'Thursday recovery must not duplicate the morning walk and mobility');
+  assert.match(f.view.innerHTML,/<details class="td-shopping" ontoggle=/,'shopping must initially be collapsed');
+  assert.match(f.view.innerHTML,/aria-valuemax="12"/,'shopping must not count toward daily progress');
+  f.c.todayChecklistAction('lunch',false);
+  assert.match(f.view.innerHTML,/td-clearing[^>]*data-task="lunch"/,'new completion must briefly celebrate');
+  assert.doesNotMatch(f.view.innerHTML,/class="td-done-row"/,'completed row must clear before entering Done');
+  assert.equal(f.announcements.length,1);
+  f.c.renderAll();assert.equal(f.announcements.length,1,'sync echo must not repeat feedback');
+  f.advance(1000);assert.doesNotMatch(f.view.innerHTML,/data-task="lunch"/);
+  assert.match(f.view.innerHTML,/Done today/);
+  f.c.todayChecklistAction('lunch',true);assert.match(f.view.innerHTML,/data-task="lunch"/,'Undo restores the row');
+  f.c.todayChecklistDisclosure('shopping',true);f.c.renderAll();assert.match(f.view.innerHTML,/<details class="td-shopping" open/,'shopping must stay open across saved-state renders');
+  f.c.water=2;f.c.renderAll();f.c.todayChecklistAction('water',false);f.advance(1000);
+  assert.doesNotMatch(f.view.innerHTML,/data-task="water"/,'water goal clears only when reached');
+  f.c.todayChecklistAction('water',true);assert.match(f.view.innerHTML,/data-task="water"/);
+  const loaded=fixture();loaded.laundry['meal-lunch-2026-09-24']=true;loaded.c.renderAll();
+  assert.doesNotMatch(loaded.view.innerHTML,/td-clearing/,'refresh must not celebrate saved completion');
+  const weekend=fixture('2026-09-26');weekend.c.renderAll();assert.doesNotMatch(weekend.view.innerHTML,/Begin paid work/);
+  const early=fixture('2026-09-24',7);early.c.renderAll();assert.match(early.view.innerHTML,/Complete: Begin paid work[^>]*disabled/);
+  const strength=fixture('2026-09-23',18);strength.laundry['health-workout-2026-09-23']=true;strength.c.renderAll();
+  strength.c.todayChecklistAction('movement',true);assert.equal(strength.laundry['health-workout-2026-09-23'],false);assert.equal(strength.laundry['well-workout-2026-09-23'],false);
+  assert.match(strength.view.innerHTML,/data-task="movement"/,'legacy workout undo must restore its row');
+  const morning=fixture();morning.c.renderAll();morning.c.todayChecklistAction('morning:bed',false);morning.advance(1000);morning.c.todayChecklistAction('morning:bed',true);
+  assert.equal(morning.laundry['morning-bed-2026-09-24'],false);assert.equal(morning.c.almanacStepState('bed').status,'active');
+  const loading=fixture();loading.c.__stateHydrated=false;loading.c.renderAll();loading.c.todayChecklistAction('lunch',false);assert.equal(loading.laundry['meal-lunch-2026-09-24'],undefined);
+  console.log('Today checklist behavior checks passed');
+}
+if(require.main===module)run();
+module.exports={fixture};

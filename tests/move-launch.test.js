@@ -7,6 +7,7 @@ const path = require("node:path");
 const root = path.join(__dirname, "..");
 const dataSource = fs.readFileSync(path.join(root, "data.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const checklist = fs.readFileSync(path.join(root, "today-checklist.js"), "utf8");
 const { TASKS, SCHEDULE, MOVE_LAUNCH_IDS, MOVE_DAILY } = new Function(
   dataSource + ";return {TASKS,SCHEDULE,MOVE_LAUNCH_IDS,MOVE_DAILY};"
 )();
@@ -83,10 +84,28 @@ for (const milestone of ["2026-08-17", "2026-08-24", "2026-08-30", "2026-08-31"]
 }
 
 assert.match(html, /function toggleMoveLaunch\(id\)[\s\S]{0,180}?checked\[id\]=todayKey\(\)/, "Today must date-stamp new one-time completions");
-assert.match(html, /if\(done&&!doneToday\) return/, "older one-time completions must stay out of future Completed today drawers");
-assert.match(html, /movePriorityCard\(id,t,[\s\S]{0,100}?true\);/, "move-launch rows must be passive extras, not inflate Today's required tally");
-assert.match(html, /reminderDone\(item\.id,true\)/, "daily sell and fragile cards must use date-keyed completion state");
-assert.match(html, /toggleReminder\('\"\+item\.id\+\"',true\)/, "daily move cards must reset through the existing date-keyed reminder path");
-assert.match(html, /clear one at a time/, "the Today header must set an achievable expectation");
+assert.doesNotMatch(checklist, /MOVE_LAUNCH_IDS|MOVE_DAILY|movePriorityCard|move-launch-|move-daily-/, "retired move-launch extras must not inflate Today or enter its completion drawer");
+
+const moveStart = html.indexOf("function moveLaunchCompletedToday");
+const moveEnd = html.indexOf("function movePriorityCard", moveStart);
+const reminderStart = html.indexOf("function reminderKey");
+const reminderEnd = html.indexOf("// 🚙 DMV", reminderStart);
+const checked = {}, laundry = {};
+let date = "2026-08-29";
+const stateApi = new Function("checked", "laundry", "todayKey", `
+  function save(){} function saveLaundry(){} function renderAll(){}
+  ${html.slice(moveStart, moveEnd)}
+  ${html.slice(reminderStart, reminderEnd)}
+  return {toggleMoveLaunch, moveLaunchCompletedToday, toggleReminder, reminderDone};
+`)(checked, laundry, () => date);
+stateApi.toggleMoveLaunch("move_old_sink");
+assert.equal(checked.move_old_sink, date, "one-time completion history must retain its actual date");
+assert.equal(stateApi.moveLaunchCompletedToday("move_old_sink"), true);
+stateApi.toggleReminder("move-sell", true);
+assert.equal(laundry["rem-move-sell-2026-08-29"], true, "daily move state must retain its existing date-keyed path");
+date = "2026-08-30";
+assert.equal(stateApi.moveLaunchCompletedToday("move_old_sink"), false, "older one-time completions must not count as completed today");
+assert.equal(stateApi.reminderDone("move-sell", true), false, "daily move reminders must reset on a new date");
+assert.equal(checked.move_old_sink, "2026-08-29", "changing the visible date must not erase one-time history");
 
 console.log("move launch regression checks passed");

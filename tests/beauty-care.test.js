@@ -7,6 +7,7 @@ const path = require("node:path");
 const root = path.join(__dirname, "..");
 const dataSource = fs.readFileSync(path.join(root, "data.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const checklist = fs.readFileSync(path.join(root, "today-checklist.js"), "utf8");
 const { BEAUTY_CARE } = new Function(dataSource + ";return {BEAUTY_CARE};")();
 
 assert.equal(BEAUTY_CARE.updated, "2026-08-29");
@@ -25,7 +26,10 @@ assert.match(html, /beautyPurchased = d\.beautyPurchased \|\| \{\};/, "saved bea
 assert.match(html, /const previous=beautyPurchased\[id\]\|\|null, next=previous\?null:todayKey\(\)/, "purchase history must be date-stamped rather than boolean-only");
 assert.match(html, /ST\.child\('beautyPurchased'\)\.child\(id\)/, "each purchase must save to its own dedicated Firebase path");
 assert.doesNotMatch(html, /ST\.child\('beautyPurchased'\)\.set\(/, "beauty updates must not replace the full purchase map");
-assert.match(html, /add\("beautyshop",habitOrder\+2,false,beautyShoppingTodayHtml\(\),true\)/, "the separate Today list must remain passive");
+assert.match(checklist, /class="td-shopping"[\s\S]+beautyShoppingTodayHtml\(\)/, "the separate Today list must still render in its shopping disclosure");
+assert.match(checklist, /shopping:false/, "the shopping disclosure must default to collapsed");
+const checklistItems = checklist.slice(checklist.indexOf("function todayChecklistItems"), checklist.indexOf("function todayChecklistRow"));
+assert.doesNotMatch(checklistItems, /beauty|shopping/i, "beauty shopping must stay passive and never inflate the daily checklist tally");
 assert.match(html, /Personal care · not groceries/);
 
 const todayStart = html.indexOf("function beautyShoppingTodayHtml");

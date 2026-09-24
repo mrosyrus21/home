@@ -7,6 +7,7 @@ const path = require("node:path");
 const root = path.join(__dirname, "..");
 const dataSource = fs.readFileSync(path.join(root, "data.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const checklist = fs.readFileSync(path.join(root, "today-checklist.js"), "utf8");
 const { SCHEDULE, TASKS, PAUSED_FLIP_SCAN, TV_FOLLOWUP } = new Function(dataSource + ";return {SCHEDULE,TASKS,PAUSED_FLIP_SCAN,TV_FOLLOWUP};")();
 
 const rolling = SCHEDULE.filter(item => item.date < "2026-08-17");
@@ -44,7 +45,7 @@ const oneTaskEnd = html.indexOf("function anyHouseTaskLeft", oneTaskStart);
 const oneTaskSource = html.slice(oneTaskStart, oneTaskEnd);
 assert.match(oneTaskSource, /effectiveTasksForDate\(dateStr\)/, "pushed rolling tasks must retain their effective date");
 assert.ok(oneTaskSource.indexOf("if(scheduled.length) return scheduled[0]") < oneTaskSource.indexOf("if(dow===1) return null"), "scheduled tasks must win before Monday rest");
-assert.match(html, /add\("newhome",800,newHomeDone,/, "Today uses a new-house one thing rather than reviving old rolling tasks");
+assert.match(checklist, /key:'newhome'[^\n]+done:!!laundry\['newhome-one-' \+ date\]/, "Today uses a new-house one thing rather than reviving old rolling tasks");
 assert.doesNotMatch(html, /const oneId=\(dow===1\)\?null:oneTaskForDate/, "Today must not discard Monday's rolling task");
 
 const pushed = {};
@@ -80,6 +81,6 @@ assert.equal(TV_FOLLOWUP.label, "Fix or get rid of the TV I found", "the separat
 assert.deepEqual(TV_FOLLOWUP.links, [], "the TV follow-up must not inherit paused deal-hunting links");
 assert.doesNotMatch(html, /PAUSED_FLIP_SCAN/, "the paused flip scan must not be rendered on Today or Timeline");
 assert.match(html, /TV_FOLLOWUP/, "the move-relevant TV follow-up must remain separate from the paused idea");
-assert.match(html, /TV follow-up — done for today/, "the completed TV reminder must retain its compact state");
+assert.doesNotMatch(checklist, /TV_FOLLOWUP|flipscan/, "the TV reminder must remain outside the focused Today checklist");
 
 console.log("schedule keeper regression checks passed");
