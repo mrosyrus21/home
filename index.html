@@ -868,7 +868,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20260923210000-checklist"></script>
+<script src="./data.js?v=20260930120000-zoey"></script>
 <script src="./today-checklist.js?v=20260923210000"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
 <script src="./recipes.js?v=20260729010000-approved"></script>
@@ -2948,7 +2948,8 @@ function recipeSearchBox(){
   return '<input id="recipe-search" type="search" placeholder="\ud83d\udd0d Search '+n+' recipes\u2026 name or ingredient" value="'+String(recipeQuery).replace(/"/g,'&quot;')+'" oninput="recipeFilter(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;margin:0 0 14px;padding:11px 14px;border-radius:9px;border:1px solid #D9C39A;background:#F5ECD7;color:#5a3a2a;font-family:\'Lora\',serif;font-size:14px;outline:none">';
 }
 function recipeMatch(r,q){
-  const hay=(r.name+' '+(r.tags||[]).join(' ')+' '+(r.ingredients||[]).join(' ')+' '+(r.blurb||'')+' '+(r.source||'')).toLowerCase();
+  const batchIngredients=(r.batches||[]).map(b=>(b.ingredients||[]).join(' ')).join(' ');
+  const hay=(r.name+' '+(r.tags||[]).join(' ')+' '+(r.ingredients||[]).join(' ')+' '+batchIngredients+' '+(r.blurb||'')+' '+(r.source||'')).toLowerCase();
   return q.split(/\s+/).filter(Boolean).every(function(w){ return hay.indexOf(w)!==-1; });
 }
 function recipeFilter(v){ recipeQuery=String(v||''); if(!String(recipeQuery).trim()) recipeCat=null; var f=document.getElementById('recipe-featured'); if(f) f.style.display=(String(recipeQuery).trim()?'none':''); const el=document.getElementById('recipe-list'); if(el) el.innerHTML=recipeListHtml(); }
@@ -3000,7 +3001,7 @@ function recipeListHtml(){
   if(recipeCat==='__doggy'){
     let out=recipeBackBar('recipeGo(null)');
     out+='<div style="display:flex;align-items:center;gap:10px;margin:4px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#8a5a2a">🐕 Zoey’s Kitchen</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
-    out+='<div style="font-size:11.5px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Rotate the recipes; eggshell calcium, liver, eggs, and weekly sardines keep it balanced.</div>';
+    out+='<div style="font-size:11.5px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Follow each recipe’s batch-specific notes; temporary formulas are labeled.</div>';
     out+= dogs.length ? dogs.map(function(r){return recipeCard(r,false);}).join('') : '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:20px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No doggy recipes yet.</div>';
     return out;
   }
@@ -3098,7 +3099,18 @@ function scaleIngredient(line, ratio){
     });
   }catch(e){ return line; }
 }
-function setServings(id,delta){ const r=(typeof RECIPES!=='undefined'?RECIPES:[]).find(function(x){return x.id===id;}); if(!r) return; const base=baseServ(r); const cur=recipeServ[id]||base; recipeServ[id]=Math.max(1,cur+delta); openRecipe(id,true); }
+function setServings(id,delta){ const r=(typeof RECIPES!=='undefined'?RECIPES:[]).find(function(x){return x.id===id;}); if(!r||r.fixedBatch) return; const base=baseServ(r); const cur=recipeServ[id]||base; recipeServ[id]=Math.max(1,cur+delta); openRecipe(id,true); }
+function recipeBatchesHtml(r){
+  const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return (r.batches||[]).map(b=>'<section class="recipe-batch" style="margin:18px 0;padding:18px;border:1px solid var(--aborder);border-radius:12px;background:rgba(212,144,10,.05);color:var(--text)">'
+    +'<h2 style="font-size:19px;margin:0 0 8px;color:var(--text)">'+esc(b.title)+'</h2>'
+    +'<p style="font-size:13px;line-height:1.5;color:var(--text2)">'+esc(b.subtitle||'')+'</p>'
+    +'<h3 style="font-size:15px">Ingredients — this batch only</h3><ul style="padding-left:20px;font-size:14px;line-height:1.6">'
+    +(b.ingredients||[]).map(i=>'<li style="margin-bottom:8px">'+esc(i)+'</li>').join('')+'</ul>'
+    +'<h3 style="font-size:15px">Steps</h3><ol style="padding-left:22px;font-size:14px;line-height:1.6">'
+    +(b.steps||[]).map(s=>'<li style="margin-bottom:12px;padding-left:4px">'+esc(s)+'</li>').join('')+'</ol>'
+    +(b.note?'<p style="border-top:1px solid var(--aborder);padding-top:12px;font-size:13px;line-height:1.6;font-weight:600">'+esc(b.note)+'</p>':'')+'</section>').join('');
+}
 function openRecipe(id, keepScroll){
   const r=(typeof RECIPES!=='undefined'?RECIPES:[]).find(x=>x.id===id); if(!r) return;
   const el=document.getElementById('recipe-page'); if(!el) return;
@@ -3116,11 +3128,12 @@ function openRecipe(id, keepScroll){
     +'<h1 style="font-family:\'Playfair Display\',serif;font-size:24px;color:var(--text);margin:0 0 8px">'+r.name+'</h1>'
     +(meta.length?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">'+meta.map(m=>'<span style="font-size:12px;padding:4px 11px;border-radius:20px;background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border)">'+m+'</span>').join('')+'</div>':'')
     +(r.blurb?'<div style="font-size:13.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.6;margin-bottom:18px">'+r.blurb+'</div>':'')
-    +(ing?servCtl:'')
+    +(ing&&!r.fixedBatch?servCtl:'')
     +(ing?'<div style="font-family:\'Playfair Display\',serif;font-size:17px;color:var(--text);margin-bottom:10px">🧺 Ingredients</div><ul style="margin:0 0 22px;padding-left:20px">'+ing+'</ul>':'')
     +(steps?'<div style="font-family:\'Playfair Display\',serif;font-size:17px;color:var(--text);margin-bottom:12px">👩‍🍳 Steps</div>'+steps:'')
+    +recipeBatchesHtml(r)
     +(r.note?'<div style="margin-top:18px;background:rgba(212,144,10,.08);border:1px solid var(--aborder,rgba(212,144,10,.3));border-radius:9px;padding:12px 14px;font-size:12.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.55;font-style:italic">📝 '+r.note+'</div>':'')
-    +((!ing&&!steps)?'<div style="background:rgba(212,144,10,.08);border:1px solid var(--aborder);border-radius:9px;padding:14px;font-size:13px;color:var(--amber2);font-family:\'Lora\',serif;line-height:1.5">This is a placeholder card. Send me this recipe and I will fill in the ingredients and steps right here.</div>':'')
+    +((!ing&&!steps&&!(r.batches||[]).length)?'<div style="background:rgba(212,144,10,.08);border:1px solid var(--aborder);border-radius:9px;padding:14px;font-size:13px;color:var(--amber2);font-family:\'Lora\',serif;line-height:1.5">This is a placeholder card. Send me this recipe and I will fill in the ingredients and steps right here.</div>':'')
     +'<div style="height:50px"></div></div>';
   el.style.display='block'; if(!keepScroll){ el.scrollTop=0; window.scrollTo(0,0); }
 }
@@ -4827,7 +4840,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20260923210000';
+  var HG_BUILD_STAMP='20260930120000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;

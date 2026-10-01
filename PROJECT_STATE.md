@@ -8,6 +8,15 @@ Cyrus says "GO LIVE."
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-09-30 — Zoey's Chicken & Brown Rice Split Batch
+
+- User authorized publication: "Upload the new recipes for my dog go live."
+- Source: `Recipes/Recipe Box/Shareable/Zoey - Chicken & Brown Rice Split Batch.txt`, via `Recipes/Recipe Box/SCHEDULE_ZOEY_CHICKEN_SPLIT_HANDOFF.md`.
+- Additive `data.js` entry `r_zoey_chicken_split` in Zoey's Kitchen: two separate formulas, all ounce/cup measures and calcium alternatives, plain-batch exclusions, and temporary-diet warning. Existing recipes and inventory unchanged.
+- `index.html`: optional bordered batch sections, batch-ingredient search, fixed-batch serving guard, neutral dog-recipe introduction. Safe-cooling clarification links USDA guidance; quantities otherwise preserved.
+- Release prepared from fresh `origin/main` worktree at `55bf206`; only reviewed recipe changes, regression test, this record, and cache/build stamps included. No shared dirty-worktree files copied wholesale.
+- Build/cache stamp: `20260930120000`. Verify via Recipe Box → Zoey's Kitchen → Chicken & Brown Rice Split Batch, including scrolling to the bottom on mobile.
+
 ### 2026-07-07 — Encoding repair + deploy marker restamp
 
 **Status:** DEPLOYED after Cyrus said "go live."

@@ -598,6 +598,61 @@ const RECIPES = [
     note:"Zucchini and yellow squash were intentionally left out — they don't pair as strongly with tenderloin. Save them for another dish." },
 
   // ── 🐕 ZOEY'S HOMEMADE DOG FOOD (not people food) ──────────────────────────
+  // Source: Recipes/Recipe Box/Shareable/Zoey - Chicken & Brown Rice Split Batch.txt (2026-09-30).
+  { id:"r_zoey_chicken_split", name:"Zoey's Chicken & Brown Rice Split Batch", emoji:"🐕", dog:true,
+    fixedBatch:true, trial:false, servings:"4 lb chicken · two separate batches",
+    tags:["dog","Zoey","chicken","brown rice","freezer","temporary batch"],
+    blurb:"Split 4 lb raw chicken into TWO separate formulas: 1 lb for the plain freezer batch and 3 lb for the regular temporary batch. Use ounce weights when possible; cups are approximate. Dog food only — no salt, seasoning, onion, or garlic. The regular batch intentionally omits iodine and vitamin E/wheat-germ oil: it is temporary, not a permanent sole diet.",
+    batches:[
+      { title:"1 · Plain freezer batch — for stomach trouble", subtitle:"1 lb chicken · chicken, rice, and water ONLY",
+        ingredients:[
+          "Chicken breast: 16 oz / 1 lb raw — about 3 cups cooked and shredded",
+          "Brown rice: 2 cups cooked — about 14 oz cooked",
+          "Water: about 1/2–1 cup, as needed for a soft, moist mixture"
+        ],
+        steps:[
+          "Put the 1 lb chicken breast in a pot and cover with plain water.",
+          "Simmer until completely cooked through and 165°F internally.",
+          "Remove the chicken and shred or chop it very finely.",
+          "Cook the brown rice extra soft with a little more water than normal, so it is not dry or chewy.",
+          "Measure 2 cups cooked brown rice.",
+          "Mix the shredded chicken and rice together.",
+          "Add 1/2 cup warm water first, then more if needed until soft and moist.",
+          "Cool promptly in shallow containers; follow the safe-cooling note below.",
+          "Once cooled, divide into small meal portions and freeze."
+        ],
+        note:"Nothing else goes in this batch: no vegetables, liver, oysters, salmon, eggshell, oils, seasoning, iodine, or vitamin E. Keep separate from the regular batch."
+      },
+      { title:"2 · Regular chicken batch — temporary", subtitle:"Remaining 3 lb chicken · keep separate from the plain batch",
+        ingredients:[
+          "Chicken breast: 48 oz / 3 lb raw — roughly 8–9 cups cooked/shredded",
+          "Cooked brown rice: 36 oz — about 5 cups cooked",
+          "Carrots: 5.3 oz before cooking — about 1 cup chopped",
+          "Green beans: 5.3 oz before cooking — about 1 1/4 cups chopped",
+          "Green peas: 5.3 oz before cooking — about 1 cup",
+          "Sweet potato: 8 oz before cooking — about 1 1/2 cups diced raw, or 1 cup mashed after cooking",
+          "Canned salmon: 8 oz drained — about 1 1/4 cups flaked",
+          "Beef liver: 2 1/2 oz — about 1/2 cup finely chopped",
+          "Oysters: 3 oz drained — about 1/2 cup chopped",
+          "Finely powdered eggshell: 2 1/4 LEVEL tsp with BONELESS salmon, OR 2 LEVEL tsp when canned salmon includes soft edible bones — choose ONE amount"
+        ],
+        steps:[
+          "Cook the chicken: simmer the 3 lb chicken breast in plain water until fully cooked to 165°F. Remove and shred or chop into small pieces.",
+          "Cook the brown rice on the softer side. Measure 5 cups cooked / about 36 oz.",
+          "Cook the sweet potato: peel if desired, dice 8 oz, and boil or steam until very soft. Mash or finely chop.",
+          "Cook the vegetables: combine 5.3 oz each of carrots, green beans, and peas. Steam or boil until soft, then finely chop or partially mash. These three vegetables total about 16 oz / 1 lb; sweet potato is separate.",
+          "Cook the liver: cook 2 1/2 oz beef liver thoroughly with no oil or seasoning. Chop very finely.",
+          "Prepare the oysters and salmon: drain 3 oz oysters and chop; drain 8 oz canned salmon and flake. If the salmon contains normal soft canned bones, mash them thoroughly into the fish.",
+          "Combine everything EXCEPT eggshell: mix chicken, 5 cups brown rice, carrots, peas, green beans, sweet potato, liver, oysters, and salmon.",
+          "Cool completely before adding eggshell; do not add it while steaming hot. Cool promptly in shallow containers under the safe-cooling note below.",
+          "Add eggshell: grind clean, completely dry shells into a flour-fine powder. Use 2 1/4 level tsp with boneless salmon OR 2 level tsp with soft edible salmon bones. Mix extremely thoroughly throughout the batch.",
+          "Portion into Zoey's normal meal-size containers or bags. Keep roughly 2–3 days in the refrigerator and freeze the rest."
+        ],
+        note:"No iodine. No vitamin E or wheat-germ oil. This is a temporary batch, not Zoey's permanent sole diet."
+      }
+    ],
+    note:"Safe cooling: use shallow containers and refrigerate promptly, within 2 hours of cooking (1 hour above 90°F). Do not leave the batch on the counter waiting to cool completely. Cool in the refrigerator as needed before adding eggshell and final portioning. <a href=\"https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety\" target=\"_blank\" rel=\"noopener\">USDA cooling guidance</a>."
+  },
   { id:"r_zoey_onepot", name:"Zoey's One-Pot — Slow-Cooker Turkey & Sweet Potato", emoji:"🐕", dog:true,
     time:"15 min prep · 4 hrs slow cooker", difficulty:"Easy", servings:"~10-day batch", tags:["dog"],
     blurb:"The pattern home-cooking dog owners actually stick with: ONE slow-cooker batch — dump, cook, portion, freeze. Built for Zoey: lean turkey (herding mixes gain weight easily), sardines for 8-year-old joints, whole-foods only.",
