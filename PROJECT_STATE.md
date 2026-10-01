@@ -8,6 +8,13 @@ Cyrus says "GO LIVE."
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-09-30 — Revised Zoey combined Instant Pot method
+
+- User requested upload of the revised dog-food recipe. Source: `Recipes/Recipe Box/Shareable/Zoey - Chicken & Brown Rice Split Batch.txt` and `Recipes/Recipe Box/SCHEDULE_ZOEY_CHICKEN_SPLIT_HANDOFF.md`, revised September 30 at 19:30.
+- Update existing `r_zoey_chicken_split` rather than duplicate it. Regular batch now first: 2 cups DRY brown rice + 2.5 cups water + 5 oz carrots + 8 oz sweet potato, one HIGH 30-minute cycle and full natural pressure release. Use entire mixture. No shared rice or second vegetable pressure cycle.
+- Beans now 5 oz and peas 6 oz. Plain batch remains separate below, with its own separately cooked plain rice. Preserve raw/drained weights, calcium alternatives, temporary-diet warning and prompt shallow-container cooling.
+- Release starts from fresh `origin/main` at `107e9df`; only `data.js`, version stamps in `index.html`/`sw.js`, this record and recipe regression assertions reviewed. No other recipes, inventory or saved state changed. Build/cache `20260930200000`.
+
 ### 2026-09-30 — Zoey's Chicken & Brown Rice Split Batch
 
 - User authorized publication: "Upload the new recipes for my dog go live."

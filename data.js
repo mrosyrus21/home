@@ -602,56 +602,49 @@ const RECIPES = [
   { id:"r_zoey_chicken_split", name:"Zoey's Chicken & Brown Rice Split Batch", emoji:"🐕", dog:true,
     fixedBatch:true, trial:false, servings:"4 lb chicken · two separate batches",
     tags:["dog","Zoey","chicken","brown rice","freezer","temporary batch"],
-    blurb:"Split 4 lb raw chicken into TWO separate formulas: 1 lb for the plain freezer batch and 3 lb for the regular temporary batch. Use ounce weights when possible; cups are approximate. Dog food only — no salt, seasoning, onion, or garlic. The regular batch intentionally omits iodine and vitamin E/wheat-germ oil: it is temporary, not a permanent sole diet.",
+    blurb:"Split 4 lb RAW chicken into TWO separate formulas: 3 lb for the regular temporary batch below and 1 lb for the separate plain freezer recipe. For the regular batch, brown rice, carrots, and sweet potato cook TOGETHER in ONE pressure cycle in a 6- or 8-quart Instant Pot. Use standard measuring cups for rice and water; weigh solids in ounces. Fish weights are DRAINED and cup estimates are approximate. Dog food only — no salt, seasoning, onion, or garlic. The regular batch intentionally omits iodine and vitamin E/wheat-germ oil: it is temporary, not a permanent sole diet.",
     batches:[
-      { title:"1 · Plain freezer batch — for stomach trouble", subtitle:"1 lb chicken · chicken, rice, and water ONLY",
+      { title:"1 · Regular chicken batch — temporary", subtitle:"3 lb chicken · rice, carrots, and sweet potato in ONE pressure cycle",
         ingredients:[
-          "Chicken breast: 16 oz / 1 lb raw — about 3 cups cooked and shredded",
-          "Brown rice: 2 cups cooked — about 14 oz cooked",
-          "Water: about 1/2–1 cup, as needed for a soft, moist mixture"
+          "Chicken breast: 48 oz / 3 lb RAW",
+          "Brown rice: 2 cups DRY, rinsed and drained",
+          "Plain water: 2.5 cups / 20 fl oz, for the combined pressure cycle",
+          "Raw carrots: 5 oz — about 1 cup chopped",
+          "Green beans: 5 oz — about 1 cup chopped",
+          "Peas: 6 oz — about 1 cup",
+          "Raw sweet potato: 8 oz — about 1.5 cups diced",
+          "Canned salmon: 8 oz DRAINED — about 1.25 cups flaked",
+          "Beef liver: 2.5 oz",
+          "Cooked/canned oysters: 3 oz DRAINED",
+          "Flour-fine eggshell powder: 2 LEVEL tsp with soft-bone canned salmon, OR 2.25 LEVEL tsp with BONELESS canned salmon (2 tsp + 0.25 tsp) — choose ONE amount"
         ],
         steps:[
-          "Put the 1 lb chicken breast in a pot and cover with plain water.",
-          "Simmer until completely cooked through and 165°F internally.",
-          "Remove the chicken and shred or chop it very finely.",
-          "Cook the brown rice extra soft with a little more water than normal, so it is not dry or chewy.",
-          "Measure 2 cups cooked brown rice.",
-          "Mix the shredded chicken and rice together.",
-          "Add 1/2 cup warm water first, then more if needed until soft and moist.",
-          "Cool promptly in shallow containers; follow the safe-cooling note below.",
-          "Once cooled, divide into small meal portions and freeze."
-        ],
-        note:"Nothing else goes in this batch: no vegetables, liver, oysters, salmon, eggshell, oils, seasoning, iodine, or vitamin E. Keep separate from the regular batch."
-      },
-      { title:"2 · Regular chicken batch — temporary", subtitle:"Remaining 3 lb chicken · keep separate from the plain batch",
-        ingredients:[
-          "Chicken breast: 48 oz / 3 lb raw — roughly 8–9 cups cooked/shredded",
-          "Cooked brown rice: 36 oz — about 5 cups cooked",
-          "Carrots: 5.3 oz before cooking — about 1 cup chopped",
-          "Green beans: 5.3 oz before cooking — about 1 1/4 cups chopped",
-          "Green peas: 5.3 oz before cooking — about 1 cup",
-          "Sweet potato: 8 oz before cooking — about 1 1/2 cups diced raw, or 1 cup mashed after cooking",
-          "Canned salmon: 8 oz drained — about 1 1/4 cups flaked",
-          "Beef liver: 2 1/2 oz — about 1/2 cup finely chopped",
-          "Oysters: 3 oz drained — about 1/2 cup chopped",
-          "Finely powdered eggshell: 2 1/4 LEVEL tsp with BONELESS salmon, OR 2 LEVEL tsp when canned salmon includes soft edible bones — choose ONE amount"
-        ],
-        steps:[
-          "Cook the chicken: simmer the 3 lb chicken breast in plain water until fully cooked to 165°F. Remove and shred or chop into small pieces.",
-          "Cook the brown rice on the softer side. Measure 5 cups cooked / about 36 oz.",
-          "Cook the sweet potato: peel if desired, dice 8 oz, and boil or steam until very soft. Mash or finely chop.",
-          "Cook the vegetables: combine 5.3 oz each of carrots, green beans, and peas. Steam or boil until soft, then finely chop or partially mash. These three vegetables total about 16 oz / 1 lb; sweet potato is separate.",
-          "Cook the liver: cook 2 1/2 oz beef liver thoroughly with no oil or seasoning. Chop very finely.",
-          "Prepare the oysters and salmon: drain 3 oz oysters and chop; drain 8 oz canned salmon and flake. If the salmon contains normal soft canned bones, mash them thoroughly into the fish.",
-          "Combine everything EXCEPT eggshell: mix chicken, 5 cups brown rice, carrots, peas, green beans, sweet potato, liver, oysters, and salmon.",
-          "Cool completely before adding eggshell; do not add it while steaming hot. Cool promptly in shallow containers under the safe-cooling note below.",
-          "Add eggshell: grind clean, completely dry shells into a flour-fine powder. Use 2 1/4 level tsp with boneless salmon OR 2 level tsp with soft edible salmon bones. Mix extremely thoroughly throughout the batch.",
-          "Portion into Zoey's normal meal-size containers or bags. Keep roughly 2–3 days in the refrigerator and freeze the rest."
+          "LOAD THE INSTANT POT: start with an empty metal inner pot fitted inside the 6- or 8-quart Instant Pot. Add 2 cups rinsed DRY brown rice and 2.5 cups plain water directly to the inner pot. Stir so all rice is wet. Dice 5 oz carrots and 8 oz sweet potato into roughly 1-inch pieces and put them on top. No basket or trivet.",
+          "ONE PRESSURE CYCLE: close and lock the pressure lid; set the valve to Sealing if your model requires it. Select Pressure Cook / Manual, HIGH, 30 minutes. The timer starts after pressure builds. When finished, turn off Keep Warm and allow a FULL natural pressure release until the float valve drops before opening. Mash the very soft carrots and sweet potato into the rice; this soft texture is intentional.",
+          "GREEN BEANS + PEAS: while the combined pot cooks, steam or microwave 5 oz green beans and 6 oz peas with a splash of water until soft. Chop or mash.",
+          "CHICKEN + LIVER: while the combined pot cooks, poach the 3 lb RAW chicken in a separate stovetop pot with plain water to cover. Simmer until the thickest part of EACH breast reaches 165°F, then shred finely. Cook 2.5 oz liver thoroughly in a separate small pan or saucepan without oil or seasoning; chop finely.",
+          "MIX THE REGULAR BATCH: combine its chicken with the ENTIRE rice-carrot-sweet-potato mixture, green beans, peas, cooked liver, 8 oz drained canned salmon, and 3 oz drained cooked/canned oysters. Mash any soft canned salmon bones thoroughly into the fish and chop the oysters finely. The 2 cups dry rice yield approximately 5–6 cups cooked; do not remove or separately weigh cooked rice, and do not run another vegetable pressure cycle.",
+          "ADD EGGSHELL: after the mixture stops steaming, mix flour-fine eggshell powder extremely thoroughly throughout the regular batch. Use 2 level tsp if the salmon includes soft edible bones OR 2.25 level tsp if boneless. No iodine, vitamin E, or wheat-germ oil.",
+          "PORTION, CHILL, FREEZE: use shallow containers and refrigerate promptly to cool. Do not wait for the whole batch to become cold on the counter. Keep 2–3 days of regular portions refrigerated and freeze the rest once chilled."
         ],
         note:"No iodine. No vitamin E or wheat-germ oil. This is a temporary batch, not Zoey's permanent sole diet."
+      },
+      { title:"2 · Plain freezer batch — separate saved recipe", subtitle:"1 lb chicken · separately cooked PLAIN rice · water ONLY",
+        ingredients:[
+          "Chicken breast: 16 oz / 1 lb RAW",
+          "PLAIN brown rice: 14 oz cooked — about 2 cups, prepared SEPARATELY",
+          "Fresh warm water: 4–8 fl oz / 1/2–1 cup, to moisten"
+        ],
+        steps:[
+          "Poach the 1 lb chicken in plain water until it reaches 165°F, then shred.",
+          "Mix with 14 oz / about 2 cups separately cooked PLAIN brown rice. Do not use the regular batch's rice-and-vegetable mixture.",
+          "Start with 4 fl oz / 1/2 cup fresh warm water, adding more until soft and moist.",
+          "Portion into shallow containers, refrigerate promptly to chill, then freeze."
+        ],
+        note:"Nothing else goes in this batch: no vegetables, liver, oysters, salmon, eggshell, oils, seasoning, iodine, or vitamin E. Keep separate from the regular batch."
       }
     ],
-    note:"Safe cooling: use shallow containers and refrigerate promptly, within 2 hours of cooking (1 hour above 90°F). Do not leave the batch on the counter waiting to cool completely. Cool in the refrigerator as needed before adding eggshell and final portioning. <a href=\"https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety\" target=\"_blank\" rel=\"noopener\">USDA cooling guidance</a>."
+    note:"Safe cooling: after the regular mixture stops steaming, mix in its eggshell; portion into shallow containers and refrigerate promptly, within 2 hours of cooking (1 hour above 90°F). Do not leave the batch on the counter waiting to become cold. Freeze once chilled. <a href=\"https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety\" target=\"_blank\" rel=\"noopener\">USDA cooling guidance</a>."
   },
   { id:"r_zoey_onepot", name:"Zoey's One-Pot — Slow-Cooker Turkey & Sweet Potato", emoji:"🐕", dog:true,
     time:"15 min prep · 4 hrs slow cooker", difficulty:"Easy", servings:"~10-day batch", tags:["dog"],
