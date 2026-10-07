@@ -4,7 +4,7 @@
 // with the inline <script> in index.html, which loads AFTER this file.
 // Objects: ROOMS, TASKS, SCHEDULE, PLANTS, PLANT_INFO, WATER_INFO,
 //          FUN_FACTS, CARE_INFO, HARVEST_INFO.
-// Jun 7 2026: per-plant display chips — light / waterChip / harvestChip (display ONLY; `days` stays the watering-engine truth, waterChip must always agree with it).
+// Plant display chips are informational. For checkOnly pots, `days` is the soil-check interval, not a watering frequency.
 // Edit plant/task/room data HERE. index.html keeps CONFIG/EYEBROWS/LAST_DEPLOY.
 // ═══════════════════════════════════════════════════════════════
 
@@ -274,26 +274,6 @@ const TASKS = {
   bk_powerwash: { room:"backyard", label:"Power wash the patio or deck", level:"hard" },
 
   // ── GARDEN ────────────────────────────────────────────────────────────────
-  gnat_buy:       { room:"garden", label:"Buy Mosquito Bits — already have sticky traps", level:"easy" },
-  parse_trim:     { room:"garden", label:"Remove dead bolted stalks from parsley at the base", level:"easy" },
-  gnat_tea:       { room:"garden", label:"Soak Mosquito Bits in distilled water — let sit 24hrs (BTI tea)", level:"easy" },
-  basil_trim:     { room:"garden", label:"Trim yellowing lower leaves off both basil plants", level:"easy" },
-  gnat_apply:     { room:"garden", label:"Water all indoor plants with the Mosquito Bits BTI tea", level:"easy" },
-  gnat_traps:     { room:"garden", label:"Place yellow sticky traps in all indoor plant pots", level:"easy" },
-  herb_pinch:     { room:"garden", label:"Pinch flower buds off both basil plants and peppermint", level:"easy" },
-  sort_plants:    { room:"garden", label:"Move Fittonia fully indoors", level:"easy" },
-  parse_harv:     { room:"garden", label:"Harvest parsley — outer stems at the base, leave inner growth", level:"easy" },
-  herb_pinch2:    { room:"garden", label:"Pinch basil & mint again — remove any flower buds", level:"easy" },
-  dill_check:     { room:"garden", label:"Check dill for flower heads — cut to extend leaf production", level:"easy" },
-  gnat_check:     { room:"garden", label:"Check sticky traps — are gnat numbers dropping?", level:"easy" },
-  gnat_nuke:      { room:"garden", label:"🪴 REPOT DAY — all 3 indoor plants, SAME day (the gnat reset). Supply run first: indoor potting mix · cactus mix · perlite · orchid bark · coco coir. Then bare-root each plant, scrub pots, fresh custom mix, gravel cap. Method + per-plant mixes: Plants → Care", level:"easy" },
-  gnat_sand:      { room:"garden", label:"🦟 Post-repot insurance: water any indoor pot that is due with BTI tea + swap sticky traps if they are getting crowded", level:"easy" },
-  gnat_check2:    { room:"garden", label:"🦟 Victory check — traps stayed clean ~2 weeks? War over. Any pot still hatching gnats: redo just that one repot", level:"easy" },
-  basil_beetles:  { room:"garden", label:"Protect both basil plants from Japanese beetles", level:"easy", note:"Tap adults into a cup of soapy water now, at dusk, and again in the cool morning. A breathable row cover is optional, not required; never wrap basil in plastic or solid cloth in the heat. Skip Japanese beetle traps. Do not use the recorded Captain Jack's Deadbug Brew for this pest on basil, and never feed treated beetles to the spiders." },
-  gard_fertilize: { room:"garden", label:"Fertilize tomatoes, jalapeño, and strawberry", level:"easy" },
-  gard_mulch:     { room:"garden", label:"Add mulch or top dressing to outdoor pots", level:"easy" },
-  gard_repot:     { room:"garden", label:"Check for root-bound plants and repot if needed", level:"moderate" },
-  heat_shade:     { room:"garden", label:"Create afternoon shade in place for the daily-watered pots", level:"easy", note:"Before the peak heat, shade the single strawberry, multi-plant strawberry with both attached runners, both tomatoes, and both potatoes. Use an umbrella, chair, shade cloth, or cardboard on the west side with an air gap. Do not move or detach the runners." },
   move_stage:     { room:"priority", label:"Set up one moving staging zone", level:"easy", note:"Use one clear area for packed boxes. Label three sections: PACKED, DECISION HOLD, and OPEN LAST. Do not make destination-dependent keep-or-discard decisions yet." },
   move_supplies:  { room:"priority", label:"Gather moving supplies and start a move folder", level:"easy", note:"Boxes, tape, marker, bags, labels, and one folder for lease, IDs, receipts, and moving information. Keep IDs and essential documents accessible." },
   move_decor:     { room:"priority", label:"Pack one labeled box of decor and display items", level:"easy", note:"One box is enough. Pack only obvious nonessentials you would take anywhere; stop after the box is labeled and in the staging zone." },
@@ -320,6 +300,31 @@ const TASKS = {
   move_out:       { room:"priority", label:"Move-out day: essentials, plants, final sweep, keys", level:"moderate", note:"Load the open-last kit, documents, medicines, valuables, plants, and pet supplies last. Do one final walkthrough and return keys as required." },
 };
 
+
+// Historical label lookup only. These old plant instructions are not active tasks.
+// Do not migrate, clear, or overwrite checked/custom task/history stores.
+const RETIRED_PLANT_TASKS = {
+  gnat_buy:       { room:"garden", label:"Buy Mosquito Bits — already have sticky traps", level:"easy" },
+  parse_trim:     { room:"garden", label:"Remove dead bolted stalks from parsley at the base", level:"easy" },
+  gnat_tea:       { room:"garden", label:"Soak Mosquito Bits in distilled water — let sit 24hrs (BTI tea)", level:"easy" },
+  basil_trim:     { room:"garden", label:"Trim yellowing lower leaves off both basil plants", level:"easy" },
+  gnat_apply:     { room:"garden", label:"Water all indoor plants with the Mosquito Bits BTI tea", level:"easy" },
+  gnat_traps:     { room:"garden", label:"Place yellow sticky traps in all indoor plant pots", level:"easy" },
+  herb_pinch:     { room:"garden", label:"Pinch flower buds off both basil plants and peppermint", level:"easy" },
+  sort_plants:    { room:"garden", label:"Move Fittonia fully indoors", level:"easy" },
+  parse_harv:     { room:"garden", label:"Harvest parsley — outer stems at the base, leave inner growth", level:"easy" },
+  herb_pinch2:    { room:"garden", label:"Pinch basil & mint again — remove any flower buds", level:"easy" },
+  dill_check:     { room:"garden", label:"Check dill for flower heads — cut to extend leaf production", level:"easy" },
+  gnat_check:     { room:"garden", label:"Check sticky traps — are gnat numbers dropping?", level:"easy" },
+  gnat_nuke:      { room:"garden", label:"🪴 REPOT DAY — all 3 indoor plants, SAME day (the gnat reset). Supply run first: indoor potting mix · cactus mix · perlite · orchid bark · coco coir. Then bare-root each plant, scrub pots, fresh custom mix, gravel cap. Method + per-plant mixes: Plants → Care", level:"easy" },
+  gnat_sand:      { room:"garden", label:"🦟 Post-repot insurance: water any indoor pot that is due with BTI tea + swap sticky traps if they are getting crowded", level:"easy" },
+  gnat_check2:    { room:"garden", label:"🦟 Victory check — traps stayed clean ~2 weeks? War over. Any pot still hatching gnats: redo just that one repot", level:"easy" },
+  basil_beetles:  { room:"garden", label:"Protect both basil plants from Japanese beetles", level:"easy", note:"Tap adults into a cup of soapy water now, at dusk, and again in the cool morning. A breathable row cover is optional, not required; never wrap basil in plastic or solid cloth in the heat. Skip Japanese beetle traps. Do not use the recorded Captain Jack's Deadbug Brew for this pest on basil, and never feed treated beetles to the spiders." },
+  gard_fertilize: { room:"garden", label:"Fertilize tomatoes, jalapeño, and strawberry", level:"easy" },
+  gard_mulch:     { room:"garden", label:"Add mulch or top dressing to outdoor pots", level:"easy" },
+  gard_repot:     { room:"garden", label:"Check for root-bound plants and repot if needed", level:"moderate" },
+  heat_shade:     { room:"garden", label:"Create afternoon shade in place for the daily-watered pots", level:"easy", note:"Before the peak heat, shade the single strawberry, multi-plant strawberry with both attached runners, both tomatoes, and both potatoes. Use an umbrella, chair, shade cloth, or cardboard on the west side with an air gap. Do not move or detach the runners." },
+};
 
 const SCHEDULE = [
   // ── MOVING · ROLLING NO-REGRET WEEK ────────────────────────────────────────
@@ -350,222 +355,1905 @@ const MOVE_DAILY = [
 ];
 
 
-const PLANTS = [
-  // ── INDOOR ────────────────────────────────────────────────────────────────
-  { id:"fittonia", light:"🌥️ Bright indirect — no direct sun", waterChip:"💧 every 2–3 days", harvestChip:"🌿 foliage — not harvested",     name:"Fittonia / Nerve Plant",  emoji:"🌱", loc:"indoor", freq:"Every 2-3 days — bark mix dries fast, check top inch. Water before it droops; don't wait for the faint. 🦟 Gnat reset = REPOT DAY Sun Jun 14 (full plan: Plants → Care). After the repot: first 2–3 waterings = BTI tea for insurance, then back to normal water.", days:3, note:"May 31: Leaf edges browning = low humidity stress. Bark mulch media dries much faster than potting mix — check every 2 days. Add a pebble tray with water under the pot for ambient humidity. Keep away from AC vents. New center growth looks healthy — no repot needed yet. Moved from dark office to bright indirect light room May 31 — correct placement. Watch for direct sun rays which will scorch leaves." },
-  { id:"croton", light:"☀️ Bright indirect → morning direct", waterChip:"💧 every 5–7 days", harvestChip:"🌿 foliage — not harvested",       name:"Banana Croton",           emoji:"🌴", loc:"indoor", freq:"Every 5-7 days — check top inch, bark mix dries fast. Don't overwater; crotons are drought-tolerant. 🦟 Gnat reset = REPOT DAY Sun Jun 14 (full plan: Plants → Care). After the repot: first 2–3 waterings = BTI tea for insurance, then back to normal water.", days:6, note:"May 31: Banana Croton — narrow yellow-striped leaves, looks like a recent purchase still adjusting. Normal to drop some leaves when moved (don't panic). Needs bright indirect to direct morning light — more light-hungry than Fittonia. Hates cold drafts and temps below 60°F. Same bark mix as Fittonia — check moisture every 3-4 days. No leaf drop yet = good sign." },
-  { id:"jade", light:"☀️ 4–6h direct or bright", waterChip:"💧 every ~18 days — dry out fully", harvestChip:"🌿 foliage — not harvested",         name:"Jade Plant",              emoji:"🪨", loc:"indoor", freq:"Succulent — let it dry out completely, then water deeply. Water sparingly. 🦟 Gnat reset = REPOT DAY Sun Jun 14 (full plan: Plants → Care). After the repot: first 2–3 waterings = BTI tea for insurance, then back to normal water.", days:18 },
-
-  // ── GREENHOUSE HERBS ──────────────────────────────────────────────────────
-  { id:"basil1", light:"☀️ Full sun 6–8h", waterChip:"💧 check every morning", harvestChip:"✂️ REQUIRED: pinch every 1–2 weeks — keeps it producing · use or preserve what you pinch",   name:"Sweet Basil #1",  emoji:"🌿", loc:"greenhouse", freq:"Check every morning and water at the soil when the top inch starts drying or the leaves just begin to soften. In extreme heat, recheck late afternoon and give a base drink only if the mix is drying — do not wait for a full wilt, and avoid wet foliage overnight.", days:1, overwater:true, trimDays:12,
-    trim:"Pinch flower buds the moment you see them. Cut just above a leaf pair, leaving 2-3 sets below. Remove all yellowing lower leaves. Never cut more than ⅓ at once. Every 1-2 weeks." },
-  { id:"basil2", light:"☀️ Full sun 6–8h", waterChip:"💧 check every morning", harvestChip:"✂️ REQUIRED: pinch every 1–2 weeks — keeps it producing · use or preserve what you pinch",   name:"Sweet Basil #2",  emoji:"🌿", loc:"greenhouse", freq:"Check every morning and water at the soil when the top inch starts drying or the leaves just begin to soften. In extreme heat, recheck late afternoon and give a base drink only if the mix is drying — do not wait for a full wilt, and avoid wet foliage overnight.", days:1, overwater:true, trimDays:12,
-    trim:"Pinch out every flower bud the moment it appears. Cut stems just above a leaf pair so each cut branches into two, and strip off any yellowing lower leaves. Bushier growth means more harvest — never take more than a third at once." },
-  { id:"parsley", light:"⛅ Full sun–part shade", waterChip:"💧 every 3–4 days", harvestChip:"✂️ pick as you cook — outer stems first · no schedule",  name:"Curled Parsley",  emoji:"🌿", loc:"greenhouse", freq:"Morning — when top 2 inches dry, every 3-4 days", days:3, trimDays:21,
-    trim:"Tending is plant-health only: cut dead or bolted flower stalks at the base and remove yellowing stems. Picking for dinner is separate — outer stems at the base, leave the young inner growth, never more than half. Every ~3 weeks is plenty." },
-  { id:"mint", light:"⛅ Part shade ok", waterChip:"💧 every 3 days — evenly moist", harvestChip:"✂️ pick as you cook · pinch tips to bush it out",     name:"Peppermint",      emoji:"🌿", loc:"greenhouse", freq:"Back and bushy — keep evenly moist with a gentle morning drink. The recovery worked.", days:3, overwater:true, trimDays:7,
-    trim:"Fully recovered — it's filled in bushy and green. Pinch the tips regularly to keep it dense and snip any leggy or flowering stems. It's harvestable now: pick sprigs as you cook." },
-  { id:"dill", light:"☀️ Full sun", waterChip:"💧 every 3 days", harvestChip:"✂️ pick fronds as you cook · REQUIRED: snip flower heads on sight",     name:"Dill",            emoji:"🌿", loc:"greenhouse", freq:"Morning — when top 2 inches dry", days:3, trimDays:7,
-    trim:"Snip outer fronds near the base. Cut flower heads to extend leaf production. Once fully flowered it declines — let go to seed if you want seeds for cooking." },
-  { id:"rosemary", light:"☀️ Full sun 6–8h", waterChip:"💧 every 7+ days — drought-tolerant", harvestChip:"✂️ snip sprigs as you cook — no schedule", name:"Rosemary",        emoji:"🌿", loc:"greenhouse", freq:"Morning — weekly or less, drought tolerant", days:7, trimDays:30,
-    trim:"Only ever trim soft green growth — cutting into the woody brown stems leaves bare gaps that will not releaf. Snip sprigs as you cook, and do light shaping to keep it bushy and upright." },
-
-  // ── OUTDOOR EDIBLES ───────────────────────────────────────────────────────
-  { id:"strawberry", light:"☀️ Full sun 6–10h", waterChip:"💧 daily", harvestChip:"🍓 berries forming — pick only when fully red",    name:"Strawberry",         emoji:"🍓", loc:"outdoor", freq:"Daily — single round pot in full sun, so it dries out fast. Water deeply at the base each morning; in a heat wave it may want a second drink in the evening. Keep soil consistently moist while flowering and fruiting.", days:1, trimDays:14,
-    trim:"Pinch off runners unless you want new plants (root them into pots). Remove browning/dead outer leaves. White flowers are open now — pinch a few of the earliest for bigger berries on the rest." },
-  { id:"strawberry_pot", light:"🌤️ Morning sun · afternoon shade while runners root", waterChip:"💧 daily · check runner pots twice in heat", harvestChip:"🍓 pick only when fully red", name:"Strawberry Pot (multi-plant)", emoji:"🍓", loc:"outdoor", freq:"Daily during the hot, dry stretch — water the mother pot from the top and check every pocket, then check the two small runner pots separately. Give the runner pots a drink when the surface starts to dry; in mid-90s heat check them again in the evening. Keep the mother and runners in morning sun with afternoon shade while they establish.", days:1, trimDays:14,
-    note:"Jul 12 — two runners from the multi-plant strawberry are being rooted in temporary pots. They stay on this card rather than becoming separate plants.", trim:"Keep each runner attached to the mother plant and pin its baby crown level against moist soil in the temporary pot. Do not cut the connecting stem until the runner resists a gentle tug and has fresh growth, usually after 2–3 weeks. Extra afternoon shade and steady moisture are appropriate while the two runners root; avoid soggy soil or burying the crown." },
-  { id:"tomato", light:"☀️ Full sun 8h", waterChip:"💧 daily — deep & consistent", harvestChip:"🍅 first fruit ripening — pick when fully colored & slightly soft",        name:"Heirloom Tomato",     emoji:"🍅", loc:"outdoor", freq:"Morning at the base — deep & CONSISTENT every day in heat (uneven watering is what causes the catfacing/cracking). Ease off slightly as fruit ripens.", days:1, trimDays:7,
-    trim:"Pinch out suckers (the shoots in the V between stem and a branch) weekly. Strip leaves touching the soil. Re-stake or cage it — it is leaning and outgrowing the bamboo. Harvest beefsteaks as they turn deep red and slightly soft. 🌨️ Hail (Jun 1): the storm shredded some leaves — leave the torn ones on for now (they still feed the plant), snip only crushed or hanging bits with a clean cut so disease cannot enter the wound, and keep watering even; it should push fresh growth within a few days." },
-  { id:"cherry_tomato", light:"☀️ Full sun", waterChip:"💧 daily", harvestChip:"🍒 every 2–3 days once coloring", name:"Husky Cherry Tomato", emoji:"🍒", loc:"outdoor", freq:"Morning at the base — daily in heat, ease off when ripening to prevent splitting.", days:1, trimDays:10,
-    trim:"Compact (determinate) type — do NOT sucker-prune it or you cut your harvest. Just remove leaves touching the soil and yellowing growth. Pick cherries promptly once they blush and it pushes out more clusters. 🌨️ Hail (Jun 1): same storm damage — do not strip the tattered leaves, just remove anything crushed or snapped, then let it recover; determinate plants bounce back fast with steady water." },
-  { id:"jalapeno", light:"☀️ Full sun 6–8h", waterChip:"💧 every 2–3 days", harvestChip:"🌶️ pick firm full-size green peppers · or leave them to ripen red", name:"Jalapeño", emoji:"🌶️", loc:"outdoor", freq:"Morning at the base — every 2-3 days, let the top 2 inches dry. Less water = hotter pepper.", days:2, trimDays:21,
-    trim:"Once the plant is mature, prune lightly: remove only yellow, badly damaged, or soil-touching lower leaves; inspect leaf undersides for pests; and support branches whenever a heavy pepper load begins to bend them. Keep the healthy canopy because it shades fruit from sunscald." },
-  { id:"raspberry", light:"☀️ Full sun", waterChip:"💧 every 2–3 days — deep soak", harvestChip:"🍇 next year — not fruiting this season",     name:"Raspberry",           emoji:"🍇", loc:"outdoor", freq:"Morning at the base — every 2-3 days, deep soak.", days:2, trimDays:21,
-    trim:"First-year canes (primocanes) — do NOT cut them back; they fruit next year. Tie them to the support as they grow and snip any dead or damaged tips." },
-  { id:"green_onion", light:"☀️ Full sun", waterChip:"💧 check each pot · usually every 2 days", harvestChip:"✂️ snip green tops as you cook — they regrow", name:"Green Onion Pots", emoji:"🧅", loc:"outdoor", freq:"The green onions are in their own pots now. Check each pot separately every day during the heat and water only when its top inch starts drying, usually about every 2 days.", days:2, trimDays:14,
-    trim:"Cut-and-come-again: snip the green tops about an inch above the soil whenever you cook and they regrow several times. Leave the white base and roots in the pot to keep producing." },
-  { id:"potato", light:"☀️ Full sun · afternoon shade in extreme heat", waterChip:"💧 check daily — grow bags dry fast", harvestChip:"🥔 dig after the tops die back", name:"Golden Potato · Felt Grow Bag", emoji:"🥔", loc:"outdoor", freq:"Check the felt grow bag every morning because fabric loses moisture quickly in hot, dry weather. Water deeply when the top inch starts drying, keeping the root zone evenly moist but never waterlogged.", days:1, trimDays:21, note:"Jul 12 — the larger potato was moved into the felt bag with handles. Its leaves are about 6 inches above the soil; the lowest leaves were removed and the stem was buried up to the split.",
-    trim:"Keep adding a few inches of soil or mulch as the stems rise, leaving the upper leafy growth exposed. Buried stem can make extra tuber sites on indeterminate varieties and always helps keep potatoes dark and supported. Stop hilling near the top of the bag and stop watering once the foliage yellows and dies back." },
-  { id:"potato_sprout", light:"☀️ Full sun · afternoon shade in extreme heat", waterChip:"💧 check daily — grow bags dry fast", harvestChip:"🥔 dig after the tops die back", name:"Golden Potato · Second Felt Grow Bag", emoji:"🥔", loc:"outdoor", freq:"Check the second felt grow bag every morning because fabric loses moisture quickly in hot, dry weather. Water deeply when the top inch starts drying, keeping the root zone evenly moist but never waterlogged.", days:1, trimDays:21,
-    trim:"Keep adding a few inches of soil or mulch as the stems rise, leaving the upper leafy growth exposed. Stop hilling near the top of the bag and stop watering once the foliage yellows and dies back." },
-  { id:"ginger", light:"🌥️ Part shade — bright, no harsh afternoon sun", waterChip:"💧 check daily in the small pot", harvestChip:"🫚 ~8–10 months — lift when leaves yellow & die back", name:"Ginger Root · Temp Pot", emoji:"🫚", loc:"outdoor", freq:"Now in its own temporary pot and sprouted above the soil. Check moisture daily in the heat and water when the top inch begins to dry; keep it evenly moist but never soggy, with afternoon shade.", days:1, trimDays:30, note:"Jul 12 — moved into its own temporary pot; the ginger has sprouted.",
-    trim:"No real pruning — just remove yellow or dead leaves. Near harvest (~8–10 months) let the foliage die back and stop watering, then tip out the pot, break off a piece of rhizome, and replant the rest." },
-  // ── OUTDOOR ORNAMENTALS ───────────────────────────────────────────────────
-  { id:"dianthus", light:"☀️ Full sun ≥6h", waterChip:"💧 every 2–3 days", harvestChip:"✂️ deadhead weekly",  name:"Dianthus / Pinks", emoji:"🌸", loc:"outdoor", freq:"Morning — every 2-3 days at the base, try not to wet the flowers.", days:2, trimDays:5,
-    trim:"Deadhead constantly — snip every faded bloom down to the next bud or leaf. Lots of spent blooms right now; do a full pass. This is the #1 thing that keeps it flowering all summer." },
-  { id:"daisy", light:"☀️ Full sun–part shade", waterChip:"💧 every 2 days — consistent", harvestChip:"✂️ deadhead weekly",     name:"Daisy",            emoji:"🌼", loc:"outdoor", freq:"Morning — every 2 days, needs consistency. Make sure it is not sitting in water — the nursery basket inside the pot traps moisture.", days:2, trimDays:7,
-    trim:"Deadhead spent flowers at the base of the stem and remove yellow/brown leaves. To fix the ongoing leaf stress, repot into the terra cotta directly with proper drainage." },
-  { id:"candytuft", light:"☀️ Full sun", waterChip:"💧 every 3–4 days — drought-tolerant", harvestChip:"✂️ shear once after bloom", name:"Candytuft",        emoji:"🌾", loc:"outdoor", freq:"Morning — every 3-4 days, fairly drought tolerant.", days:3, trimDays:30,
-    trim:"Spring bloom is finishing and it is getting leggy — shear the whole plant back by about a third now to keep it compact and trigger a second flush." }];
-
-const PLANT_INFO = {
-  turmeric:     { fact:"Turmeric is ginger's cousin — same rhizome family; its bright orange flesh is what colors curry, and it can take several weeks to break the surface after planting.", photo:"images/turmeric_sprout_example_20260727.jpg", photoPos:"center 60%", photoCredit:"Example sprout · Derk29 · Wikimedia Commons · CC BY-SA 4.0 · resized", photoCreditUrl:"https://commons.wikimedia.org/wiki/File:Turmeric_sprout.jpg" },
-  ginger:       { fact:"Ginger is not a root — it is a rhizome, an underground stem. Each knobby hand you plant sends up leafy shoots and grows more rhizome to harvest.", photo:"images/ginger_20260714.jpg", photoPos:"70% 48%" },
-  fittonia:     { photo:"images/fittonia_20260714.jpg", photoPos:"48% 65%", fact:"Called the 'nerve plant' for its vein-like patterns — it dramatically faints when thirsty, then perks back up after a drink. In bark mulch, check it every 2 days — it dries faster than soil." },
-  croton:       { photo:"images/croton_20260714.jpg", photoPos:"55% 48%", fact:"Croton leaves change color with light: more sun means brighter reds, oranges, and yellows." },
-  jade:         { fact:"A succulent that can live for decades — jade is widely seen as a symbol of good luck and prosperity.", photo:"images/jade_20260714.jpg", photoPos:"42% 68%" },
-  basil1:       { fact:"Basil is in the mint family, and pinching it makes it bushier — the more you harvest, the more it grows.", photo:"images/basil1_20260714.jpg", photoPos:"55% 48%" },
-  basil2:       { fact:"Ancient cultures saw basil as a symbol of love and protection; today it's the heart of pesto.", photo:"images/basil2_20260714.jpg", photoPos:"60% 50%" },
-  parsley:      { fact:"Parsley is biennial — leaves the first year, flowers the second — and it's loaded with vitamin K.", photo:"images/parsley_20260714.jpg", photoPos:"50% 45%" },
-  mint:         { fact:"Peppermint is a natural hybrid of watermint and spearmint, and it spreads so fast it's best kept potted.", photo:"images/mint_20260714.jpg", photoPos:"47% 48%" },
-  dill:         { fact:"Dill's name comes from old Norse 'dilla', to soothe — it was once used to calm fussy babies.", photo:"images/dill_20260714.jpg", photoPos:"52% 42%" },
-  rosemary:     { fact:"Rosemary means 'dew of the sea' and can live 20+ years — it loves dry feet and full sun.", photo:"images/rosemary_20260714.jpg", photoPos:"48% 43%" },
-  strawberry:   { fact:"A strawberry isn't a true berry, and it's the only fruit with seeds on the outside — about 200 each.", photo:"images/strawberry_20260714.jpg", photoPos:"52% 48%" },
-  strawberry_pot:{ fact:"A strawberry pot lets a whole patch of plants share one tall container — and runners from the top plants can root right into the lower pockets.", photo:"images/strawberry_pot_20260714.jpg", photoPos:"62% 45%" },
-  tomato:       { fact:"Tomatoes are technically fruit; 'heirloom' means the variety has been saved and passed down 50+ years.", photo:"images/tomato_20260714.jpg", photoPos:"56% 45%" },
-  cherry_tomato:{ fact:"Cherry tomatoes taste sweeter than big ones — more skin per bite concentrates the sugars.", photo:"images/cherry_tomato_20260714.jpg", photoPos:"53% 48%" },
-  jalapeno:     { fact:"A jalapeño's heat lives in the white pith, not the seeds — and less water makes it hotter.", photo:"images/jalapeno_20260714.jpg", photoPos:"center 32%" },
-  raspberry:    { fact:"Each raspberry is a cluster of tiny 'drupelets', and the canes fruit in their second year.", photo:"images/raspberry_20260714.jpg", photoPos:"56% 46%" },
-  green_onion:  { fact:"Green onions are a cut-and-come-again crop — leave the white base and roots and the green tops regrow again and again.", photo:"images/green_onion_20260714.jpg", photoPos:"58% 50%" },
-  potato:       { fact:"The potato you eat is a swollen underground stem (a tuber), not a root — and it grows from 'eyes' that sprout into new plants.", photo:"images/potato_20260714.jpg", photoPos:"57% 42%" },
-  potato_sprout:{ fact:"A new potato sprout feeds first from the seed potato, then builds the leaves and roots that will support its tubers.", photo:"images/potato_20260714.jpg", photoPos:"57% 42%" },
-  white_onion:  { fact:"An onion bulb is really a cluster of swollen leaf bases — and the tops flopping over is the plant's signal it's done bulbing.", photo:"images/white_onion_20260714.jpg", photoPos:"58% 47%" },
-  dianthus:     { fact:"Dianthus means 'flower of the gods' in Greek, and many kinds smell just like cloves.", photo:"images/dianthus_20260714.jpg", photoPos:"58% 47%" },
-  daisy:        { fact:"'Daisy' comes from 'day's eye' — the flower opens at dawn and closes again at dusk.", photo:"images/daisy_20260714.jpg", photoPos:"57% 52%" },
-  candytuft:    { fact:"Candytuft is named for Candia (old Crete), not candy — though the clusters look sweet enough to eat.", photo:"images/candytuft_20260714.jpg", photoPos:"62% 43%" }
+// ── CURRENT PLANTS · user-authorized physical pots received Oct 6, 2026 ──────
+// Fresh IDs never inherit old watering, tending, snooze, or harvest dates.
+// Photo intake can continue: this adapter activates the current confirmed pots,
+// not an assertion that provisional species/cultivars are now identified.
+// days:1 with checkOnly:true means DAILY SOIL CHECK ONLY, never daily watering.
+// User confirmed these are ALL current plants and ALL 31 were watered Oct 6, 2026.
+// The source intake snapshot below retains its earlier unknown dates for provenance;
+// runtime lastWatered is the explicit user-confirmed baseline, never a photo-date inference.
+const PLANT_REFRESH = {
+  "asOf": "2026-10-06",
+  "locality": {
+    "city": "Westcliffe",
+    "state": "Colorado",
+    "source": "user"
+  },
+  "confirmedPreferences": {
+    "preferredWateringMethod": "bottom_watering",
+    "allPotsWellDrained": true,
+    "saucers": "User reports bottom catchers on all pots except plastic pots.",
+    "lightAssessment": "deferred_by_user",
+    "overwinterPlanning": "deferred_by_user",
+    "outdoorPlants": [
+      "fresh_strawberry_gray_outdoor",
+      "fresh_pot1000016368"
+    ],
+    "temporaryOutdoorPlants": [
+      "fresh_pot1000016368"
+    ]
+  },
+  "sourceIntakeStatus": "collecting_photos",
+  "sourceIntakeComplete": false,
+  "activeInventory": "The user confirms these 31 physical pots are all current plants; old plants are archive-only.",
+  "lastWateredConfirmation": {
+    "date": "2026-10-06",
+    "scope": "all31_current_plants",
+    "source": "user"
+  },
+  "checkSchedule": "Daily soil check only, not a watering frequency. Log only real watering; defer a damp pot.",
+  "legacyPlantIds": [
+    "fittonia",
+    "croton",
+    "jade",
+    "basil1",
+    "basil2",
+    "parsley",
+    "mint",
+    "dill",
+    "rosemary",
+    "strawberry",
+    "strawberry_pot",
+    "tomato",
+    "cherry_tomato",
+    "jalapeno",
+    "raspberry",
+    "green_onion",
+    "potato",
+    "potato_sprout",
+    "ginger",
+    "dianthus",
+    "daisy",
+    "candytuft"
+  ]
+};
+const PLANT_INVENTORY_20261006 = [
+  {
+    "id": "fresh_pot120734",
+    "reviewId": "pot120734",
+    "name": "Small succulent — terracotta with figurine",
+    "emoji": "🪴",
+    "plantType": "succulent_provisional",
+    "careTemplateKey": "succulent_provisional",
+    "identification": {
+      "confidence": "medium",
+      "basis": "Succulent identity clear; exact genus/species remains unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Terracotta pot with pale figurine and many clay balls; tiny fleshy rounded-leaf plant",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120734.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120734.jpg",
+    "photoPosition": "50% 51%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120734.jpg",
+    "sourcePhotoFilename": "20261006_120734.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120742",
+    "reviewId": "pot120742",
+    "name": "Dianthus — taupe-gray pot",
+    "emoji": "🌸",
+    "plantType": "dianthus",
+    "careTemplateKey": "dianthus",
+    "identification": {
+      "confidence": "high",
+      "basis": "One distinct flowering pot; cultivar unknown.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Taupe-gray round pot; narrow blue-green foliage and pink/magenta flowers with pale fringes",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120742.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120742.jpg",
+    "photoPosition": "50% 54%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120742.jpg",
+    "sourcePhotoFilename": "20261006_120742.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationIsTemporary": true,
+    "placementNote": "Temporary indoor spot by the door while a permanent place is arranged.",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120748",
+    "reviewId": "pot120748",
+    "name": "Likely candytuft — taupe-gray pot",
+    "emoji": "🌼",
+    "plantType": "candytuft_provisional",
+    "careTemplateKey": "candytuft",
+    "identification": {
+      "confidence": "medium_high",
+      "basis": "Broad candytuft identification probable; exact species/cultivar unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Taupe-gray pot; dense branching narrow-leaf mound with small white flower cluster",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120748.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120748.jpg",
+    "photoPosition": "50% 50%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120748.jpg",
+    "sourcePhotoFilename": "20261006_120748.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationIsTemporary": true,
+    "placementNote": "Temporary indoor spot by the door while a permanent place is arranged.",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120755",
+    "reviewId": "pot120755",
+    "name": "Mint #1 · bushy taupe-gray pot",
+    "emoji": "🌿",
+    "plantType": "mint",
+    "careTemplateKey": "mint",
+    "identification": {
+      "confidence": "high_broad_id",
+      "basis": "User confirmed Mint #1 (120755) and Mint #3 (120835) are two different pots. Keep both records and their existing mint numbers. Mint variety remains unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Taupe-gray pot on table; bushy pointed green leaves and some purplish stems",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120755.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120755.jpg",
+    "photoPosition": "50% 52%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120755.jpg",
+    "sourcePhotoFilename": "20261006_120755.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationIsTemporary": true,
+    "placementNote": "Temporary indoor spot by the door while a permanent place is arranged.",
+    "physicalPotIdentity": {
+      "status": "confirmed_distinct",
+      "source": "user",
+      "confirmedDate": "2026-10-06",
+      "otherReviewId": "pot120835"
+    },
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120806",
+    "reviewId": "pot120806",
+    "name": "Daisy-type plant — terracotta pot",
+    "emoji": "🌼",
+    "plantType": "daisy_provisional",
+    "careTemplateKey": "daisy_provisional",
+    "identification": {
+      "confidence": "medium",
+      "basis": "Daisy-type flowering plant; exact species unconfirmed. No cultivar claim.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Terracotta pot; toothed foliage, cut stems, spent pale composite flower",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120806.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120806.jpg",
+    "photoPosition": "50% 54%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120806.jpg",
+    "sourcePhotoFilename": "20261006_120806.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationIsTemporary": true,
+    "placementNote": "Temporary indoor spot by the door while a permanent place is arranged.",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120810",
+    "reviewId": "pot120810",
+    "name": "Impatiens #1 · rear flower tag",
+    "emoji": "🌸",
+    "plantType": "impatiens",
+    "careTemplateKey": "impatiens",
+    "identification": {
+      "confidence": "high_broad_id",
+      "basis": "The shared floor photo 1000016370 shows this pot beside the dog and a separate fuller impatiens pot in front. Two distinct physical pots; closeup matched by rear tag and foliage.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Terracotta pot with rear black-bordered flower tag; smaller red/bronze branching cluster and yellow-green older leaves",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120810.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120810.jpg",
+    "photoPosition": "50% 53%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120810.jpg",
+    "sourcePhotoFilename": "20261006_120810.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationIsTemporary": true,
+    "placementNote": "Temporary indoor spot by the door while a permanent place is arranged.",
+    "identityResolutionEvidence": "1000016370.jpg",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120815",
+    "reviewId": "pot120815",
+    "name": "Impatiens #2 · fuller plant, front tag",
+    "emoji": "🌸",
+    "plantType": "impatiens",
+    "careTemplateKey": "impatiens",
+    "identification": {
+      "confidence": "high_broad_id",
+      "basis": "The shared floor photo 1000016370 shows this foreground pot and the rear-tag impatiens simultaneously. This resolves the prior provisional merge as two pots.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Separate terracotta pot and saucer with pale front flower tag; fuller broad green/red-veined foliage and pink buds",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120815.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120815.jpg",
+    "photoPosition": "50% 51%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120815.jpg",
+    "sourcePhotoFilename": "20261006_120815.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationIsTemporary": true,
+    "placementNote": "Temporary indoor spot by the door while a permanent place is arranged.",
+    "identityResolutionEvidence": "1000016370.jpg",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120821",
+    "reviewId": "pot120821",
+    "name": "Curly parsley — tan pot",
+    "emoji": "🌿",
+    "plantType": "parsley",
+    "careTemplateKey": "parsley",
+    "identification": {
+      "confidence": "high",
+      "basis": "One distinct curly parsley pot; exact container material unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Tan/fibrous-looking round pot with bright curly parsley foliage",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120821.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120821.jpg",
+    "photoPosition": "50% 48%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120821.jpg",
+    "sourcePhotoFilename": "20261006_120821.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationIsTemporary": true,
+    "placementNote": "Temporary indoor spot by the door while a permanent place is arranged.",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120830",
+    "reviewId": "pot120830",
+    "name": "Mint #2 · terracotta with clay balls",
+    "emoji": "🌿",
+    "plantType": "mint",
+    "careTemplateKey": "mint",
+    "identification": {
+      "confidence": "high",
+      "basis": "Distinct growth and pot markers from the other mint pots. Mint species/cultivar unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Terracotta pot; small central multi-shoot cluster and two visible clay balls toward foreground",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120830.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120830.jpg",
+    "photoPosition": "50% 47%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120830.jpg",
+    "sourcePhotoFilename": "20261006_120830.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120835",
+    "reviewId": "pot120835",
+    "name": "Mint #3 · bushy blue-gray pot",
+    "emoji": "🌿",
+    "plantType": "mint",
+    "careTemplateKey": "mint",
+    "identification": {
+      "confidence": "high_broad_id",
+      "basis": "User confirmed Mint #1 (120755) and Mint #3 (120835) are two different pots. Keep both records and their existing mint numbers. Mint variety remains unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Blue-gray pot on sill; dense broader rounded foliage, conspicuous cut stem, wet leaves",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120835.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120835.jpg",
+    "photoPosition": "50% 53%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120835.jpg",
+    "sourcePhotoFilename": "20261006_120835.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "physicalPotIdentity": {
+      "status": "confirmed_distinct",
+      "source": "user",
+      "confirmedDate": "2026-10-06",
+      "otherReviewId": "pot120755"
+    },
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120837",
+    "reviewId": "pot120837",
+    "name": "Mint #4 · three shoots, worn terracotta",
+    "emoji": "🌿",
+    "plantType": "mint",
+    "careTemplateKey": "mint",
+    "identification": {
+      "confidence": "high",
+      "basis": "Distinct from 120855 by figurine absence, shoot positions and pot surface. Species/cultivar unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Terracotta pot with pale rim wear; three small separate shoot clusters and no figurine visible",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120837.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120837.jpg",
+    "photoPosition": "50% 55%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120837.jpg",
+    "sourcePhotoFilename": "20261006_120837.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120841",
+    "reviewId": "pot120841",
+    "name": "Mint #5 · gray pot with white stone",
+    "emoji": "🌿",
+    "plantType": "mint",
+    "careTemplateKey": "mint",
+    "identification": {
+      "confidence": "high",
+      "basis": "Distinct gray sparse-mint pot with stone markers. Species/cultivar unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Gray plastic-looking pot; sparse shoot groups, pale/white stone and large bark pieces",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120841.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120841.jpg",
+    "photoPosition": "50% 52%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120841.jpg",
+    "sourcePhotoFilename": "20261006_120841.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120843",
+    "reviewId": "pot120843",
+    "name": "Mint #6 · small terracotta cluster",
+    "emoji": "🌿",
+    "plantType": "mint",
+    "careTemplateKey": "mint",
+    "identification": {
+      "confidence": "high",
+      "basis": "Distinct from 120830 by plant branching, pot and scene context. Species/cultivar unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Smaller terracotta near window; low branching leafy cluster, no figurine visible",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120843.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120843.jpg",
+    "photoPosition": "50% 49%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120843.jpg",
+    "sourcePhotoFilename": "20261006_120843.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120848",
+    "reviewId": "pot120848",
+    "name": "Likely pepper seedling — terracotta with figurine",
+    "emoji": "🌱",
+    "plantType": "pepper_provisional",
+    "careTemplateKey": "pepper_provisional",
+    "identification": {
+      "confidence": "medium",
+      "basis": "Pepper probable; exact seedling identity and variety unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Small terracotta pot; pale standing figurine and small smooth-leaved seedling",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120848.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120848.jpg",
+    "photoPosition": "50% 49%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120848.jpg",
+    "sourcePhotoFilename": "20261006_120848.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120851",
+    "reviewId": "pot120851",
+    "name": "Likely sage — terracotta with figurine",
+    "emoji": "🌱",
+    "plantType": "sage_provisional",
+    "careTemplateKey": "sage_provisional",
+    "identification": {
+      "confidence": "medium_high",
+      "basis": "Sage probable; exact species/cultivar unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Small terracotta pot; fuzzy oval leaves, pale round figurine near rim",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120851.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120851.jpg",
+    "photoPosition": "50% 48%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120851.jpg",
+    "sourcePhotoFilename": "20261006_120851.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120855",
+    "reviewId": "pot120855",
+    "name": "Mint #7 · terracotta with standing figurine",
+    "emoji": "🌿",
+    "plantType": "mint",
+    "careTemplateKey": "mint",
+    "identification": {
+      "confidence": "high",
+      "basis": "Distinct from 120837 and other mints by figurine and growth pattern. Species/cultivar unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Terracotta pot; upright pale figurine and three sparse shoot clusters",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120855.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120855.jpg",
+    "photoPosition": "50% 53%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120855.jpg",
+    "sourcePhotoFilename": "20261006_120855.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120904",
+    "reviewId": "pot120904",
+    "name": "Croton — narrow leaves, terracotta",
+    "emoji": "🌴",
+    "plantType": "croton",
+    "careTemplateKey": "croton",
+    "identification": {
+      "confidence": "high",
+      "basis": "Broad croton identification strong. Exact cultivar is not newly confirmed by this photo.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Terracotta pot; narrow green leaves with yellow stripe/patches; two pale figurines",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120904.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120904.jpg",
+    "photoPosition": "50% 43%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120904.jpg",
+    "sourcePhotoFilename": "20261006_120904.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120909",
+    "reviewId": "pot120909",
+    "name": "Strawberries · pocket jar",
+    "emoji": "🍓",
+    "plantType": "strawberry",
+    "careTemplateKey": "strawberry",
+    "identification": {
+      "confidence": "high",
+      "basis": "Multiple crowns in one physical watering pot; repeated earlier attachment adds no extra pot.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Tall terracotta strawberry jar with side pockets, multiple crowns and berries",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120909.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120909.jpg",
+    "photoPosition": "50% 50%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120909.jpg",
+    "sourcePhotoFilename": "20261006_120909.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016355.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "waterNote": "Pocket jar: check the top and side pockets separately after soaking. If an upper pocket stays dry, water its soil slowly from above and let the jar drain.",
+    "waterNoteBasis": "Application of general whole-root-zone hydration guidance to this pocketed container.",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120913",
+    "reviewId": "pot120913",
+    "name": "Unidentified seedling — gray pot with figurine pieces",
+    "emoji": "🌱",
+    "plantType": "seedling_unconfirmed",
+    "careTemplateKey": "seedling_unknown",
+    "identification": {
+      "confidence": "low_species_high_pot",
+      "basis": "Species unresolved. Do not automatically label mint; candytuft or another herb/seedling remains plausible. Earlier photo is the same pot.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Gray pot; three pale figurine pieces and tiny narrow-leaved green growth",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120913.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120913.jpg",
+    "photoPosition": "50% 43%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120913.jpg",
+    "sourcePhotoFilename": "20261006_120913.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016356.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120917",
+    "reviewId": "pot120917",
+    "name": "Amaranth — tall red stems",
+    "emoji": "🌾",
+    "plantType": "amaranth",
+    "careTemplateKey": "amaranth",
+    "identification": {
+      "confidence": "high_broad_id",
+      "basis": "Likely love-lies-bleeding-type amaranth; exact species/cultivar unconfirmed. Earlier image same pot.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Terracotta pot; tall red stems, support stake and hanging red flower/seed tassel",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120917.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120917.jpg",
+    "photoPosition": "50% 39%",
+    "photoFit": "contain",
+    "primaryOriginalFilename": "20261006_120917.jpg",
+    "sourcePhotoFilename": "20261006_120917.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016357.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot120923",
+    "reviewId": "pot120923",
+    "name": "Likely philodendron — teal hanging basket",
+    "emoji": "🌱",
+    "plantType": "philodendron_provisional",
+    "careTemplateKey": "philodendron_provisional",
+    "identification": {
+      "confidence": "medium_high",
+      "basis": "Likely heartleaf philodendron; exact variety unconfirmed. Earlier repeated uploads add no pot.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Large teal hanging basket with a small broad glossy-leaf vine and pale figurine",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_120923.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_120923.jpg",
+    "photoPosition": "50% 44%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_120923.jpg",
+    "sourcePhotoFilename": "20261006_120923.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016358.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "waterNote": "Small soil-grown vine in a large basket: check moisture near its roots and deeper in the mix before watering. A dry surface alone does not show that the lower mix needs soaking.",
+    "waterNoteBasis": "Conservative application of container moisture checks to a small plant in a large volume of soil.",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot121000",
+    "reviewId": "pot121000",
+    "name": "Jade — teal glazed pot",
+    "emoji": "🪴",
+    "plantType": "jade",
+    "careTemplateKey": "jade",
+    "identification": {
+      "confidence": "high",
+      "basis": "One jade pot; earlier repeated uploads add no pot. Cultivar unknown.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Teal/green glazed pot; thick glossy oval leaves on upright fleshy stem",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_121000.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_121000.jpg",
+    "photoPosition": "50% 43%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_121000.jpg",
+    "sourcePhotoFilename": "20261006_121000.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016359.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot121003",
+    "reviewId": "pot121003",
+    "name": "Small cactus — red-rimmed pot",
+    "emoji": "🌵",
+    "plantType": "cactus_unconfirmed",
+    "careTemplateKey": "cactus_provisional",
+    "identification": {
+      "confidence": "high_cactus_low_species",
+      "basis": "Cactus clear; species unresolved. Same pot as earlier attachment.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Red-rimmed glazed pot; many clay balls and small ribbed green cactus with long golden spines",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_121003.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_121003.jpg",
+    "photoPosition": "50% 51%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_121003.jpg",
+    "sourcePhotoFilename": "20261006_121003.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016360.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_onions_dark_pot_indoor",
+    "reviewId": "pot121010",
+    "name": "Onions #1 · dark pot, three main bases",
+    "emoji": "🧅",
+    "plantType": "allium_provisional",
+    "careTemplateKey": "allium_provisional",
+    "identification": {
+      "confidence": "high_broad_id",
+      "basis": "Definitely separate from 121022: opposite sides of geode strawberry and different base/shoot arrangements. Exact onion type unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Dark plastic-looking pot with three larger pale onion-like bases; left of geode strawberry, beside jade",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_121010.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_121010.jpg",
+    "photoPosition": "50% 48%",
+    "photoFit": "contain",
+    "primaryOriginalFilename": "20261006_121010.jpg",
+    "sourcePhotoFilename": "20261006_121010.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016361.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_strawberry_wide_terracotta_indoor",
+    "reviewId": "pot121016",
+    "name": "Strawberry · geode pot",
+    "emoji": "🍓",
+    "plantType": "strawberry",
+    "careTemplateKey": "strawberry",
+    "identification": {
+      "confidence": "high",
+      "basis": "Same geode strawberry pot as earlier upload. Cultivar unknown.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Wide terracotta pot with geode, stained pale card and small leafy strawberry crown",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_121016.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_121016.jpg",
+    "photoPosition": "50% 48%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_121016.jpg",
+    "sourcePhotoFilename": "20261006_121016.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016362.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot121022",
+    "reviewId": "pot121022",
+    "name": "Onions #2 · dark pot, wall side",
+    "emoji": "🧅",
+    "plantType": "allium_provisional",
+    "careTemplateKey": "allium_provisional",
+    "identification": {
+      "confidence": "high_broad_id",
+      "basis": "Definitely separate from 121010; pots flank the geode strawberry. Exact onion type unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Dark plastic-looking pot with larger base, smaller base and thin shoot/dead stalk; wall side, right of geode strawberry",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_121022.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_121022.jpg",
+    "photoPosition": "50% 48%",
+    "photoFit": "contain",
+    "primaryOriginalFilename": "20261006_121022.jpg",
+    "sourcePhotoFilename": "20261006_121022.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_rosemary_terracotta_indoor",
+    "reviewId": "pot121422",
+    "name": "Rosemary · pale-stone pot",
+    "emoji": "🌿",
+    "plantType": "rosemary",
+    "careTemplateKey": "rosemary",
+    "identification": {
+      "confidence": "high",
+      "basis": "Same rosemary as earlier attachment; cultivar unknown.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Tall terracotta with matching saucer, large flat pale stone and woody upright rosemary",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_121422.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_121422.jpg",
+    "photoPosition": "50% 44%",
+    "photoFit": "contain",
+    "primaryOriginalFilename": "20261006_121422.jpg",
+    "sourcePhotoFilename": "20261006_121422.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016364.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_strawberry_deep_terracotta_indoor",
+    "reviewId": "pot121426",
+    "name": "Strawberry · deeper terracotta pot",
+    "emoji": "🍓",
+    "plantType": "strawberry",
+    "careTemplateKey": "strawberry",
+    "identification": {
+      "confidence": "high",
+      "basis": "Same deeper strawberry pot as earlier attachment; cultivar unknown.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Deeper tapered terracotta with matching saucer; long red leaf stems",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_121426.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_121426.jpg",
+    "photoPosition": "50% 58%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_121426.jpg",
+    "sourcePhotoFilename": "20261006_121426.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016365.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_strawberry_gray_outdoor",
+    "reviewId": "pot121504",
+    "name": "Strawberry · shallow gray pot",
+    "emoji": "🍓",
+    "plantType": "strawberry",
+    "careTemplateKey": "strawberry",
+    "identification": {
+      "confidence": "high",
+      "basis": "User-confirmed outdoor strawberry; same plant as earlier upload. The newly added heirloom tomato is also temporarily outdoors. Cultivar unknown.",
+      "cultivar": null
+    },
+    "location": "outdoor",
+    "pot": {
+      "description": "Large shallow round gray pot; green strawberry foliage, white flowers and red fruit",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/20261006_121504.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/20261006_121504.jpg",
+    "photoPosition": "50% 50%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "20261006_121504.jpg",
+    "sourcePhotoFilename": "20261006_121504.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": "1000016366.jpg",
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot1000016368",
+    "reviewId": "pot1000016368",
+    "name": "Heirloom tomato · caged pot",
+    "emoji": "🌱",
+    "plantType": "tomato",
+    "careTemplateKey": "tomato",
+    "identification": {
+      "confidence": "user_confirmed_broad_id",
+      "basis": "User identifies this as the missed heirloom tomato. The closer and wider photos show the same pot, cage, stems and green fruit; one card with two original views.",
+      "cultivar": null
+    },
+    "location": "outdoor",
+    "pot": {
+      "description": "Large dark round pot with stakes and surrounding wire cages; tall tomato plant with green fruit",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/1000016368.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/1000016368.jpg",
+    "photoPosition": "50% 48%",
+    "photoFit": "contain",
+    "primaryOriginalFilename": "1000016368.jpg",
+    "sourcePhotoFilename": "1000016368.jpg",
+    "alternateOriginalFilenames": [
+      "1000016369.jpg"
+    ],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationIsTemporary": true,
+    "placementNote": "Temporarily outdoors, per your update. Permanent placement is still being arranged.",
+    "waterNote": "Large caged pot: check moisture in the root zone before watering. If soaking does not moisten the root ball evenly, water the soil slowly from above and allow free drainage.",
+    "waterNoteBasis": "Application of container-tomato root-zone moisture guidance and the shared uneven-uptake check.",
+    "alternatePhotos": [
+      "plant-photos/2026-10-06/1000016369.jpg"
+    ]
+  },
+  {
+    "id": "fresh_pot1000016367",
+    "reviewId": "pot1000016367",
+    "name": "Fittonia · glossy black pot",
+    "emoji": "🌱",
+    "plantType": "fittonia",
+    "careTemplateKey": "fittonia",
+    "identification": {
+      "confidence": "high_broad_id",
+      "basis": "Distinct newly supplied pot. Leaf pattern supports Fittonia/nerve plant; exact cultivar is unconfirmed.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Glossy black round pot with pink-and-green netted leaves on several low stems",
+      "drainage": "well_drained_user_confirmed"
+    },
+    "photo": "plant-photos/2026-10-06/1000016367.jpg",
+    "originalPhoto": "plant-photos/2026-10-06/1000016367.jpg",
+    "photoPosition": "50% 48%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "1000016367.jpg",
+    "sourcePhotoFilename": "1000016367.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "alternatePhotos": []
+  }
+];
+const PLANT_CARE_SHARED = {
+  "bottom_watering": {
+    "label": "Soak, lift, drain",
+    "steps": [
+      "Check this pot's moisture cue before soaking.",
+      "Put drainage holes in contact with basin water. Use 2–3 inches for ordinary taller pots; use less for shallow pots, below soil and crowns.",
+      "Check around 15 minutes; usually 15–30 minutes is enough. Stop when the root zone is moist and the pot heavier.",
+      "Lift, drain, and empty the saucer."
+    ],
+    "endpoint": "Moisture controls the endpoint. Finish uneven uptake with slow top watering. Avoid prolonged soaking.",
+    "exceptions": "Tiny seedlings and fresh cuttings need separate checks. Bottom watering can still overwater.",
+    "water": "Use room-temperature water. Misting does not replace watering.",
+    "inference_note": "Lower basin depth adapts generic Extension guidance to shallow pots.",
+    "source_ids": [
+      "vce_bottom_water",
+      "umd_water"
+    ]
+  },
+  "salt_flush": {
+    "label": "Occasional top watering",
+    "text": "Bottom watering does not wash accumulated salts out of the mix. About every 4–6 months, or sooner if a salt crust appears, use clear water from the top and let it drain freely. Empty all runoff. Avoid sodium-softened water.",
+    "source_ids": [
+      "umd_water"
+    ]
+  },
+  "feeding_baseline": {
+    "text": "Feed established plants modestly while they are actively growing, following the product label. Pause feeding when growth has slowed. Fertilizer is not a first response to unexplained wilting or yellowing.",
+    "source_ids": [
+      "umd_feed",
+      "umn_active_feed"
+    ],
+    "application_note": "Checking existing fertilizer and deferring an uncertain dose are conservative draft decisions."
+  },
+  "trouble_baseline": {
+    "text": "Wilting can reflect dry or wet roots. Check moisture first. Investigate soft yellowing growth in wet mix, or dry brittle growth in a light pot.",
+    "source_ids": [
+      "vce_bottom_water"
+    ],
+    "no_pesticide_protocol": true
+  }
+};
+const PLANT_CARE_SOURCE_CATALOG = {
+  "vce_bottom_water": {
+    "title": "Properly Watering Container Houseplants",
+    "url": "https://www.pubs.ext.vt.edu/content/pubs_ext_vt_edu/en/SPES/spes-804.html"
+  },
+  "umd_water": {
+    "title": "Watering Indoor Plants",
+    "url": "https://www.extension.umd.edu/resource/watering-indoor-plants"
+  },
+  "umd_feed": {
+    "title": "Fertilizer for Indoor Plants",
+    "url": "https://extension.umd.edu/resource/fertilizer-indoor-plants"
+  },
+  "umn_active_feed": {
+    "title": "Spring houseplant care",
+    "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care"
+  }
+};
+const PLANT_CARE_TEMPLATES = {
+  "tomato": {
+    "name": "Heirloom tomato — cultivar unknown",
+    "status": "draft",
+    "identification": "Tomato identified by the user; cultivar and determinate/indeterminate growth habit unconfirmed.",
+    "watering": {
+      "when": "Check below the surface beside the plant. Water as root-zone moisture starts to fall; maintain even moisture without leaving the mix soggy or letting the root ball dry out completely.",
+      "method": "Bottom watering when uptake wets the root zone evenly; use slow top watering if this large pot does not wick adequately. Drain freely.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "A dry surface alone is insufficient in a large pot. Check deeper moisture before repeating a soak, and empty any collected runoff."
+    },
+    "care": {
+      "soil": "Airy, well-drained container potting mix rather than dense garden soil.",
+      "feed": "Use label-directed container or tomato fertilizer during active growth, accounting for feed already in the mix. Excess nitrogen can favor leaves over fruit.",
+      "pruning": "Keep the cage supporting growth. Defer a sucker-removal routine until growth habit is confirmed; bush tomatoes generally do not need pruning.",
+      "trouble": "Leaf curl has several possible causes. Check moisture and leaf undersides before diagnosing it; record persistent wilt, spreading spots, or fruit damage."
+    },
+    "sources": [
+      {
+        "title": "Fertilizing and watering container plants",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/fertilizing-and-watering-container-plants"
+      },
+      {
+        "title": "Growing tomatoes in home gardens",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-tomatoes"
+      },
+      {
+        "title": "Growing Vegetables in Containers and Salad Tables",
+        "url": "https://www.extension.umd.edu/resource/growing-vegetables-containers-and-salad-tables"
+      },
+      {
+        "title": "Key to Common Problems of Tomatoes",
+        "url": "https://www.extension.umd.edu/resource/key-common-problems-tomatoes"
+      }
+    ],
+    "application_note": "Bottom watering is adapted from the shared method; deeper checks address the photographed large pot. Curling leaves in a photo do not establish a cause.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "fittonia": {
+    "name": "Fittonia / nerve plant — cultivar unknown",
+    "status": "draft",
+    "identification": "Fittonia with pink and green foliage; no cultivar assigned from the photo.",
+    "watering": {
+      "when": "Check often and water before the root ball dries out. Keep the mix consistently lightly moist, without waterlogging; wait if it is still wet.",
+      "method": "Bottom watering, then lift, drain fully, and empty any saucer.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "Do not use repeated wilting as the watering signal. If it droops, check root moisture first; a dry plant may recover after thorough watering."
+    },
+    "care": {
+      "soil": "Moisture-retentive houseplant potting mix with drainage; avoid a container much larger than the root ball.",
+      "feed": "A light feeder: occasional dilute houseplant fertilizer during active growth, roughly every two or three months, following product instructions and accounting for feed already in the mix.",
+      "pruning": "No routine pruning needed. Remove dead leaves and stems as needed.",
+      "trouble": "Dry air can cause browning. Check moisture before responding to drooping; inspect for mites, mealybugs, and mould on dead material. Humid air does not require soggy roots."
+    },
+    "sources": [
+      {
+        "title": "How to grow fittonia",
+        "url": "https://www.rhs.org.uk/plants/fittonia/how-to-grow-fittonia"
+      },
+      {
+        "title": "Fittonia / RHS Plant Guide",
+        "url": "https://www.rhs.org.uk/plants/fittonia"
+      }
+    ],
+    "application_note": "The preferred bottom-watering method is applied to a soil-grown, freely draining pot. Moisture checks replace a fixed soak schedule.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "croton": {
+    "name": "Croton — narrow-leaf form, cultivar unconfirmed",
+    "status": "draft",
+    "identification": "Codiaeum variegatum group; do not assign a cultivar from leaf shape alone.",
+    "watering": {
+      "when": "Water when the top half-inch to one inch of mix has dried. Keep the root zone moderately moist, avoiding prolonged dryness or saturation.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "Lift, drain fully, and empty the saucer after uptake; do not keep the pot standing in basin water."
+    },
+    "care": {
+      "soil": "Fertile, well-drained container potting mix.",
+      "feed": "Modest label-directed feeding once or twice during active growth is a starting approach; account for fertilizer already in the mix.",
+      "pruning": "Remove fully dead material. If shaping is needed later, prune when healthy and entering active growth. Wear gloves when cutting because the sap can irritate skin.",
+      "trouble": "Leaf drop can follow prolonged wetness, dryness, cold drafts, or abrupt changes. Inspect for spider mites, mealybugs, and scale before choosing treatment."
+    },
+    "sources": [
+      {
+        "title": "Croton, Codiaeum variegatum",
+        "url": "https://hort.extension.wisc.edu/articles/croton-codiaeum-variegatum/"
+      }
+    ],
+    "application_note": "Species-group moisture guidance is adapted to the preferred bottom-watering method; no cultivar-specific or placement prescription.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "strawberry": {
+    "name": "Strawberry — variety unconfirmed",
+    "status": "draft",
+    "identification": "Strawberry group; no cultivar, June-bearing, everbearing, or day-neutral claim from photos.",
+    "watering": {
+      "when": "Water as the soil surface becomes dry; maintain steady moisture without waterlogging. Do not wait for the whole root ball to dry.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "Keep the crown above basin water. Each strawberry pot needs a separate moisture check."
+    },
+    "care": {
+      "soil": "Container potting mix with good drainage; crown level with the mix surface.",
+      "feed": "Use a label-directed container fertilizer during active growth after checking the mix's existing feed.",
+      "pruning": "Remove diseased leaves or fruit and unwanted runners. Keep runners only if deliberately growing another plant.",
+      "trouble": "Wilting with dry mix; prolonged wetness; spotted foliage; damaged or moldy fruit."
+    },
+    "sources": [
+      {
+        "title": "How to Grow Strawberries in Containers",
+        "url": "https://yardandgarden.extension.iastate.edu/how-to/how-grow-strawberries-containers"
+      },
+      {
+        "title": "Properly Watering Container Houseplants",
+        "url": "https://www.pubs.ext.vt.edu/content/pubs_ext_vt_edu/en/SPES/spes-804.html"
+      }
+    ],
+    "application_note": "",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "rosemary": {
+    "name": "Rosemary",
+    "status": "draft",
+    "identification": "Rosemary; cultivar unknown.",
+    "watering": {
+      "when": "Allow the mix to dry somewhat between waterings. Water thoroughly when needed, then drain; do not keep it continuously wet or let the whole root ball become persistently desiccated.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "Use a longer drying interval than mint, strawberries, or impatiens. No fixed weekly schedule."
+    },
+    "care": {
+      "soil": "Free-draining potting mix.",
+      "feed": "Light feeding during active growth; an established container plant may benefit from a modest spring/early-summer feed.",
+      "pruning": "Snip leafy shoot tips or lightly trim after flowering. Avoid cutting into bare old wood.",
+      "trouble": "Brittle shedding foliage; persistent wetness or collapse; white powdery patches; fine webbing or insects."
+    },
+    "sources": [
+      {
+        "title": "How to grow rosemary",
+        "url": "https://www.rhs.org.uk/herbs/rosemary/grow-your-own"
+      },
+      {
+        "title": "Growing Herbs Indoors",
+        "url": "https://yardandgarden.extension.iastate.edu/how-to/growing-herbs-indoors"
+      },
+      {
+        "title": "Properly Watering Container Houseplants",
+        "url": "https://www.pubs.ext.vt.edu/content/pubs_ext_vt_edu/en/SPES/spes-804.html"
+      }
+    ],
+    "application_note": "",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "allium_provisional": {
+    "name": "Green onion / scallion — type unconfirmed",
+    "status": "draft",
+    "identification": "Onion-family appearance; exact Allium species and grocery-regrowth history unresolved.",
+    "watering": {
+      "when": "Keep shallow roots evenly moist. Water when the surface begins drying; avoid leaving the mix saturated.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": ""
+    },
+    "care": {
+      "soil": "Well-drained container potting mix.",
+      "feed": "A dose remains provisional until the growing goal and current fertilizer are known.",
+      "pruning": "Defer repeated harvest instructions until this is confirmed as onions grown for greens.",
+      "trouble": "Yellowing, wilt, damaged tips, or soft bases; inspect roots and moisture before assuming a cause."
+    },
+    "sources": [
+      {
+        "title": "Growing onions in home gardens",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-onions"
+      },
+      {
+        "title": "Properly Watering Container Houseplants",
+        "url": "https://www.pubs.ext.vt.edu/content/pubs_ext_vt_edu/en/SPES/spes-804.html"
+      }
+    ],
+    "application_note": "Garden-source moisture needs are adapted cautiously to this indoor pot.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "succulent_provisional": {
+    "name": "Paddle / flapjack succulent — species unconfirmed",
+    "status": "draft",
+    "identification": "Fleshy paddle-leaf succulent; Kalanchoe is provisional. Do not assign K. luciae or K. thyrsiflora.",
+    "watering": {
+      "when": "For an established rooted succulent, let the mix dry through before another thorough watering.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "Use uptake and complete drainage; repeated frequent soaking can leave roots too wet."
+    },
+    "care": {
+      "soil": "Quick-draining succulent potting mix.",
+      "feed": "Use dilute succulent feed sparingly during active growth, according to its label.",
+      "pruning": "No major pruning while identification is pending; remove only fully dead material.",
+      "trouble": "Soft translucent leaves, yellowing, or collapse in wet soil; severe wrinkling with dry mix; cottony insects."
+    },
+    "sources": [
+      {
+        "title": "Growing Succulents Indoors",
+        "url": "https://yardandgarden.extension.iastate.edu/how-to/growing-succulents-indoors"
+      }
+    ],
+    "application_note": "Broad succulent guidance; species-specific care waits for confirmation.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "dianthus": {
+    "name": "Dianthus — cultivar unconfirmed",
+    "status": "draft",
+    "identification": "Dianthus group; annual/perennial type unresolved.",
+    "watering": {
+      "when": "Let the surface dry slightly between thorough waterings. Recheck the root zone; avoid persistently wet mix.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": ""
+    },
+    "care": {
+      "soil": "Well-drained potting mix and airflow around foliage.",
+      "feed": "Use modest label-directed container feed only during active growth; exact interval pending current fertilizer history.",
+      "pruning": "Remove faded flowers. Lightly trim after flowering rather than making a large cut now.",
+      "trouble": "Wet-root collapse; powdery coating, rust-colored spots, or aphid clusters."
+    },
+    "sources": [
+      {
+        "title": "Dianthus",
+        "url": "https://plants.ces.ncsu.edu/plants/dianthus/"
+      },
+      {
+        "title": "Dianthus caryophyllus",
+        "url": "https://www.rhs.org.uk/plants/5707/dianthus-caryophyllus/details"
+      },
+      {
+        "title": "Fertilizer for Indoor Plants",
+        "url": "https://extension.umd.edu/resource/fertilizer-indoor-plants"
+      }
+    ],
+    "application_note": "The surface-drying cue is a conservative container interpretation of the genus's drained, occasionally dry conditions.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "candytuft": {
+    "name": "Candytuft — species unconfirmed",
+    "status": "draft",
+    "identification": "Candytuft group. Perennial I. sempervirens remains conditional until label or leaves confirm it.",
+    "watering": {
+      "when": "Maintain lightly moist to slightly dry mix; allow some drying and avoid a constantly wet crown.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": ""
+    },
+    "care": {
+      "soil": "Well-drained potting mix.",
+      "feed": "Keep feeding modest; avoid adding a routine heavy feed before existing fertilizer is known.",
+      "pruning": "Remove dead material now. If perennial candytuft is confirmed, lightly trim after flowering.",
+      "trouble": "A dark soft crown in wet mix; leaf spotting or powdery coating."
+    },
+    "sources": [
+      {
+        "title": "Iberis sempervirens",
+        "url": "https://plants.ces.ncsu.edu/plants/iberis-sempervirens/"
+      },
+      {
+        "title": "Iberis sempervirens",
+        "url": "https://www.rhs.org.uk/plants/9066/iberis-sempervirens/details"
+      }
+    ],
+    "application_note": "The perennial profile informs a provisional group template; no perennial lifecycle claim is assigned yet.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "impatiens": {
+    "name": "New Guinea impatiens — cultivar unconfirmed",
+    "status": "draft",
+    "identification": "New Guinea impatiens group; exact cultivar or hybrid unresolved.",
+    "watering": {
+      "when": "Check frequently and water when the soil surface becomes dry. Keep the root zone moist, avoiding both drying out and waterlogging.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": ""
+    },
+    "care": {
+      "soil": "Moisture-retentive but well-drained potting mix.",
+      "feed": "During active growth, a label-directed water-soluble fertilizer about every two weeks is a starting pattern; account for existing slow-release feed.",
+      "pruning": "Remove fully dead leaves and damaged flowers; defer a heavy cut.",
+      "trouble": "Dry-root wilting, dropped buds, brown leaf margins, or leaf drop; persistent wet soil can cause root rot."
+    },
+    "sources": [
+      {
+        "title": "Growing Impatiens in the Home Garden",
+        "url": "https://yardandgarden.extension.iastate.edu/how-to/growing-impatiens-home-garden"
+      }
+    ],
+    "application_note": "The feeding pattern comes from container gardening and needs adjustment to actual indoor growth.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "philodendron_provisional": {
+    "name": "Heartleaf vine in soil — likely philodendron",
+    "status": "draft",
+    "identification": "Likely heartleaf philodendron in soil; medium-high confidence, species/cultivar provisional.",
+    "watering": {
+      "when": "Let the surface dry slightly, then check beside the plant and deeper in the basket. Wait if the root area or lower mix remains moist.",
+      "method": "Bottom-water when needed, then lift and drain fully.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "This tiny vine occupies a large teal basket. A dry surface alone does not justify another soak; the lower mix can remain wet."
+    },
+    "care": {
+      "soil": "Loose, well-drained mix. Soil volume much larger than the root ball dries slowly and can encourage root rot.",
+      "feed": "Feed modestly per label only when established and growing; account for nutrients already in the mix.",
+      "pruning": "Keep healthy foliage; remove dead material. Defer shaping. Gloves protect against irritating sap.",
+      "trouble": "Investigate yellowing, soft stems, or collapse in wet mix. Inspect spots and insects before treatment."
+    },
+    "sources": [
+      {
+        "title": "How to grow philodendrons",
+        "url": "https://www.rhs.org.uk/plants/philodendron/growing-guide"
+      },
+      {
+        "title": "Philodendron hederaceum",
+        "url": "https://plants.ces.ncsu.edu/plants/philodendron-hederaceum/"
+      }
+    ],
+    "application_note": "Deeper moisture checks adapt the RHS overpotting warning to the photographed basket.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "jade": {
+    "name": "Jade plant",
+    "status": "draft",
+    "identification": "Jade / Crassula ovata group; cultivar unknown.",
+    "watering": {
+      "when": "Allow the mix to dry between thorough waterings, then drain completely.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": ""
+    },
+    "care": {
+      "soil": "Quick-draining succulent potting mix.",
+      "feed": "Feed about every two months during active growth, or use a more dilute label-directed approach.",
+      "pruning": "When healthy and growing, stems can be cut back to a lateral branch to control shape; no need to prune immediately.",
+      "trouble": "Wet-soil leaf drop or stem rot; severe drought can also cause leaf drop; inspect for cottony mealybugs or fine webbing."
+    },
+    "sources": [
+      {
+        "title": "Jade Plant, Crassula ovata",
+        "url": "https://hort.extension.wisc.edu/articles/jade-plant-crassula-ovata/"
+      },
+      {
+        "title": "Properly Watering Container Houseplants",
+        "url": "https://www.pubs.ext.vt.edu/content/pubs_ext_vt_edu/en/SPES/spes-804.html"
+      }
+    ],
+    "application_note": "",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "seedling_unknown": {
+    "name": "Small seedling — identification pending",
+    "status": "draft",
+    "identification": "General observation placeholder for unidentified seedlings until identity and maturity are established. Each remains separate; use cactus_provisional for the cactus-like pot.",
+    "watering": {
+      "when": "Check the small root zone and pot weight often. The drying threshold remains provisional until identity and maturity are confirmed. If confirmed as a young herbaceous seedling, keep its mix lightly moist without saturation.",
+      "method": "Use gentle shallow bottom contact; stop once the mix absorbs moisture, then drain.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "When watering is needed, use shallow basin contact and drain after uptake. Avoid a fixed mature-pot soak, full-dry cactus rule, or species-specific watering schedule before identification."
+    },
+    "care": {
+      "soil": "Do not disturb the roots solely to identify it. Confirm the label, leaf details, and current medium.",
+      "feed": "Hold a species-specific feeding schedule until identity, root stage, and current nutrients are known.",
+      "pruning": "No pinching, harvesting, or major pruning until identified.",
+      "trouble": "A thinning dark stem at soil level, collapse, persistent sogginess, or drying out; document changes before choosing treatment."
+    },
+    "sources": [
+      {
+        "title": "A warm-weather jump on seed starting",
+        "url": "https://extension.umn.edu/about/our-stories/news/yard-and-garden-news/a-warm-weather-jump-on-seed-starting"
+      },
+      {
+        "title": "How to prevent seedling damping off",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/yard-and-garden-problems/how-to-prevent-seedling-damping-off"
+      }
+    ],
+    "application_note": "This is interim general seedling handling, not confirmed pepper or cactus care. A confirmed succulent seedling needs a separate age-specific template.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "daisy_provisional": {
+    "name": "Unidentified plant — care pending",
+    "status": "draft",
+    "identification": "Use for an ambiguous daisy-family plant or other unidentified leafy specimen. Do not assign species-specific needs.",
+    "watering": {
+      "when": "If the mix is damp and the pot is heavy, wait and recheck. If the root zone is becoming dry and the pot light, water gently and drain. Avoid both repeated saturation and prolonged complete dehydration.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "The exact drying threshold remains provisional until identification."
+    },
+    "care": {
+      "soil": "Confirmed drainage; medium suitability remains unassessed.",
+      "feed": "Hold a species-specific feeding schedule until identification and fertilizer history are known.",
+      "pruning": "Remove fully dead material only; defer large cuts and harvest advice.",
+      "trouble": "Record wilting, yellowing, leaf drop, and soft stems; check moisture before adding water."
+    },
+    "sources": [
+      {
+        "title": "Watering Indoor Plants",
+        "url": "https://www.extension.umd.edu/resource/watering-indoor-plants"
+      },
+      {
+        "title": "Properly Watering Container Houseplants",
+        "url": "https://www.pubs.ext.vt.edu/content/pubs_ext_vt_edu/en/SPES/spes-804.html"
+      }
+    ],
+    "application_note": "Conservative observation placeholder rather than a species care prescription.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "mint": {
+    "name": "Mint — variety unconfirmed",
+    "status": "draft",
+    "identification": "Mentha group; seven physical pots share this text but remain seven independent inventory records.",
+    "watering": {
+      "when": "Keep the mix evenly moist. Check each pot separately and water as the surface begins drying; do not let the whole root ball dry.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": ""
+    },
+    "care": {
+      "soil": "Well-drained container potting mix; divide or repot when an established root ball becomes crowded.",
+      "feed": "Feed modestly during active growth, accounting for existing nutrients and following the label.",
+      "pruning": "Snip soft tips regularly. Pinch flower buds if leaves are the goal; defer a large cut until each pot is healthy and established.",
+      "trouble": "Distorted shoots or aphid clusters; dusty orange, yellow, or black spots that need inspection for rust."
+    },
+    "sources": [
+      {
+        "title": "How to grow mint",
+        "url": "https://www.rhs.org.uk/herbs/mint/grow-your-own"
+      },
+      {
+        "title": "Mint in the garden",
+        "url": "https://extension.usu.edu/yardandgarden/research/mint-in-the-garden"
+      },
+      {
+        "title": "Nutrition and feeding plants",
+        "url": "https://www.rhs.org.uk/garden-jobs/nutrition-feeding-plants"
+      }
+    ],
+    "application_note": "The surface-and-weight cue adapts the evenly-moist goal to containers.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "parsley": {
+    "name": "Parsley",
+    "status": "draft",
+    "identification": "Parsley; cultivar unknown.",
+    "watering": {
+      "when": "Keep the mix evenly moist, without waterlogging. Water before the entire pot dries.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": ""
+    },
+    "care": {
+      "soil": "Moisture-retentive container mix with drainage.",
+      "feed": "An actively growing container plant may benefit from balanced liquid feed every few weeks, per the label and accounting for existing fertilizer.",
+      "pruning": "Harvest a few outer leafy stems at their bases; leave the central growing point. Remove yellow lower leaves.",
+      "trouble": "Inspect distorted growth for aphids; yellow leaves need a moisture/root check. Second-year flowering is normal biennial development."
+    },
+    "sources": [
+      {
+        "title": "How to grow parsley",
+        "url": "https://www.rhs.org.uk/herbs/parsley/grow-your-own"
+      },
+      {
+        "title": "Watering Indoor Plants",
+        "url": "https://www.extension.umd.edu/resource/watering-indoor-plants"
+      }
+    ],
+    "application_note": "",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "amaranth": {
+    "name": "Flowering amaranth — species unconfirmed",
+    "status": "draft",
+    "identification": "Amaranthus broadly; species, cultivar, and harvest goal unresolved.",
+    "watering": {
+      "when": "Keep mix moist and well drained. Check the surface and pot weight before watering; do not drought-test a small container.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": ""
+    },
+    "care": {
+      "soil": "Well-drained, reasonably fertile potting mix; keep the container stable as stems grow.",
+      "feed": "Feed modestly only during active growth, per label and accounting for existing nutrients; interval provisional.",
+      "pruning": "Remove dead material; preserve flowering stems until the goal of display or seed collection is clear.",
+      "trouble": "Inspect distorted tips for aphids; investigate persistent wetness or wilting. Many flowering amaranths are annuals, so decline is not automatically a watering failure."
+    },
+    "sources": [
+      {
+        "title": "Amaranthus",
+        "url": "https://www.rhs.org.uk/plants/amaranthus"
+      },
+      {
+        "title": "Amaranthus caudatus",
+        "url": "https://plants.ces.ncsu.edu/plants/amaranthus-caudatus/"
+      },
+      {
+        "title": "Nutrition and feeding plants",
+        "url": "https://www.rhs.org.uk/garden-jobs/nutrition-feeding-plants"
+      }
+    ],
+    "application_note": "A. caudatus source used conservatively; its species identity, dimensions, and flower shape are not assigned.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "sage_provisional": {
+    "name": "Fuzzy sage-like herb — identification pending",
+    "status": "draft",
+    "identification": "Sage-like appearance is provisional. Use general observations until label or leaf/stem detail confirms identity.",
+    "watering": {
+      "when": "If the mix is damp and the pot is heavy, wait and recheck. If the root zone is becoming dry and the pot light, water gently and drain. Avoid both repeated saturation and prolonged complete dehydration.",
+      "method": "Bottom watering.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "The exact drying threshold remains provisional until identification."
+    },
+    "care": {
+      "soil": "Confirmed drainage; medium suitability remains unassessed.",
+      "feed": "Hold a species-specific feeding schedule until identification and fertilizer history are known.",
+      "pruning": "Remove fully dead material only; defer large cuts and harvest advice.",
+      "trouble": "Record wilting, yellowing, leaf drop, and soft stems; check moisture before adding water."
+    },
+    "sources": [
+      {
+        "title": "Watering Indoor Plants",
+        "url": "https://www.extension.umd.edu/resource/watering-indoor-plants"
+      },
+      {
+        "title": "Properly Watering Container Houseplants",
+        "url": "https://www.pubs.ext.vt.edu/content/pubs_ext_vt_edu/en/SPES/spes-804.html"
+      }
+    ],
+    "application_note": "Conservative observation placeholder rather than a species care prescription.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "pepper_provisional": {
+    "name": "Pepper-like seedling — identification pending",
+    "status": "draft",
+    "identification": "Do not assign Capsicum or pepper harvest/pruning care from this photograph alone.",
+    "watering": {
+      "when": "Check the small root zone and pot weight often. The drying threshold remains provisional until identity and maturity are confirmed. If confirmed as a young herbaceous seedling, keep its mix lightly moist without saturation.",
+      "method": "Use gentle shallow bottom contact; stop once the mix absorbs moisture, then drain.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "When watering is needed, use shallow basin contact and drain after uptake. Avoid a fixed mature-pot soak, full-dry cactus rule, or species-specific watering schedule before identification."
+    },
+    "care": {
+      "soil": "Do not disturb the roots solely to identify it. Confirm the label, leaf details, and current medium.",
+      "feed": "Hold a species-specific feeding schedule until identity, root stage, and current nutrients are known.",
+      "pruning": "No pinching, harvesting, or major pruning until identified.",
+      "trouble": "A thinning dark stem at soil level, collapse, persistent sogginess, or drying out; document changes before choosing treatment."
+    },
+    "sources": [
+      {
+        "title": "A warm-weather jump on seed starting",
+        "url": "https://extension.umn.edu/about/our-stories/news/yard-and-garden-news/a-warm-weather-jump-on-seed-starting"
+      },
+      {
+        "title": "How to prevent seedling damping off",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/yard-and-garden-problems/how-to-prevent-seedling-damping-off"
+      }
+    ],
+    "application_note": "This is interim general seedling handling, not confirmed pepper or cactus care. A confirmed succulent seedling needs a separate age-specific template.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  },
+  "cactus_provisional": {
+    "name": "Cactus-like seedling — identification pending",
+    "status": "draft",
+    "identification": "Cactus-like appearance and maturity require confirmation; avoid applying a mature desert-cactus schedule.",
+    "watering": {
+      "when": "Check the tiny root zone and pot weight before watering. Water need and drying threshold remain provisional until cactus identity and maturity are confirmed.",
+      "method": "Use gentle shallow bottom contact; stop once the mix absorbs moisture, then drain.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "Do not automatically keep a cactus seedling constantly moist or assign a mature dry-through cycle. Confirm identification and root stage before choosing the threshold."
+    },
+    "care": {
+      "soil": "Do not disturb the roots solely to identify it. Confirm the label, leaf details, and current medium.",
+      "feed": "Hold a species-specific feeding schedule until identity, root stage, and current nutrients are known.",
+      "pruning": "No pinching, harvesting, or major pruning until identified.",
+      "trouble": "A thinning dark stem at soil level, collapse, persistent sogginess, or drying out; document changes before choosing treatment."
+    },
+    "sources": [
+      {
+        "title": "A warm-weather jump on seed starting",
+        "url": "https://extension.umn.edu/about/our-stories/news/yard-and-garden-news/a-warm-weather-jump-on-seed-starting"
+      },
+      {
+        "title": "How to prevent seedling damping off",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/yard-and-garden-problems/how-to-prevent-seedling-damping-off"
+      }
+    ],
+    "application_note": "This is interim general seedling handling, not confirmed pepper or cactus care. A confirmed succulent seedling needs a separate age-specific template.",
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
+  }
+};
+const PLANT_HARVEST_TEMPLATES = {
+  "mint": {
+    "ongoing": true,
+    "badge": "✂️ Pick as needed",
+    "hdrNote": "healthy established growth",
+    "signsLabel": "🍴 When to pick",
+    "signs": "Pick a few healthy soft tips when needed, once this particular pot is established. There is no calendar harvest or required picking routine.",
+    "how": "Snip a few soft tips. Leave plenty of healthy growth and allow this pot to recover; defer a large cut until it is healthy and established.",
+    "fact": "Mint variety is unconfirmed. The seven mint pots have separate harvest and watering records."
+  },
+  "parsley": {
+    "ongoing": true,
+    "badge": "✂️ Pick as needed",
+    "hdrNote": "outer leafy stems",
+    "signsLabel": "🍴 When to pick",
+    "signs": "Pick a few healthy outer leafy stems when needed, leaving the central young growth. There is no calendar harvest.",
+    "how": "Harvest a few outer leafy stems at their bases; leave the central growing point.",
+    "fact": "Kitchen picking is optional and separate from removing dead or yellow foliage."
+  },
+  "rosemary": {
+    "ongoing": true,
+    "badge": "✂️ Pick as needed",
+    "hdrNote": "leafy shoot tips",
+    "signsLabel": "🍴 When to pick",
+    "signs": "Choose healthy leafy shoot tips when needed. There is no calendar harvest.",
+    "how": "Snip leafy shoot tips lightly. Avoid cutting into bare old wood.",
+    "fact": "Keep most of the healthy foliage; a large cut is not needed for a kitchen sprig."
+  },
+  "strawberry": {
+    "ongoing": true,
+    "badge": "🍓 Pick only when ripe",
+    "hdrNote": "check each berry",
+    "signsLabel": "👀 Ripe fruit only",
+    "signs": "For red-fruited strawberries, wait until a berry is fully red to the shoulders. Cultivar and bearing type are unconfirmed; do not use a calendar date as a ripeness signal.",
+    "how": "Support the ripe berry and snip its stem, leaving the green cap attached. Do not pull the plant or crown. Check each crown or pocket separately.",
+    "fact": "Strawberries do not continue ripening after picking. This card makes no claim that fruit is currently ready."
+  },
+  "tomato": {
+    "ongoing": true,
+    "badge": "🍅 Pick only when ripe",
+    "hdrNote": "variety still unconfirmed",
+    "signsLabel": "👀 Ripeness check",
+    "signs": "Use mature color for the actual variety and a slight give, not a calendar date. The heirloom cultivar is unknown, so do not assume every ripe tomato must be red.",
+    "how": "Support the fruit and snip a tough stem with clean scissors or pruners instead of yanking on the plant or cage. Leave immature fruit to develop.",
+    "fact": "No harvest date or claim that the photographed green fruit is ready has been assigned."
+  }
 };
 
-const WATER_INFO = {
-  fittonia:{when:"Check every 2 days — bark mulch mix dries fast. Water when the top inch is barely dry; don't let it reach the droop. Place on a pebble tray with water underneath for humidity. Keep away from AC vents. 🦟 Gnat reset = REPOT DAY Sun Jun 14 (full plan: Plants → Care). After the repot: first 2–3 waterings = BTI tea for insurance, then back to normal water. New coco-coir mix holds moisture longer — expect ~4–5 days between drinks after the repot (say the word and we retune the schedule).",thirst:"The drama queen: it collapses flat the instant it's thirsty, then springs back upright within an hour of a drink. But bark mix dries faster than potting soil — don't wait for the faint."},
-  croton:{when:"Water when the top inch is dry, usually every 5–7 days, keeping it evenly moist in bright warm light. Do not let it fully dry out. 🦟 Gnat reset = REPOT DAY Sun Jun 14 (full plan: Plants → Care). After the repot: first 2–3 waterings = BTI tea for insurance, then back to normal water.",thirst:"Sensitive to swings — both bone-dry soil and cold drafts make it drop leaves in protest."},
-  jade:{when:"Let the soil dry out completely, then water deeply and leave it alone for 2–3 weeks. Water much less in winter. 🦟 Gnat reset = REPOT DAY Sun Jun 14 (full plan: Plants → Care). After the repot: first 2–3 waterings = BTI tea for insurance, then back to normal water.",thirst:"A true succulent that stores water in its leaves, so underwatering is nearly impossible — but overwatering is fatal."},
-  basil1:{when:"Check every morning and water at the soil when the top inch starts drying or the leaves just begin to soften. In extreme heat, recheck late afternoon and water only if the mix is drying; avoid wet foliage overnight.",thirst:"A heavy summer drinker that can collapse quickly in heat — catch the early softening stage instead of waiting for a full wilt."},
-  basil2:{when:"Check every morning and water at the soil when the top inch starts drying or the leaves just begin to soften. In extreme heat, recheck late afternoon and water only if the mix is drying; avoid wet foliage overnight.",thirst:"Wants steady moisture — do not let it reach a severe wilt, but use the soil check so the roots never stay soggy."},
-  parsley:{when:"Morning water every 3–4 days, whenever the top 2 inches dry out. Water at the base and keep it lightly moist.",thirst:"Dislikes drying out completely — drought stress makes it bolt to seed sooner."},
-  mint:{when:"Keep the soil evenly moist with a gentle morning drink — peppermint is a water-lover. Never let it sit soggy.",thirst:"A water-lover that wilts fast then bounces back within hours of a drink — it's fully recovered now, so just keep it on its normal even-moisture schedule."},
-  dill:{when:"Morning water when the top 2 inches dry, every couple of days. Water at the base and keep it from drying out fully.",thirst:"Likes slightly moist soil — let it dry hard and it bolts and flowers early."},
-  rosemary:{when:"Water sparingly — only about weekly, and let it dry well between drinks. Morning water at the base; when in doubt, skip it.",thirst:"Mediterranean and drought-tolerant — overwatering is the number-one way to kill rosemary."},
-  strawberry:{when:"Daily — the round pot in full sun dries fast. Water deeply at the base each morning; in a heat wave it may want a second drink in the evening. Keep evenly moist while flowering and fruiting.",thirst:"Shallow-rooted and quick to dry — steady moisture is what makes the berries plump and sweet."},
-  strawberry_pot:{when:"Daily in summer — water the multi-plant mother pot and check every pocket, then check its two attached runners in their temporary pots. During mid-90s heat, check those little pots again in the evening.",thirst:"The upper pockets and temporary runner pots dry first. Keep them evenly moist while rooting, with morning sun and afternoon shade, but never bury the runner crowns."},
-  tomato:{when:"Morning, at the base, deep and CONSISTENT — daily in heat. Never wet the leaves. Ease off slightly as the fruit ripens.",thirst:"Consistency is everything: swinging from dry to drenched is exactly what causes cracking and catfacing."},
-  cherry_tomato:{when:"Morning, at the base, daily in heat; ease off once the fruit is ripening to prevent splitting.",thirst:"Steady water keeps the skins intact — a sudden big drink after a dry spell makes them burst."},
-  jalapeno:{when:"Water at the base every 2–3 days, letting the top 2 inches dry first. A little controlled dryness is good for it.",thirst:"Mild water stress concentrates the heat — keep it on the lean side for hotter peppers."},
-  raspberry:{when:"Deep soak at the base every 2–3 days — aim for about an inch of water a week. Deep and infrequent beats daily sprinkles.",thirst:"Its roots run wide and shallow, so it wants deep soaks that reach them, not surface splashes."},
-  green_onion:{when:"Check each green-onion pot separately every day during the heat and water only the pots whose top inch is starting to dry, usually about every 2 days.",thirst:"Their shallow roots can wilt quickly, and individual pots may dry at different rates, so use each pot's soil rather than watering them automatically as a group."},
-  potato:{when:"Check the felt grow bag every morning and water deeply when the top inch starts drying. Fabric loses moisture quickly in Denver heat, but the bag should still drain freely.",thirst:"Even moisture while the large plant grows supports smooth tubers; large wet-dry swings can cause misshapen potatoes."},
-  potato_sprout:{when:"Check the second felt grow bag every morning and water deeply when the top inch starts drying. Fabric loses moisture quickly in Denver heat, but the bag should still drain freely.",thirst:"Even moisture while the plant grows supports smooth tubers; large wet-dry swings can cause misshapen potatoes."},
-  white_onion:{when:"While it recovers from root rot, water the shared gray pot only after the top inch dries and keep water away from the exposed bulb neck.",thirst:"Watch for fresh upright growth. Renewed softness, odor, or yellowing suggests the base is staying too wet."},
-  ginger:{when:"Check its new temporary pot daily in hot weather and water when the top inch begins to dry. Keep the sprouted ginger evenly moist with afternoon shade, never soggy.",thirst:"The small pot dries faster now, but standing moisture can rot the rhizome."},
-  turmeric:{when:"Check both turmeric plantings separately each day during the heat and water only where the top inch starts to dry. This is one shared schedule record for now, so log it only after both plantings have actually been watered.",thirst:"Keep each planting lightly moist, never soggy. Use its own soil check rather than the example sprout photo or a rigid interval."},
-  dianthus:{when:"Water at the base every 2–3 days, letting the surface dry slightly between. Keep water off the flowers and crown.",thirst:"Hates soggy soil — a constantly wet crown is what rots these plants."},
-  daisy:{when:"Morning water about every 2 days for consistency. Crucial: make sure it is not sitting in water — the nursery basket inside the pot traps moisture.",thirst:"A tricky reader — droopy stems can mean too little OR too much water, so always check drainage first."},
-  candytuft:{when:"Water every 3–4 days, letting it dry between — it is fairly drought-tolerant. Do not overwater.",thirst:"Happiest on the dry side; it sulks and rots in soil that stays wet."}
-};
+function plantText(value){
+  return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function plantSourceLinks(sources){
+  const unique = [...new Map((sources || []).filter(s => s && /^https:\/\//.test(s.url)).map(s => [s.url, s])).values()];
+  return unique.length ? '<span class="plant-care-sources">Sources: ' + unique.map(s => '<a href="'+plantText(s.url)+'" target="_blank" rel="noopener noreferrer">'+plantText(s.title)+'</a>').join(' · ') + '</span>' : '';
+}
+function plantSharedSources(section){
+  return (section.source_ids || []).map(id => PLANT_CARE_SOURCE_CATALOG[id]).filter(Boolean);
+}
+function plantCareTemplate(p){ return PLANT_CARE_TEMPLATES[p.careTemplateKey]; }
+function plantCareSources(p){ return plantCareTemplate(p).sources || []; }
+function plantProvisionalIdentity(p){ return /provisional|unconfirmed/.test(p.plantType) || p.plantType === 'amaranth'; }
+function plantIdentityWarning(p){
+  return plantProvisionalIdentity(p) ? 'Identification remains provisional. ' + plantCareTemplate(p).identification + ' Do not eat or harvest until identity and edible use are confirmed.' : '';
+}
+function plantNote(p){
+  return [...new Set([p.placementNote, p.identityNote, p.waterNote, plantCareTemplate(p).watering.notes, plantIdentityWarning(p)].filter(Boolean))].join(' ');
+}
 
-const FUN_FACTS = {
-  fittonia:["Called the nerve plant for its glowing vein patterns, which come in pink, red, and white.","It dramatically faints flat when thirsty, then springs upright within an hour of a drink.","A rainforest groundcover at heart, so it thrives in the humidity of a terrarium."],
-  croton:["Croton leaves change color with light — more sun means brighter reds, oranges, and yellows.","Every croton has its own leaf pattern; no two plants are exactly alike.","It sulks and drops leaves when moved, then settles once it is used to its new spot."],
-  jade:["A succulent that can live for decades — jade is widely seen as a symbol of good luck and prosperity.","Each plump leaf is a little water tank, which is why jade shrugs off a missed watering.","A single fallen leaf laid on soil will root and grow into a whole new plant."],
-  basil1:["Basil is in the mint family, and pinching it makes it bushier — the more you harvest, the more it grows.","Basil and tomatoes are companions both in the garden and on the plate.","Keep cut basil on the counter, never the fridge — cold turns the leaves black."],
-  basil2:["Ancient cultures saw basil as a symbol of love and protection; today it is the heart of pesto.","There are 60+ varieties — Thai, lemon, cinnamon, purple — each with its own aroma.","Letting basil flower tells the plant to stop making leaves, so keep pinching the buds."],
-  parsley:["Parsley is biennial — leaves the first year, flowers the second — and it is loaded with vitamin K.","Chewing fresh parsley really does help neutralize garlic and onion breath.","It is a magnet for swallowtail butterflies, whose caterpillars feed on the leaves."],
-  mint:["Peppermint is a natural hybrid of watermint and spearmint, and it spreads so fast it is best kept potted.","Mint's menthol is what makes it feel cold on your tongue — it tricks your nerves.","A few sprigs in open ground can take over an entire bed in a season."],
-  dill:["Dill's name comes from old Norse dilla, to soothe — it was once used to calm fussy babies.","Both the feathery fronds and the seeds are edible, with different flavors.","Like parsley, dill feeds swallowtail caterpillars — leave a little for them."],
-  rosemary:["Rosemary means dew of the sea and can live 20+ years — it loves dry feet and full sun.","Students in ancient Greece wore rosemary sprigs, believing it boosted memory.","Its woody stems make great grilling skewers that perfume the food."],
-  strawberry:["A strawberry is not a true berry, and it is the only fruit with seeds on the outside — about 200 each.","Those tiny seeds are actually the real fruits; the sweet red part is swollen stem tissue.","One plant sends out runners that root into whole new plants for free."],
-  strawberry_pot:["A strawberry pot's stacked pockets let one container hold a whole little patch of plants.","Runners from the upper plants will root themselves into the lower pockets if you tuck them in.","Terracotta breathes and wicks moisture, so these pots dry faster than plastic — and the top pockets fastest of all."],
-  tomato:["Tomatoes are technically a fruit; heirloom means the variety has been saved and passed down 50+ years.","They were once feared as poisonous in Europe because they belong to the nightshade family.","A tomato on a sunny sill keeps ripening — chilling it in the fridge kills the flavor."],
-  cherry_tomato:["Cherry tomatoes taste sweeter than big ones — more skin per bite concentrates the sugars.","Husky types stay compact and bushy, which makes them perfect for pots.","They ripen in waves, so a single plant can feed you cherries all summer long."],
-  jalapeno:["A jalapeño's heat lives in the white pith, not the seeds — and less water makes it hotter.","Leave one on the plant and it turns red, sweeter, and hotter.","Smoke-dry a ripe red jalapeño and you have made a chipotle."],
-  raspberry:["Each raspberry is a cluster of tiny drupelets, and the canes fruit in their second year.","The hollow center is why raspberries are so delicate — they bruise in the bowl.","Green primocanes this year become the fruiting floricanes of next year."],
-  green_onion:["Green onions are a cut-and-come-again crop — snip the tops and they regrow again and again.","The white base left in the soil (or even a glass of water) will resprout fresh green shoots.","'Scallion', 'green onion', and 'spring onion' all refer to much the same young onion."],
-  potato:["The potato you eat is a swollen underground stem called a tuber, not a root.","Potatoes grow from the 'eyes' — each eye is a bud that can sprout a whole new plant.","Mounding soil over the stems ('hilling') gives more potatoes and keeps them from going green."],
-  white_onion:["An onion bulb is a cluster of swollen leaf bases wrapped in papery skins.","When the green tops flop over on their own, that's the plant signaling the bulb is done.","Curing onions in a dry, airy spot for a couple weeks is what lets them store for months."],
-  dianthus:["Dianthus means flower of the gods in Greek, and many kinds smell just like cloves.","The color word pink came from these flowers' frilly, pinked edges.","Deadheading spent blooms is the single best trick to keep it flowering all summer."],
-  daisy:["Daisy comes from day's eye — the flower opens at dawn and closes again at dusk.","What looks like one flower is actually hundreds of tiny florets packed together.","Daisies are in the same plant family as sunflowers and lettuce."],
-  candytuft:["Candytuft is named for Candia (old Crete), not candy — though the clusters look sweet enough to eat.","It is evergreen, so the foliage stays green through winter in mild climates.","Shear it back after blooming and it often rewards you with a second flush."]
-};
+const PLANTS = PLANT_INVENTORY_20261006.map(p => {
+  const t = plantCareTemplate(p), h = PLANT_HARVEST_TEMPLATES[p.plantType];
+  return {
+    ...p,
+    sourceCardsStatus: p.cardsStatus,
+    cardsStatus: 'active_current_inventory',
+    loc: p.location,
+    days: 1,
+    checkOnly: true,
+    lastWatered: '2026-10-06',
+    preferredWateringMethod: 'bottom_watering',
+    provisionalIdentity: plantProvisionalIdentity(p),
+    identityWarning: plantIdentityWarning(p),
+    light: '☀️ Light assessment deferred',
+    waterChip: '👀 Daily soil check · water only when needed',
+    harvestChip: h ? h.badge + ' · no calendar harvest' : (plantProvisionalIdentity(p) ? '🔎 Identity or edible use unconfirmed · do not harvest' : '🪴 Foliage / flowers · no edible harvest advice'),
+    freq: t.watering.when,
+    note: plantNote(p)
+  };
+});
 
-const CARE_INFO = {
-  fittonia:{fact:"Pinching off the tiny flower spikes keeps the plant pouring energy into those colorful leaves."},
-  croton:{fact:"Rotating the pot a quarter-turn each week keeps its colorful leaves growing evenly toward the light."},
-  jade:{fact:"Turning jade regularly keeps it from leaning, and its trunk thickens with age into a little tree."},
-  basil1:{fact:"Pinching out the growing tip tricks basil into branching — one cut becomes two stems."},
-  basil2:{fact:"Removing flower buds keeps the plant making tender leaves instead of going to seed."},
-  parsley:{fact:"Snipping the oldest outer stems first keeps the productive young center growing."},
-  mint:{fact:"Cutting mint back hard whenever it gets leggy forces fresh, tender new growth."},
-  dill:{fact:"Pinching the central flower stalk early keeps dill leafy for much longer."},
-  rosemary:{fact:"Light, regular shaping of green growth keeps rosemary bushy — never cut into old wood."},
-  strawberry:{fact:"Snipping off runners sends the plant's energy into berries instead of new plants."},
-  strawberry_pot:{fact:"Every runner can become a free new plant — but a stressed or sunburnt mother should keep only its strongest one or two and have the rest snipped off."},
-  tomato:{fact:"Removing the suckers in the leaf joints channels energy into fewer, bigger fruit."},
-  cherry_tomato:{fact:"This compact type needs almost no pruning — just clear the leaves that touch the soil."},
-  jalapeno:{fact:"Mature pepper plants need only light pruning: keep the healthy canopy, remove damaged or soil-touching leaves, and support branches when fruit makes them bend."},
-  raspberry:{fact:"Tying canes to a support and snipping off dead tips is most of raspberry care."},
-  green_onion:{fact:"Always leave the white base and roots when you cut — that's what lets the tops regrow."},
-  potato:{fact:"Mounding soil over the stems as they grow ('hilling') is the whole job — more tubers, and they stay buried."},
-  white_onion:{fact:"Once the tops flop on their own, stop watering and let the bulb cure — that's what makes it keep."},
-  dianthus:{fact:"Deadheading — snipping spent blooms back to a bud — is the heart of keeping it flowering."},
-  daisy:{fact:"Deadheading spent flowers and clearing yellow leaves keeps it blooming and healthy."},
-  candytuft:{fact:"A hard shear right after bloom keeps candytuft compact instead of woody and sprawling."}
-};
+const PLANT_INFO = Object.fromEntries(PLANTS.map(p => [p.id, {
+  photo: p.photo,
+  photoPos: p.photoPosition,
+  photoPosition: p.photoPosition,
+  photoFit: p.photoFit,
+  alternatePhotos: p.alternatePhotos.slice(),
+  identification: p.identification,
+  careTemplateKey: p.careTemplateKey,
+  plantType: p.plantType,
+  loc: p.loc,
+  fact: plantText(plantCareTemplate(p).identification) + '<br>' + plantText(p.pot.description) + (p.identityWarning ? '<br>' + plantText(p.identityWarning) : '') + '<br>' + plantSourceLinks(plantCareSources(p)),
+  note: p.note,
+  sources: plantCareSources(p)
+}]));
 
-const PEST_INFO = {
-  fittonia:{ look:"Fungus gnats are the top risk because the chunky bark mix stays moist — watch for tiny black flies at the soil surface and translucent larvae in the top layer. Spider mites bring underside stippling and fine webbing in dry air; mealybugs leave white cottony masses in the axils and aphids gather on new growth.", fix:"For gnats, let the mix surface dry between waterings, top-dress with coarse sand or a pinch of cinnamon, set yellow sticky traps, and drench with BTI (mosquito bits) for the larvae. Use insecticidal soap or neem for mites and aphids; alcohol swab for mealybugs." },
-  croton:{ look:"Spider mites are croton's signature pest — thick waxy leaves plus dry warm air make it the most mite-vulnerable plant you have. Check leaf undersides for fine stippling, dull bronzing, and webbing along the veins and axils. Also watch for white cottony mealybugs in the axils, brown scale bumps with honeydew on stems, and thrips (silvery streaks plus tiny black frass specks).", fix:"Wipe the glossy leaves with a damp cloth weekly, raise humidity, and rinse the undersides. Spray insecticidal soap or neem top and bottom every 5 to 7 days for 2 to 3 cycles to break the mite life cycle; alcohol swab for mealybugs and scale; isolate at the first sign of webbing." },
-  jade:{ look:"Mealybugs are the classic jade pest — check the leaf axils, the joints where leaves meet the stems, and the undersides for white cottony masses and sticky honeydew. Spider mites occasionally show fine stippling and webbing on dry plants; root mealybugs or root rot can lurk if it has been overwatered (inspect the roots at repotting).", fix:"Dab mealybugs directly with a cotton swab soaked in 70% isopropyl alcohol — it kills them on contact. For wider spread use neem or insecticidal soap (test one leaf first, succulents can be sensitive). The real defense is not overwatering, which keeps growth firm and pest-resistant." },
-  basil1:{ look:"Japanese beetles have metallic green heads, copper wing covers, and small white tufts along their sides; they rapidly skeletonize basil leaves into lace. Also check tender tips and leaf undersides for aphids, whiteflies, spider-mite stippling or webbing, and lower leaves for slug damage.", fix:"For Japanese beetles, tap adults into a cup of soapy water now, at dusk, and again in the cool morning. If the pots are portable, a bright indoor pause after clearing can block their return for a day or two. A breathable row cover is an optional later tool; never wrap basil in plastic or solid cloth in the heat. Skip Japanese beetle traps, which attract more beetles. The recorded Captain Jack's Deadbug Brew is not labeled for Japanese beetles on basil, so do not use it for this. Use any spray only when its label lists basil or herbs, the exact pest, and the harvest interval; protect blooms and pollinators, and never feed treated beetles to spiders. For aphids, whiteflies, or mites, use a strong water rinse and a food-crop-labeled insecticidal soap as directed." },
-  basil2:{ look:"Japanese beetles have metallic green heads, copper wing covers, and small white tufts along their sides; they rapidly skeletonize basil leaves into lace. Also check tender tips and leaf undersides for aphids, whiteflies, spider-mite stippling or webbing, and lower leaves for slug damage.", fix:"For Japanese beetles, tap adults into a cup of soapy water now, at dusk, and again in the cool morning. If the pots are portable, a bright indoor pause after clearing can block their return for a day or two. A breathable row cover is an optional later tool; never wrap basil in plastic or solid cloth in the heat. Skip Japanese beetle traps, which attract more beetles. The recorded Captain Jack's Deadbug Brew is not labeled for Japanese beetles on basil, so do not use it for this. Use any spray only when its label lists basil or herbs, the exact pest, and the harvest interval; protect blooms and pollinators, and never feed treated beetles to spiders. For aphids, whiteflies, or mites, use a strong water rinse and a food-crop-labeled insecticidal soap as directed." },
-  parsley:{ look:"Aphids gather on the new center growth and leaf undersides (honeydew). Black swallowtail caterpillars chew the leaves and leave dark frass droppings — look on the stems and foliage for green-and-black striped larvae. Whiteflies appear on the undersides in the warm greenhouse, and spider mites show up in dry spots.", fix:"Hand-pick the caterpillars (or relocate them — they become swallowtail butterflies). Use insecticidal soap or neem for aphids, whiteflies, and mites; water-blast the aphids; yellow sticky traps for whiteflies; ladybugs as aphid predators." },
-  mint:{ look:"Aphids are mint's main pest — they cluster on tender new tips and leaf undersides with honeydew. Spider mites bring underside stippling and fine webbing in warm dry corners, and whiteflies sit on the undersides. Orange pustules on leaf undersides are mint rust, a fungal disease rather than a pest — pull those leaves, do not spray for bugs.", fix:"Water-blast and use insecticidal soap or neem for aphids (hit the undersides); ladybugs and lacewings help, and yellow sticky traps catch whiteflies. For mites raise humidity and use insecticidal soap. For rust, improve airflow and remove infected leaves." },
-  dill:{ look:"Aphids settle on new growth and the flower umbels (honeydew). Swallowtail caterpillars chew the fronds and leave dark frass — check the stems for green-and-black striped larvae. Spider mites show in dry heat and whiteflies in the warm greenhouse. Dill itself draws beneficial wasps and ladybugs, so it often polices its own pests.", fix:"Water-blast plus insecticidal soap or neem for aphids, mites, and whiteflies; hand-pick the caterpillars (or let them grow into swallowtails). Lean on the beneficial predators dill attracts rather than heavy spraying." },
-  rosemary:{ look:"Spider mites are a real problem in dry greenhouse air — check the leaf undersides and stem tips for fine stippling, a gray cast, and webbing. Aphids hit the tender new tips (honeydew), whiteflies sit on the undersides, and mealybugs (white cotton) or scale (brown bumps) appear on the woody stems. A white powdery coating is powdery mildew, a fungal issue from poor airflow.", fix:"Rinse the foliage and use insecticidal soap or neem for aphids, mites, and whiteflies (spray the undersides); alcohol swab for mealybugs and scale. Improve airflow and avoid wetting the leaves overhead to head off powdery mildew — good ventilation is the best mite and mildew preventive." },
-  strawberry:{ look:"Slugs and snails are the headliners — look on and under berries touching the soil and on the pot rim at night for ragged chewed holes in ripe fruit plus silvery slime trails. Pillbugs widen existing wounds on low berries at the soil line. Spider mites stipple and bronze the leaf undersides with webbing in the dry heat; aphids cluster on tips with honeydew. Fuzzy gray rot on a berry is botrytis (a moisture fungus), not a pest.", fix:"For slugs use iron-phosphate bait, beer traps, or night hand-picking, and lift the berries off the soil with straw or a support. For mites, blast the undersides with water then insecticidal soap or neem every 5 to 7 days (not above about 90F). Strong water spray and soap for aphids; improve airflow against botrytis." },
-  strawberry_pot:{ look:"Same cast as the single strawberry — slugs and pillbugs on the dangling fruit (ragged holes, slime trails), spider mites on the undersides (the porous jar dries fast and raises mite risk), and aphids on the tips. Watch too for drought stress, not a pest: wilting, scorched leaf edges, and small hard berries mean the column went dry — the top pockets dry out first.", fix:"Iron-phosphate bait and night hand-picking for slugs; water-blast plus insecticidal soap or neem for mites and aphids. Keeping the jar evenly watered is itself mite prevention, since drought-stressed plants are mite magnets — check the top pockets separately." },
-  tomato:{ look:"Tomato hornworm is the big one — look on the stems, growing tips, and leaf undersides for large stripped leaves, dark pellet-like frass on the leaves and soil below, and the green caterpillar itself (easiest to spot at dusk). Aphids cluster on tender tips and new-leaf undersides (honeydew, then sooty mold); spider mites stipple, bronze, and web the undersides in the dry heat. A sunken leathery black patch on the bottom of a fruit is blossom-end rot — a calcium and uneven-watering disorder, not a pest, so fix watering rather than spraying.", fix:"Hand-pick hornworms into soapy water at dusk; use Bt or spinosad on young larvae; leave any hornworm covered in white rice-like cocoons (those are parasitic braconid wasps working for you). Water-blast and insecticidal soap or neem for aphids and mites every 5 to 7 days. For blossom-end rot, water evenly, mulch the pot, and avoid excess nitrogen." },
-  cherry_tomato:{ look:"Same cast as the beefsteak: hornworms (chewed leaves plus frass — easy to scan on the compact bush), aphids on the tips (honeydew, sooty mold), and spider mites stippling and webbing the undersides in Denver's dry heat. Watch out for splitting or cracking of the cherries — that is from uneven watering (dry then soaked), not a pest, so steady the moisture rather than spraying.", fix:"Hand-pick hornworms; water-blast plus insecticidal soap or neem for aphids and mites; encourage ladybugs. Because the plant is compact a thorough underside spray is quick. Even watering and a surface mulch prevent most cracking." },
-  jalapeno:{ look:"Aphids (especially green peach aphid) cluster on the growing tips and undersides of new leaves — curling tips, honeydew, sooty mold. Flea beetles chew tiny round shot-hole pinholes in the leaves, worst on young foliage. Spider mites stipple, bronze, and web the undersides in the dry heat. Check the growing tips first for aphids and the undersides for mites.", fix:"For aphids: water-blast, insecticidal soap, or neem, and plant sweet alyssum nearby to draw ladybugs and hoverflies. For flea beetles: floating row cover early, kaolin clay, or neem. For mites: water-blast the undersides plus insecticidal soap or neem every 5 to 7 days. Avoid spraying open blossoms at midday to protect pollinators." },
-  raspberry:{ look:"Spider mites are the top threat in Denver's hot dry air — on the leaf undersides causing stippling, yellowing or bronzing, and fine webbing, worst in mid-to-late summer. Aphids sit on the tips and new-leaf undersides (honeydew, and they vector raspberry viruses). Japanese beetles skeletonize the upper leaf surfaces into lace; sawfly or looper larvae chew leaf holes.", fix:"Hose the undersides hard, then neem or insecticidal soap for mites (skip neem above about 90F), and protect predatory mites, lacewings, and ladybugs by avoiding broad-spectrum sprays. Water-blast plus soap for aphids. Hand-pick Japanese beetles into soapy water in the cool morning; skip pheromone traps, which draw in more beetles than they catch." },
-  green_onion:{ look:"Thrips hide down in the leaf folds and at the base of the tops — evidence is silvery streaks and flecks plus distorted growth (Denver's heat and dust favor them). Onion maggot larvae work at the base and roots below the soil line, causing wilting, yellowing, and mushy bases. Aphids show up occasionally on the tender green tops. Look into the leaf folds for thrips and at the soil-line base for maggot wilt.", fix:"For thrips: water-blast, then insecticidal soap or neem worked into the leaf folds, reflective mulch, and lacewings or minute pirate bugs. For onion maggot: floating row cover early to block the egg-laying fly, avoid fresh manure, and remove infested plants. Water-blast plus soap for aphids. The onions' own scent keeps pressure light." },
-  potato:{ look:"Colorado potato beetle is a Front Range regular — adults are rounded with yellow-and-black stripes, larvae are fat, reddish, and humpbacked, and both chew leaves to a skeleton, with clusters of orange-yellow eggs on the leaf undersides. Aphids hit the tips and undersides (honeydew, virus vectors). A tuber that turns green is a light-exposure disorder, not a pest — it needs hilling, not spraying.", fix:"Hand-pick the beetle adults and larvae and crush the orange egg clusters on the undersides (very effective in a single pot); spinosad or Bt tenebrionis for larvae; row cover early. Water-blast plus insecticidal soap for aphids. Prevent green tubers by hilling soil over any that near the surface." },
-  white_onion:{ look:"Thrips hide down in the leaf axils and folds where the leaves meet the bulb neck — silvery-white streaking and stippling on the leaves, thriving in the hot dry summer. Onion maggot larvae attack the bulb base and roots below the soil line, causing wilting, yellowing, and a rotting mushy bulb. Aphids appear occasionally on the tops. Check the leaf folds for thrips and the soil-line base for maggot.", fix:"For thrips: strong water spray, then insecticidal soap or neem aimed into the leaf folds, reflective mulch, and minute pirate bugs or lacewings. For onion maggot: floating row cover early to exclude the fly, avoid fresh manure, and pull infested plants. The onion's pungency keeps overall pressure low." },
-  dianthus:{ look:"Aphids cluster on the new growth and buds (clusters plus honeydew). Slugs and snails chew ragged holes and leave silvery slime trails — check at soil level and under the foliage. Spider mites stipple and web the undersides during hot dry spells. A white powdery coating or stem and root rot in soggy soil is fungal, not a pest.", fix:"Blast aphids off with water, then insecticidal soap or neem for aphids and mites. Hand-pick slugs and snails or use iron-phosphate bait and clear their hiding spots. Keep container drainage sharp to prevent rot; ladybugs help with aphids." },
-  daisy:{ look:"Aphids on the buds and new growth (honeydew). Earwigs chew the petals and leaves and hide by day — check under the pot and in the foliage for ragged holes. Slugs and snails leave ragged holes and slime trails at soil level; spider mites stipple the undersides in hot dry weather; leaf miners sometimes leave squiggly pale trails inside the leaves.", fix:"Water-blast plus insecticidal soap or neem for aphids and mites. Trap earwigs with rolled damp newspaper or a shallow oil trap and empty it in the morning. Hand-pick slugs and snails or use iron-phosphate bait, and remove any miner-trailed leaves. Good airflow and uncrowded pots cut problems." },
-  candytuft:{ look:"Candytuft is fairly pest-resistant. Watch for aphids on new growth (honeydew), flea beetles chewing tiny shot-hole pits in the leaves, and slugs or snails (ragged holes, slime trails) — all minor. The bigger threat is root rot or damping off in soggy pots, which is fungal rather than a pest.", fix:"Water-blast plus insecticidal soap or neem for aphids and flea beetles; hand-pick slugs and snails or use iron-phosphate bait. The main control is cultural: a gritty fast-draining mix and no overwatering prevent the root rot that actually kills candytuft." }
-};
-const FEED_INFO = {
-  fittonia:{ what:"A balanced organic liquid such as worm-casting tea or diluted fish emulsion at half strength.", how:"Feed lightly every 4 weeks in spring and summer; the bark mix holds few nutrients, so steady light feeding matters more here than for soil plants. No winter feeding." },
-  croton:{ what:"A balanced organic liquid (fish emulsion or balanced organic fertilizer) at half strength; slightly higher nitrogen supports the big leaves.", how:"Feed monthly in spring and summer, but do not overdo it; reduce or stop in fall and winter." },
-  jade:{ what:"A diluted balanced or low-nitrogen organic feed (half-strength fish or seaweed, or a succulent feed). Jade is not a heavy feeder.", how:"Feed sparingly — only every 2 to 3 months during spring and summer, and only when actively growing. No feeding in fall or winter; overfeeding causes weak leggy growth." },
-  basil1:{ what:"A nitrogen-leaning feed for lush leaves — diluted fish emulsion or a fish/seaweed blend, or a top-dress of worm castings.", how:"Feed every 2 to 3 weeks; do not over-fertilize, which can dilute the essential-oil flavor — steady moderate nitrogen is the sweet spot." },
-  basil2:{ what:"Same as the other basil: a nitrogen-leaning diluted fish emulsion or fish/seaweed, or worm castings.", how:"Feed every 2 to 3 weeks, avoiding overfeeding so the flavor stays strong." },
-  parsley:{ what:"A nitrogen-leaning feed for lush leaves — diluted fish emulsion or fish/seaweed, or a side-dress of compost or worm castings.", how:"Feed every 2 to 3 weeks; steady moderate nitrogen keeps the leaves tender and green." },
-  mint:{ what:"A light nitrogen-leaning feed — diluted fish emulsion or balanced organic liquid. Mint is vigorous and needs little.", how:"Feed every 3 to 4 weeks; over-fertilizing produces lush but bland leaves, so keep it light." },
-  dill:{ what:"A balanced or mildly nitrogen diluted fish/seaweed feed. Dill is a light feeder.", how:"Feed every 3 to 4 weeks and go easy — too much nitrogen makes floppy stems and weaker flavor." },
-  rosemary:{ what:"Very little — rosemary prefers lean, well-drained conditions. A light diluted fish/seaweed or balanced organic feed is all it wants.", how:"Feed only once or twice across spring and summer. Overfeeding (and overwatering) makes soft, weak, less-aromatic growth and invites root rot — lean and slightly dry gives the most fragrant rosemary." },
-  strawberry:{ what:"Light, balanced feeding — a dilute balanced organic liquid (fish emulsion plus kelp, or balanced 5-5-5) or compost-tea and worm castings. Not a heavy feeder; too much nitrogen gives leaves at the expense of fruit.", how:"Feed every 2 to 3 weeks during fruiting; top-dress with worm castings or compost for steady release." },
-  strawberry_pot:{ what:"A dilute balanced organic liquid (fish plus kelp), with worm castings tucked into each pocket.", how:"Feed every 1 to 2 weeks — lighter and more often than the big pot, because the small pockets leach nutrients quickly with frequent watering." },
-  tomato:{ what:"Now that it is flowering and fruiting, back off nitrogen and favor phosphorus and potassium — a tomato-specific organic (such as 3-4-6) or fish-and-kelp plus a phosphorus source. Calcium matters in containers: a calcium-containing tomato fertilizer or a bit of crushed eggshell or gypsum.", how:"Feed every 2 to 3 weeks; too much nitrogen gives a jungle of leaves and few tomatoes. Consistent watering plus the calcium source prevents blossom-end rot far better than any spray." },
-  cherry_tomato:{ what:"Same as the beefsteak — a lower-nitrogen, higher phosphorus/potassium organic now that it is fruiting (a tomato organic or fish/kelp).", how:"Feed every 2 to 3 weeks. As a determinate it sets most fruit in one window, so steady feeding through that flush maximizes the harvest; do not overdo nitrogen." },
-  jalapeno:{ what:"Modest nitrogen with steady phosphorus, potassium, and calcium now that it is flowering — a low-N organic (a tomato/veg fertilizer, or fish plus kelp with bone meal, or a 4-6-3 type).", how:"Side-dress lightly at first fruit set and again about 3 weeks later, or liquid-feed every 2 to 3 weeks. Too much nitrogen right now means a big bushy plant with few peppers." },
-  raspberry:{ what:"First-year canes want to grow, so balanced organic feeding is fine — a top-dress of compost or well-rotted manure plus a balanced organic liquid (fish plus kelp). Do not overdo nitrogen, which delays next year's flowering and makes soft mite-prone growth.", how:"Feed every 3 to 4 weeks through midsummer, then taper off by late summer so the canes harden for winter." },
-  green_onion:{ what:"Scallions are nitrogen-loving leaf crops — a higher-nitrogen organic (fish emulsion, blood meal, or a balanced-to-high-N liquid) for green top growth.", how:"Feed every 2 to 3 weeks. Unlike bulb onions you do not need to taper the nitrogen, since you are harvesting the tops rather than curing a bulb." },
-  potato:{ what:"Balanced organic early during leafy growth and tuber bulking (compost, balanced 5-5-5, fish plus kelp), then shift to low-nitrogen, higher-potassium once tubers are sizing up.", how:"Feed during early growth and bulking, then switch away from nitrogen as tubers size up, and stop feeding entirely as the tops begin to die back — excess late nitrogen pushes leaves and delays the tubers." },
-  white_onion:{ what:"Classic onion-bulb pattern: nitrogen early, then taper. A higher-N organic (blood meal, fish emulsion) during early leaf growth, because each leaf becomes a bulb ring.", how:"Feed every 2 to 3 weeks during early leaf growth, then stop nitrogen once bulbing begins and the tops start to fall, so the plant cures down instead of pushing soft growth that causes thick necks and poor storage." },
-  dianthus:{ what:"A lower-nitrogen, bloom-leaning feed so it flowers instead of running to foliage — a diluted balanced or bloom-type organic fertilizer, compost tea, or a light scratch of compost.", how:"Feed about once a month during the growing season; container plants need this regular light feeding since pots leach nutrients." },
-  daisy:{ what:"Moderate balanced feeding for plenty of blooms without going all-foliage — a balanced organic fertilizer or compost, plus a monthly diluted organic liquid in containers. Avoid heavy nitrogen, which gives leaves at the expense of flowers.", how:"Feed with balanced organic or compost in early spring and again after the first flush of flowers; in containers supplement monthly with a diluted organic liquid since pots run out of nutrients faster." },
-  candytuft:{ what:"A light feeder — keep it lean. Candytuft prefers poor-to-average, well-drained soil; a single light feeding of balanced organic fertilizer or compost is plenty.", how:"Feed once in early spring (a thin top-dress of compost is ideal in a container); over-feeding produces floppy, sparse, less-floriferous growth." }
-};
+const WATER_INFO = Object.fromEntries(PLANTS.map(p => {
+  const t = plantCareTemplate(p), bottom = PLANT_CARE_SHARED.bottom_watering, flush = PLANT_CARE_SHARED.salt_flush;
+  const smallRoot = ['seedling_unknown','pepper_provisional','cactus_provisional'].includes(p.careTemplateKey);
+  const sources = [...plantCareSources(p), ...plantSharedSources(bottom), ...plantSharedSources(flush)];
+  const smallRootNote = smallRoot ? '<br><b>Seedling exception:</b> Use gentle shallow bottom contact rather than the ordinary pot depth/timer below; stop once the mix absorbs moisture, then drain. The drying threshold remains provisional.' : '';
+  return [p.id, {
+    when: '<b>Daily reminder = soil check, not watering.</b> ' + plantText(t.watering.when) + '<br><b>This pot:</b> ' + plantText([t.watering.notes,p.waterNote].filter(Boolean).join(' ') || 'Check and log this physical pot separately.') + '<br><b>Method:</b> ' + plantText(t.watering.method) + smallRootNote + '<br><b>'+plantText(bottom.label)+':</b><ol>' + bottom.steps.map(step => '<li>'+plantText(step)+'</li>').join('') + '</ol>' + plantText(bottom.endpoint) + '<br>' + plantText(bottom.exceptions) + ' ' + plantText(bottom.water) + '<br><b>'+plantText(flush.label)+':</b> ' + plantText(flush.text) + '<br>' + plantText(t.watering.seasonal) + '<br>' + plantSourceLinks(sources),
+    thirst: plantText(PLANT_CARE_SHARED.trouble_baseline.text),
+    checkOnly: true,
+    potNote: p.waterNote || '',
+    potNoteBasis: p.waterNoteBasis || '',
+    sources
+  }];
+}));
+
+const FUN_FACTS = Object.fromEntries(PLANTS.map(p => {
+  const t = plantCareTemplate(p);
+  return [p.id, [t.identification, t.watering.notes || t.care.soil, p.waterNote || 'This physical pot keeps its own history. A soil check is not a watering record.'].map(plantText)];
+}));
+const CARE_INFO = Object.fromEntries(PLANTS.map(p => {
+  const t = plantCareTemplate(p);
+  return [p.id, {
+    fact: '<b>Soil / drainage:</b> ' + plantText(t.care.soil) + ' All pots are well drained, confirmed by the user.<br><b>Pruning / handling:</b> ' + plantText(t.care.pruning) + (p.note ? '<br><b>Current notes:</b> '+plantText(p.note) : '') + (t.application_note ? '<br><b>How this guidance applies:</b> '+plantText(t.application_note) : '') + '<br>Light placement and overwinter planning remain deferred.<br>' + plantSourceLinks(plantCareSources(p)),
+    sources: plantCareSources(p)
+  }];
+}));
+const PEST_INFO = Object.fromEntries(PLANTS.map(p => [p.id, {
+  look: plantText(plantCareTemplate(p).care.trouble),
+  fix: plantText(PLANT_CARE_SHARED.trouble_baseline.text) + ' Confirm the cause before treatment; no pesticide protocol is assigned.<br>' + plantSourceLinks([...plantCareSources(p), ...plantSharedSources(PLANT_CARE_SHARED.trouble_baseline)]),
+  sources: plantCareSources(p)
+}]));
+const FEED_INFO = Object.fromEntries(PLANTS.map(p => [p.id, {
+  what: plantText(plantCareTemplate(p).care.feed),
+  how: plantText(PLANT_CARE_SHARED.feeding_baseline.text) + ' ' + plantText('Check potting-mix fertilizer and recent feeding before adding another fertilizer.') + '<br>' + plantSourceLinks([...plantCareSources(p), ...plantSharedSources(PLANT_CARE_SHARED.feeding_baseline)]),
+  sources: plantCareSources(p)
+}]));
 
 function dayOfYear(){ const n=new Date(); return Math.floor((n-new Date(n.getFullYear(),0,0))/86400000); }
 function dailyFact(id){ const a=FUN_FACTS[id]; if(a&&a.length) return a[dayOfYear()%a.length]; return (PLANT_INFO[id]||{}).fact||""; }
 
-const HARVEST_INFO = {
-  basil1:{ongoing:true, badge:"✂️ Pinch 1–2 wks — required", hdrNote:"pinch 1–2 wks", signsLabel:"📅 Why this one stays scheduled", signs:"For the plant, not the kitchen: regular pinching is what keeps basil bushy, sweet and producing — skip it and it flowers, turns bitter and stalls. Pinch every 1–2 weeks and the moment you see a flower bud, even on days you are not cooking basil — pinch anyway and keep the leaves (🌟 below). When you do cut for the kitchen, do it in the early morning (about 7–10 AM) after the dew dries but before the heat — basil's aromatic oils replenish overnight and burn off once the sun warms the leaves, so morning leaves are the most fragrant and flavorful.", how:"Cut in the early morning for peak oils. Start once it's ~6–8 inches with several leaf sets. Always cut or pinch JUST ABOVE a leaf pair (a node), about a quarter inch above where two side shoots emerge, removing the top 2–4 inches — that node splits into two new branches, so the plant gets bushier and more productive. Use clean scissors or pinch with your fingers; do not strip individual leaves off the stem. Harvest from the top down, never more than about ⅓ at once, then let it recover. Pinch off any flower buds the moment they appear — flowering turns the leaves bitter and slows new growth. A light harvest about every 1–2 weeks while it is growing (more often once it is big and bushy, as long as you stay under ⅓).", fact:"Keeping it (when you are not cooking with it that day): short-term, treat it like cut flowers — trim the stems and stand them in a glass with about an inch of water on the COUNTER (never the fridge; cold turns basil black), loosely tent with a bag, good about a week. Longer: freeze — chop into ice-cube trays with olive oil or water, or blend into pesto and freeze (blanch whole leaves 2 seconds + an ice bath first). Drying works but loses the most flavor; frozen in oil or as pesto keeps it best."},
-  basil2:{ongoing:true, badge:"✂️ Pinch 1–2 wks — required", hdrNote:"pinch 1–2 wks", signsLabel:"📅 Why this one stays scheduled", signs:"For the plant, not the kitchen: regular pinching is what keeps basil bushy, sweet and producing — skip it and it flowers, turns bitter and stalls. Pinch every 1–2 weeks and the moment you see a flower bud, even on days you are not cooking basil — pinch anyway and keep the leaves (🌟 below). When you do cut for the kitchen, do it in the early morning (about 7–10 AM) after the dew dries but before the heat — basil's aromatic oils replenish overnight and burn off once the sun warms the leaves, so morning leaves are the most fragrant and flavorful.", how:"Cut in the early morning for peak oils. Start once it's ~6–8 inches with several leaf sets. Always cut or pinch JUST ABOVE a leaf pair (a node), about a quarter inch above where two side shoots emerge, removing the top 2–4 inches — that node splits into two new branches, so the plant gets bushier and more productive. Use clean scissors or pinch with your fingers; do not strip individual leaves off the stem. Harvest from the top down, never more than about ⅓ at once, then let it recover. Pinch off any flower buds the moment they appear — flowering turns the leaves bitter and slows new growth. A light harvest about every 1–2 weeks while it is growing (more often once it is big and bushy, as long as you stay under ⅓).", fact:"Keeping it (when you are not cooking with it that day): short-term, treat it like cut flowers — trim the stems and stand them in a glass with about an inch of water on the COUNTER (never the fridge; cold turns basil black), loosely tent with a bag, good about a week. Longer: freeze — chop into ice-cube trays with olive oil or water, or blend into pesto and freeze (blanch whole leaves 2 seconds + an ice bath first). Drying works but loses the most flavor; frozen in oil or as pesto keeps it best."},
-  rosemary:{ongoing:true, badge:"✂️ Pick as needed", hdrNote:"as needed", signsLabel:"🍴 When to pick", signs:"No schedule — rosemary is an evergreen shrub, so the harvest window is simply whenever a recipe calls for it. Nothing bad happens if you never pick it. Best to cut in mid-morning, after the dew dries and the sun has warmed the plant slightly — its resinous oils run highest in the morning, so that is when the sprigs are most fragrant.", how:"Pick when cooking, in the mid-morning for peak oils: snip the top 2–4 inches of soft green new growth, cutting JUST ABOVE a leaf node — never cut into the woody brown stems, which are slow or unable to regrow and may leave a dead stub. Cutting the soft tips encourages bushier, more compact regrowth. Strip the needles backward off the stem to use, and take no more than a third of the plant in one go.", fact:"Got more than the recipe needs? Fresh sprigs keep ~2 weeks in the fridge wrapped in a barely-damp paper towel inside a bag. Longer: rosemary is the herb that DRIES best — hang a small bundle upside-down somewhere warm and airy about a week (the greenhouse drying rack is perfect), then strip the needles into a jar; good ~6 months. Or freeze whole sprigs in a zip bag and snap off what you need."},
-  parsley:{ongoing:true, badge:"✂️ Pick as needed", hdrNote:"as needed", signsLabel:"🍴 When to pick", signs:"No schedule — pick when you are cooking. Any stem with full-size leaves is fair game; it regrows from the center all season long. Early-to-mid morning, once the dew has dried, gives the crispest, most flavorful stems and avoids spreading disease on wet foliage. The outer stems mature first.", how:"Harvest in the morning, from the outside in: cut the outermost, oldest full-size stems right at the base near the soil line (scissors, not tearing), and leave the young inner growth at the center to keep producing — cutting full outer stems at the base is what drives continuous regrowth from the crown, not snipping leaf tips. Never take more than about a third (up to half) of the stems at once.", fact:"Keeping it: stand the stems like a bouquet in a glass with an inch of water in the FRIDGE, loosely bagged — good ~2 weeks (parsley loves the cold; basil hates it). Longer: chop and pack into ice-cube trays with water or olive oil and freeze — curly parsley loses nearly all its flavor dried, so freezing is the move."},
-  dill:{ongoing:true, badge:"✂️ As needed + bud patrol", hdrNote:"as needed", signsLabel:"🍴 When to pick (+ the one required job)", signs:"Fronds: no schedule — snip as you cook, ideally in the early morning after the dew dries but before the heat, when the feathery foliage holds the most essential oil and aroma. The ONE required job: cut flower heads the moment they appear or leaf production stops — or deliberately let one head go to seed for dill seed.", how:"In the morning, snip the outer and upper feathery fronds with clean scissors where a frond meets the main stem, as you need them for cooking. Pinch the central growing tip early to encourage branching and delay bolting. When you cut a flower head, the plant is telling you it wants to bolt — keep patrolling, it will keep trying in summer heat. For seed, cut a whole browned umbel and dry it in a paper bag.", fact:"Keeping it: dill wilts fast — stand it in a glass of water in the fridge, loosely bagged, ~1 week. Longer: chop the fronds into ice-cube trays with water and freeze (far better than drying, which loses most of the flavor). For dill seed: let one head brown on the plant, then hang it upside-down inside a paper bag to catch the seeds."},
-  strawberry:{ongoing:true, signs:"Ready when the berry is deep, glossy red all the way to the shoulders and stem — no white or pale patches near the top — with a slight give to a gentle squeeze and a sweet fragrance. Ripe ones come off with the lightest tug. Pick in the cool of the morning, after the dew dries: the berries are firmest then, sugars concentrate overnight, and cool fruit bruises less and stores longer than berries picked in afternoon heat.", how:"Pick in the morning, only when fully, evenly red. Pinch or snip the stem about half an inch above the berry and leave the green cap and a short stem attached so it does not rot at the scar or bruise — never pull the fruit off by its body. Support each berry in your palm and lay them in a wide shallow tray (do not pile them deep, they crush under their own weight). Only a few are ripening at a time right now, so it is an occasional pick — check the plants every few days and take only the fully red ones.", fact:"Strawberries do not ripen any further once picked, so wait for full red."},
-  strawberry_pot:{ongoing:true, signs:"Check every pocket — a berry is ready when it is fully, evenly red to the shoulders with a slight give and a fragrant smell. Pockets ripen on their own schedule, so there is almost always one ready, and ripe ones hide behind the leaves. Berries in the lower and front pockets get more reflected heat and ripen faster than the shaded back pockets, so judge each by color, not by jar position. Pick in the morning after the dew dries, when the berries are firmest and sweetest.", how:"Do a quick morning walk-around of every pocket. Pick each berry only when fully red, pinching or snipping the stem about half an inch above the berry and keeping the green cap on so you do not bruise it — never tug. Rotate the jar every few days so all pockets get even sun, and watch the berries dangling out of pockets, which slugs find first. Only a few are ripening at a time right now — check the pockets every few days and take only the fully red ones.", fact:"A strawberry pot gives a longer, staggered picking season than a single plant."},
-  cherry_tomato:{ongoing:true, signs:"Coloring up now — the first cherries are turning red. They are ready when fully, deeply colored to the shoulders, slightly soft, and releasing with a light tug. Pick in the morning after the dew dries, when the fruit is firmest and sweetest and the foliage is dry (so you avoid spreading fungal spores). Check every 1–2 days.", how:"Harvest in the morning. Pinch the stem at the knuckle (the swollen joint in the stem) and twist gently, or just roll the ripe cherry off between thumb and finger — they release readily when ripe. If a whole spray is ripe, harvest the whole truss at once. Leave the green ones to finish and avoid squeezing. Check daily once they start coloring.", fact:"Left too long they split, so pick promptly once they color up."},
-  jalapeno:{ongoing:true, badge:"🌶️ Pick as they mature", hdrNote:"green or red", signsLabel:"🌶️ When to pick", signs:"Harvest a jalapeño green once it has reached full size for its variety and feels firm, smooth, and glossy. Green fruit has the familiar crisp, bright heat. For a sweeter, fruitier, and usually hotter pepper, leave it attached until it turns fully red. Check by size, firmness, and color each time rather than relying on a fixed date.", how:"Harvest in the cool morning with clean scissors or pruners. Support the branch with one hand and snip each pepper with a short piece of stem attached; do not pull or twist hard, because pepper branches split easily. Picking mature green fruit encourages continued production, while leaving selected fruit to turn red gives a different flavor. Refrigerate fresh peppers unwashed in a loose bag and wash just before use.", fact:"The same plant can supply crisp green jalapeños and sweeter red ones; harvest stage is a flavor choice."},
-  green_onion:{ongoing:true, badge:"✂️ Snip as needed", hdrNote:"as needed", signsLabel:"🍴 When to pick", signs:"No schedule — snip the green tops whenever you cook. They are ready as soon as the tops are firm, upright, and at least pencil-thick; no need to wait for any bulbing, since scallions are best young and tender. Cut in the cool of the morning, which keeps the tops crisp and turgid — they wilt fast if cut in afternoon heat. Take the tallest outer tops and leave the rest to keep regrowing.", how:"In the morning, cut the green tops about an inch above the white base with scissors, leaving the roots and base in each pot so they can regrow for a second and third cutting. Or pull a whole onion straight up by the soil line, roots and all, if you want the white part too. No curing needed — use fresh.", fact:"Keeping them: stand cut green onions in a glass with an inch of water on the counter or fridge, loosely bagged — they keep a week-plus and even keep growing. Longer: chop and freeze in a bag for cooking."},
-  potato:{signs:"Not yet — the potatoes are sizing up underground (~70–90 days from planting). The signal to dig is when the foliage yellows, flops, and dies back (~90–120 days), which means the plant has finished bulking and the skins have thickened. For a few tender new potatoes you can sneak a hand in a couple weeks after any flowering. Harvest on a dry day — time of day matters less than the soil being dry, since wet-soil harvest damages and rots tubers.", how:"Stop watering 1–2 weeks before the main harvest so the skins set for storage. When the tops have died back, pick a dry day, tip the felt grow bag out onto a tarp, and sift the tubers from the soil by hand — far easier than digging, and you will not spear them with a fork. For new potatoes, instead reach in along the side and pull a few by hand without uprooting the plant, then re-cover. Brush off the dirt — don't wash storage potatoes until you're ready to use them.", fact:"Keeping them: cure harvested potatoes a few days in a cool, dark, airy spot to toughen the skins, then store cool and dark — never the fridge, and away from onions. Cut off any green patches (light exposure)."},
-  white_onion:{signs:"Not yet — the bulb is sizing up (~90–110 days). It's ready when the neck softens and the green tops naturally flop over and start to yellow and brown on their own, and the papery outer skins firm up. Don't bend the tops down yourself — forcing it lowers yield and storage quality. Harvest on a dry, sunny day, ideally mid-morning once the dew is off, so the bulb and tops dry and cure cleanly.", how:"Once most of the tops have flopped and dried at the neck, stop watering, then on a dry mid-morning loosen the soil and lift the bulb gently by hand (easy in a shallow pot — work around the neighboring potato and scallion roots). Don't pull hard by the tops, which bruises the neck and invites rot. Cure for 2–4 weeks in a warm, dry, shaded, well-ventilated spot with the tops left on until the neck is fully dry and the outer scales are papery, then trim the roots and tops for storage.", fact:"Keeping it: cure the onion in a single layer somewhere dry, airy, and shaded for 1–2 weeks until the neck is papery, then trim the roots and store cool and dry. Well-cured onions keep for months."},
-  tomato:{ongoing:true, signs:"It's started! The first big fruit is turning yellow/pink (the breaker stage, where the blossom end first breaks from green to pink/orange). It's vine-ripe when colored all the way to the shoulders with a slight give to a gentle squeeze and it releases easily — or pick at the breaker stage and finish it on the counter. Pick in the morning, after the dew dries: the fruit is firmest and coolest, sugars are highest, and you avoid spreading fungal spores on wet foliage. The rest are still green and coming.", how:"Harvest in the morning. Cradle the fruit and gently twist or bend at the knuckle (the swollen joint in the stem) until it snaps off, leaving the green calyx on the fruit. For big heirlooms with tough stems, snip the stem with pruners instead of yanking, so you do not damage the cluster or pull the plant against its stake. Or pick at first blush and ripen on the counter (stem-up, out of direct sun, 70–75F) to beat cracking, sunscald, hail, and critters. Never refrigerate until dead ripe — cold kills the flavor.", fact:"Counter-ripening from the breaker stage protects the fruit from splitting."},
-};
+// Only confirmed edible plant groups receive harvest cards. Unidentified seedlings,
+// likely sage/pepper, provisional Allium, and species-uncertain amaranth are excluded.
+const HARVEST_INFO = Object.fromEntries(PLANTS.filter(p => PLANT_HARVEST_TEMPLATES[p.plantType]).map(p => [p.id, {
+  ...PLANT_HARVEST_TEMPLATES[p.plantType],
+  fact: plantText(PLANT_HARVEST_TEMPLATES[p.plantType].fact) + '<br>' + plantSourceLinks(plantCareSources(p)),
+  sources: plantCareSources(p)
+}]));
 
 /* ── RECIPES ──────────────────────────────────────────────────────────────
    Placeholder list so the Food → Recipes tab has a featured card + grid + a

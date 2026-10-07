@@ -1,12 +1,21 @@
 # House Project — State & Handoff
 
 This file tracks staged changes to the Home & Garden schedule site (`mrosyrus21/home`,
-https://mrosyrus21.github.io/home/). Deploys happen ONLY from the Master Shake chat, ONLY after
-Cyrus says "GO LIVE."
+https://mrosyrus21.github.io/home/). Only Schedule Keeper (`home-schedule-keeper`) may publish,
+after Cyrus authorizes it, from a fresh current-origin worktree with explicitly reviewed files.
 
 ---
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
+
+### 2026-10-06 — Complete current plant replacement
+
+- Cyrus authorized publication of the new Plant chat intake and confirmed these 31 pots are all current plants, all watered October 6. Retired plants are no longer active; historical watering, harvest and completion keys remain untouched.
+- Source: `home-and-garden-project/docs/plant-refresh-2026-10-06/` in the shared House project. Integrate only the current confirmed set: 31 physical pots, seven distinct mint pots, 29 indoor and two outdoor (tomato temporarily outside).
+- Source-backed care replaces obsolete guidance; provisional identities stay provisional and are excluded from edible harvest advice. Daily reminders are soil checks, not orders to water every day. No light-placement or overwintering assumptions added.
+- Publish 32 unchanged original photos, per-pot crop/whole-pot controls, original-photo viewer and All/Mint/Indoor/Outdoor filters. Westcliffe city-level NWS weather and Day Arc coordinates replace the old Denver location.
+- Explicitly reviewed release from fresh `origin/main` at `c7c02d6`: `data.js`, `index.html`, `sw.js`, `tests/watering-schedule.test.js`, this record and `plant-photos/2026-10-06/`. Recipes and unrelated shared changes are not included. Build/cache `20261006190000`.
+- Saved confirmed October 6 watering to all 31 fresh per-pot Firebase paths using server ETag conditional writes. Verified 31 current dates and all 27 pre-existing retired watering records unchanged. No whole-state or whole-watering-map overwrite; newer dates would be preserved.
 
 ### 2026-09-30 — Revised Zoey combined Instant Pot method
 
