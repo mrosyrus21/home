@@ -8,6 +8,13 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-07 — Simple watering reminders
+
+- Cyrus requested less overwhelming watering cards: just inform when it is time to water. All watering states now render short compact rows with one moisture-based timing cue; actual-water and damp-deferral controls remain. Watered rows stay at the bottom.
+- Existing detailed watering methods, moisture checks and references are preserved in collapsed Watering instructions within Care. Removed repeated daily-check banners, full-card photos, fun facts and daily-check count pressure from the watering view. No automatic watering claim is made from elapsed time.
+- No watering dates, history, plant identity, cadence or deferred light/overwinter decisions changed. Brief cues summarize existing care templates and retain uncertainty for unidentified or tiny seedlings.
+- Fresh release from origin `a11bf50`: reviewed `data.js`, `index.html`, `sw.js`, this record and `tests/watering-schedule.test.js`; build/cache `20261007190000`. All nine regression suites and isolated mobile/desktop watering/Care layout and write-safety checks passed.
+
 ### 2026-10-06 — Complete current plant replacement
 
 - Cyrus authorized publication of the new Plant chat intake and confirmed these 31 pots are all current plants, all watered October 6. Retired plants are no longer active; historical watering, harvest and completion keys remain untouched.

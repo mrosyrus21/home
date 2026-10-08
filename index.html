@@ -515,9 +515,16 @@ body::after{
 .water-card-compact-main{flex:1;min-width:0}
 .water-card-compact-name{font-family:'Playfair Display',serif;font-size:13.5px;font-weight:700;color:var(--text);line-height:1.25}
 .water-card-compact-meta{font-size:10.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px}
+.water-card-water-cue{font:12px/1.45 'Lora',serif;color:#BDE9E0;margin-top:5px}
+.water-card-compact[data-water-state="due"]{border-left:3px solid #22D3EE}
+.water-card-compact[data-water-state="due"] .water-card-compact-side{flex-direction:column;gap:5px}
+.water-card-compact[data-water-state="due"] .water-card-compact-action{min-height:34px;min-width:70px}
+.plant-watering-details{margin:10px 0;border-top:1px solid var(--border);padding-top:9px}
+.plant-watering-details summary{cursor:pointer;font:12px 'Lora',serif;color:#7EB8F0;padding:5px 0}
 .water-card-compact-side{display:flex;align-items:center;gap:7px;flex-shrink:0}
 .water-card-compact-status{font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:20px;background:rgba(6,5,10,.45);font-family:'Lora',serif;white-space:nowrap}
 .water-card-compact-action{padding:5px 8px;font-size:9.5px}
+.water-card-compact-action.damp{background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.2);color:#A5F3FC}
 .water-card-compact-check{font-size:17px;color:#4AD490;padding:0 5px}
 .plant-photo-controls,.plant-filter-controls{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px}
 .plant-photo-controls button,.plant-filter-controls button{background:var(--s3);border:1px solid var(--border2);border-radius:9px;padding:7px 10px;color:var(--text);font:11px 'Lora',serif;cursor:pointer}
@@ -881,7 +888,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20261006190000-plant-refresh"></script>
+<script src="./data.js?v=20261007190000-simple-watering"></script>
 <script src="./today-checklist.js?v=20260923210000"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
 <script src="./recipes.js?v=20260729010000-approved"></script>
@@ -1424,7 +1431,7 @@ function updateHeader() {
   if(wt && !wateringStateLoaded) wt.textContent="💧 loading — do not use yet";
   else if(wt){
     const queue=buildWateringQueue(today), due=queue.filter(function(x){return x.state.key==="due";}).length, done=queue.filter(function(x){return x.state.key==="watered";}).length;
-    wt.textContent = due||done ? ("💧 "+due+" checks · "+done+" watered") : "💧 ✓ no checks";
+    wt.textContent = PLANTS.every(p=>p.checkOnly) ? ("💧 "+done+" watered today") : (due||done ? ("💧 "+due+" checks · "+done+" watered") : "💧 ✓ no checks");
   }
   const tDoneToday=PLANTS.filter(p=>p.trimDays&&trimmed[p.id]===today);
   const tIds=new Set([...plantsTrimDueOn(today).map(p=>p.id), ...tDoneToday.map(p=>p.id)]);
@@ -2625,7 +2632,7 @@ function renderGarden() {
     const count=PLANTS.filter(function(p){return filter[0]==="all"||(filter[0]==="mint"?p.plantType==="mint":p.loc===filter[0]);}).length;
     return '<button type="button" aria-pressed="'+(gardenPlantFilter===filter[0])+'" onclick="setGardenPlantFilter(\''+filter[0]+'\')">'+filter[1]+' · '+count+'</button>';
   }).join('')+'</div>';
-  if(PLANTS.every(p=>p.checkOnly)) html+='<div class="plant-pot-note" style="padding:0 10px">'+visiblePlants.length+' of '+PLANTS.length+' photographed pots · reminders are <b>daily soil checks</b>, not daily watering instructions. Log only real watering; a soil check or forecast does not count as watered.</div>';
+  if(gardenSub!=="watering" && PLANTS.every(p=>p.checkOnly)) html+='<div class="plant-pot-note" style="padding:0 10px">'+visiblePlants.length+' of '+PLANTS.length+' photographed pots</div>';
   const photo_ = id => plantPhotoData(PLANTS.find(p=>p.id===id)||{id:id}).photo;
   const photoPos_ = id => plantPhotoData(PLANTS.find(p=>p.id===id)||{id:id}).position;
   const photoCredit_ = id => (PLANT_INFO[id]||{}).photoCredit || "";
@@ -2694,12 +2701,9 @@ function renderGarden() {
       return;
     }
     const queue=buildWateringQueue(today).filter(function(entry){return gardenPlantMatches(entry.p);});
-    const dueCount=queue.filter(function(x){return x.state.key==="due";}).length;
     const doneCount=queue.filter(function(x){return x.state.key==="watered";}).length;
-    html += `<div class="section-label">💧 Watering log — ${doneCount} watered today · ${dueCount} soil check${dueCount===1?"":"s"} due</div>`;
+    html += `<div class="section-label">💧 Watering · ${doneCount} watered today</div><div class="plant-pot-note" style="padding:0 2px">Water only when the plant’s cue below is met.</div>`;
     if(!wateringOnline) html += `<div style="background:rgba(251,191,36,.09);border:1px solid rgba(251,191,36,.35);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#FCD34D;font-family:'Lora',serif;line-height:1.5"><b>Offline:</b> the list is read-only. Reconnect before logging watering or moving a check.</div>`;
-    if(dueCount) html += `<div style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.28);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#A5F3FC;font-family:'Lora',serif;line-height:1.5">👀 A full card means <b>check the soil and plant</b> — not automatic watering. Log only plants you actually water; if the soil is still damp, move that check to tomorrow.</div>`;
-    else html += `<div style="background:rgba(45,184,112,.08);border:1px solid rgba(45,184,112,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">✅</div><div style="font-size:13px;color:#4AD490;font-style:italic">No soil checks due right now. The compact cards below are not asking you to water.</div></div>`;
 
     function entryPending(entry){ return entry.ids.some(function(id){return !!wateringPending[id];}); }
     function entryCall(entry,fn){
@@ -2718,38 +2722,20 @@ function renderGarden() {
       if(pending) action='<button class="water-btn water-card-compact-action soon" disabled>Saving…</button>';
       else if(entry.state.key==="watered") action='<div class="water-card-compact-check" aria-label="Watered today">✓</div>';
       else if(!wateringOnline) action='<button class="water-btn water-card-compact-action" disabled>Offline</button>';
-      else action='<button class="water-btn water-card-compact-action ok" onclick="'+entryCall(entry,"waterPlantGroup")+'">Log watered</button>';
+      else action='<button class="water-btn water-card-compact-action ok" onclick="'+entryCall(entry,"waterPlantGroup")+'">Watered</button>';
+      if(entry.state.key==="due" && !pending && wateringOnline) action+='<button class="water-btn water-card-compact-action damp" onclick="'+entryCall(entry,"pushWateringGroup")+'">Still damp</button>';
+      const cue=entry.state.key==="due"?'<div class="water-card-water-cue" data-water-cue>'+plantHtml(p.waterCue||p.freq)+'</div>':'';
+      const status=entry.state.key==="due"||entry.state.key==="watered"?'':'<span class="water-card-compact-status" style="border:1px solid '+badgeColor+'66;color:'+badgeColor+'">'+badge+'</span>';
       return '<div class="water-card-compact" data-water-card="compact" data-water-size="compact" data-water-state="'+entry.state.key+'" data-water-id="'+entry.id+'">'
         +'<button type="button" class="water-card-compact-thumb" onclick="openPlantPhoto(\''+p.id+'\')" aria-label="'+plantHtml('Open original photo of '+p.name)+'" style="border:0;color:inherit;cursor:zoom-in"><span>'+p.emoji+'</span>'+(ph?'<img class="plant-card-photo" data-plant-id="'+p.id+'" src="'+plantHtml(ph)+'" alt="" loading="lazy" style="object-fit:'+plantPhotoData(p).fit+';object-position:'+photoPos_(p.id)+'" onerror="this.style.display=\'none\'"/>':'')+'</button>'
-        +'<div class="water-card-compact-main"><div class="water-card-compact-name">'+p.name+'</div><div class="water-card-compact-meta">'+ageLabel(entry)+' · '+(p.loc==="outdoor"?'outdoor':'indoor')+'</div></div>'
-        +'<div class="water-card-compact-side"><span class="water-card-compact-status" style="border:1px solid '+badgeColor+'66;color:'+badgeColor+'">'+badge+'</span>'+action+'</div></div>';
-    }
-    function dueWaterButtons(entry){
-      const pending=entryPending(entry);
-      if(pending) return '<button class="water-btn soon" disabled style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">Saving…</button>';
-      if(!wateringOnline) return '<button class="water-btn" disabled style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">Offline — reconnect to log</button>';
-      return '<button class="water-btn '+(entry.p.checkOnly?'ok':'now')+'" onclick="'+entryCall(entry,"waterPlantGroup")+'" style="width:100%;padding:10px 0;font-size:13px;margin-top:10px">💧 Log watered</button>'
-        +'<button class="water-btn" onclick="'+entryCall(entry,"pushWateringGroup")+'" style="width:100%;padding:9px 0;font-size:12px;margin-top:7px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.35);color:#A5F3FC">Soil still damp — check tomorrow</button>';
-    }
-    function fullDueCard(entry){
-      const p=entry.p, pending=entryPending(entry), badge=pending?"Saving…":"👀 Check soil", badgeColor=pending?"#FBBF24":entry.state.color;
-      let body=hdr(p,ageLabel(entry));
-      body+=chipRow(chip(p.waterChip,"#7EB8F0"));
-      const wi=WATER_INFO[p.id]||{};
-      body+=sect("💧 When & how","#7EB8F0",wi.when||p.freq);
-      if(wi.thirst) body+=sect("👀 Thirst check","#22D3EE",wi.thirst);
-      body+=wxWaterNote(p);
-      if(p.overwater) body+='<div style="margin-top:4px"><span class="overwater-badge">⚠️ overwater risk</span></div>';
-      body+=dueWaterButtons(entry);
-      body+=factBox(dailyFact(p.id));
-      return '<div data-water-card="full" data-water-size="full" data-water-state="due" data-water-id="'+entry.id+'">'+pcard(p,badge,badgeColor,body)+'</div>';
+        +'<div class="water-card-compact-main"><div class="water-card-compact-name">'+p.name+'</div><div class="water-card-compact-meta">'+ageLabel(entry)+'</div>'+cue+'</div>'
+        +'<div class="water-card-compact-side">'+status+action+'</div></div>';
     }
 
     let compactLabel=false, wateredLabel=false;
     queue.forEach(function(entry){
-      if(entry.state.key==="due"){ html+=fullDueCard(entry); return; }
       if(entry.state.key==="watered" && !wateredLabel){ html+='<div class="section-label" style="margin-top:18px">✓ Watered today</div>'; wateredLabel=true; }
-      else if(entry.state.key!=="watered" && !compactLabel){ html+='<div class="section-label" style="margin-top:16px">Not due now · compact</div>'; compactLabel=true; }
+      else if(entry.state.key!=="watered" && entry.state.key!=="due" && !compactLabel){ html+='<div class="section-label" style="margin-top:16px">Not due now</div>'; compactLabel=true; }
       html+=compactWaterCard(entry);
     });
     const tks=gardenTasksOn(today);
@@ -2809,6 +2795,8 @@ function renderGarden() {
       if(p.trim){ const dT=daysSinceTrimmed(p.id), doneT=trimmed[p.id]===today; const due=!doneT&&(dT===null||(p.trimDays&&dT>=p.trimDays)); if(doneT){bTxt="✓ Tended";bCol="#4AD490";} else if(due){bTxt="🌿 Needs tending";bCol="#FB923C";} }
       let body=hdr(p,"");
       body+=chipRow(chip(p.light,"#FBBF24"));
+      const wi=WATER_INFO[p.id];
+      if(wi) body+='<details class="plant-watering-details"><summary>💧 Watering instructions</summary>'+sect("When & how","#7EB8F0",wi.when||p.freq)+(wi.thirst?sect("Moisture check","#22D3EE",wi.thirst):'')+'</details>';
       if(CARE_INFO[p.id]) body+=sect("🌿 Care note","#86C232",CARE_INFO[p.id].fact);
       if(p.trim){
         const dT=daysSinceTrimmed(p.id), doneT=trimmed[p.id]===today;
@@ -4935,7 +4923,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261006190000';
+  var HG_BUILD_STAMP='20261007190000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;

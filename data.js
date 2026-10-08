@@ -2103,6 +2103,30 @@ const PLANT_CARE_TEMPLATES = {
     ]
   }
 };
+// Brief reminders summarize the existing moisture guidance; they are not fixed watering intervals.
+const PLANT_WATER_CUES = {
+  tomato: 'Water as the root zone starts drying; do not let it dry out completely.',
+  fittonia: 'Water before the root ball dries; keep it lightly moist, never soggy.',
+  croton: 'Water when the top half-inch to one inch is dry.',
+  strawberry: 'Water when the surface is dry; do not let the whole pot dry out.',
+  rosemary: 'Water after the mix has dried somewhat; wait if it is still damp.',
+  allium_provisional: 'Water when the surface starts drying; keep shallow roots moist.',
+  succulent_provisional: 'For an established rooted plant, water when the mix has dried through.',
+  dianthus: 'Water after slight surface drying; wait if the root zone is still wet.',
+  candytuft: 'Allow some drying between waterings; do not keep the crown constantly wet.',
+  impatiens: 'Water when the surface is dry; keep the root zone moist, not soggy.',
+  philodendron_provisional: 'Water after slight surface drying, only if the deeper root zone is not still moist.',
+  jade: 'Water when the mix is dry, then drain completely.',
+  seedling_unknown: 'Plant unidentified; watering timing needs confirmation. Wait if wet.',
+  daisy_provisional: 'Water when the root zone is becoming dry and the pot feels light.',
+  mint: 'Water as the surface starts drying; do not let the whole pot dry out.',
+  parsley: 'Water before the whole pot dries; keep the mix evenly moist, not soggy.',
+  amaranth: 'Keep the mix moist, not saturated; check moisture and pot weight before watering.',
+  sage_provisional: 'Water when the root zone is becoming dry and the pot feels light.',
+  pepper_provisional: 'Seedling timing is not confirmed; check its small root zone and wait if wet.',
+  cactus_provisional: 'Tiny root zone; watering timing is not confirmed. Check Care before watering.'
+};
+
 const PLANT_HARVEST_TEMPLATES = {
   "mint": {
     "ongoing": true,
@@ -2186,6 +2210,7 @@ const PLANTS = PLANT_INVENTORY_20261006.map(p => {
     identityWarning: plantIdentityWarning(p),
     light: '☀️ Light assessment deferred',
     waterChip: '👀 Daily soil check · water only when needed',
+    waterCue: PLANT_WATER_CUES[p.careTemplateKey],
     harvestChip: h ? h.badge + ' · no calendar harvest' : (plantProvisionalIdentity(p) ? '🔎 Identity or edible use unconfirmed · do not harvest' : '🪴 Foliage / flowers · no edible harvest advice'),
     freq: t.watering.when,
     note: plantNote(p)
