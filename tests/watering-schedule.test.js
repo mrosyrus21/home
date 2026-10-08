@@ -68,13 +68,53 @@ assert.match(html, /WateringQueue\.build/);
 assert.match(html, /data-water-card="compact"/);
 assert.doesNotMatch(html, /data-water-(?:card|size)="full"|fullDueCard/, "every watering state must use a compact reminder, never a full card");
 assert.match(html, /html\+=compactWaterCard\(entry\)/, "the queue must render its entries through the compact reminder");
-assert.match(html, /p\.waterCue/, "watering reminders must show a short per-plant timing cue");
 const wateringViewStart = html.indexOf('if (gardenSub === "watering")');
 const harvestViewStart = html.indexOf('else if (gardenSub === "harvest")', wateringViewStart);
 const careViewStart = html.indexOf("const tDueSet", harvestViewStart);
 const gardenViewEnd = html.indexOf("function renderShopping", careViewStart);
 assert.ok(wateringViewStart >= 0 && harvestViewStart > wateringViewStart && careViewStart > harvestViewStart && gardenViewEnd > careViewStart, "watering and Care view boundaries must remain identifiable");
-assert.doesNotMatch(html.slice(wateringViewStart, harvestViewStart), /WATER_INFO\[/, "detailed watering guidance must stay out of the reminder list");
+const wateringView = html.slice(wateringViewStart, harvestViewStart);
+assert.doesNotMatch(wateringView, /WATER_INFO\[|p\.waterCue|p\.freq|ageLabel|water-card-water-cue|data-water-cue|plant-pot-note/, "watering reminders must show only a plant name and short status, never cue or age paragraphs");
+assert.match(wateringView, /water-card-compact-meta">'\+plantHtml\(label\)/, "reminder metadata must come from the short status label");
+assert.match(html, /\.water-card-compact-name\{[^}]*white-space:nowrap;overflow:hidden;text-overflow:ellipsis/, "long names must stay on one line");
+assert.match(html, /\.water-card-compact-thumb\{\s*width:42px;height:42px/, "desktop photo thumbnail dimensions must remain unchanged");
+assert.match(html, /@media\(max-width:430px\)\{[\s\S]*?\.water-card-compact-thumb\{width:38px;height:38px/, "mobile photo thumbnail dimensions must remain unchanged");
+const reminderHelpersStart = wateringView.indexOf("function entryPending");
+const reminderHelpersEnd = wateringView.indexOf("queue.forEach", reminderHelpersStart);
+assert.ok(reminderHelpersStart >= 0 && reminderHelpersEnd > reminderHelpersStart, "compact reminder helpers must remain identifiable");
+const reminderFactory = new Function("wateringPending", "wateringOnline", "photo_", "plantHtml", "plantPhotoData", "photoPos_",
+  wateringView.slice(reminderHelpersStart, reminderHelpersEnd) + ";return compactWaterCard;"
+);
+function reminder(state, options = {}) {
+  const p = {id:"fixture", name:"Fixture physical pot", emoji:"🪴", waterCue:"SHOULD_NOT_RENDER", freq:"SHOULD_NOT_RENDER"};
+  const escape = value => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const render = reminderFactory(options.pending ? {fixture:"water"} : {}, !options.offline, () => "images/fixture.jpg", escape, () => ({fit:"contain"}), () => "55% 45%");
+  return render({id:p.id, p, ids:[p.id], state:queue.STATE[state], days:options.unknown ? null : 1, warning:options.warning ? "Full warning must not render" : ""});
+}
+const reminderLabels = {due:"Check moisture", soon:"Check soon", good:"Good", tomorrow:"Check tomorrow", watered:"Watered today"};
+for (const [state, label] of Object.entries(reminderLabels)) {
+  const row = reminder(state);
+  assert.match(row, new RegExp('water-card-compact-meta">' + label + '<'), `${state} needs a short status`);
+  assert.doesNotMatch(row, /SHOULD_NOT_RENDER|since watering|Full warning/, "cards must not render watering or age paragraphs");
+  assert.equal((row.match(/onclick="waterPlantGroup\(/g) || []).length, state === "watered" ? 0 : 1, "each active row gets only one primary watering action");
+  assert.equal((row.match(/<details\b/g) || []).length, state === "due" ? 1 : 0, "only due rows may offer a hidden secondary menu");
+}
+const dueReminder = reminder("due");
+const dampMenu = dueReminder.match(/<details class="water-row-menu">[\s\S]*?<\/details>/)?.[0];
+assert.ok(dampMenu, "due reminders need a closed options menu");
+assert.match(dampMenu, /<summary[^>]*>⋯<\/summary>/);
+assert.match(dampMenu, /onclick="pushWateringGroup\([\s\S]*>Still damp<\/button>/);
+assert.doesNotMatch(dueReminder.replace(dampMenu, ""), /pushWateringGroup|Still damp/, "damp deferral must not be a second visible primary action");
+assert.match(dueReminder, /class="water-card-compact-name" title="Fixture physical pot"/, "the full plant name must remain available in its title");
+assert.match(dueReminder, /class="water-card-compact-thumb" onclick="openPlantPhoto\('/, "the same photo must still open its original");
+assert.match(dueReminder, /src="images\/fixture\.jpg"[^>]*object-fit:contain;object-position:55% 45%/, "photo source and saved framing must remain intact");
+for (const options of [{offline:true}, {pending:true}]) {
+  const row = reminder("due", options);
+  assert.doesNotMatch(row, /waterPlantGroup|pushWateringGroup|water-row-menu/, "offline and pending reminders must not offer writes");
+  assert.match(row, /<button[^>]*disabled>/, "unavailable writes must be disabled");
+}
+assert.match(reminder("due", {warning:true}), /water-card-compact-meta">Review date</);
+assert.match(reminder("due", {unknown:true}), /water-card-compact-meta">No saved date</);
 const careView = html.slice(careViewStart, gardenViewEnd);
 assert.match(careView, /const wi=WATER_INFO\[p\.id\]/, "Care must retain the existing per-plant watering guidance");
 assert.match(careView, /<details class="plant-watering-details">[^\n]+wi\.when[^\n]+wi\.thirst[^\n]+<\/details>/, "Care must offer the full when/how and moisture guidance in a collapsed disclosure");

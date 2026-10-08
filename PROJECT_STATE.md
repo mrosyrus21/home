@@ -8,6 +8,12 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-07 — Remove every watering-card paragraph
+
+- Cyrus says the shortened cues still look like walls of text and asks that pictures remain the same. Watering cards now show only the existing photo, one-line plant name, short status and primary Watered action. Damp deferral remains available in a closed ellipsis menu; full watering and care guidance stays in Care.
+- Photo paths, bytes, framing functions and thumbnail dimensions are unchanged. No plant data, watering cadence or saved state changed. Elapsed time is not mislabeled as proof a plant needs water.
+- Fresh release from origin `52927a0`; reviewed only `index.html`, `sw.js`, this record and watering regression assertions. Build/cache `20261007210000`.
+
 ### 2026-10-07 — Simple watering reminders
 
 - Cyrus requested less overwhelming watering cards: just inform when it is time to water. All watering states now render short compact rows with one moisture-based timing cue; actual-water and damp-deferral controls remain. Watered rows stay at the bottom.
