@@ -163,8 +163,31 @@ for (const name of ["PLANT_INFO", "WATER_INFO", "FUN_FACTS", "CARE_INFO", "PEST_
   assert.deepEqual(Object.keys(plantData[name]).sort(), activeIds, `${name} must cover exactly the fresh active pots`);
 }
 const harvestIds = Object.keys(plantData.HARVEST_INFO).sort();
-assert.equal(harvestIds.length, 14, "harvest cards must stay limited to confirmed edible plants");
-assert.deepEqual(harvestIds, plants.filter(p => ["mint", "parsley", "rosemary", "strawberry", "tomato"].includes(p.plantType)).map(p => p.id).sort());
+assert.equal(harvestIds.length, 17, "harvest cards must stay limited to confirmed edible plants");
+assert.deepEqual(harvestIds, plants.filter(p => ["mint", "parsley", "rosemary", "strawberry", "tomato", "oregano", "spinach"].includes(p.plantType)).map(p => p.id).sort());
+
+const correctedPots = {
+  fresh_pot120913: ["Greek oregano", "oregano"],
+  fresh_pot120734: ["Jade", "jade"],
+  fresh_pot120748: ["Candytuft", "candytuft"],
+  fresh_pot120806: ["Daisy", "daisy_provisional"],
+  fresh_pot120848: ["Spinach", "spinach"],
+  fresh_pot120851: ["Greek oregano", "oregano"],
+  fresh_pot120923: ["Heartleaf philodendron", "philodendron_provisional"]
+};
+for (const [id, [name, type]] of Object.entries(correctedPots)) {
+  const pot = plants.find(p => p.id === id);
+  assert.ok(pot.name.toLowerCase().startsWith(name.toLowerCase()), `${id} must retain the reviewed name`);
+  assert.equal(pot.plantType, type, `${id} must use its reviewed care type`);
+}
+assert.deepEqual(plants.filter(p => p.plantType === "oregano").map(p => p.id).sort(),
+  ["fresh_pot120851", "fresh_pot120913"], "the two oregano pots must not be merged");
+assert.equal(plants.find(p => p.id === "fresh_pot120923").provisionalIdentity, true, "the accepted vine guess must remain provisional");
+const cactus = plants.find(p => p.id === "fresh_pot121003");
+assert.equal(cactus.provisionalIdentity, true, "the cactus species guess must remain provisional");
+assert.match(cactus.name, /prickly pear/i);
+assert.match(plantData.CARE_INFO[cactus.id].fact, /rooting nicely/i, "the found cutting's user-reported rooting must be preserved");
+assert.doesNotMatch(plantData.WATER_INFO[cactus.id].when, /Seedling exception:|2–3 inches|15–30 minutes/, "rooting-cactus care must not append generic mature-pot soaking instructions");
 
 const photos = plants.map(p => plantData.PLANT_INFO[p.id].photo);
 assert.equal(new Set(photos).size, 31, "each pot needs a unique primary photo path");

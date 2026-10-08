@@ -422,13 +422,13 @@ const PLANT_INVENTORY_20261006 = [
   {
     "id": "fresh_pot120734",
     "reviewId": "pot120734",
-    "name": "Small succulent — terracotta with figurine",
+    "name": "Jade plant — terracotta with figurine",
     "emoji": "🪴",
-    "plantType": "succulent_provisional",
-    "careTemplateKey": "succulent_provisional",
+    "plantType": "jade",
+    "careTemplateKey": "jade",
     "identification": {
-      "confidence": "medium",
-      "basis": "Succulent identity clear; exact genus/species remains unconfirmed.",
+      "confidence": "user_confirmed_common_name",
+      "basis": "Cyrus confirmed this terracotta pot with figurine is a jade plant on October 7, 2026. Exact species/cultivar is not established by this common-name confirmation.",
       "cultivar": null
     },
     "location": "indoor",
@@ -484,13 +484,13 @@ const PLANT_INVENTORY_20261006 = [
   {
     "id": "fresh_pot120748",
     "reviewId": "pot120748",
-    "name": "Likely candytuft — taupe-gray pot",
+    "name": "Candytuft — taupe-gray pot",
     "emoji": "🌼",
-    "plantType": "candytuft_provisional",
+    "plantType": "candytuft",
     "careTemplateKey": "candytuft",
     "identification": {
-      "confidence": "medium_high",
-      "basis": "Broad candytuft identification probable; exact species/cultivar unconfirmed.",
+      "confidence": "user_confirmed_common_name",
+      "basis": "Cyrus confirmed this taupe-gray pot is candytuft on October 7, 2026. Exact species/cultivar remains unconfirmed; annual or perennial type is not assumed.",
       "cultivar": null
     },
     "location": "indoor",
@@ -554,13 +554,13 @@ const PLANT_INVENTORY_20261006 = [
   {
     "id": "fresh_pot120806",
     "reviewId": "pot120806",
-    "name": "Daisy-type plant — terracotta pot",
+    "name": "Daisy — terracotta pot",
     "emoji": "🌼",
     "plantType": "daisy_provisional",
     "careTemplateKey": "daisy_provisional",
     "identification": {
       "confidence": "medium",
-      "basis": "Daisy-type flowering plant; exact species unconfirmed. No cultivar claim.",
+      "basis": "Cyrus confirmed this terracotta pot is a daisy on October 7, 2026. Exact species/cultivar remains unconfirmed; no species-specific care or lifecycle is assumed.",
       "cultivar": null
     },
     "location": "indoor",
@@ -840,13 +840,13 @@ const PLANT_INVENTORY_20261006 = [
   {
     "id": "fresh_pot120848",
     "reviewId": "pot120848",
-    "name": "Likely pepper seedling — terracotta with figurine",
+    "name": "Spinach — terracotta with figurine",
     "emoji": "🌱",
-    "plantType": "pepper_provisional",
-    "careTemplateKey": "pepper_provisional",
+    "plantType": "spinach",
+    "careTemplateKey": "spinach",
     "identification": {
-      "confidence": "medium",
-      "basis": "Pepper probable; exact seedling identity and variety unconfirmed.",
+      "confidence": "user_confirmed",
+      "basis": "Cyrus confirmed this small terracotta pot with the standing figurine is spinach on October 8, 2026, correcting the photo-based pepper guess. Variety remains unspecified.",
       "cultivar": null
     },
     "location": "indoor",
@@ -870,13 +870,13 @@ const PLANT_INVENTORY_20261006 = [
   {
     "id": "fresh_pot120851",
     "reviewId": "pot120851",
-    "name": "Likely sage — terracotta with figurine",
+    "name": "Greek oregano — terracotta with round figurine",
     "emoji": "🌱",
-    "plantType": "sage_provisional",
-    "careTemplateKey": "sage_provisional",
+    "plantType": "oregano",
+    "careTemplateKey": "oregano",
     "identification": {
-      "confidence": "medium_high",
-      "basis": "Sage probable; exact species/cultivar unconfirmed.",
+      "confidence": "user_confirmed",
+      "basis": "Cyrus confirmed this terracotta pot with the round figurine is Greek oregano on October 8, 2026, correcting the photo-based sage guess. It is a separate physical pot from fresh_pot120913.",
       "cultivar": null
     },
     "location": "indoor",
@@ -992,13 +992,13 @@ const PLANT_INVENTORY_20261006 = [
   {
     "id": "fresh_pot120913",
     "reviewId": "pot120913",
-    "name": "Unidentified seedling — gray pot with figurine pieces",
+    "name": "Greek oregano — gray pot with figurine pieces",
     "emoji": "🌱",
-    "plantType": "seedling_unconfirmed",
-    "careTemplateKey": "seedling_unknown",
+    "plantType": "oregano",
+    "careTemplateKey": "oregano",
     "identification": {
-      "confidence": "low_species_high_pot",
-      "basis": "Species unresolved. Do not automatically label mint; candytuft or another herb/seedling remains plausible. Earlier photo is the same pot.",
+      "confidence": "user_confirmed",
+      "basis": "Cyrus confirmed this gray pot with figurine pieces is Greek oregano on October 7, 2026. Identity is not inferred from the photo.",
       "cultivar": null
     },
     "location": "indoor",
@@ -1052,13 +1052,13 @@ const PLANT_INVENTORY_20261006 = [
   {
     "id": "fresh_pot120923",
     "reviewId": "pot120923",
-    "name": "Likely philodendron — teal hanging basket",
+    "name": "Heartleaf philodendron — teal hanging basket",
     "emoji": "🌱",
     "plantType": "philodendron_provisional",
     "careTemplateKey": "philodendron_provisional",
     "identification": {
-      "confidence": "medium_high",
-      "basis": "Likely heartleaf philodendron; exact variety unconfirmed. Earlier repeated uploads add no pot.",
+      "confidence": "moderate_photo_id_accepted_by_user",
+      "basis": "Working identification: heartleaf philodendron (Philodendron hederaceum), assessed from the photo with moderate confidence and accepted by Cyrus on October 8, 2026. Not an owner-recalled label confirmation; exact variety unconfirmed. Earlier repeated uploads add no pot.",
       "cultivar": null
     },
     "location": "indoor",
@@ -1114,13 +1114,13 @@ const PLANT_INVENTORY_20261006 = [
   {
     "id": "fresh_pot121003",
     "reviewId": "pot121003",
-    "name": "Small cactus — red-rimmed pot",
+    "name": "Likely brittle prickly pear — red-rimmed pot",
     "emoji": "🌵",
     "plantType": "cactus_unconfirmed",
     "careTemplateKey": "cactus_provisional",
     "identification": {
-      "confidence": "high_cactus_low_species",
-      "basis": "Cactus clear; species unresolved. Same pot as earlier attachment.",
+      "confidence": "cactus_clear_species_tentative",
+      "basis": "Best working guess: brittle prickly pear (Opuntia fragilis), not a confirmed species. Cyrus found a detached piece during a walk, believes it fell from the mother plant, and reports it rooting nicely on October 8, 2026. The small rounded segment, pale woolly areoles and straight spines support an Opuntia-type hypothesis; do not treat it as a seedling.",
       "cultivar": null
     },
     "location": "indoor",
@@ -1136,7 +1136,7 @@ const PLANT_INVENTORY_20261006 = [
     "sourcePhotoFilename": "20261006_121003.jpg",
     "alternateOriginalFilenames": [],
     "duplicateEarlierFilename": "1000016360.jpg",
-    "identityNote": null,
+    "identityNote": "Found detached cactus piece, not seed-grown; rooting nicely as reported by Cyrus on October 8, 2026. Species remains tentative.",
     "lastWatered": null,
     "cardsStatus": "draft",
     "alternatePhotos": []
@@ -1838,6 +1838,58 @@ const PLANT_CARE_TEMPLATES = {
       "overwinter_planning"
     ]
   },
+  "spinach": {
+    "name": "Spinach",
+    "status": "reviewed",
+    "identification": "Spinach, confirmed by Cyrus; variety unspecified.",
+    "watering": {
+      "when": "Keep the root zone evenly moist without waterlogging. Check the mix and pot weight; water as it starts drying, before the whole root ball dries out. Wait if it is still wet.",
+      "method": "Bottom-water when needed, then lift and drain. For a small seedling, use gentle shallow contact until the mix absorbs moisture, not a fixed mature-pot soak.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning remain deferred.",
+      "notes": "Do not drought-test spinach. Root maturity is not established by identifying the plant."
+    },
+    "care": {
+      "soil": "Well-drained, moisture-retentive container mix; avoid persistently saturated roots.",
+      "feed": "Account for nutrients already in the mix. Feed as needed during active growth according to the vegetable fertilizer label; no fixed interval is assigned.",
+      "pruning": "Harvest individual usable leaves only once enough healthy growth remains. Leave the central growing point for regrowth; do not pinch it like a branching pepper or herb.",
+      "trouble": "Heat, long days and drought can encourage bolting. Inspect leaf tunnels, holes or mildew before choosing treatment."
+    },
+    "sources": [
+      {"title": "Growing Spinach — University of Maryland Extension", "url": "https://extension.umd.edu/resource/growing-spinach-home-garden"},
+      {"title": "Growing Spinach and Swiss Chard — University of Minnesota Extension", "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-spinach-and-swiss-chard"}
+    ],
+    "application_note": "Even moisture and gentle seedling handling adapt the guidance to a container. No watering interval, harvest date or current readiness is inferred from the photo.",
+    "deferred": ["light_placement", "overwinter_planning"]
+  },
+  "oregano": {
+    "name": "Greek oregano",
+    "status": "reviewed",
+    "identification": "Greek oregano (Origanum vulgare subsp. hirtum), confirmed by Cyrus; exact cultivar unknown.",
+    "watering": {
+      "when": "Allow the soil surface to dry slightly between waterings. Check the root zone and pot weight; wait if still wet. Do not let a small seedling's entire root ball dry out.",
+      "method": "Bottom-water when needed, then lift and drain. For a small seedling, use gentle shallow contact and stop once the mix absorbs moisture rather than using a fixed mature-pot soak.",
+      "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
+      "notes": "Identification does not establish root maturity. Use gentle seedling handling until the plant is established."
+    },
+    "care": {
+      "soil": "Well-drained potting mix; avoid persistently wet roots.",
+      "feed": "Keep feeding modest and account for nutrients already in the mix. Excess feeding can weaken growth and reduce flavor; no fixed feeding interval is assigned.",
+      "pruning": "Lightly pinch healthy growing tips to encourage branching. Harvest only once established, leaving plenty of foliage for regrowth.",
+      "trouble": "Root or stem rot in persistently wet mix; inspect for aphids or spider mites before treatment."
+    },
+    "sources": [
+      {
+        "title": "All About Oregano and Marjoram — Iowa State Extension",
+        "url": "https://yardandgarden.extension.iastate.edu/how-to/all-about-oregano-and-marjoram"
+      },
+      {
+        "title": "Greek Oregano — NC State Extension",
+        "url": "https://plants.ces.ncsu.edu/plants/origanum-vulgare-subsp-hirtum/"
+      }
+    ],
+    "application_note": "Surface drying and conservative seedling handling adapt oregano guidance to a container; no watering interval or present harvest readiness is inferred from its photo.",
+    "deferred": ["light_placement", "overwinter_planning"]
+  },
   "seedling_unknown": {
     "name": "Small seedling — identification pending",
     "status": "draft",
@@ -2071,32 +2123,32 @@ const PLANT_CARE_TEMPLATES = {
     ]
   },
   "cactus_provisional": {
-    "name": "Cactus-like seedling — identification pending",
-    "status": "draft",
-    "identification": "Cactus-like appearance and maturity require confirmation; avoid applying a mature desert-cactus schedule.",
+    "name": "Found cactus piece — rooting",
+    "status": "reviewed_provisional_species",
+    "identification": "Likely brittle prickly pear (Opuntia fragilis), a tentative working identification. Cyrus confirms a found detached piece and reports good rooting, not a seedling.",
     "watering": {
-      "when": "Check the tiny root zone and pot weight before watering. Water need and drying threshold remain provisional until cactus identity and maturity are confirmed.",
-      "method": "Use gentle shallow bottom contact; stop once the mix absorbs moisture, then drain.",
+      "when": "Allow the mix to dry between waterings. While roots are establishing, water sparingly and avoid keeping the base or mix wet. Check moisture and pot weight; no fixed watering interval is assigned.",
+      "method": "If bottom-watering while roots establish, use controlled shallow contact only as needed, then drain promptly; do not use a fixed mature-pot soak timer. Once well rooted, hydrate the dry mix and drain completely.",
       "seasonal": "Adjust to actual pot drying and growth; light placement and overwinter planning are deferred.",
-      "notes": "Do not automatically keep a cactus seedling constantly moist or assign a mature dry-through cycle. Confirm identification and root stage before choosing the threshold."
+      "notes": "Cyrus reports this found piece is rooting nicely. Rooting-cutting guidance applies while it establishes; this is not a continuously moist seedling protocol. Do not disturb good new roots solely to identify the species."
     },
     "care": {
-      "soil": "Do not disturb the roots solely to identify it. Confirm the label, leaf details, and current medium.",
-      "feed": "Hold a species-specific feeding schedule until identity, root stage, and current nutrients are known.",
-      "pruning": "No pinching, harvesting, or major pruning until identified.",
-      "trouble": "A thinning dark stem at soil level, collapse, persistent sogginess, or drying out; document changes before choosing treatment."
+      "soil": "Fast-draining cactus mix in a pot with drainage. No immediate repotting is prescribed for a piece already rooting well.",
+      "feed": "Do not add a routine feed while roots establish. Once established and actively growing, use modest label-directed cactus feed, accounting for nutrients already in the mix.",
+      "pruning": "Protect new roots and handle spines carefully. No cutting, edible harvest, or major pruning is assigned while species remains unconfirmed.",
+      "trouble": "Investigate a soft or darkening base, collapse, or persistent wetness before watering again; record the change rather than diagnosing from this photo alone."
     },
     "sources": [
       {
-        "title": "A warm-weather jump on seed starting",
-        "url": "https://extension.umn.edu/about/our-stories/news/yard-and-garden-news/a-warm-weather-jump-on-seed-starting"
+        "title": "Cacti and Succulents — University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/cacti-and-succulents"
       },
       {
-        "title": "How to prevent seedling damping off",
-        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/yard-and-garden-problems/how-to-prevent-seedling-damping-off"
+        "title": "Brittle Prickly Pear — E-Flora BC, University of British Columbia",
+        "url": "https://linnet.geog.ubc.ca/Atlas/Atlas.aspx?sciname=Opuntia+fragilis"
       }
     ],
-    "application_note": "This is interim general seedling handling, not confirmed pepper or cactus care. A confirmed succulent seedling needs a separate age-specific template.",
+    "application_note": "General cactus cutting guidance is adapted conservatively to a found piece with user-reported rooting. The species guess does not establish cold hardiness, edible use or a watering interval.",
     "deferred": [
       "light_placement",
       "overwinter_planning"
@@ -2117,6 +2169,8 @@ const PLANT_WATER_CUES = {
   impatiens: 'Water when the surface is dry; keep the root zone moist, not soggy.',
   philodendron_provisional: 'Water after slight surface drying, only if the deeper root zone is not still moist.',
   jade: 'Water when the mix is dry, then drain completely.',
+  oregano: 'Water after slight surface drying; wait if the root zone is still wet.',
+  spinach: 'Water as the mix starts drying; keep roots evenly moist, never soggy.',
   seedling_unknown: 'Plant unidentified; watering timing needs confirmation. Wait if wet.',
   daisy_provisional: 'Water when the root zone is becoming dry and the pot feels light.',
   mint: 'Water as the surface starts drying; do not let the whole pot dry out.',
@@ -2124,10 +2178,28 @@ const PLANT_WATER_CUES = {
   amaranth: 'Keep the mix moist, not saturated; check moisture and pot weight before watering.',
   sage_provisional: 'Water when the root zone is becoming dry and the pot feels light.',
   pepper_provisional: 'Seedling timing is not confirmed; check its small root zone and wait if wet.',
-  cactus_provisional: 'Tiny root zone; watering timing is not confirmed. Check Care before watering.'
+  cactus_provisional: 'Allow the mix to dry between waterings; water sparingly while roots establish.'
 };
 
 const PLANT_HARVEST_TEMPLATES = {
+  "spinach": {
+    "ongoing": true,
+    "badge": "🥬 Pick as needed",
+    "hdrNote": "usable leaves and enough growth",
+    "signsLabel": "🍴 When to pick",
+    "signs": "Pick individual tender leaves at a usable size when enough healthy growth can remain. This does not claim the plant is ready today; no calendar harvest is assigned.",
+    "how": "Snip a few outer leaves, leaving the central growing point and younger leaves to continue growing. Do not strip a tiny seedling.",
+    "fact": "Spinach was confirmed by Cyrus, correcting the earlier pepper guess."
+  },
+  "oregano": {
+    "ongoing": true,
+    "badge": "✂️ Pick as needed",
+    "hdrNote": "once well established",
+    "signsLabel": "🍴 When to pick",
+    "signs": "Pick a few healthy leafy sprigs once the plant is well established. This is not a claim that it is ready today; there is no calendar harvest.",
+    "how": "Snip lightly, leaving plenty of healthy foliage for regrowth. Larger harvests are best just before flowering.",
+    "fact": "Greek oregano was confirmed by Cyrus, not identified from the photo."
+  },
   "mint": {
     "ongoing": true,
     "badge": "✂️ Pick as needed",
@@ -2234,11 +2306,12 @@ const PLANT_INFO = Object.fromEntries(PLANTS.map(p => [p.id, {
 
 const WATER_INFO = Object.fromEntries(PLANTS.map(p => {
   const t = plantCareTemplate(p), bottom = PLANT_CARE_SHARED.bottom_watering, flush = PLANT_CARE_SHARED.salt_flush;
-  const smallRoot = ['seedling_unknown','pepper_provisional','cactus_provisional'].includes(p.careTemplateKey);
+  const smallRoot = ['seedling_unknown','pepper_provisional'].includes(p.careTemplateKey);
   const sources = [...plantCareSources(p), ...plantSharedSources(bottom), ...plantSharedSources(flush)];
   const smallRootNote = smallRoot ? '<br><b>Seedling exception:</b> Use gentle shallow bottom contact rather than the ordinary pot depth/timer below; stop once the mix absorbs moisture, then drain. The drying threshold remains provisional.' : '';
+  const ordinarySoak = p.careTemplateKey === 'cactus_provisional' ? '' : '<br><b>'+plantText(bottom.label)+':</b><ol>' + bottom.steps.map(step => '<li>'+plantText(step)+'</li>').join('') + '</ol>';
   return [p.id, {
-    when: '<b>Daily reminder = soil check, not watering.</b> ' + plantText(t.watering.when) + '<br><b>This pot:</b> ' + plantText([t.watering.notes,p.waterNote].filter(Boolean).join(' ') || 'Check and log this physical pot separately.') + '<br><b>Method:</b> ' + plantText(t.watering.method) + smallRootNote + '<br><b>'+plantText(bottom.label)+':</b><ol>' + bottom.steps.map(step => '<li>'+plantText(step)+'</li>').join('') + '</ol>' + plantText(bottom.endpoint) + '<br>' + plantText(bottom.exceptions) + ' ' + plantText(bottom.water) + '<br><b>'+plantText(flush.label)+':</b> ' + plantText(flush.text) + '<br>' + plantText(t.watering.seasonal) + '<br>' + plantSourceLinks(sources),
+    when: '<b>Daily reminder = soil check, not watering.</b> ' + plantText(t.watering.when) + '<br><b>This pot:</b> ' + plantText([t.watering.notes,p.waterNote].filter(Boolean).join(' ') || 'Check and log this physical pot separately.') + '<br><b>Method:</b> ' + plantText(t.watering.method) + smallRootNote + ordinarySoak + '<br>' + plantText(bottom.endpoint) + '<br>' + plantText(bottom.exceptions) + ' ' + plantText(bottom.water) + '<br><b>'+plantText(flush.label)+':</b> ' + plantText(flush.text) + '<br>' + plantText(t.watering.seasonal) + '<br>' + plantSourceLinks(sources),
     thirst: plantText(PLANT_CARE_SHARED.trouble_baseline.text),
     checkOnly: true,
     potNote: p.waterNote || '',

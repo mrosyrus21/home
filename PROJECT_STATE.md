@@ -8,6 +8,13 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-08 — Watering finish and reviewed plant corrections
+
+- Published the eight reviewed identity/care corrections, retaining provisional vine/cactus species labels and the user's report that the found cactus piece is rooting well. Two oregano pots remain separate; spinach replaces the pepper guess. Conditional harvest guides total 17, without dated readiness claims.
+- Watering stays compact: unchanged original photo, one-line plant name, short status, Watered action, and a closed damp-deferral menu. No watering dates, history, pot IDs, photo bytes/framing, or daily soil-check cadence changed; no live Firebase writes.
+- Dated same-origin plant photos now reuse a stable cache on repeat visits. App files and build probes remain fresh; writes and Firebase requests bypass caching. First-time photo downloads still use the originals.
+- Fresh release from origin `c58f5cd`; reviewed `data.js`, `index.html`, `sw.js`, this record, and the two watering/service-worker regression files. Build/cache `20261008173000`.
+
 ### 2026-10-07 — Remove every watering-card paragraph
 
 - Cyrus says the shortened cues still look like walls of text and asks that pictures remain the same. Watering cards now show only the existing photo, one-line plant name, short status and primary Watered action. Damp deferral remains available in a closed ellipsis menu; full watering and care guidance stays in Care.
