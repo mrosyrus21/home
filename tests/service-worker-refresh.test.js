@@ -13,6 +13,7 @@ const build = html.match(/var HG_BUILD_STAMP='(\d{14})'/)?.[1];
 const cache = sw.match(/const CACHE = 'hg-cache-(\d{14})'/)?.[1];
 const refresh = sw.match(/const REFRESH_STAMP = '(\d{14})'/)?.[1];
 const photoCache = sw.match(/const PHOTO_CACHE = '([^']+)'/)?.[1];
+const staticCache = sw.match(/const STATIC_CACHE = '([^']+)'/)?.[1];
 
 assert.ok(build, "index.html must expose a deploy build stamp");
 assert.equal(build, cache, "the page and service-worker cache stamps must match");
@@ -25,6 +26,10 @@ assert.match(html, /setInterval\(hgCheckLatestBuild,300000\)/, "a continuously v
 assert.match(sw, /url\.pathname\.endsWith\('\/sw\.js'\) \|\| url\.searchParams\.has\('hg-build-check'\)/, "timestamped freshness probes must bypass the cache");
 assert.doesNotMatch(html, /sw\.js\?v=20260731000500/, "the obsolete fixed worker URL must stay removed");
 assert.equal(photoCache, "hg-plant-photos-v1", "the photo cache name must not change with app build stamps");
+assert.equal(staticCache, "hg-static-v1");
+assert.doesNotMatch(sw, /client\.navigate|clients\.matchAll/, "worker activation must not force a second page navigation");
+assert.match(html, /controllerchange',function\(\)\{ hgCheckLatestBuild\(\); \}/, "controller changes check versions instead of reloading a fresh page");
+assert.doesNotMatch(html, /controllerchange[^\n]+window\.location\.reload/, "first install must not reload an already-current document");
 
 const origin = "https://mrosyrus21.github.io";
 const site = `${origin}/home/`;
@@ -123,13 +128,14 @@ async function runBehaviorChecks() {
   activated.stores.set(photoCache, new Map([[photoUrl, savedPhoto]]));
   activated.stores.set("hg-cache-20261007210000", new Map());
   activated.stores.set(`hg-cache-${cache}`, new Map());
+  activated.stores.set(staticCache, new Map());
   await activated.activate();
-  assert.deepEqual([...activated.stores.keys()], [photoCache], "activation must preserve only the dedicated photo cache");
+  assert.deepEqual([...activated.stores.keys()], [photoCache, `hg-cache-${cache}`, staticCache], "activation must preserve static assets, photos, and this build's cache");
   assert.equal(activated.claims, 1, "activation must still claim clients");
   assert.equal((await activated.request(photoUrl)).response, savedPhoto, "preserved photos must remain reusable after activation");
   assert.equal(activated.fetches.length, 0);
 
-  for (const url of [site, `${site}data.js`, `${site}images/recipe.jpg`, `${site}plant-photos/undated/pot.jpg`, `${site}plant-photos/2026-10-06/pot.svg`, `https://other.example/plant-photos/2026-10-06/pot.jpg`]) {
+  for (const url of [site, `${site}data.js`, `${site}bundle.js`]) {
     const app = workerHarness([response("fresh-one"), response("fresh-two"), new Error("offline")]);
     assert.equal((await app.request(url)).response.id, "fresh-one");
     assert.equal((await app.request(url)).response.id, "fresh-two", "non-photo assets must remain network-first");
@@ -138,6 +144,31 @@ async function runBehaviorChecks() {
     assert.ok(app.fetches.every((call) => call.options.cache === "no-store"), "app requests must bypass the HTTP cache");
     assert.ok(app.puts.every((put) => put.name === `hg-cache-${cache}`), "non-photo assets must not enter the photo cache");
   }
+
+  for (const [url, expectedCache] of [
+    [`${site}images/recipe.jpg`, `hg-cache-${cache}`],
+    [`${site}data.js?v=${build}`, `hg-cache-${cache}`],
+    [`${site}dayarc.css?v=${build}`, `hg-cache-${cache}`],
+    [`${site}plant-photo-previews/2026-10-06/pot.webp`, photoCache],
+    [`${site}dayarc-assets/optimized-v1/mtn-day.webp`, staticCache]
+  ]) {
+    const asset = workerHarness([response("asset-one"), response("should-not-fetch")]);
+    assert.equal((await asset.request(url)).response.id, "asset-one");
+    assert.equal((await asset.request(url)).response.id, "asset-one");
+    assert.equal(asset.fetches.length, 1, "repeated static delivery requests must skip the network");
+    assert.equal(asset.puts[0].name, expectedCache);
+    assert.equal(asset.fetches[0].options, undefined, "static misses should allow normal HTTP caching");
+  }
+
+  const lastGood = workerHarness([response("last-good"), response("server-error", 500), new Error("offline")]);
+  const documentUrl = `${site}index.html`;
+  assert.equal((await lastGood.request(documentUrl)).response.id, "last-good");
+  assert.equal((await lastGood.request(documentUrl)).response.id, "last-good", "HTTP errors must fall back to last good content");
+  assert.equal(lastGood.puts.length, 1, "HTTP errors must not poison the cache");
+  assert.equal((await lastGood.request(documentUrl)).response.id, "last-good", "offline still receives good cached content after a server error");
+  const uncachedError = workerHarness([response("missing", 404)]);
+  assert.equal((await uncachedError.request(documentUrl)).response.status, 404);
+  assert.equal(uncachedError.puts.length, 0);
 
   for (const url of [`${site}sw.js?hg-version=1`, `${site}?hg-build-check=${refresh}&t=1`, `${photoUrl}?hg-build-check=${refresh}`]) {
     const probe = workerHarness();

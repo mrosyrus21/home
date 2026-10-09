@@ -1,7 +1,7 @@
 (function(){
   "use strict";
   var DACFG=(window.DAYARC_CONFIG||{}); var HOSTID=DACFG.host||"view-today"; var APPENDSEL=DACFG.appendHost||null;
-  var ASSET=(DACFG.assets||"dayarc-assets")+"/";
+  var ASSET=(DACFG.assets||"dayarc-assets/optimized-v1")+"/";
   var LAT=(DACFG.lat!=null?DACFG.lat:39.78), LNG=(DACFG.lng!=null?DACFG.lng:-104.75), RAD=Math.PI/180;
   var TZ=-(new Date().getTimezoneOffset())/60;   // user's local tz (Denver = -6/-7)
 
@@ -102,16 +102,23 @@
   // ---------- build the photo scene ----------
   var sceneHost=null, E={};
   function mk(parent,cls){ var d=document.createElement("div"); d.className=cls; parent.appendChild(d); return d; }
+  function layerPhoto(el,name,visible){
+    if(!el)return;
+    var key=visible?name:"";
+    if(el.dataset.photo===key)return;
+    el.dataset.photo=key;
+    el.style.backgroundImage=visible?"url('"+ASSET+name+".webp')":"none";
+  }
   function buildScene(host){
     sceneHost=host; host.innerHTML=""; host.classList.add("da-scene");
-    E.stars=mk(host,"da-stars"); E.stars.style.backgroundImage="url('"+ASSET+"stars.jpg')";
-    E.sun=mk(host,"da-sun");  E.sun.innerHTML='<img src="'+ASSET+'sun.png" alt="">';
+    E.stars=mk(host,"da-stars");
+    E.sun=mk(host,"da-sun"); E.sun.innerHTML='<img alt="">'; E.sunImg=E.sun.firstChild;
     E.moon=mk(host,"da-moon"); E.moon.innerHTML='<canvas class="da-moon-cv" style="width:100%;height:100%;display:block"></canvas>'; E.moonCanvas=E.moon.firstChild;
-    E.moonBase=new Image(); E.moonBase.onload=function(){ try{ if(E.moonCanvas)E.moonCanvas._key=""; update(); }catch(e){} }; E.moonBase.src=ASSET+"moon-base.png?v=2340";
+    E.moonBase=new Image(); E.moonBase.onload=function(){ try{ if(E.moonCanvas)E.moonCanvas._key=""; update(); }catch(e){} };
     E.clouds=mk(host,"da-clouds-layer");
-    E.mtnDay=mk(host,"da-mtn"); E.mtnDay.style.backgroundImage="url('"+ASSET+"mtn-day.png?v=2326')";
-    E.mtnDusk=mk(host,"da-mtn"); E.mtnDusk.style.backgroundImage="url('"+ASSET+"mtn-dusk.png?v=2326')"; E.mtnDusk.style.opacity="0";
-    E.mtnNight=mk(host,"da-mtn"); E.mtnNight.style.backgroundImage="url('"+ASSET+"mtn-night.png?v=2326')"; E.mtnNight.style.opacity="0";
+    E.mtnDay=mk(host,"da-mtn");
+    E.mtnDusk=mk(host,"da-mtn"); E.mtnDusk.style.opacity="0";
+    E.mtnNight=mk(host,"da-mtn"); E.mtnNight.style.opacity="0";
     E.rain=mk(host,"da-rain-layer");
     E.snow=mk(host,"da-snow-layer");
   }
@@ -126,7 +133,7 @@
     var nl=document.createElement("div"); nl.className="da-tl-now"; nl.id="da_now"; span.appendChild(nl);
   }
 
-  function jumpTo(find){ try{ var host=document.getElementById(HOSTID); if(!host)return; var all=host.querySelectorAll("div"),target=null;
+  function jumpTo(find){ try{ if(typeof switchTab==="function" && typeof currentTab!=="undefined" && currentTab!=="today") switchTab("today"); var host=document.getElementById(HOSTID); if(!host)return; var all=host.querySelectorAll("div"),target=null;
     for(var i=0;i<all.length;i++){ var n=all[i]; if(n.closest&&n.closest("#day-arc"))continue; var t=(n.textContent||"").toLowerCase(); if(t.indexOf(find)!==-1 && n.offsetHeight<260){ target=n; break; } }
     if(target){ window.scrollTo({top:target.getBoundingClientRect().top+window.pageYOffset-70,behavior:"smooth"}); var os=target.style.boxShadow; target.style.transition="box-shadow .4s"; target.style.boxShadow="0 0 0 2px rgba(240,168,32,.6)"; setTimeout(function(){target.style.boxShadow=os;},1100); } }catch(e){} }
 
@@ -135,9 +142,9 @@
   function liveMin(){ var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60; }
   function curM(){ if(userScrub) return scrubM; if(DACFG.demoMin!=null) return DACFG.demoMin; return liveMin(); }
 
-  var CLOUD_FILE=["","clouds-light.png","clouds-medium.png","clouds-overcast.png"];
-  var RAIN_FILE=["","rain-light.png","rain-medium.png","rain-heavy.png"];
-  var SNOW_FILE=["","snow-light.png","snow-medium.png","snow-heavy.png"];
+  var CLOUD_FILE=["","clouds-light.webp","clouds-medium.webp","clouds-overcast.webp"];
+  var RAIN_FILE=["","rain-light.webp","rain-medium.webp","rain-heavy.webp"];
+  var SNOW_FILE=["","snow-light.webp","snow-medium.webp","snow-heavy.webp"];
   // real moon photos keyed from the phase chart: [index, position in cycle 0=new .5=full 1=new]
   var MOON_POS=[[0,0.062],[1,0.220],[2,0.286],[3,0.463],[4,0.452],[5,0.226],[6,0.249],[7,0.273],[8,0.464],[9,0.459],[10,0.535],[11,0.531],[12,0.469],[13,0.468],[14,0.457],[15,0.538],[16,0.530],[17,0.467],[18,0.468],[19,0.478],[20,0.243],[21,0.517],[22,0.490],[23,0.492],[24,0.787]];
   function moonFile(pos){ var best=11,bd=9; for(var i=0;i<MOON_POS.length;i++){ var d=Math.abs(MOON_POS[i][1]-pos); if(d>0.5)d=1-d; if(d<bd){bd=d;best=MOON_POS[i][0];} } return "moons/m"+(best<10?"0":"")+best+".png"; }
@@ -177,17 +184,23 @@
       var y; if(p>=0&&p<=1){ y=ridge - Math.sin(p*Math.PI)*(ridge-topPad)*peak; }
       else { var bel=(p>1)?(p-1):(-p); y=ridge + Math.min(1,bel/0.045)*(H-ridge+H*0.12); } return [x,y]; }
 
-    if(E.stars) E.stars.style.opacity=nf.toFixed(2);
+    if(E.stars){ layerPhoto(E.stars,"stars",nf>0); E.stars.style.opacity=nf.toFixed(2); }
     // mountain set cross-fade: day layer always opaque underneath, dusk+night fade on top -> never blanks on a swap
-    if(E.mtnDusk) E.mtnDusk.style.opacity=Math.max(0,Math.min(1,(nf-0.10)/0.20)).toFixed(2);
-    if(E.mtnNight) E.mtnNight.style.opacity=Math.max(0,Math.min(1,(nf-0.45)/0.30)).toFixed(2);
+    var duskOpacity=Math.max(0,Math.min(1,(nf-0.10)/0.20)), nightOpacity=Math.max(0,Math.min(1,(nf-0.45)/0.30));
+    layerPhoto(E.mtnDay,"mtn-day",duskOpacity<1 && nightOpacity<1);
+    layerPhoto(E.mtnDusk,"mtn-dusk",duskOpacity>0 && nightOpacity<1);
+    layerPhoto(E.mtnNight,"mtn-night",nightOpacity>0);
+    if(E.mtnDusk) E.mtnDusk.style.opacity=duskOpacity.toFixed(2);
+    if(E.mtnNight) E.mtnNight.style.opacity=nightOpacity.toFixed(2);
 
     if(E.sun){ if(sp.elev>-9){ var ss=Math.max(24,Math.min(H*0.55,W*0.15)); E.sun.style.width=ss+"px"; E.sun.style.height=ss+"px";
+        if(E.sunImg && !E.sunImg.getAttribute("src")) E.sunImg.src=ASSET+"sun.webp";
         var pS=(m-SUN.sunrise)/Math.max(1,SUN.sunset-SUN.sunrise), sPk=Math.min(1,Math.max(0.4,SUN.maxElev/70)), xyS=arcXY(pS,sPk);
         E.sun.style.left=xyS[0]+"%"; E.sun.style.top=xyS[1]+"px"; E.sun.style.opacity="1"; }
       else E.sun.style.opacity="0"; }
     var mp=moonPos(D0,m), marc=moonArc(m);
     if(E.moon){ if(mp.alt>-9 && marc){ var ms=Math.max(13,Math.min(H*0.22,W*0.06)); E.moon.style.width=ms+"px"; E.moon.style.height=ms+"px";
+        if(!E.moonBase.getAttribute("src")) E.moonBase.src=ASSET+"moon-base.webp";
         var pM=(m-marc.rise)/Math.max(1,marc.set-marc.rise), mPk=Math.min(1,Math.max(0.35,marc.maxAlt/70)), xyM=arcXY(pM,mPk);
         E.moon.style.left=xyM[0]+"%"; E.moon.style.top=xyM[1]+"px";
         var mday=moonPos(D0,720); E._mil=mday.illum; E._mwax=mday.waxing; drawMoon(ms);
@@ -271,7 +284,7 @@
   }
 
   if(typeof window.renderToday==="function"){ var _o=window.renderToday; window.renderToday=function(){ var r=_o.apply(this,arguments); try{ mount(); }catch(e){} return r; }; }
-  setInterval(function(){ try{ if(APPENDSEL||typeof currentTab==="undefined"||currentTab==="today"){ if(!document.getElementById("day-arc")) mount(); else if(!userScrub) update(); } }catch(e){} }, 30000);
+  setInterval(function(){ try{ if(document.hidden)return; if(APPENDSEL||typeof currentTab==="undefined"||currentTab==="today"){ if(!document.getElementById("day-arc")) mount(); else if(!userScrub) update(); } }catch(e){} }, 30000);
   document.addEventListener("DOMContentLoaded",function(){ setTimeout(function(){ try{mount();}catch(e){} },400); });
   setTimeout(function(){ try{ mount(); }catch(e){} }, 700);
   window.DayArc={ mount:mount, update:update, cfg:DACFG, setMin:function(mm){ userScrub=(mm!=null); scrubM=(mm==null?0:mm); update(); } };

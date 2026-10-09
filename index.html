@@ -68,6 +68,10 @@ body::after{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   opacity:.032;mix-blend-mode:overlay;
 }
+@media (max-width:768px){
+  body{background-attachment:scroll}
+  body::after{display:none}
+}
 
 /* ── HEADER ── */
 .header{
@@ -514,9 +518,13 @@ body::after{
 .water-card-compact-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .water-card-compact-main{flex:1;min-width:0}
 .water-card-compact-name{font-family:'Playfair Display',serif;font-size:13.5px;font-weight:700;color:var(--text);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.water-card-compact-meta{font-size:10.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px}
-.water-card-compact[data-water-state="due"]{border-left:3px solid #22D3EE}
-.water-card-compact[data-water-state="due"] .water-card-compact-action{min-height:34px;min-width:70px}
+.water-card-compact-meta{font-size:10.5px;color:var(--text2);font-family:'Lora',serif;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.water-card-picture{background:linear-gradient(145deg,var(--s2),var(--s1));border:1px solid var(--border);border-radius:14px;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.water-card-picture-photo{position:relative;height:140px;overflow:hidden;border-radius:14px 14px 0 0;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,rgba(45,184,112,.22),transparent 70%),linear-gradient(135deg,var(--s3),var(--s1));font-size:50px}
+.water-card-picture[data-plant-type="strawberry"] .water-card-picture-photo{height:172px}
+.water-card-picture-footer{display:flex;align-items:center;gap:10px;min-height:62px;padding:10px 12px}
+.water-card-picture .water-card-compact-name{font-size:15px}
+.water-card-picture .water-card-compact-action{min-height:34px;min-width:70px;font-size:11px}
 .water-row-menu{position:relative}
 .water-row-menu summary{list-style:none;cursor:pointer;width:24px;height:34px;display:grid;place-items:center;font-size:20px;color:var(--text2)}
 .water-row-menu summary::-webkit-details-marker{display:none}
@@ -890,10 +898,11 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20261008173000-watering-finish"></script>
+<script src="./data.js?v=20261008193000-mobile-repair"></script>
 <script src="./today-checklist.js?v=20260923210000"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
 <script src="./recipes.js?v=20260729010000-approved"></script>
+<script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // APP CONFIG — EDIT TITLES HERE, NOWHERE ELSE
@@ -926,7 +935,7 @@ function curtainTry(ev){ if(ev&&ev.preventDefault) ev.preventDefault();
   return false; }
 function curtainInit(){ const el=document.getElementById('curtain'); if(!el) return;
   if(curtainUnlocked()){ el.style.display='none'; return; }
-  try{ el.style.backgroundImage="linear-gradient(rgba(4,10,22,.72),rgba(4,10,22,.84)),url('"+TODAY_BG[todaySeg()]+"')"; }catch(e){}
+  try{ el.style.backgroundImage=matchMedia('(max-width:768px)').matches ? 'linear-gradient(145deg,#0b1830,#06050a)' : "linear-gradient(rgba(4,10,22,.72),rgba(4,10,22,.84)),url('"+TODAY_BG[todaySeg()]+"')"; }catch(e){}
   setTimeout(function(){ const i=document.getElementById('curtain-pass'); if(i) i.focus(); },100); }
 // ═══════════════════════════════════════════════════════════════
 
@@ -968,7 +977,7 @@ let cookQueue = {};  // 🍳 planned recipes: {rid,day,meal,done}
 let habits = {};     // 💧 water + forgiving habit-streak state (water counts/goal/serving, freeze tokens)
 let wishCustom = {}; // 💎 big-ticket wishlist: {t,done}   // 💰 finance state: bal/debt history, bills paid, cancels verified, to-dos
 let rollovers = {}; // 🔁 user rollover tasks {id:{label,created,done?}} — stay on Today until checked, carry forward daily
-let sleep = {};      // 😴 sleep log {YYYY-MM-DD(wake date):{bed,wake,mins,q,src}} + _prefs (reminders) — see v2-features.js
+let sleep = {};      // 😴 sleep log {YYYY-MM-DD(wake date):{bed,wake,mins,q,src}} + _prefs (reminders) — see sleep-finance.js
 let harvestLog = {}; // 📸 harvest journal {id:{ts,date,text,img?}} — see v2-features.js
 let almanacFlow = {}; // shared Current/Next state; desktop O.B. will mirror this later
 let trimOpen = {};
@@ -987,7 +996,36 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const ST = db.ref('state');
+// Keep Firebase's reference API, but never publish defaults before a saved
+// snapshot has arrived. This also covers child references and future writers.
+const hgStateRefs = new WeakMap();
+function hgGuardStateRef(ref){
+  if(!ref || typeof ref!=="object") return ref;
+  if(hgStateRefs.has(ref)) return hgStateRefs.get(ref);
+  const writes=new Set(["set","update","remove","transaction","setWithPriority","setPriority"]);
+  const guarded=new Proxy(ref,{get:function(target,key){
+    const value=Reflect.get(target,key,target);
+    if(key==="parent" || key==="root" || key==="ref") return hgGuardStateRef(value);
+    if(typeof value!=="function") return value;
+    if(key==="child" || key==="onDisconnect") return function(){ return hgGuardStateRef(value.apply(target,arguments)); };
+    if(writes.has(key) || key==="push") return function(){
+      const args=Array.from(arguments);
+      if(key==="push" && !args.length) return hgGuardStateRef(value.apply(target,args));
+      if(!window.__stateHydrated){
+        const err=new Error("Saved progress has not loaded; no changes were written."); err.code="hg/state-not-ready";
+        try{ toast("Still loading saved progress — nothing was saved."); }catch(_){}
+        const callback=key==="transaction"?args[1]:args[args.length-1];
+        if(typeof callback==="function") Promise.resolve().then(function(){ callback(err,false,null); });
+        const blocked=Promise.reject(err); blocked.catch(function(){}); return blocked;
+      }
+      const result=value.apply(target,args);
+      return key==="push"?hgGuardStateRef(result):result;
+    };
+    return value.bind(target);
+  }});
+  hgStateRefs.set(ref,guarded); return guarded;
+}
+const ST = hgGuardStateRef(db.ref('state'));
 
 db.ref('.info/connected').on('value', function(snap){
   const next=snap.val()===true, changed=next!==wateringOnline;
@@ -1089,7 +1127,7 @@ function invKey(s){ return String(s||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/
 function splitEmoji(label){ const m=String(label||'').match(/^\s*(\p{Extended_Pictographic}[️‍\p{Extended_Pictographic}]*)\s*(.*)$/u); return m?{emoji:m[1],name:(m[2]||'').trim()||m[1]}:{emoji:'',name:String(label||'').trim()}; }
 function grocLabel(id){ const b=GROC_BUILTIN.find(function(i){return i.id===id;}); if(b) return b.label; if(grocCustom[id]) return grocCustom[id]; return id; }
 function capFirst(s){ s=String(s||''); for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); if(c>=97&&c<=122){ return s.slice(0,i)+s[i].toUpperCase()+s.slice(i+1); } if((c>=65&&c<=90)||(c>=48&&c<=57)){ return s; } } return s; }
-function buyGroc(id){ const sp=splitEmoji(grocLabel(id)); sp.name=sp.name.replace(/\s*\(from:[^)]*\)\s*$/,''); const k=invKey(sp.name); if(!k) return; /* optimistic: update local state + re-render IMMEDIATELY, never gated on Firebase */ inventory[k]={name:sp.name,emoji:sp.emoji||'🛒',inStock:true,ts:Date.now()}; grocPurchased[id]=true; const hadShop=!!shopping[id]; if(hadShop) delete shopping[id]; renderGrocery(); try{ toast('✓ '+capFirst(sp.name)+' → Kitchen Inventory'); }catch(e){} try{ saveInv(); saveGrocPurchased(); if(hadShop) saveShopping(); }catch(e){} }
+function buyGroc(id){ const sp=splitEmoji(grocLabel(id)); sp.name=sp.name.replace(/\s*\(from:[^)]*\)\s*$/,''); const k=invKey(sp.name); if(!k) return; /* optimistic: update local state + re-render IMMEDIATELY, never gated on Firebase */ inventory[k]={name:sp.name,emoji:sp.emoji||'🛒',inStock:true,ts:Date.now()}; grocPurchased[id]=true; const hadShop=!!shopping[id]; if(hadShop) delete shopping[id]; renderGrocery(); try{ toast('✓ '+capFirst(sp.name)+' → Kitchen Inventory'); }catch(e){} try{ saveFood(); if(hadShop) saveShopping(); }catch(e){} }
 function addInv(){ const el=document.getElementById('invInput'); if(!el) return; let v=(el.value||'').trim(); if(!v) return; const sp=splitEmoji(v); const em=sp.emoji||grocEmoji(sp.name); const k=invKey(sp.name); if(!k) return; inventory[k]={name:sp.name,emoji:em,inStock:true,ts:Date.now()}; saveInv(); renderGrocery(); }
 // ── 🛒 GROCERIES AUTO-BUILD (Jun 6 2026): queueing a recipe ADDS its missing food ingredients to the list. Add-only — never auto-removes, never auto-checks (accountability rule). ──
 const GROC_STAPLE_WORDS=['salt','pepper','black','water','oil','olive','and','optional','taste','a','of','grind','grinds','pinch','few'];  // skip items made ONLY of these words
@@ -2511,7 +2549,7 @@ function renderRooms() {
 
     if(isOpen){
       const levelOrder={easy:0,moderate:1,hard:2};
-      const sorted=[...allT].sort(([a],[b])=>(levelOrder[a.level]||1)-(levelOrder[b.level]||1));
+      const sorted=[...allT].sort(([,a],[,b])=>(levelOrder[a.level]??1)-(levelOrder[b.level]??1));
       html+=`<div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px">`;
       sorted.forEach(([id,t])=>{
         const isDone=!!checked[id];
@@ -2567,6 +2605,9 @@ function plantHtml(value){ return String(value==null?"":value).replace(/[&<>"']/
 function plantPhotoData(p){
   const info=PLANT_INFO[p.id]||{};
   return {photo:p.photo||info.photo,position:p.photoPosition||info.photoPosition||info.photoPos||"center",fit:plantPhotoFrames[p.id]||p.photoFit||info.photoFit||"cover",alternates:p.alternatePhotos||info.alternatePhotos||[]};
+}
+function plantPhotoPreview(photo){
+  return /^plant-photos\/\d{4}-\d{2}-\d{2}\/[^/]+\.(?:jpe?g|png)$/i.test(photo||"") ? photo.replace(/^plant-photos\//,"plant-photo-previews/").replace(/\.(?:jpe?g|png)$/i,".webp") : photo;
 }
 function gardenPlantMatches(p){ return gardenPlantFilter==="all" || (gardenPlantFilter==="mint"?p.plantType==="mint":p.loc===gardenPlantFilter); }
 function setGardenPlantFilter(value){
@@ -2641,7 +2682,7 @@ function renderGarden() {
   const photoCreditUrl_ = id => (PLANT_INFO[id]||{}).photoCreditUrl || "";
   function photoImage(p,extraStyle){
     const data=plantPhotoData(p);
-    return data.photo?'<button type="button" class="plant-photo-button" onclick="openPlantPhoto(\''+p.id+'\')" aria-label="'+plantHtml('Open original photo of '+p.name)+'"><img class="plant-card-photo" data-plant-id="'+p.id+'" src="'+plantHtml(data.photo)+'" alt="'+plantHtml(p.name)+'" loading="lazy" referrerpolicy="no-referrer" style="object-fit:'+data.fit+';object-position:'+data.position+';'+(extraStyle||'')+'" onerror="this.style.display=\'none\'"/></button>':'';
+    return data.photo?'<button type="button" class="plant-photo-button" onclick="openPlantPhoto(\''+p.id+'\')" aria-label="'+plantHtml('Open original photo of '+p.name)+'"><img class="plant-card-photo" data-plant-id="'+p.id+'" src="'+plantHtml(plantPhotoPreview(data.photo))+'" alt="'+plantHtml(p.name)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="object-fit:'+data.fit+';object-position:'+data.position+';'+(extraStyle||'')+'" onerror="this.style.display=\'none\'"/></button>':'';
   }
   function photoControls(p){
     if(!photo_(p.id)) return '';
@@ -2711,23 +2752,40 @@ function renderGarden() {
     function entryCall(entry,fn){
       return fn+'([\''+entry.ids.join("','")+'\'])';
     }
-    function compactWaterCard(entry){
-      const p=entry.p, ph=photo_(p.id), pending=entryPending(entry);
-      const label=pending?"Saving…":entry.warning?"Review date":entry.days===null&&entry.state.key==="due"?"No saved date":entry.state.key==="due"?"Check moisture":entry.state.label;
+    function entryLabel(entry){
+      return entryPending(entry)?"Saving…":entry.warning?"Review date":entry.days===null&&entry.state.key==="due"?"No saved date":entry.state.key==="due"?"Check moisture":entry.state.label;
+    }
+    function entryActions(entry){
+      const p=entry.p, pending=entryPending(entry);
       let action="";
       if(pending) action='<button class="water-btn water-card-compact-action soon" disabled>Saving…</button>';
       else if(entry.state.key==="watered") action='<div class="water-card-compact-check" aria-label="Watered today">✓</div>';
       else if(!wateringOnline) action='<button class="water-btn water-card-compact-action" disabled>Offline</button>';
       else action='<button class="water-btn water-card-compact-action ok" onclick="'+entryCall(entry,"waterPlantGroup")+'">Watered</button>';
       if(entry.state.key==="due" && !pending && wateringOnline) action+='<details class="water-row-menu"><summary aria-label="'+plantHtml('Options for '+p.name)+'">⋯</summary><div><button class="water-btn water-card-compact-action damp" onclick="'+entryCall(entry,"pushWateringGroup")+'">Still damp</button></div></details>';
+      return action;
+    }
+    function entryFooter(entry){
+      const p=entry.p;
+      return '<div class="water-card-compact-main"><div class="water-card-compact-name" title="'+plantHtml(p.name)+'">'+plantHtml(p.name)+'</div><div class="water-card-compact-meta">'+plantHtml(entryLabel(entry))+'</div></div>'
+        +'<div class="water-card-compact-side">'+entryActions(entry)+'</div>';
+    }
+    function compactWaterCard(entry){
+      const p=entry.p, ph=plantPhotoPreview(photo_(p.id));
       return '<div class="water-card-compact" data-water-card="compact" data-water-size="compact" data-water-state="'+entry.state.key+'" data-water-id="'+entry.id+'">'
-        +'<button type="button" class="water-card-compact-thumb" onclick="openPlantPhoto(\''+p.id+'\')" aria-label="'+plantHtml('Open original photo of '+p.name)+'" style="border:0;color:inherit;cursor:zoom-in"><span>'+p.emoji+'</span>'+(ph?'<img class="plant-card-photo" data-plant-id="'+p.id+'" src="'+plantHtml(ph)+'" alt="" loading="lazy" style="object-fit:'+plantPhotoData(p).fit+';object-position:'+photoPos_(p.id)+'" onerror="this.style.display=\'none\'"/>':'')+'</button>'
-        +'<div class="water-card-compact-main"><div class="water-card-compact-name" title="'+plantHtml(p.name)+'">'+p.name+'</div><div class="water-card-compact-meta">'+plantHtml(label)+'</div></div>'
-        +'<div class="water-card-compact-side">'+action+'</div></div>';
+        +'<button type="button" class="water-card-compact-thumb" onclick="openPlantPhoto(\''+p.id+'\')" aria-label="'+plantHtml('Open original photo of '+p.name)+'" style="border:0;color:inherit;cursor:zoom-in"><span>'+p.emoji+'</span>'+(ph?'<img class="plant-card-photo" data-plant-id="'+p.id+'" src="'+plantHtml(ph)+'" alt="" loading="lazy" decoding="async" style="object-fit:'+plantPhotoData(p).fit+';object-position:'+photoPos_(p.id)+'" onerror="this.style.display=\'none\'"/>':'')+'</button>'
+        +entryFooter(entry)+'</div>';
+    }
+    function pictureWaterCard(entry){
+      const p=entry.p;
+      return '<div class="water-card-picture" data-water-card="picture" data-water-size="wide" data-water-state="due" data-water-id="'+entry.id+'" data-plant-type="'+p.plantType+'">'
+        +'<div class="water-card-picture-photo"><span>'+p.emoji+'</span>'+photoImage(p)+'</div>'
+        +'<div class="water-card-picture-footer">'+entryFooter(entry)+'</div></div>';
     }
 
     let compactLabel=false, wateredLabel=false;
     queue.forEach(function(entry){
+      if(entry.state.key==="due"){ html+=pictureWaterCard(entry); return; }
       if(entry.state.key==="watered" && !wateredLabel){ html+='<div class="section-label" style="margin-top:18px">✓ Watered today</div>'; wateredLabel=true; }
       else if(entry.state.key!=="watered" && entry.state.key!=="due" && !compactLabel){ html+='<div class="section-label" style="margin-top:16px">Not due now</div>'; compactLabel=true; }
       html+=compactWaterCard(entry);
@@ -4348,24 +4406,86 @@ function renderToCook(){ const el=document.getElementById('view-grocery'); if(!e
   el.innerHTML=out;
 }
 
+// Snapshot/weather refreshes must not replace a draft or close the instructions
+// being used. Keys are independent of row order and changing completion counts.
+function hgViewStateKey(el){
+  if(el.id) return "id:"+el.id;
+  if(el.tagName==="DETAILS"){
+    const summary=el.querySelector("summary"), row=el.closest("[data-task]");
+    return "details:"+(row?row.getAttribute("data-task")+":":"")+(el.className||"")+":"+
+      String(summary?summary.textContent:"").replace(/\d+/g,"#").replace(/\s+/g," ").trim();
+  }
+  return el.name?el.tagName+":"+el.name:"";
+}
+function hgViewStateElements(root){
+  const counts={};
+  return Array.from(root.querySelectorAll("input,textarea,select,details")).map(function(el){
+    const base=hgViewStateKey(el); if(!base) return null;
+    const count=counts[base]||0; counts[base]=count+1;
+    return {el:el,key:base+":"+count};
+  }).filter(Boolean);
+}
+function hgWithViewState(render){
+  const root=document.getElementById("view-"+currentTab);
+  if(!root) return render();
+  const state={}, active=document.activeElement;
+  hgViewStateElements(root).forEach(function(item){
+    const el=item.el, detail=el.tagName==="DETAILS";
+    if(!detail && /^(?:hidden|file|password|checkbox|radio|button|submit)$/i.test(el.type||"")) return;
+    const entry=state[item.key]={detail:detail,value:detail?el.open:el.value,focus:el===active || (detail && el.querySelector("summary")===active)};
+    if(entry.focus && !detail){ try{ entry.start=el.selectionStart; entry.end=el.selectionEnd; entry.direction=el.selectionDirection; }catch(_){} }
+  });
+  const result=render();
+  hgViewStateElements(root).forEach(function(item){
+    const entry=state[item.key], el=item.el; if(!entry) return;
+    if(entry.detail) el.open=entry.value;
+    else if(el.tagName!=="SELECT" || Array.from(el.options||[]).some(function(option){return option.value===entry.value;})) el.value=entry.value;
+    if(entry.focus){
+      const focusEl=entry.detail?el.querySelector("summary"):el;
+      if(focusEl){ try{ focusEl.focus({preventScroll:true}); }catch(_){} }
+      if(entry.start!=null && typeof el.setSelectionRange==="function") try{el.setSelectionRange(entry.start,entry.end,entry.direction);}catch(_){}
+    }
+  });
+  return result;
+}
+let hgRenderFrame=0;
+function queueRenderAll(){
+  if(hgRenderFrame) return;
+  hgRenderFrame=requestAnimationFrame(function(){ hgRenderFrame=0; renderAll(); });
+}
 function renderAll() {
-  updateHeader();
-  if(currentTab==="today")    renderToday();
-  if(currentTab==="wellness") renderWellness();
-  if(currentTab==="finance")  renderFinance();
-  if(currentTab==="timeline") renderTimeline();
-  if(currentTab==="rooms")    renderRooms();
-  if(currentTab==="garden")   renderGarden();
-  if(currentTab==="shopping") renderShopping();
-  if(currentTab==="grocery")  renderGrocery();
-  if(currentTab==="print")    renderPrint();
-  if(currentTab==="forecast") renderForecast();
+  if(hgRenderFrame){ cancelAnimationFrame(hgRenderFrame); hgRenderFrame=0; }
+  return hgWithViewState(function(){
+    updateHeader();
+    if(currentTab==="today")    renderToday();
+    if(currentTab==="wellness") renderWellness();
+    if(currentTab==="finance")  renderFinance();
+    if(currentTab==="timeline") renderTimeline();
+    if(currentTab==="rooms")    renderRooms();
+    if(currentTab==="garden")   renderGarden();
+    if(currentTab==="shopping") renderShopping();
+    if(currentTab==="grocery")  renderGrocery();
+    if(currentTab==="print")    renderPrint();
+    if(currentTab==="forecast") renderForecast();
+  });
 }
 
 // ── FIREBASE REAL-TIME LISTENER ──────────────────────────────────────────────
+function hgLoadingState(message){
+  let el=document.getElementById('fb-loading');
+  if(!el){ el=document.createElement('div'); el.id='fb-loading'; el.style.cssText='position:fixed;inset:0;background:#06050A;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px;padding:24px;text-align:center;color:#BDB1D0;font:14px Lora,serif'; document.body.appendChild(el); }
+  el.replaceChildren();
+  const icon=document.createElement('div'); icon.textContent='📖'; icon.style.fontSize='36px';
+  const text=document.createElement('div'); text.textContent=message; text.style.cssText='max-width:360px;line-height:1.6;color:#BDB1D0'; text.setAttribute('role','status');
+  const retry=document.createElement('button'); retry.type='button'; retry.textContent='Retry connection'; retry.style.cssText='border:1px solid #6A6480;border-radius:9px;padding:12px 18px;background:#171322;color:#EDE5F8;cursor:pointer'; retry.addEventListener('click',function(){location.reload();});
+  el.append(icon,text,retry);
+}
 function showApp() {
+  if(!window.__stateHydrated){ hgLoadingState('Your saved progress has not loaded. Changes are disabled while we reconnect.'); return; }
   const el = document.getElementById('fb-loading');
   if (el) el.remove();
+  if(window.__appReady){ queueRenderAll(); return; }
+  window.__appReady=true;
   autoCarryOverdue();
   renderAll();
   setTabBg(currentTab);
@@ -4382,11 +4502,13 @@ let __dataStarted = false;
 window.__stateHydrated = false;
 function startData() {
 if (__dataStarted) return; __dataStarted = true;
-// Fallback: show app after 6 seconds even if Firebase is slow
-fbTimeout = setTimeout(showApp, 6000);
+// A slow connection is not an empty saved state. Keep all mutations covered.
+fbTimeout = setTimeout(function(){ hgLoadingState('Still connecting to your saved progress. Nothing has been changed. Check your connection, then retry.'); }, 6000);
 
 ST.on('value', snap => {
   const d = snap.val() || {};
+  if(typeof d!=="object" || Array.isArray(d)){ window.__stateHydrated=false; hgLoadingState('Saved progress could not be read. Changes are disabled; please retry.'); return; }
+  window.__stateHydrated = true; // only a successful snapshot authorizes the migrations below
   wateringStateLoaded=!!d.watered && typeof d.watered==="object" && !Array.isArray(d.watered);
   wateringStateError=wateringStateLoaded?"":"The saved watering history could not be found.";
   checked     = d.checked     || {};
@@ -4652,13 +4774,11 @@ ST.on('value', snap => {
   window.__stateHydrated = true;
   clearTimeout(fbTimeout);
   showApp();
-});
-
-ST.on('value', () => {}, err => {
+}, err => {
   console.warn('Firebase error:', err);
   wateringStateLoaded=false;
   wateringStateError="Firebase could not load the saved watering history.";
-  window.__stateHydrated = true;
+  window.__stateHydrated = false;
   clearTimeout(fbTimeout);
   showApp();
 });
@@ -4680,21 +4800,26 @@ function hgLoginTry(ev){ if(ev&&ev.preventDefault) ev.preventDefault();
   return false; }
 function hgSignOut(){ try{ firebase.auth().signOut().then(function(){ location.reload(); }); }catch(e){ location.reload(); } }
 (function hgAuthBoot(){
-  if(!firebase.auth){ startData(); return; }
+  let settled=false;
+  function waitingForAuth(message){
+    if(settled || __dataStarted) return;
+    if(firebase.auth){ hgShowLogin(); const msg=document.getElementById('hg-login-msg'); if(msg) msg.textContent=message; }
+    else hgLoadingState(message);
+  }
+  const probeTimeout=setTimeout(function(){ waitingForAuth('Connection is taking longer than expected. Sign in if needed, or check your connection and retry.'); },8000);
   try{
-    let settled=false;
-    firebase.auth().onAuthStateChanged(function(u){
-      if(u){ settled=true; hgHideLogin(); try{ localStorage.setItem(CURTAIN_FLAG,CURTAIN_PASSWORD); curtainOpen(); }catch(e){} startData(); }
+    if(firebase.auth) firebase.auth().onAuthStateChanged(function(u){
+      if(u){ settled=true; clearTimeout(probeTimeout); hgHideLogin(); try{ localStorage.setItem(CURTAIN_FLAG,CURTAIN_PASSWORD); curtainOpen(); }catch(e){} startData(); }
     });
     // probe: can we still read without signing in? (i.e. rules not locked yet)
     db.ref('state/flags').once('value')
-      .then(function(){ if(!settled && !__dataStarted) startData(); })
+      .then(function(){ clearTimeout(probeTimeout); if(!settled && !__dataStarted){ hgHideLogin(); startData(); } })
       .catch(function(err){
+        clearTimeout(probeTimeout);
         const code=String((err&&err.code)||err).toLowerCase();
-        if(code.indexOf('permission')>-1){ if(!settled && !__dataStarted) hgShowLogin(); }
-        else if(!__dataStarted) startData();
+        waitingForAuth(code.indexOf('permission')>-1?'Sign in to load your saved progress.':'Could not verify your saved progress. Check your connection, then try signing in again.');
       });
-  }catch(e){ startData(); }
+  }catch(e){ clearTimeout(probeTimeout); waitingForAuth('Could not connect to saved progress. Check your connection and retry.'); }
 })();
 
 const HEADER_NIGHT = "https://commons.wikimedia.org/wiki/Special:FilePath/Night_Sky_at_Rocky_Mountain_National_Park_(26972703445).jpg?width=2560"; // Milky Way over RMNP — Public Domain (NPS / Jeremy M. White)
@@ -4727,16 +4852,19 @@ function setTabBg(t){
   let u, key;
   if(t==="today"){ const seg=todaySeg(); u=TODAY_BG[seg]; key="today-"+seg; }
   else { u=TAB_BG[t]||TODAY_BG.dusk; key=t; }
+  const mobile=matchMedia('(max-width:768px)').matches;
+  key+=mobile?'-mobile':'-desktop';
   if(document.body.dataset.tabbg===key) return;
   document.body.dataset.tabbg=key;
-  document.body.style.backgroundImage="linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url('"+u+"')";
+  const tint={garden:'#10251e',wellness:'#1b1830',finance:'#251c11',grocery:'#251c16',shopping:'#102432'}[t]||'#0d1b2e';
+  document.body.style.backgroundImage=mobile ? 'linear-gradient(160deg,'+tint+',#06050a 420px)' : "linear-gradient(rgba(6,5,10,.64),rgba(6,5,10,.86)),url('"+u+"')";
 }
 function updateHeaderBg(){
   const el=document.getElementById("headerBg");
   if(!el) return;
-  const seg=(typeof todaySeg==="function")?todaySeg():"night";
-  const url=(seg==="night")?HEADER_NIGHT:(TODAY_BG[seg]||HEADER_NIGHT);
-  if(el.dataset.cur!==url){ el.style.backgroundImage="url('"+url+"')"; el.dataset.cur=url; }
+  // Day Arc owns the visible scenery. Do not download a second, hidden photo
+  // before the late header styles have parsed.
+  el.style.backgroundImage="none";
 }
 let WXF={ready:false};
 function wxIcon(wc){return wc>=95?"⛈️":wc>=71?"❄️":wc>=51?"🌧️":wc>=45?"🌫️":wc>=3?"☁️":wc>=1?"🌤️":"☀️";}
@@ -4756,10 +4884,25 @@ function nwsWindSpeed(label){
   const nums=String(label||"").match(/\d+/g);
   return nums?Math.max(...nums.map(Number)):0;
 }
+let hgWeatherFlight=null, hgWeatherLast=0, hgWeatherAttempt=null, hgWeatherHourlyURL="";
+const HG_WEATHER_FRESH_MS=2700000;
 function loadWeather(){
-  fetch("https://api.weather.gov/points/38.1347,-105.4658",{headers:{Accept:"application/geo+json"}})
+  if(hgWeatherFlight) return hgWeatherFlight;
+  const now=Date.now();
+  if(WXF.ready && now-hgWeatherLast<HG_WEATHER_FRESH_MS) return Promise.resolve(WXF);
+  if(hgWeatherAttempt!==null && now-hgWeatherAttempt<30000) return Promise.resolve(WXF);
+  hgWeatherAttempt=now;
+  const controller=typeof AbortController!=="undefined"?new AbortController():null;
+  const timeout=controller?setTimeout(function(){controller.abort();},20000):null;
+  const options={headers:{Accept:"application/geo+json"}}; if(controller) options.signal=controller.signal;
+  const endpoint=hgWeatherHourlyURL?Promise.resolve({properties:{forecastHourly:hgWeatherHourlyURL}}):
+    fetch("https://api.weather.gov/points/38.1347,-105.4658",options)
     .then(r=>{if(!r.ok) throw new Error("NWS point lookup failed"); return r.json();})
-    .then(p=>fetch(p.properties.forecastHourly,{headers:{Accept:"application/geo+json"}}))
+  hgWeatherFlight=endpoint.then(p=>{
+      const url=new URL(p.properties&&p.properties.forecastHourly);
+      if(url.protocol!=="https:" || url.hostname!=="api.weather.gov") throw new Error("Unexpected NWS forecast endpoint");
+      hgWeatherHourlyURL=url.href; return fetch(hgWeatherHourlyURL,options);
+    })
     .then(r=>{if(!r.ok) throw new Error("NWS hourly forecast failed"); return r.json();})
     .then(d=>{
       const periods=(d.properties&&d.properties.periods)||[];
@@ -4790,13 +4933,20 @@ function loadWeather(){
         const h=Number(p.startTime.slice(11,13));
         WXF.hourlyTime[h]=p.startTime; WXF.hourlyCodes[h]=nwsCode(p.shortForecast); WXF.hourlyTemp[h]=Math.round(p.temperature);
       });
+      hgWeatherLast=Date.now();
       renderHeaderWeather();
       if(typeof currentTab!=="undefined"){
-        if(currentTab==="garden" && document.getElementById("view-garden")) renderGarden();
-        if(currentTab==="today") renderToday();
-        if(currentTab==="forecast" && document.getElementById("view-forecast")) renderForecast();
+        if(currentTab==="garden" || currentTab==="today" || currentTab==="forecast") queueRenderAll();
       }
-    }).catch(()=>{});
+      return WXF;
+    }).catch(function(){
+      if(!WXF.ready && currentTab==="forecast"){
+        const el=document.getElementById("view-forecast");
+        if(el) el.innerHTML='<div class="today-date">7-Day Forecast</div><p style="color:var(--text2);font-family:Lora,serif;padding:20px 4px">Weather is unavailable right now. Your saved progress is unaffected; try again after reconnecting.</p>';
+      }
+      return WXF;
+    }).finally(function(){ if(timeout) clearTimeout(timeout); hgWeatherFlight=null; });
+  return hgWeatherFlight;
 }
 function renderHeaderWeather(){
   const el=document.getElementById("hdrWeather"); if(!el||!WXF.ready) return;
@@ -4917,7 +5067,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261008173000';
+  var HG_BUILD_STAMP='20261008193000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;
@@ -4955,7 +5105,7 @@ curtainInit();
       });
     }).catch(function(){ __hgBuildProbeBusy=false; hgScheduleBuildRetry(); });
   }
-  navigator.serviceWorker.addEventListener('controllerchange',function(){ if(__hgReloaded) return; __hgReloaded=true; window.location.reload(); });
+  navigator.serviceWorker.addEventListener('controllerchange',function(){ hgCheckLatestBuild(); });
   window.addEventListener('load',function(){
     navigator.serviceWorker.register('sw.js?v='+HG_BUILD_STAMP,{updateViaCache:'none'}).then(function(reg){
       try{ reg.update(); }catch(e){}
@@ -5126,6 +5276,10 @@ curtainInit();
     .header{min-height:330px}
     .header #day-arc.da-inheader .da-mtn{background-size:auto 230px;background-position:center -26px}
   }
+  @media (max-width:768px){
+    #day-arc .da-clouds-layer.drift,#day-arc .da-rain-layer.on,#day-arc .da-snow-layer.on{animation:none!important}
+    .header .progress-wrap,.header .hdr-trackers{-webkit-backdrop-filter:none;backdrop-filter:none}
+  }
   .header #day-arc.da-inheader{position:static;display:block;border:none;border-radius:0;margin:0;box-shadow:none;cursor:grab}
   .header #day-arc.da-inheader.grabbing{cursor:grabbing}
   .header #day-arc.da-inheader .da-sky{position:absolute;left:0;right:0;top:0;bottom:94px;z-index:0}
@@ -5137,7 +5291,7 @@ curtainInit();
 </style>
 <script>window.DAYARC_CONFIG={appendHost:'.header',lat:38.1347,lng:-105.4658};</script>
 <link rel="stylesheet" href="dayarc.css?v=20260626213000">
-<script src="dayarc.js?v=20260729010000-user-batch"></script>
+<script src="dayarc.js?v=20261008193000-mobile-repair"></script>
 <script>(function(){ function relocate(){ try{
   var tr=document.querySelector('.hdr-trackers'), hd=document.querySelector('.header'); if(tr&&hd&&tr.parentElement!==hd){ hd.appendChild(tr); }
  }catch(e){} } relocate(); setTimeout(relocate,500); setTimeout(relocate,1500); })();</script>

@@ -8,6 +8,16 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-08 — Mobile speed, picture cards and runtime repair
+
+- Cyrus authorized the repair batch after the whole-site audit. Fresh worktree starts at current `origin/main` `b3cf74a`; no dirty shared-worktree code is included. Build/cache `20261008193000`.
+- Due watering cards regain the original wide photo layout with only name, short status and Watered action. Other states remain mini cards below. Mechanical uncropped WebP delivery copies reduce all 32 plant photos from 80.79 MB to 1.37 MB; tapping still opens the unchanged full original with existing framing controls.
+- Mechanical scenery copies and visible-layer-only loading replace multi-megabyte header downloads. Phones use lightweight tinted backgrounds, no grain layer or continuous weather animations. Task-completion effects remain. Static assets cache safely; failed responses do not poison the offline cache, and first worker activation does not force a second page load.
+- Saved-state loading stays blocked until a successful snapshot; nested Firebase writes are guarded before hydration. Snapshot refreshes are coalesced and keep current drafts, selections, focus and open instructions. NWS requests are bounded, shared and reused instead of repeated after every save. Grocery purchases no longer save the same food state twice.
+- Restore missing Sleep and Finance helpers through a small selected module, not the entire dormant feature bundle. Correct Rooms difficulty ordering. No plant data, watering dates/history, recipes, user task state or production Firebase records changed by this release.
+- Verification: all 11 JavaScript regression suites, original-photo/scenery fidelity tests and 27 mobile views passed; no JavaScript errors, missing local assets or horizontal overflow. Long recipe scrolling, draft retention, pre-hydration write blocking and one weather chain passed in an isolated fixture (no production writes).
+- Slow-4G/4x-CPU mobile fixture verified no duplicate Wikimedia background request and no full original photo downloads for cards. Night header fetched only two visible scenery assets (141,166 bytes); all six original initial scene assets totaled 6,289,412 bytes. Fixture isolates external services and is not a promise about real-phone load time.
+
 ### 2026-10-08 — Watering finish and reviewed plant corrections
 
 - Published the eight reviewed identity/care corrections, retaining provisional vine/cactus species labels and the user's report that the found cactus piece is rooting well. Two oregano pots remain separate; spinach replaces the pepper guess. Conditional harvest guides total 17, without dated readiness claims.
