@@ -8,6 +8,14 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-17 — Sage-free tofu sausage spaghetti
+
+- Cyrus authorized publication of the latest Recipes chat handoff: `Recipes/Recipe Box/SCHEDULE_TOFU_SPAGHETTI_HANDOFF.md`, with exact source `Shareable/Italian-Style Tofu Sausage Spaghetti - No Sage.txt`.
+- Add one new `recipes.js` record, `r_trial_tofu_sausage_spaghetti_no_sage`, to Haven't Tried Yet / Italian & Pasta. Preserve all 13 ingredient lines, six directions, four technique notes and allergen information. No sage; oregano is 3/4 tsp; optional cheese uses vegetarian rennet or a plant-based alternative. About three servings, kept as one source-sized batch so ingredient scaling cannot conflict with step quantities.
+- Existing recipes, approvals/shelves, groceries, inventory, plant data and saved state unchanged. No production Firebase writes.
+- Fresh release worktree begins at current `origin/main` `f980042`; review only `recipes.js`, recipe URL/build stamps in `index.html`, cache stamp in `sw.js`, this log and the new recipe regression test. Build/cache `20261017200646`.
+- Verification: independent exact-source comparison passed; all 12 JavaScript suites passed. Isolated mobile/desktop test opened its trial card, displayed all 13 ingredients and six steps, scrolled to the allergens at the bottom, and recorded no overflow, missing local assets, JavaScript errors or fixture writes. The 70 existing `recipes.js` records compare unchanged.
+
 ### 2026-10-08 — Mobile speed, picture cards and runtime repair
 
 - Cyrus authorized the repair batch after the whole-site audit. Fresh worktree starts at current `origin/main` `b3cf74a`; no dirty shared-worktree code is included. Build/cache `20261008193000`.
