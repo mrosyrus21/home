@@ -107,5 +107,179 @@ const RECIPES_BOX = [
   ],
   "note":"Crushed fennel is the main Italian-sausage flavor; no sage is needed. Brown the tofu before adding soy sauce or marinara. Reserve some tofu for topping so it keeps its browned texture. Fresh basil is a finishing herb, not a replacement for the fennel. Allergens: Soy; wheat in ordinary spaghetti and many soy sauces; milk if dairy cheese is used."
 }
+,{
+  "id": "r_trial_roasted_pumpkin_pie_butter_crust",
+  "name": "Roasted Pie Pumpkin Pie with Butter Crust",
+  "emoji": "🥧",
+  "tags": [
+    "box",
+    "trial",
+    "dessert",
+    "baking",
+    "pumpkin",
+    "vegetarian"
+  ],
+  "trial": true,
+  "fixedBatch": true,
+  "servings": "8 slices (one 9-inch deep-dish pie)",
+  "time": "About 45 minutes hands-on; allow about 6 hours total",
+  "source": "Homemade / Cyrus · October 22, 2026",
+  "blurb": "One 9-inch deep-dish pie; 8 slices. About 45 minutes hands-on, plus roasting, dough chilling, baking and cooling. Allow about 6 hours total, or roast the pumpkin and make the dough a day ahead.",
+  "ingredients": [
+    "1 sugar/pie pumpkin, about 3-4 lb; yield varies",
+    "Measure 15 oz / 425 g thick, cooled roasted puree for the filling (approximately 1 3/4 cups; weight is more reliable)",
+    "1 1/4 cups all-purpose flour, 150 g",
+    "1 tsp sugar",
+    "1/2 tsp fine salt",
+    "8 tbsp cold unsalted butter, 113 g, cubed",
+    "3-5 tbsp ice water, added only as needed",
+    "15 oz / 425 g prepared pumpkin puree, as above",
+    "3/4 cup packed light or dark brown sugar, about 160 g",
+    "2 large eggs plus 1 large egg yolk",
+    "1 cup heavy cream, 240 mL",
+    "1 tsp vanilla extract",
+    "1 1/2 tsp ground cinnamon",
+    "1/2 tsp ground ginger",
+    "1/4 tsp ground nutmeg",
+    "1/8 tsp ground cloves",
+    "1/2 tsp fine salt",
+    "Optional serving: lightly sweetened whipped cream"
+  ],
+  "ingredientGroups": [
+    {
+      "title": "Pumpkin",
+      "start": 0
+    },
+    {
+      "title": "Single Butter Crust",
+      "start": 2
+    },
+    {
+      "title": "Filling",
+      "start": 7
+    }
+  ],
+  "steps": [
+    "Roast the pumpkin. Heat oven to 400 F. Wash and dry the pumpkin. Carefully halve it and remove seeds and stringy pulp. Place cut-side down on a parchment-lined rimmed baking sheet. Roast 45-70 minutes, until flesh is very tender. Larger/thicker pumpkins may take longer. Let cool enough to handle.",
+    "Make THICK puree. Scoop flesh from the skin and blend until smooth. If watery, drain in a fine-mesh sieve, or stir in a wide saucepan over medium-low heat until thick and spoonable, with no watery puddle. Do not scorch. Cool, THEN weigh 425 g for the pie. Reserve any extra for another use. Do not assume the whole pumpkin is the correct amount. If short, roast more pumpkin.",
+    "Make the dough. Mix flour, sugar and salt. Cut in cold butter until a mixture of coarse crumbs and pea-size butter pieces remains. Toss with 3 tbsp ice water; add more a teaspoon at a time until a squeezed handful holds together. Press into a disk without kneading. Wrap and refrigerate 45-60 minutes.",
+    "Line and chill the pan. Roll dough on a lightly floured surface to a 12-inch circle. Ease into the pie pan without stretching. Trim to about a 1/2-inch overhang, fold under and crimp. Refrigerate 30 minutes. Heat oven to 375 F.",
+    "Par-bake the crust. Line chilled crust with parchment and fill with pie weights or dried beans, supporting the sides. Bake on a baking sheet for 20 minutes. Carefully lift out parchment and weights. Bake another 7-10 minutes, until the bottom looks dry and lightly golden. Reduce oven to 350 F.",
+    "Mix the filling. Whisk brown sugar, spices and salt into the cooled, measured puree. Whisk in eggs and yolk, then cream and vanilla, just until smooth. Avoid whipping in lots of air. Pour into the warm par-baked crust, leaving at least 1/4 inch below the rim. If the pan is shallow, bake leftover filling separately in an oven-safe ramekin; do not overfill.",
+    "Bake gently. Bake at 350 F on the baking sheet for about 45-65 minutes. Start checking at 40 minutes. Shield the crust edge with foil if browning too quickly. The edges should be set and the center should wobble gently as one piece, not slosh. Aim for about 175 F at the center. Do not wait until the entire filling is rigid; carryover heat continues setting it. Time varies with pan, puree and altitude; use the doneness cues.",
+    "Cool, chill and serve. Cool on a rack for about 60-90 minutes, then refrigerate, initially loosely covered. Refrigerate within 2 hours of leaving the oven; do not wait for the pie to become completely cold on the counter. Chill at least 3 hours before slicing. Cover once cold. Keep refrigerated and eat within 3-4 days."
+  ],
+  "note": "<strong>Equipment</strong><br>9-inch deep-dish metal pie pan, baking sheet, parchment, pie weights or dried beans, blender/food processor, rolling pin and instant-read thermometer. Use a pan rated for the stated oven temperatures.<br><br><strong>Key Technique</strong><br>Use a pie pumpkin, not a large carving pumpkin.<br>Removing excess water BEFORE weighing puree prevents a watery custard.<br>Par-baking protects the bottom crust; gentle baking protects the filling.<br>This is an original, untested recipe, not a claim of a tested adaptation.<br><br><strong>Allergens</strong><br>Wheat, milk, eggs.<br><br><strong>Food Storage Reference</strong><br>FDA: refrigerate perishable foods, including pumpkin pie, within 2 hours. <a href=\"https://www.fda.gov/consumers/consumer-updates/food-safety-tips-healthy-holidays\" target=\"_blank\" rel=\"noopener noreferrer\">FDA food storage reference</a>"
+}
+,{
+  "id": "r_trial_miso_japanese_bbq_seitan_wings",
+  "name": "Crispy Miso Japanese BBQ Seitan Wings",
+  "emoji": "🍢",
+  "tags": [
+    "box",
+    "trial",
+    "asian",
+    "seitan",
+    "vegetarian",
+    "dinner",
+    "appetizer"
+  ],
+  "trial": true,
+  "fixedBatch": true,
+  "servings": "About 3 main-dish servings or 4 appetizer servings",
+  "time": "About 35-45 minutes with already-cooked seitan",
+  "source": "Homemade / Cyrus · October 22, 2026",
+  "blurb": "About 3 main-dish servings or 4 appetizer servings. About 35-45 minutes with already-cooked seitan.",
+  "ingredients": [
+    "1 lb / 454 g plain cooked seitan, drained and patted dry",
+    "1/4 cup cornstarch, 32 g",
+    "2 tbsp all-purpose flour, about 15 g",
+    "1 tsp smoked paprika",
+    "1/2 tsp garlic powder",
+    "1/2 tsp black pepper",
+    "2 tbsp neutral oil, divided",
+    "No added salt initially; seitan, miso and sauce may already be salty",
+    "1/3 cup Japanese BBQ sauce, about 80 mL",
+    "1 tsp miso paste to start; up to 2 tsp total only if needed",
+    "2 tbsp water, plus more if needed",
+    "1 tsp finely grated fresh ginger",
+    "1 small garlic clove, finely grated",
+    "1 tsp rice vinegar, optional and only after tasting",
+    "1/4-1/2 tsp red pepper flakes, optional",
+    "1 tsp toasted sesame oil, stirred in off heat",
+    "Optional finish: sliced green onion and toasted sesame seeds"
+  ],
+  "ingredientGroups": [
+    {
+      "title": "Wings",
+      "start": 0
+    },
+    {
+      "title": "Glaze",
+      "start": 8
+    }
+  ],
+  "steps": [
+    "Prepare the oven and seitan. Heat oven to 425 F. Lightly oil a large metal baking sheet with 1 tbsp of the neutral oil. Tear cooked seitan into 12-16 chunky wing-size pieces, roughly 1 inch thick, with rough edges. Homemade pieces already steamed in wing shapes do not need tearing again. Pat very dry. Dense seitan works better in smaller pieces than large, thick slabs.",
+    "Coat. Combine cornstarch, flour, paprika, garlic powder and pepper. Toss seitan with the remaining 1 tbsp neutral oil, then toss in the dry mixture. Press a thin coating onto the pieces and shake off loose excess. If completely dry patches remain, lightly mist them with oil. Do not build a thick flour shell or pour water over the coated pieces.",
+    "Crisp BEFORE glazing. Arrange in one layer with space between pieces. Bake 15 minutes, turn, then bake 10-15 minutes more, until the outside is crisp and browned. Seitan is already cooked; the goal is a hot center and crisp exterior. Stop earlier if small pieces begin drying out.",
+    "Make the glaze while the wings bake. Whisk Japanese BBQ sauce, 1 tsp miso (unless using combined sauce), water, ginger, garlic and optional pepper flakes in a small saucepan. Simmer gently for 2-3 minutes, stirring, until garlic loses its raw bite and sauce lightly coats a spoon. Add water by the teaspoon if too thick. Remove from heat and stir in sesame oil. Taste before adding optional vinegar or the remaining miso. The glaze should be savory-sweet, not aggressively salty. If already salty, omit extra miso and thin with water; use less glaze on the wings.",
+    "Glaze lightly and set. Toss hot crisp wings with about HALF the glaze, adding only enough to coat thinly. Return to the baking sheet and bake 3-5 minutes, watching closely, until tacky. Do not broil unattended; sugary sauce burns fast. Keep leftover glaze for dipping instead of soaking the crisp coating.",
+    "Serve immediately. Finish with optional green onion and sesame seeds. Serve with rice and a crunchy cucumber/cabbage side, or as wings with a dipping sauce."
+  ],
+  "note": "<strong>Ingredient Clarification</strong><br>Seitan is wheat-based meat alternative (the user's &quot;satan&quot;). This recipe starts with 1 lb plain, fully COOKED seitan, homemade or purchased, not 1 lb dry vital wheat gluten. For the from-scratch base, use the companion recipe &quot;<a href=\"#\" onclick=\"openRecipe('r_trial_homemade_seitan_bbq_wings');return false;\">Homemade Seitan for BBQ Wings.txt</a>&quot; in this folder. Its entire batch (roughly 14-18 oz cooked) works with the coating and glaze below. Miso and Japanese BBQ sauce brands/formulations are not yet confirmed. The glaze below accommodates separate products or one combined sauce.<br><br><strong>If The Purchase Is One Miso-Japanese-Bbq Sauce</strong><br>Use 1/3 cup of that sauce and OMIT the separate miso paste. Follow the rest of the glaze method, tasting before adding vinegar or chile. No extra sugar or soy sauce is needed by default.<br><br><strong>Optional Air Fryer Method</strong><br>Instead of the oven: preheat air fryer to 390 F. Lightly oil the basket; use only the remaining oil needed for the coating, not a tablespoon pooled in the basket. Arrange coated cooked-seitan pieces in a single layer, in batches as needed. Air-fry about 10-15 minutes, turning halfway, until crisp and hot. Lightly glaze, then return for 1-2 minutes at 375 F, checking early for scorching. Appliance performance varies; watch the first batch closely.<br><br><strong>Storage</strong><br>Refrigerate promptly within 2 hours in a shallow covered container; use within 3-4 days. For best texture store unglazed wings and glaze separately. Reheat until hot throughout; refrigerated leftovers should reach 165 F. Glaze after re-crisping. Refrigerate leftover glaze too.<br><br><strong>Diet And Allergens</strong><br>Vegetarian if all packaged ingredients are vegetarian. Check BBQ sauce and miso for fish/dashi, anchovy or other animal ingredients; choose versions without them. Vegan if all packaged ingredients are vegan. Contains wheat/gluten and usually soy; sesame from sesame oil/seeds. Not suitable for a gluten-free diet. Check package allergen labels.<br><br><strong>Recipe Status</strong><br>Original, untested recipe. No specific sauce brand, stock quantity or successful cooking/tasting is implied by this saved version."
+}
+,{
+  "id": "r_trial_homemade_seitan_bbq_wings",
+  "name": "Homemade Seitan for BBQ Wings",
+  "emoji": "🍢",
+  "tags": [
+    "box",
+    "trial",
+    "asian",
+    "seitan",
+    "vegetarian",
+    "dinner"
+  ],
+  "trial": true,
+  "fixedBatch": true,
+  "servings": "About 14-18 oz cooked seitan; 12-16 small wing pieces",
+  "time": "15 min prep + 10 min rest + 35-45 min steam + 20 min cooling",
+  "source": "Homemade / Cyrus · October 22, 2026",
+  "blurb": "About 14-18 oz cooked seitan, depending on hydration and cooking losses; 12-16 small wing pieces. One batch suits the linked BBQ wing recipe. About 15 minutes preparation, 10 minutes resting, 35-45 minutes steaming, and 20 minutes cooling before crisping. Overnight chilling improves firmness.",
+  "ingredients": [
+    "180 g vital wheat gluten, approximately 1 1/2 cups; use weight if possible",
+    "30 g chickpea flour, approximately 1/4 cup",
+    "1 tsp garlic powder",
+    "1 tsp onion powder",
+    "1/2 tsp smoked paprika",
+    "1/4 tsp black pepper",
+    "3/4 cup cool low-sodium vegetable broth, 180 mL",
+    "1 tbsp soy sauce, 15 mL",
+    "1 tbsp neutral oil, 15 mL",
+    "Additional cool water only if needed, a teaspoon at a time",
+    "A little oil to grease the steamer"
+  ],
+  "ingredientGroups": [
+    {
+      "title": "Dry",
+      "start": 0
+    },
+    {
+      "title": "Wet",
+      "start": 6
+    }
+  ],
+  "steps": [
+    "Mix dry and wet separately. Whisk gluten, chickpea flour and seasonings in a bowl. Separately whisk broth, soy sauce and oil. Use cool liquid, not hot broth.",
+    "Form a soft dough. Pour wet into dry and stir until combined. Knead gently by hand for 60-90 seconds, just until cohesive and slightly springy. If dry flour remains and the dough will not join together, add water a teaspoon at a time. Do not add lots of extra water or knead for several minutes; excessive kneading makes a denser, chewier result.",
+    "Rest and shape. Cover and rest 10 minutes. Tear into 12-16 irregular wing-size pieces, each about 1/2-3/4 inch thick. Leave rough edges for the crispy coating. Do not form large thick balls; the centers take longer to cook.",
+    "Set up the steamer. Add about 1-2 inches of water to the pot, or enough for the equipment, keeping the water BELOW the basket/rack. Bring to a simmer. Lightly oil the basket. Arrange pieces with expansion space; do not tightly pack or stack. Use two batches if needed. Food should not sit in the water.",
+    "Steam until cooked through. Cover and steam over a steady simmer for 35-45 minutes, counting from when steam resumes after loading. Check water occasionally and add hot water along the side as needed; never let the pot boil dry. Keep steam escaping from you when lifting the lid. Pieces should feel firm and springy, with no wet, sticky raw-dough center when the thickest is cut. If still doughy, steam another 5-10 minutes and check again.",
+    "Cool before coating. Transfer to a rack or plate and rest 20 minutes. Pat dry. They firm up as they cool. For an even firmer texture, refrigerate in a covered container overnight after the initial cooling. Refrigerate within 2 hours of cooking rather than leaving out to cool indefinitely.",
+    "Make the BBQ wings. Use this batch in \"<a href=\"#\" onclick=\"openRecipe('r_trial_miso_japanese_bbq_seitan_wings');return false;\">Crispy Miso Japanese BBQ Seitan Wings</a>.\" For a cooked yield around 14-18 oz, use the listed coating and glaze amounts as written, adding glaze gradually rather than flooding the pieces. These small wing shapes do not need tearing again after steaming. Steam FIRST; baking or air-frying the raw dough is not the same method."
+  ],
+  "note": "<strong>Equipment</strong><br>Kitchen scale recommended; pot with tight-fitting lid and steamer basket or rack that holds food above the water. This is stovetop steaming, not pressure cooking. No foil wrapping is required.<br><br><strong>Grocery Additions To The Wing List</strong><br>Vital wheat gluten, not ordinary flour or bread flour<br>Chickpea flour (also called besan/gram flour)<br>Low-sodium vegetable broth<br>Soy sauce<br>Onion powder, if not already stocked Replace the purchased cooked-seitan item with these ingredients.<br><br><strong>Notes</strong><br>No miso or BBQ sauce is needed in this base dough; those go in the glaze.<br>Chickpea flour and oil soften the otherwise very chewy gluten texture.<br>This is the vital-wheat-gluten method, not the washed-flour method.<br>Original, untested recipe. Volume measures vary by brand; prefer grams.<br>Contains wheat/gluten and usually soy. Not gluten-free.<br><br><strong>Storage</strong><br>Refrigerate promptly and use within 3-4 days, or freeze cooled pieces in an airtight container for later wings. Thaw in the refrigerator and pat dry before coating. Reheat refrigerated leftovers to 165 F throughout."
+}
 ];;
 if (typeof RECIPES !== 'undefined') { RECIPES_BOX.forEach(function(r){ if(!RECIPES.some(function(x){return x.id===r.id;})) RECIPES.push(r); }); }

@@ -8,6 +8,14 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-23 — Fresh pumpkin pie, miso Japanese BBQ wings and homemade seitan
+
+- Cyrus authorized publication of the two new recipes, then explicitly confirmed inclusion of the homemade-seitan companion on October 23. Source: `Recipes/Recipe Box/SCHEDULE_PUMPKIN_PIE_SEITAN_WINGS_HANDOFF.md` and its three complete Shareable text sources.
+- Add `r_trial_roasted_pumpkin_pie_butter_crust`, `r_trial_miso_japanese_bbq_seitan_wings` and `r_trial_homemade_seitan_bbq_wings` to Haven't Tried Yet, categorized Baking & Sweets / Asian-Inspired. Preserve source-sized yields/times, all 18/17/11 ingredients, 8/6/7 directions and every equipment/technique/sauce/air-fryer/storage/allergen/reference/status note. Wings and homemade base link to each other. No brand, inventory count or taste approval is inferred.
+- Optional display-only ingredient-group labels keep pumpkin/crust/filling and wings/glaze separate. Flat ingredient data contains no headings, so group labels cannot become grocery items. Existing ungrouped recipe ingredient markup remains unchanged. Both recipes retain source-sized quantities without ingredient-only scaling.
+- Fresh release begins at current `origin/main` `d65eeba`; reviewed files are `recipes.js`, the small optional group-label renderer plus recipe URL/build stamps in `index.html`, cache stamps in `sw.js`, this log, new recipe regression coverage and a future-version-safe assertion in the prior tofu test. Build/cache `20261023095836`. No production Firebase writes or unrelated changes; grocery lists and inventory remain unchanged.
+- Verification: all 13 JavaScript regression suites pass; independent comparison found zero omissions across 95 source-content checks. Mobile/desktop tests opened all three trial cards, checked every ingredient group, scrolled to each end, validated the FDA URL and clicked both companion links. No overflow, missing local assets, page JavaScript errors or fixture writes; all 71 existing recipe-box entries compare unchanged.
+
 ### 2026-10-17 — Sage-free tofu sausage spaghetti
 
 - Cyrus authorized publication of the latest Recipes chat handoff: `Recipes/Recipe Box/SCHEDULE_TOFU_SPAGHETTI_HANDOFF.md`, with exact source `Shareable/Italian-Style Tofu Sausage Spaghetti - No Sage.txt`.

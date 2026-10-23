@@ -901,7 +901,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 <script src="./data.js?v=20261008193000-mobile-repair"></script>
 <script src="./today-checklist.js?v=20260923210000"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20261017200646-tofu-spaghetti"></script>
+<script src="./recipes.js?v=20261023095836-pumpkin-seitan"></script>
 <script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -3246,11 +3246,20 @@ function recipeBatchesHtml(r){
     +(b.steps||[]).map(s=>'<li style="margin-bottom:12px;padding-left:4px">'+esc(s)+'</li>').join('')+'</ol>'
     +(b.note?'<p style="border-top:1px solid var(--aborder);padding-top:12px;font-size:13px;line-height:1.6;font-weight:600">'+esc(b.note)+'</p>':'')+'</section>').join('');
 }
+function recipeIngredientsHtml(r,ratio){
+  const groups=r.ingredientGroups||[];
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return (r.ingredients||[]).map(function(ingredient,index){
+    const group=groups.find(g=>g.start===index);
+    const heading=group?'<li data-ingredient-group="true" style="list-style:none;margin:14px 0 8px;font-size:14px;color:var(--text);font-weight:700">'+esc(group.title)+'</li>':'';
+    return heading+'<li style="margin-bottom:6px;font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.5">'+scaleIngredient(ingredient,ratio)+'</li>';
+  }).join('');
+}
 function openRecipe(id, keepScroll){
   const r=(typeof RECIPES!=='undefined'?RECIPES:[]).find(x=>x.id===id); if(!r) return;
   const el=document.getElementById('recipe-page'); if(!el) return;
   const base=baseServ(r); const serv=recipeServ[id]||base; const ratio=serv/base;
-  const ing=(r.ingredients||[]).map(i=>'<li style="margin-bottom:6px;font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.5">'+scaleIngredient(i,ratio)+'</li>').join('');
+  const ing=recipeIngredientsHtml(r,ratio);
   const servCtl='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:10px 14px;background:rgba(212,144,10,.07);border:1px solid var(--aborder,rgba(212,144,10,.3));border-radius:10px"><span style="font-family:\'Lora\',serif;font-size:13px;color:var(--text2)">🍽️ Servings</span><div style="display:flex;align-items:center;gap:14px;margin-left:auto"><button onclick="setServings(\''+r.id+'\',-1)" aria-label="fewer servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">\u2212</button><span style="font-family:\'Playfair Display\',serif;font-size:19px;color:var(--text);min-width:22px;text-align:center">'+serv+'</span><button onclick="setServings(\''+r.id+'\',1)" aria-label="more servings" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">+</button></div></div>';
   const steps=(r.steps||[]).map((st,i)=>'<div style="display:flex;gap:12px;margin-bottom:12px"><div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(212,144,10,.18);border:1px solid var(--amber);color:var(--amber2);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">'+(i+1)+'</div><div style="font-size:13px;color:var(--text);font-family:\'Lora\',serif;line-height:1.55;padding-top:3px">'+st+'</div></div>').join('');
   const meta=[r.trial&&("🧪 HAVEN'T TRIED YET"), r.draft&&('🕒 DRAFT — pending approval'), r.time&&((r.id==='r_trial_spicy_peanut_sesame_chicken'?'🍳 ':'⏱️ ')+r.time), r.difficulty&&('📊 '+r.difficulty), r.source&&('📖 '+r.source)].filter(Boolean);
@@ -5067,7 +5076,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261017200646';
+  var HG_BUILD_STAMP='20261023095836';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;

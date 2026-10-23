@@ -52,5 +52,5 @@ assert.match(page.innerHTML,/About 3 servings/);
 for(const text of [...expected,...Array.from(r.steps),r.note])assert.ok(page.innerHTML.includes(text),'full source content must render');
 assert.doesNotMatch(page.innerHTML,/fewer servings|more servings/,'source-sized recipe must not offer inconsistent ingredient-only scaling');
 c.setServings(id,1);assert.deepEqual(c.recipeServ,{});
-assert.match(html,/recipes\.js\?v=20261017200646-tofu-spaghetti/,'changed recipe bundle needs a fresh version');
+assert.match(html,/recipes\.js\?v=\d{14}[^"\s]*/,'recipe bundle must retain a versioned URL across later deployments');
 console.log('Sage-free tofu recipe quantity, six-step, trial-shelf/category and complete-detail checks passed.');
