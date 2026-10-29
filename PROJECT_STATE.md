@@ -8,6 +8,19 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-29 — Kitchen and Aquarium publication
+
+- Finish the pending October 28 kitchen batch below and publish the reviewed Blue Dream, Tall and Wide aquarium branches from their dedicated October 28/29 handoffs. Dated chemistry and conditional census/transfer status preserved; no new livestock completion or water-test claims.
+- Three unchanged October 28 photos included with full-frame displays; June archives and Dry branch retained. Only the three reviewed tank branches and their date condition transplanted from the dirty shared source, not the rest of that file.
+- Fresh worktree at current origin 906c328. Publish only recipes.js, index.html, sw.js, this log, regression coverage and the three tank photos. No Firebase writes or inventory/grocery/history changes. Build 20261029103000.
+- Validation: all 14 JavaScript regression suites pass. Five kitchen and four tank views pass at 390px/1280px with no overflow, missing local assets or page errors; soup scroll reaches its end. All 74 previous recipe-box entries unchanged, no fixture writes. Original tank image hashes match the handoff assets.
+
+### 2026-10-28 — Soup and kitchen organization
+
+- Publish the current SCHEDULE_KITCHEN_HANDOFF.md: add the complete untried Smoky Black Bean Soup with Roasted Poblano and Tomatillo; preserve the four already-live recent recipes without duplication. Source-sized amounts, seven steps, equipment, distinctions, storage, allergens and development references retained.
+- Reuse the existing kitchen views: Recipe Box, Inventory, Groceries, Meal Prep and direct Zoey access. Add trusted, mains and components browse tiles while retaining existing cuisine categories and trial shelf. Separate seitan component from mains; retain pet formulation warnings.
+- No stock, grocery, completion, recipe approvals or meal-date mutations; no Firebase writes. Fresh worktree at origin 906c328; reviewed recipes.js, index.html, sw.js, this record and regression coverage. Build 20261028173000.
+
 ### 2026-10-23 — Fresh pumpkin pie, miso Japanese BBQ wings and homemade seitan
 
 - Cyrus authorized publication of the two new recipes, then explicitly confirmed inclusion of the homemade-seitan companion on October 23. Source: `Recipes/Recipe Box/SCHEDULE_PUMPKIN_PIE_SEITAN_WINGS_HANDOFF.md` and its three complete Shareable text sources.

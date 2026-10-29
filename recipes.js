@@ -281,5 +281,62 @@ const RECIPES_BOX = [
   ],
   "note": "<strong>Equipment</strong><br>Kitchen scale recommended; pot with tight-fitting lid and steamer basket or rack that holds food above the water. This is stovetop steaming, not pressure cooking. No foil wrapping is required.<br><br><strong>Grocery Additions To The Wing List</strong><br>Vital wheat gluten, not ordinary flour or bread flour<br>Chickpea flour (also called besan/gram flour)<br>Low-sodium vegetable broth<br>Soy sauce<br>Onion powder, if not already stocked Replace the purchased cooked-seitan item with these ingredients.<br><br><strong>Notes</strong><br>No miso or BBQ sauce is needed in this base dough; those go in the glaze.<br>Chickpea flour and oil soften the otherwise very chewy gluten texture.<br>This is the vital-wheat-gluten method, not the washed-flour method.<br>Original, untested recipe. Volume measures vary by brand; prefer grams.<br>Contains wheat/gluten and usually soy. Not gluten-free.<br><br><strong>Storage</strong><br>Refrigerate promptly and use within 3-4 days, or freeze cooled pieces in an airtight container for later wings. Thaw in the refrigerator and pat dry before coating. Reheat refrigerated leftovers to 165 F throughout."
 }
+,{
+  "id": "r_trial_smoky_black_bean_poblano_tomatillo_soup",
+  "name": "Smoky Black Bean Soup with Roasted Poblano and Tomatillo",
+  "emoji": "🥣",
+  "tags": [
+    "box",
+    "trial",
+    "soup",
+    "vegetarian",
+    "beans",
+    "stovetop"
+  ],
+  "trial": true,
+  "fixedBatch": true,
+  "servings": "About 4 generous main-dish servings",
+  "time": "About 45-50 minutes",
+  "source": "Homemade / Cyrus · October 28, 2026",
+  "blurb": "About 4 generous main-dish servings. About 45-50 minutes, overlapping vegetable roasting and onion cooking.",
+  "ingredients": [
+    "3 cans black beans, 15 oz EACH before draining; drained and rinsed (about 4 1/2 cups cooked beans total; reserve one-third for pureeing)",
+    "2 medium-to-large poblano peppers",
+    "8 oz tomatillos, weighed without husks; rinsed and halved",
+    "1 large yellow onion, diced",
+    "4 garlic cloves, minced",
+    "1 cup corn kernels, fresh or frozen; no need to thaw frozen corn",
+    "2 tbsp olive oil",
+    "1 1/2 tsp ground cumin",
+    "1/2 tsp smoked paprika",
+    "1/2 tsp dried Mexican oregano",
+    "3 cups vegetable broth, preferably low sodium, plus up to 1 cup to thin",
+    "1/4 cup chopped cilantro, plus extra for serving",
+    "Salt and black pepper, to taste",
+    "About 1/2 cup crema or sour cream total, about 2 tbsp per serving",
+    "Tortilla chips or crisp tortilla strips, a small handful per serving",
+    "Optional: lime wedges, only if the finished soup needs more acidity"
+  ],
+  "ingredientGroups": [
+    {
+      "title": "SOUP",
+      "start": 0
+    },
+    {
+      "title": "FINISH",
+      "start": 13
+    }
+  ],
+  "steps": [
+    "Broil the vegetables briefly. Set a rack about 4-6 inches below the broiler, following the appliance's guidance, and preheat. Put whole poblanos and halved tomatillos cut-side down on a rimmed metal sheet, bare or foil-lined. Do NOT use parchment under the broiler. Broil, checking often. Remove tomatillos when softened with blistered brown patches, roughly 7-12 minutes; save their juices. Turn poblanos as needed until blistered on all sides, roughly 10-15 minutes total. Remove vegetables individually as ready; do not burn the tomatillo juices black. This is a quick flavor step, not a slow roast.",
+    "Peel and chop the poblanos. Put hot poblanos in a bowl and cover for 10 minutes. Remove loose charred skin, stems and seeds, then chop. Avoid rinsing away the roasted flavor. Chop the softened tomatillos too, retaining their juices.",
+    "Brown the onion while the vegetables roast and steam. Heat olive oil in the soup pot over medium heat. Add onion and a pinch of salt. Cook 10-15 minutes, stirring occasionally, until softened and golden. Add garlic and cook 30 seconds. Add cumin, smoked paprika and oregano; stir another 30 seconds without scorching.",
+    "Build a creamy base with an immersion blender. Add roasted tomatillos and their juices, one-third of the drained beans (about 1 1/2 cups), and 1 cup of the broth. Turn off the heat and puree carefully with an immersion blender, keeping the head submerged to avoid splashes. The onion can be blended too. Without a blender, finely chop tomatillos and mash the reserved beans very well before adding; texture will be more rustic. Do not put hot soup into a sealed personal blender.",
+    "Simmer briefly. Add remaining beans, remaining 2 cups broth and chopped poblanos. Bring to a gentle simmer, then cook partly covered for 15-20 minutes, stirring occasionally. Add corn for the final 5 minutes. Thin with reserved extra broth as needed; aim for thick but spoonable, not a bean dip.",
+    "Finish and taste. Turn off heat and stir in 1/4 cup cilantro. Taste, then adjust salt and pepper. Only add lime if needed: the tomatillos already provide acidity.",
+    "Serve. Ladle into bowls and finish with crema or sour cream, extra cilantro and tortilla chips. Keep chips separate until eating so they stay crisp."
+  ],
+  "note": "<strong>EQUIPMENT</strong><br>Regular 4-5-quart soup pot, rimmed metal baking sheet, foil if desired, covered bowl and optional immersion blender. No slow cooker needed.<br><br><strong>IMPORTANT DISTINCTIONS</strong><br>- These times assume canned or already-cooked beans. Do not use dry beans directly. If starting dry, cook them fully separately before adding the acidic tomatillo base, then measure about 4 1/2 cups cooked beans. - No red tomato, chipotle or meat is needed in this version. Poblano heat varies; smoked paprika provides additional smoke without extra chile heat. - Ordinary dried oregano works if Mexican oregano is unavailable. - Tomatillos should be sound; cooking is not a way to rescue spoiled produce. - Bean yield, broth need and roasting times vary. Use texture/doneness cues.<br><br><strong>STORAGE</strong><br>Divide leftovers into shallow containers and refrigerate within 2 hours. Use within 3-4 days, or freeze the soup without dairy or chips. Reheat refrigerated leftovers to 165 F throughout; add broth if thickened in storage.<br><br><strong>ALLERGENS AND DIET</strong><br>Vegetarian with vegetarian broth. Milk in crema/sour cream. For vegan bowls, use a suitable plant-based topping or omit dairy. Check broth/chip labels for other allergens and animal-derived ingredients.<br><br><strong>DEVELOPMENT NOTES</strong><br>User-selected adaptation; not yet cooked or taste-tested by the user. Combination references, not an exact reproduction of either recipe: https://www.farmfreshtoyou.com/recipes/597/black-bean--tomatillo-and-corn-soup https://www.homechef.com/meals/roasted-tomatillo-poblano-soup"
+}
 ];;
 if (typeof RECIPES !== 'undefined') { RECIPES_BOX.forEach(function(r){ if(!RECIPES.some(function(x){return x.id===r.id;})) RECIPES.push(r); }); }

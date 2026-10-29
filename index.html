@@ -901,7 +901,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 <script src="./data.js?v=20261008193000-mobile-repair"></script>
 <script src="./today-checklist.js?v=20260923210000"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20261023095836-pumpkin-seitan"></script>
+<script src="./recipes.js?v=20261029103000-kitchen-aquarium"></script>
 <script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1427,7 +1427,7 @@ function renderSubtabs(t) {
   if(t==="garden"){ subs=[["watering","💧 Watering"],["harvest","🌾 Harvest"],["care","❤️ Care"]]; cur=gardenSub; fn="switchGardenSub"; }
   else if(t==="shopping"){ subs=[["bluedream","🦐 Blue Dream"],["tall","📏 Tall"],["wide","📐 Wide"],["dry","🏜️ Dry"]]; cur=tankSub; fn="switchTankSub"; }
   else if(t==="print"){ subs=[["todo","📋 To-Do"],["wishlist","💎 Wishlist"],["ideas","💡 Ideas"],["upgrades","🛠️ Upgrades"]]; cur=printSub; fn="switchPrintSub"; }
-  else if(t==="grocery"){ subs=[["list","🛒 List"],["inventory","🧺 Inventory"],["recipebox","📖 Recipes"],["tocook","🍳 To Cook"]]; cur=foodSub; fn="switchFoodSub"; }
+  else if(t==="grocery"){ subs=[["recipebox","📖 Recipe Box"],["inventory","🧺 Inventory"],["list","🛒 Groceries"],["tocook","🍳 Meal Prep"],["zoey","🐶 Zoey"]]; cur=foodSub; fn="switchFoodSub"; }
   else if(t==="finance"){ subs=[["todos","✅ To-dos"],["overview","📊 Overview"],["bills","📅 Bills"],["debts","❄️ Debts"],["mondays","📞 Mondays"],["coach","🧠 Coach"],["sideincome","💸 Side Income"]]; cur=finSub; fn="switchFinSub"; }
   if(subs){ el.style.display="flex"; el.innerHTML=subs.map(x=>`<button class="tab tab-secondary${cur===x[0]?" active":""}" onclick="${fn}('${x[0]}')">${x[1]}</button>`).join(""); }
   else { el.style.display="none"; el.innerHTML=""; }
@@ -1435,7 +1435,7 @@ function renderSubtabs(t) {
 function switchGardenSub(x) { gardenSub=x; renderSubtabs("garden"); renderGarden(); }
 function switchTankSub(x) { tankSub=x; renderSubtabs("shopping"); renderShopping(); }
 function switchPrintSub(x) { printSub=x; renderSubtabs("print"); renderPrint(); }
-function switchFoodSub(x) { foodSub=x; renderSubtabs("grocery"); renderGrocery(); }
+function switchFoodSub(x) { if(x==='zoey') recipeCat='__doggy'; else if(x==='recipebox') recipeCat=null; foodSub=x; renderSubtabs("grocery"); renderGrocery(); }
 function switchFinSub(x)  { finSub=x; renderSubtabs("finance"); renderFinance(); }
 function goDebtsTab(){ finSub="debts"; switchFinSub("debts"); }
 
@@ -2905,86 +2905,121 @@ function renderShopping() {
   <div style="text-align:center;margin-bottom:12px;padding-top:4px">
     <div style="font-size:9px;letter-spacing:.25em;color:#00e5cc;text-transform:uppercase;font-family:'Lora',serif;margin-bottom:6px">🌊 Cyrus · Tanks · pick a tank above</div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4fc3f7,#00e5cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">${TITLES[tankSub]||'Tanks'}</div>
-    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated June 10, 2026</div>
+    <div style="font-size:10px;color:#5a7a99;font-family:'Lora',serif;font-style:italic">Last updated ${['bluedream','tall','wide'].includes(tankSub)?'October 29, 2026':'June 10, 2026'}</div>
   </div>`;
 
   if (tankSub === "bluedream") {
-    html += hero('images/tank_bluedream_20260604.jpg','Blue Dream cube — LED bar, colorful substrate, hydro baskets + feeding tube');
-    html += specs('11.2 × 11.4 × 11.1 in','3.7 gal','💧 Aquatic — Imagitarium PRO Deluxe cube');
-    html += banner('74,212,144','Status — June 10 ✅ · Always-on monitor','Ammonia 0 ppm · permanent ammonia alert card installed','A <b style="color:#4AD490">permanent Seachem-style always-on ammonia alert card</b> is now installed in the tank (continuous monitor — not a one-off strip test). It currently reads <b style="color:#4AD490">0 ppm ammonia (safe)</b>. The 5/31–6/2 spike (0→0.5→1.0) is fully resolved — 🦐 shrimp active &amp; eating, no losses. Glance at the card any time for a live reading.');
-    html += `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px">${chip('0','NH3','ok')}${chip('0','NO2','ok')}${chip('5','NO3','ok')}${chip('7.6','pH')}${chip('125','Hard','ok')}${chip('74°','Temp','ok')}</div>`;
-    html += panel('⚗️ Right Now (June 10)','<b style="color:#4AD490">Ammonia 0 ppm — safe.</b> A <b style="color:#4AD490">permanent always-on ammonia alert card</b> (Seachem-style continuous monitor) is now installed and reads 0 — no more relying on one-off strips. NO2 0, NO3 5, temp in range, shrimp active and eating. Keep feeding light and just glance at the alert card on water-change day.');
-    html += panel('🧼 Daily care — '+(laundry['tankd-bdamm-'+todayKey()]?1:0)+' of 1 today',
-      tdaily('bdamm',"👀 Glance at the ammonia alert card — confirm it's still showing safe / 0 ppm")
-      + '<div style="font-size:10.5px;color:#5a7a99;font-style:italic;margin-top:6px">Now that the alert card is always-on, this is a 5-second look — not a strip test. Resets every morning, like the daily items on Today.</div>');
-    html += panel('🎯 Neocaridina Targets',
-      '<div class="kv"><span>Ammonia</span><span>0 ppm <span style="color:#4AD490">(0 ✅ — always-on alert card)</span></span></div>'
-      +'<div class="kv"><span>Nitrite</span><span>0 ppm <span style="color:#4AD490">(0 ✅)</span></span></div>'
-      +'<div class="kv"><span>Nitrate</span><span>under 20 ppm <span style="color:#4AD490">(5 ✅)</span></span></div>'
-      +'<div class="kv"><span>pH</span><span>6.8–7.5 <span style="color:#F5B830">(7.6 — slightly high, fine)</span></span></div>'
-      +'<div class="kv"><span>Hardness</span><span>100–150 ppm <span style="color:#4AD490">(125 ✅)</span></span></div>'
-      +'<div class="kv"><span>Temp</span><span>72–74°F <span style="color:#4AD490">(74 ✅)</span></span></div>');
-    html += panel('🍤 Feeding Plan','<b style="color:#4AD490">Feeding resumed — shrimp are eating again.</b> <b>Half stick every other day</b>; remove anything uneaten within 2–3h and ease off if ammonia ticks back up.'
-      + sh('Foods') + '<b>Primary:</b> Color Studio Shrimp Premium — HALF stick every other day (10 shrimp, 3.7 gal). <b>Backup:</b> Ultra Fresh micro pellet. <b>Natural:</b> biofilm on moss / pearl weed / roots + almond leaves (replace every 2–3 wks). <b>Veggies:</b> blanched zucchini / spinach / cucumber / peas once stable.'
-      + sh('Rules') + '<ul><li>❌ No food while ammonia is elevated</li><li>✅ Remove uneaten food within 2–3h</li><li>✅ Underfeed rather than overfeed</li></ul>');
-    html += panel('🛒 Shopping &amp; Next Purchases',
-      buy('shop-airstone','~$10','Ring air stone')
-      + buy('shop-mossball','Petco','Weighted moss ball — wrap with Java or Christmas moss')
-      + `<div style="font-size:10px;color:#5a7a99;margin-top:8px;font-style:italic">Ring air stone is from Aqua Rocks Colorado (ask for Tommy).</div>`);
-    html += panel('🔧 Tank Hardware',
-      '<div class="kv"><span>Top</span><span>Open top + 3D-printed escape lid (DAP Rapid Fuse, cured, aquarium-safe)</span></div>'
-      +'<div class="kv"><span>Filter</span><span>3-stage internal: carbon · bio media · foam sponge (+ spare seeding sponges)</span></div>'
-      +'<div class="kv"><span>Heater</span><span>Target 72–74°F. Held ~74°F during the 6/2 heat spike.</span></div>'
-      +'<div class="kv"><span>Cooling</span><span><b style="color:#4AD490">Clip-on fan added (Jun 6)</b> — evaporative cooling across the surface for heat-spike days; watch evaporation, top off with distilled</span></div>'
-      +'<div class="kv"><span>Aeration</span><span>Air pump + airstone — swapped to one smaller airstone (6/2); tube weighted with petrified wood. Run high in the heat.</span></div>'
-      +'<div class="kv"><span>Lighting</span><span>Black LED bar across top + blue LED inside</span></div>');
-    html += hero('images/hydro_top_20260606.jpg','Aquarium-top hydroponics, Jun 6 — potatoes in the net baskets: one sprout cluster up, the left one leafing out under the tank light');
-    html += panel('🌱 Hydroponics (hang-on baskets)',
-      '<div class="kv"><span>Potatoes</span><span><b style="color:#4AD490">Top growth started (Jun 6)</b> — one sprout cluster up, one leafing out</span></div>'
-      +'<div class="kv"><span>White sweet potato</span><span>Roots now <b>4–8 inches</b> into the water</span></div>'
-      +'<div class="kv"><span>Other baskets</span><span>Sweet potato vines/leaves (<b>no tubers</b>) · Ristra/Mexican pepper seed (germinating)</span></div>'
-      +'Roots hang in the tank — absorb nitrates/ammonia and give shrimp biofilm to graze. LECA is the aquarium-safe Aqua Rocks type.');
-    html += panel('🪟 Lid Design Plan — idea, not built',
-      'Sketch for a future build: a <b>transparent lid</b> that keeps the nerite snails IN, with an <b>integrated small light</b> and <b>airflow gaps</b> so the surface still breathes. The hydroponics keep growing on TOP of the lid under the grow lamp; the aquarium lamp then serves <b>only the water column</b>. Pairs with the 🌱 grow-lamp stand project on the Print tab.');
-    html += panel('🪨 Hardscape &amp; Decor',
-      '<b>Substrate:</b> glow gravel (tested 0 hardness ✅). <b>Decor:</b> glass Japanese lantern · large white/quartz rock · glass shrimp feeding tube · quartz &amp; amethyst crystal beds · decorative hut · petrified wood (weighting the airstone tube). <b style="color:#F5B830">Removed 6/2:</b> fake glowing coral/anemone (stirred up detritus → watch NH3). <b>Plants:</b> Cuba Pearl Weed (5/27; rest added 6/2 in thumb-sized patches) + Indian almond leaves.');
-    html += panel('🦐 Livestock',
-      '<div class="kv"><span>Shrimp</span><span>10× Blue Dream Neocaridina, high grade (dark blue) — one-color breeding colony</span></div>'
-      +'<div class="kv"><span>Snails</span><span>2× Nerite (Tiger) — glass cleaners; can\'t breed in freshwater</span></div>'
-      +'Added 5/27 via ~1.5h drip acclimation, no losses.');
-    html += panel('🧰 Equipment On Hand','<b>Treatment:</b> Seachem Prime · Tetra SafeStart · filter regenerator<br><b>Testing:</b> <b style="color:#4AD490">permanent always-on ammonia alert card (Seachem-style, installed Jun 10)</b> · multi-param strips · ammonia strips · API Master Kit<br><b>Food:</b> Color Studio 40g · Ultra Fresh 53g');
-    html += `<div style="height:6px"></div><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif;text-align:center;margin:14px 0 8px">— History &amp; Log —</div>`;
-    html += panel('📋 Full Parameter Log',`<div class="tbl"><table><thead><tr><th>Date</th><th>NH3</th><th>NO2</th><th>NO3</th><th>pH</th><th>Hard</th><th>Alk</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></div><div style="font-size:10px;color:#5a7a99;margin-top:4px">* Livestock added 5/27/2026</div>`);
-    html += panel('🔄 Cycling History','Fishless cycle, early May (Tetra SafeStart + filter regenerator, no water changes, heater 80°F, bubbler HIGH). Wk 1–2 ammonia stalled at 0.5; 5/22 nitrite spiked (stage-2 on); 5/24 ammonia hit 0; 5/27 both 0/0 — CYCLED ✅.');
-    html += panel('💎 Hardness Journey','Started at 250 ppm (too high) from Sunwinx LECA — NOT substrate/coral. Fixed by swapping to Aqua Rocks LECA + partial distilled-water changes (max 30–40%). Now stable at 125 ppm ✅.'+sh('Water Change Rules')+'<ul><li>✅ Distilled from King Soopers / Safeway / Walmart</li><li>✅ Small tap additions to raise hardness/alk</li><li>❌ No Eldorado Spring, fridge-filtered, or chemical pH adjusters</li></ul>');
-    html += panel('📚 Key Lessons','<ul><li>No air through a submersible pump (cavitation)</li><li>Low alk (under 36) suppresses nitrifiers</li><li>Bubbler HIGH during cycling</li><li>Prime detoxifies without stalling the cycle</li><li>Molts = white shells — leave them (calcium)</li><li>One shrimp color per tank; cull lightest, keep darkest</li></ul>');
-    html += panel('🧬 Breeding Notes','<b>Blue Dream:</b> deepen blue over generations — cull pale offspring. Females carry 20–30 eggs ~30 days. <b>Tiger Nerites:</b> can\'t breed in freshwater. <b>Planned (separate divided cube):</b> Red Bloody Mary + Yellow Neon shrimp, one color per side behind a fine-mesh divider.');
-    html += panel('📍 Local Resources','<b style="color:#7fe9dd">Aqua Rocks Colorado</b> (primary — ask for Tommy) · 6771 E 50th Ave, Commerce City · (720) 219-0303 · Tue–Sat 10–6<br><b>Distilled water:</b> King Soopers / Safeway / Walmart (under $2/gal)');
+    html += '<figure style="margin:0 0 12px;border:1px solid rgba(0,229,204,.2);border-radius:8px;overflow:hidden;background:#0a1628"><img src="images/tank_bluedream_20261028.jpg" alt="Blue Dream cube on October 28, 2026: dense low plants, hanging roots, colorful gravel, ornaments and central aeration" style="width:100%;height:auto;display:block" loading="lazy"><figcaption style="padding:9px 13px;font-size:11px;color:#cfe3f5">Blue Dream cube - October 28, 2026; photo added October 29</figcaption></figure>';
+    html += specs('11.2 x 11.4 x 11.1 in','3.7 gal nominal','Imagitarium PRO Deluxe - shrimp breeding / aquaponics');
+    html += banner('245,184,48','Updated October 28, 2026','Latest test: nitrate 0 ppm on October 27','Shrimp-focused planted aquarium. Other water readings below are dated October 9-10, not a fresh full panel. Current livestock census and October 10 additions need confirmation; the original 10-shrimp count and June no-loss status are historical.');
+    html += panel('Water records',
+      '<div class="kv"><span>Nitrate - Oct 27</span><span>0 ppm, reported Oct 28</span></div>'
+      +'<div class="kv"><span>pH - Oct 10</span><span>8.0 in the 3.7-gallon tank; user suspects earlier 7.4 was incorrect</span></div>'
+      +'<div class="kv"><span>GH / KH - Oct 9</span><span>9 dGH / 5 dKH; about 161 / 90 ppm as CaCO3</span></div>'
+      +'<div class="kv"><span>Ammonia / nitrite - Oct 9</span><span>Both 0 ppm; not newly tested Oct 27</span></div>'
+      +'<div class="kv"><span>Temperature - Oct 10</span><span>Strip estimate 73-74 F; not a fresh probe measurement</span></div>'
+      +'API hardness drop counts use 5 mL samples. Oct 10 shrimp holding water also tested GH 9, KH 5 and pH 8.0; holding-water tests are not new tank tests. Nitrate 0 alone does not establish complete water quality.');
+    html += panel('Residents and breeding',
+      '<b>Last explicit pre-addition report:</b> 3 Blue Dreams, 1 trapdoor and 2 nerites. Black and gold mystery snails died; original rabbit snail moved to Wide Oct 8.'
+      +'<br><b>Oct 10 additions in progress:</b> 2 blue shrimp, 1 accidentally purchased brown shrimp and 1 trapdoor. Acclimation reported, release not confirmed. If all entered and all previous residents remain, that would be 5 blue shrimp, 1 brown, 2 trapdoors and 2 nerites - not a verified census.'
+      +'<br><b>Cross-chat record:</b> original four Endlers observed in Wide Oct 9; no longer assume those four remain here. The Oct 28 photo shows at least one small fish; current species/count are unresolved. No new Blue Dream fish stocking planned.'
+      +'<br>Blue-only breeding is preferred. Brown shrimp species/line is unverified; a brown Neocaridina can interbreed and offspring may not remain blue. A separate brown colony is an idea, not a completed setup. Babies and sexes are not confirmed.');
+    html += panel('Daily observations',
+      tdaily('bdamm','Check livestock, filter flow and any installed ammonia indicator; use liquid tests for concerns')
+      +tdaily('bdtemp-v20261028','Check water temperature and rear-chamber water level')
+      +tdaily('bdfood-v20261028','Remove leftover vegetables and inspect feeding area')
+      +'Historical ammonia alert card installation was reported June 10; current presence/function is not newly verified. Do not treat a saved safe status as a live reading.');
+    html += panel('Stable water and winter heating',
+      '<b>Temperature goal:</b> about 74 F; practical range 72-76 F. Room held at 74 F; north-facing basement window has no direct sun. Monitor actual water during cold nights.'
+      +'<br>One tiny nonadjustable betta heater previously raised this tank to 78 F. User has about three available and may try one in winter; installation now is not confirmed. Monitor one heater rather than combining them; adjustable control is preferable if preset runs too warm.'
+      +'<br>Rear chamber placement depends on heater instructions, clearance, flow and reliable submersion. Pump-chamber evaporation can expose a heater; keep the thermometer in the main compartment and unplug before water changes as instructed.'
+      +'<br><b>Evaporation top-offs:</b> plain distilled/RO to the normal waterline. <b>Water changes:</b> safe, temperature- and mineral-matched water; choose well/distilled proportions from measured hardness, not a fixed historical recipe. Avoid blind pH-down or mineral dosing.');
+    html += panel('Plants, cover and aquaponics',
+      'September photos show extensive small-leaved growth called Cuba by the user, coarse colorful gravel, decorations and algae. Exact plant identification is unverified; this is not confirmed moss. Preserve grazing surfaces and dense cover.'
+      +'<br>Sweet potatoes previously grew aquaponically above the tank. Roots and LECA were removed Sept 25 during chemistry investigation. Oct 28 photo shows hanging roots and baskets again; current plant species, medium and reinstallation date are not confirmed. LECA leaching was a hypothesis, not a proven cause.'
+      +'<br>For future aquaponics, keep appropriate crowns/leaves above water, light the emersed leaves separately as needed, avoid pesticide exposure and leave filter intakes accessible. Plants do not replace filtration or testing.'
+      +'<br>Requested hides: one small aquarium-safe ceramic shelter with Java moss, or short aquarium-grade cholla. These are recommendations, not purchases.');
+    html += panel('Feeding and seed shrimp',
+      'Use modest supplemental complete shrimp food alongside established grazing; adjust to actual livestock and leftovers rather than the old ten-shrimp feeding dose.'
+      +'<br>Oct 28: zucchini develops bubbles and floats; user wants aquarium veggie clips. Suction-cup SeaVeggies clip or magnetic VeggieMag recommended, not purchased. Offer a small thin piece and remove leftovers after a few hours.'
+      +'<br>Endlers previously ate suspected seed shrimp; user estimated 70% fewer visible animals, not a counted eradication. Identification is unconfirmed. Limit excess food and siphon loose leftovers; no permanent fish added here just for pest control.');
+    html += panel('Next checks',
+      tchk('bd-census-v20261028','Confirm current blue/brown shrimp and snail census, including Oct 10 releases')
+      +tchk('bd-panel-v20261028','Record fresh ammonia, nitrite, pH, GH/KH and water temperature when tested')
+      +tchk('bd-clip-v20261028','Get an aquarium veggie clip; purchase remains pending')
+      +tchk('bd-cover-v20261028','Choose one compact hide and moss without crowding the tank'));
+    html += panel('References','<a href="https://www.aquariumcoop.com/blogs/aquarium/cherry-shrimp-care" target="_blank" rel="noopener">Neocaridina care</a> · <a href="https://flipaquatics.com/pages/frequently-asked-questions" target="_blank" rel="noopener">Color-line breeding</a> · <a href="https://www.aqueon.com/articles/what-to-feed-your-fish-when-out-of-fish-food" target="_blank" rel="noopener">Vegetable feeding</a>');
+    html += panel('Historical May-June parameter log',`<div class="tbl"><table><thead><tr><th>Date</th><th>NH3</th><th>NO2</th><th>NO3</th><th>pH</th><th>Hard</th><th>Alk</th><th>Historical notes</th></tr></thead><tbody>${rows}</tbody></table></div><div style="font-size:11px;margin-top:6px">Archived reports and interpretations, not current status. Later losses and chemistry changes supersede June population/safety claims. Full dated history remains in the aquarium master logs.</div>`);
   }
 
   else if (tankSub === "tall") {
-    html += hero('images/tank_tall_20260604.jpg','Tall tank — currently empty / open');
-    html += specs('11 × 16 × 11 in','~8.4 gal','✋ Empty / open');
-    html += banner('139,155,181','Status — Open','✋ Empty &amp; available','This tall tank is <b>empty and open</b> right now — free for a new use. Clean it out and store it, or set it up later (it is a good height for a planted aquatic tank or a tall terrestrial build).');
-    html += panel('📐 Specs','<div class="kv"><span>Footprint</span><span>11 × 16 × 11 in (tall)</span></div><div class="kv"><span>Volume</span><span>~8.4 gal</span></div><div class="kv"><span>State</span><span>Empty, no livestock, no water</span></div>');
-    html += `<div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif;text-align:center;margin:14px 0 8px">— Notes —</div>`;
-    html += panel('📝 Next Steps',
-      tchk('tall-1','Clean it out and store, or pick a new purpose')
-      + tchk('tall-2','If going aquatic: leak-check, then cycle before stocking')
-      + tchk('tall-3','If going planted/terrestrial: pick substrate + lighting'));
+    html += '<figure style="margin:0 0 12px;background:#0a1628;border:1px solid rgba(0,229,204,.2);border-radius:8px;overflow:hidden"><img src="images/tank_tall_20261028_173725.jpg" alt="Tall Tank with pale hollow tree decoration, fluorescent ornaments, corner plants, filter, heater and fish along the left side" loading="lazy" style="display:block;width:100%;max-height:720px;object-fit:contain"><figcaption style="padding:9px 13px;font-size:11px;color:#cfe3f5;line-height:1.5">Tall Tank - October 28 filename; photo supplied October 29, 2026</figcaption></figure>';
+    html += specs('11 W x 11 D x 16 H in','8.38 gal gross','Planted freshwater / temporary Endler holding plan');
+    html += banner('74,212,144','October 29 - Photo update','Temporary Endler holding',
+      '<b>Fish are visible in the new photo</b>, consistent with the planned Endlers. Full six-male count and transfer date remain unconfirmed. Temporary housing while Wide shrimp babies grow, not permanent stocking. Female accommodation is unresolved; Wide is not confirmed fish-free.');
+    html += panel('Dated water readings',
+      '<b>October 27 - Tall:</b> ammonia 0 ppm; nitrite 0 ppm; nitrate 0 ppm; pH 8.2; GH 11 dGH; KH 11 dKH. These readings preceded an unspecified distilled-water addition.<br>'
+      + '<b>October 28 - cross-chat report:</b> the Wide summary reports the same Tall chemistry and measured <b>77 F</b>. A distinct post-top-off chemistry test is not established.<br>'
+      + 'Source Endler tank: <b>78 F reported October 27</b>. Verify stable temperature with a properly immersed thermometer, not the heater setting. Hardness assumes standard API 5 mL drop tests.');
+    html += panel('Setup and equipment',
+      '<b>Footprint:</b> 11 x 11 inches; height 16 inches. Actual water volume is unmeasured; the earlier 6-7 gallon estimate is not a measured dosing volume.<br>'
+      + '<b>Filter:</b> sponge filter previously reported; photo shows a black internal housing and left-side aeration. Media and original seeding unconfirmed. Keep filtration and aeration running.<br>'
+      + '<b>Heater:</b> Aqueon visible with illuminated indicator; label appears 50 W, exact model unconfirmed. Glass thermometer and Seachem Ammonia Alert card visible; no precise temperature or ammonia reading inferred from photo.<br>'
+      + '<b>Debris catcher:</b> placed under filter October 27, type unconfirmed. Keep flow clear, empty debris outside tank and remove catcher before fish introduction.');
+    html += panel('Plants, lighting and aquaponics',
+      '<b>Growing:</b> user-reported Cuba in all four corners, with mostly Glo-themed substrate/decor. Exact plant identity unconfirmed.<br>'
+      + '<b>Lighting:</b> blue light, no black light; fixture and white-light mode unknown. An overnight schedule was proposed, not confirmed installed. Start around six hours with a dark period; assess plant growth and algae before extending it.<br>'
+      + '<b>Aquaponics:</b> no Tall-specific emersed plants or baskets confirmed. Any future plant needs suitable leaf lighting, secure mounting, pesticide-free preparation and appropriate crown/root placement.');
+    html += panel('Before moving the males',
+      tchk('tall-temperature-v20261028','Verify stable temperature close to their 78 F source tank')
+      + tchk('tall-cleanup-v20261028','Remove rotting food and catcher; check cover and unobstructed flow')
+      + tchk('tall-water-v20261028','Confirm current ammonia/nitrite zero and acclimate to any water difference')
+      + tchk('tall-transfer-v20261028','Record actual transfer date/count and separate female accommodation')
+      + 'Keep the existing sponge filter running; do not deep-clean or replace it before transfer. No ammonia dosing with animals present.');
+    html += panel('After transfer and water care',
+      'Feed lightly and test ammonia/nitrite daily during the first week. If either appears, use appropriately conditioned, temperature-matched partial water changes and reassess feeding. Observe breathing and chasing, not activity alone.<br>'
+      + '<b>Top-offs:</b> plain distilled/RO for evaporation. <b>Water changes:</b> replacement water needs suitable minerals. Do not chase lower pH/GH/KH; last reported chemistry suits Endlers. Historical regulator dosing is not an ongoing instruction.<br>'
+      + 'Return timing depends on shrimp size and fish predation risk, not a guaranteed calendar date.');
+    html += panel('Cycling record',
+      '<b>October 10:</b> ammonia 0.25; nitrite/nitrate 0 ppm; pH 8.2; GH/KH 13.<br>'
+      + '<b>October 15:</b> ammonia 0.25; nitrite 0 ppm; GH 11 / KH 12. Food still decomposing; user chose food-based fishless cycling to observe organic-load handling.<br>'
+      + '<b>October 27:</b> ammonia, nitrite and nitrate 0 ppm; pH 8.2; GH/KH 11. Encouraging improvement, not a measured clearance-time test. Zero nitrate alone does not prove or disprove cycling.');
+    html += panel('References',
+      '<a href="https://www.aquariumcoop.com/blogs/aquarium/endlers-livebearer-care-guide" target="_blank" rel="noopener noreferrer">Endler care</a> &middot; '
+      + '<a href="https://www.aquariumcoop.com/blogs/aquarium/fish-tank-cycling" target="_blank" rel="noopener noreferrer">Cycling and monitoring</a>');
   }
 
   else if (tankSub === "wide") {
-    html += hero('images/tank_wide_20260604.jpg','Wide tank — being set up; leak-test before trusting it with water');
-    html += specs('19 × 11 × 10 in','~9 gal','❓ Test first → future big aquatic');
-    html += banner('79,195,247','Status — Setting up','📐 The future big aquatic tank','The widest tank — slated to become the <b>big aquatic tank</b>. <b>Leak-test it first</b> (fill 24–48 hrs) before trusting it, then cycle it like any new tank. Decor is going in, but don\'t stock until it holds water and reads 0/0.');
-    html += panel('📐 Specs','<div class="kv"><span>Footprint</span><span>19 × 11 × 10 in (wide)</span></div><div class="kv"><span>Volume</span><span>~9 gal</span></div><div class="kv"><span>Plan</span><span>Leak-test → cycle → big aquatic tank</span></div>');
-    html += `<div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#5a7a99;font-family:'Lora',serif;text-align:center;margin:14px 0 8px">— Setup checklist —</div>`;
-    html += panel('🐠 Get It Running',
-      tchk('wide-1','Fill and LEAK-TEST 24–48 hrs before trusting it')
-      + tchk('wide-2','If it holds: set up filter + heater and cycle fully (NH3 0, NO2 0)')
-      + tchk('wide-3','If it leaks: re-silicone the seams or repurpose it dry')
-      + tchk('wide-4','Once cycled: stock as the big aquatic tank'));
+    html += `<figure style="margin:0 0 12px"><img src="images/tank_wide_20261028_173638.jpg" alt="Wide Tank photographed October 28, 2026: gravel, plant patches, shelters and active bubble curtain" loading="lazy" style="display:block;width:100%;height:auto;border-radius:8px"><figcaption style="font-size:11px;color:#8b9bb5;line-height:1.5;padding:6px 0">Wide Tank - October 28, 2026 photo; added to records October 29.</figcaption></figure>`;
+    html += specs('19 W x 10 D x 11 H in','9.05 gal gross','Cherry shrimp colony / aquaponics plans');
+    html += banner('74,212,144','October 28 - Breeding update','Two berried cherry females','<b>Two females confirmed carrying yellow eggs under their bellies.</b> Hatch timing is roughly 3-4 weeks from first carrying a clutch; start dates are unknown. Yellow saddles are developing unfertilized eggs. Endler relocation to Tall is planned for baby protection; completion is not yet confirmed.');
+    html += panel('Residents',
+      '<b>Cherry shrimp:</b> 10 adults + 1 tiny juvenile introduced October 8-9; ten adults later counted, current census unknown.<br>'
+      + '<b>Snails:</b> 3 black horned nerites + 2 rabbit snails confirmed by October 22.<br>'
+      + '<b>Endlers:</b> latest shared-log count October 27 is 6 full-sized males + 1 small female. Earlier two-juvenile count remains unresolved. Temporary male relocation to Tall is planned; female housing and completed transfer still need confirmation.');
+    html += panel('Dated water readings',
+      '<b>Wide - October 9:</b> pH 8.1; GH 13 / KH 9 drops; ammonia, nitrite and nitrate 0 ppm.<br>'
+      + '<b>Wide - October 10:</b> pH 8.2.<br>'
+      + '<b>Wide - October 27:</b> nitrate 0 ppm, reported October 28. Other readings above are historical.<br>'
+      + '<b>Tall destination - October 28 report:</b> pH 8.2; GH 11 / KH 11; ammonia, nitrite and nitrate 0 ppm; 77 F.<br>'
+      + 'Hardness uses the standard API 5 mL drop method. Tall readings are not Wide readings. Mixed-stock temperature recommendation: about 78 F, checked with a thermometer.');
+    html += panel('Plants, equipment and aquaponics',
+      'Shallow coarse gravel, decorations, two pumps with biofilters, and a corner air stone about 6-7 x 3/4 inches. Cuba planted in six places; three almond leaves and sweet-potato roots reported earlier. Keep filtration and aeration running.<br>'
+      + '<b>Aquaponics:</b> pothos considered for indirect room light; new installation unconfirmed. Emersed leaves need adequate light above the tank. Mount securely and keep crowns/leaves above water as appropriate to the species.');
+    html += panel('Algae and lighting',
+      'Long filamentous algae followed several extended light nights. Much removed; exact algae species unconfirmed. Existing horned nerites graze surfaces but do not reliably clear established strands or attachment patches.<br>'
+      + 'Use consistent roughly <b>6-hour lighting</b>, lower intensity if needed, wipe the viewing glass and remove loose strands. Preserve a chosen decorative/grazing patch. Red spectrum alone is not inherently wrong; match intensity and duration to plant growth.<br>'
+      + '<b>Planned, not purchased:</b> compact dimmable waterproof aquarium lamp with timer. <a href="https://www.amazon.com/dp/B0CYT298XC" target="_blank" rel="noopener noreferrer">hygger 14W / 15-inch candidate</a>; recheck size, price and rating. Keep controller/power supply dry.');
+    html += panel('Feeding and water maintenance',
+      '<b>Reported feeding:</b> thin zucchini slices for shrimp, modest Endler food. Remove leftovers before decay. Zucchini supplements grazing; occasional tiny complete shrimp food was advised.<br>'
+      + '<b>Evaporation:</b> slowly top off with plain distilled water to the normal level.<br>'
+      + '<b>Water changes:</b> use safe temperature- and mineral-matched water. Avoid blind pH regulator or mineral dosing. Leave empty molts for grazing.');
+    html += panel('Shrimplet protection and next checks',
+      tdaily('wide-observe-v20261028','Observe grazing, berried females, tiny shrimp and filter intake protection')
+      + tchk('wide-transfer-v20261028','Confirm which Endlers moved to Tall and where the female will live')
+      + tchk('wide-light-v20261028','Confirm the replacement lamp/timer is installed and set')
+      + 'Healthy adult cherries generally coexist with babies. Keep Cuba, roots and leaves as cover. Record new Wide tests with dates; monitor Tall ammonia/nitrite after fish transfer.');
+    html += panel('Care references','<a href="https://www.aquariumcoop.com/blogs/aquarium/cherry-shrimp-care" target="_blank" rel="noopener noreferrer">Cherry shrimp and breeding</a> &middot; <a href="https://www.aquariumcoop.com/blogs/aquarium/nerite-snail-care" target="_blank" rel="noopener noreferrer">Nerite care</a> &middot; <a href="https://www.aquariumcoop.com/blogs/faqs/hair-algae" target="_blank" rel="noopener noreferrer">Filamentous algae</a>');
   }
 
   else if (tankSub === "dry") {
@@ -3136,9 +3171,15 @@ function recipeListHtml(){
   if(recipeCat==='__doggy'){
     let out=recipeBackBar('recipeGo(null)');
     out+='<div style="display:flex;align-items:center;gap:10px;margin:4px 0 10px"><div style="flex:1;height:1px;background:#D9C39A55"></div><div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:17px;font-weight:700;color:#8a5a2a">🐕 Zoey’s Kitchen</div><div style="flex:1;height:1px;background:#D9C39A55"></div></div>';
-    out+='<div style="font-size:11.5px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Follow each recipe’s batch-specific notes; temporary formulas are labeled.</div>';
+    out+='<div style="font-size:11.5px;color:#8a6a3a;font-family:\'Lora\',serif;font-style:italic;text-align:center;margin-bottom:12px">Dog food — not people food. Homemade formulas are not automatically complete and balanced. Follow batch-specific warnings; temporary and experimental formulas need veterinary nutrition review before sole daily feeding.</div>';
     out+= dogs.length ? dogs.map(function(r){return recipeCard(r,false);}).join('') : '<div style="background:#F5ECD7;border:1px solid #D9C39A;border-radius:8px;padding:20px;text-align:center;color:#7a5c3a;font-family:\'Lora\',serif;font-size:13px">No doggy recipes yet.</div>';
     return out;
+  }
+  if(['__trusted','__mains','__components'].includes(recipeCat)){
+    const component=r=>r.id==='r_trial_homemade_seitan_bbq_wings';
+    const items=human.filter(r=>recipeCat==='__trusted'?!r.trial:recipeCat==='__components'?component(r):!component(r)&&!['Breakfast','Baking & Sweets','Sides & Vegetables','Soups, Stews & Chili'].includes(recipeCategory(r)));
+    const label=recipeCat==='__trusted'?'Tried, Trusted & True':recipeCat==='__components'?'Components':'Mains';
+    return recipeBackBar('recipeGo(null)')+'<h2 style="color:#7a5230;margin-bottom:12px">'+label+'</h2>'+items.map(r=>recipeCard(r,false)).join('');
   }
   // ── TRIAL shelf: recipes Cyrus has saved but not cooked yet ──
   if(recipeCat==='__trial'){
@@ -3162,6 +3203,9 @@ function recipeListHtml(){
   const trials=human.filter(function(r){return r.trial;});
   const counts={}; human.forEach(function(r){var c=recipeCategory(r); counts[c]=(counts[c]||0)+1;});
   let tiles=[];
+  tiles.push(recipeTile('Tried, Trusted & True','✅',human.filter(r=>!r.trial).length+' recipes',"recipeGo('__trusted')",false));
+  tiles.push(recipeTile('Mains','🍽️','Browse main dishes',"recipeGo('__mains')",false));
+  tiles.push(recipeTile('Components','🧩','Linked recipe building blocks',"recipeGo('__components')",false));
   if(trials.length) tiles.push(recipeTile("Haven't Tried Yet",'🧪',trials.length+' on trial',"recipeGo('__trial')",false));
   RECIPE_CATS.forEach(function(cm){ var c=cm[0]; if(counts[c]) tiles.push(recipeTile(c,cm[1],counts[c]+' recipe'+(counts[c]===1?'':'s'),"recipeGo('cat:"+c+"')",false)); });
   let out='<div style="font-family:\'Playfair Display\',serif;font-style:italic;font-size:16px;font-weight:700;color:#7a5230;margin:2px 0 10px">🧑 Hooman Food</div>';
@@ -3285,6 +3329,7 @@ function closeRecipe(){ const el=document.getElementById('recipe-page'); if(el) 
 function renderGrocery() {
   const el = document.getElementById("view-grocery");
   if(foodSub==="recipes") foodSub="recipebox"; // old sub-tab id self-heals
+  if(foodSub==="zoey"){ recipeCat='__doggy'; renderRecipeBox(); return; }
   if(foodSub==="recipebox"){ renderRecipeBox(); return; }
   if(foodSub==="tocook"){ renderToCook(); return; }
   if(foodSub==="inventory"){ el.innerHTML=inventoryHtml(); return; }
@@ -4328,11 +4373,11 @@ function renderFinance(){
 
 
 // ═══ 📖 RECIPE BOX TAB + 🍳 TO COOK QUEUE ═══════════════════════════════════
-function renderRecipeBox(){ const el=document.getElementById('view-grocery'); if(!el||foodSub!=='recipebox') return;
+function renderRecipeBox(){ const el=document.getElementById('view-grocery'); if(!el||!['recipebox','zoey'].includes(foodSub)) return;
   const all=(typeof RECIPES!=='undefined')?RECIPES:[];
   const _fpool=(typeof RECIPES_BOX!=='undefined'?RECIPES_BOX:all).filter(function(r){return !r.dog && !r.draft && !r.trial;}); const feat=weeklyFeatured(_fpool)||all.filter(function(r){return !r.dog&&!r.trial;})[0]; // 🔁 trusted weekly pick; trials stay on their own shelf
   let out='';
-  if(feat) out+='<div id="recipe-featured"><div class="section-label">⭐ Featured recipe</div>'+recipeCard(feat,true)+'</div>';
+  if(feat&&foodSub!=='zoey') out+='<div id="recipe-featured"><div class="section-label">⭐ Featured recipe</div>'+recipeCard(feat,true)+'</div>';
   out+=recipesHtml();
   el.innerHTML='<div class="gk-surface">'+out+'</div>';
 }
@@ -5076,7 +5121,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261023095836';
+  var HG_BUILD_STAMP='20261029103000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;
