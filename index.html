@@ -901,7 +901,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 <script src="./data.js?v=20261008193000-mobile-repair"></script>
 <script src="./today-checklist.js?v=20260923210000"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20261029163000-new-recipes"></script>
+<script src="./recipes.js?v=20261029180000-tortillas"></script>
 <script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -3176,7 +3176,7 @@ function recipeListHtml(){
     return out;
   }
   if(['__trusted','__mains','__components'].includes(recipeCat)){
-    const component=r=>r.id==='r_trial_homemade_seitan_bbq_wings';
+    const component=r=>r.id==='r_trial_homemade_seitan_bbq_wings'||(r.tags||[]).includes('component');
     const items=human.filter(r=>recipeCat==='__trusted'?!r.trial:recipeCat==='__components'?component(r):!component(r)&&!['Breakfast','Baking & Sweets','Sides & Vegetables','Soups, Stews & Chili'].includes(recipeCategory(r)));
     const label=recipeCat==='__trusted'?'Tried, Trusted & True':recipeCat==='__components'?'Components':'Mains';
     return recipeBackBar('recipeGo(null)')+'<h2 style="color:#7a5230;margin-bottom:12px">'+label+'</h2>'+items.map(r=>recipeCard(r,false)).join('');
@@ -5121,7 +5121,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261029163000';
+  var HG_BUILD_STAMP='20261029180000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;

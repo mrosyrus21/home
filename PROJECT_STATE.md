@@ -8,6 +8,12 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-29 — Masa harina tortillas
+
+- Publish the complete Corn Tortillas from Masa Harina Shareable source: four ingredients, six steps, full yield/equipment, hydration caveats, troubleshooting, storage, ingredient distinctions, research/status and allergens. Untried, source-sized batch; 270 mL remains STARTING water, not guaranteed final water.
+- Show under Components and Haven't Tried Yet, retain Mexican category, and link the existing smoky black bean soup. No other recipe/list/inventory/history changes.
+- Fresh current origin 7044273; reviewed recipes.js, Components predicate and version stamps in index.html, sw.js, this log and tortilla regression coverage. Build 20261029180000.
+
 ### 2026-10-29 — Three additional untried recipes
 
 - Publish complete October 29 Shareable sources from the latest Kitchen handoff: Jalapeño-Cheddar Cornbread (11 ingredients/6 steps), Buttermilk Irish Soda Bread (4/7), Mushroom White Bean and Thyme Soup (10/7). Trial status and source-sized batches retained with all notes/equipment/allergens/storage text.

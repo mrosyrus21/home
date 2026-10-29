@@ -446,5 +446,39 @@ const RECIPES_BOX = [
   ],
   "note": "<strong>NOTES</strong><br>- Canned or already-cooked beans only; dry beans need separate cooking first. - Use vegetable broth, not chicken broth. For vegan soup use oil instead of butter and omit sour cream or use a suitable plant-based alternative. - This recipe uses sour cream, not the heavy cream suggested in the initial discussion. No extra cream purchase is required for this soup. - Original, untested recipe; chunky-creamy texture is a working default, not a claim that the user selected a specific texture preference.<br><br><strong>STORAGE</strong><br>Refrigerate in shallow containers within 2 hours and use within 3-4 days. For freezing, reserve portions before adding sour cream for better texture. Reheat gently, stirring, to 165 F throughout without a prolonged boil.<br><br><strong>ALLERGENS</strong><br>Milk if butter or sour cream is used; check broth labels for other allergens."
 }
+,{
+  "id": "r_trial_corn_tortillas_masa_harina",
+  "name": "Corn Tortillas from Masa Harina",
+  "emoji": "🫓",
+  "tags": [
+    "box",
+    "trial",
+    "mexican",
+    "vegetarian",
+    "vegan",
+    "component"
+  ],
+  "trial": true,
+  "fixedBatch": true,
+  "servings": "About 12-15 small tortillas",
+  "time": "About 45 minutes",
+  "source": "Primary-source synthesis / Cyrus · October 29, 2026",
+  "blurb": "About 12-15 small tortillas, depending on added water and portion size. Allow about 45 minutes including resting and cooking in batches. Comal or heavy skillet, bowl, kitchen towel, tortilla press or flat-bottomed pan, and two sheets of food-safe plastic cut from a clean food-storage bag. Plastic is for shaping only; remove BOTH sheets before cooking.",
+  "ingredients": [
+    "210 g nixtamalized masa harina FOR TORTILLAS",
+    "270 mL comfortably warm water to start, about 1 cup plus 2 tbsp",
+    "Additional water, as needed after resting",
+    "Optional: 1/4 tsp fine salt"
+  ],
+  "steps": [
+    "Mix. Combine masa harina and optional salt. Gradually work in warm water and knead briefly until evenly hydrated, about 1-2 minutes. Use water that is comfortable to touch, not boiling water. No fat or leavener is needed.",
+    "Rest and adjust. Cover for 15-20 minutes. Knead again, adding water a tablespoon at a time if stiff or crumbly. Aim for soft, cohesive dough that does not smear wetly onto your hands. If too sticky, add flour a teaspoon at a time.",
+    "Test one piece. Flatten a little ball between your palms. Deep edge cracks mean it needs more water. Use the first tortilla to adjust heat and dough before committing the whole batch. Keep unused dough covered.",
+    "Shape. Portion into roughly 35-40 g balls. Press one at a time between plastic sheets to about 5-6 inches across and 1 1/2-2 mm thick. Aim for even thickness, not maximum thinness. Without a press, flatten between plastic with a sturdy flat-bottomed pan. Peel plastic away from the tortilla, supporting the dough on your palm. Remove all plastic before cooking.",
+    "Cook on a dry surface. Preheat a heavy comal or skillet over medium to medium-high heat for 5-8 minutes. No cooking oil. Gently lay down a tortilla without folding. Cook roughly 30 seconds until it releases, flip for about 30-45 seconds, then flip again to finish, roughly another 30 seconds or as needed. Seek cooked surfaces with scattered brown spots, not a brittle shell. Adjust heat to the first tortilla; burner settings and pans vary. A gentle spatula press can encourage puffing. Do not press bare fingers onto the hot tortilla. Puffing is helpful, not a requirement for success.",
+    "Stack and soften. Immediately place each cooked tortilla in a towel-lined covered bowl or tortilla warmer, stacking and re-covering as you go. Rest the stack about 5-10 minutes before serving; this is a practical serving suggestion. Serve warm alongside Smoky Black Bean Soup with Roasted Poblano and Tomatillo, or use for tacos."
+  ],
+  "note": "<strong>HYDRATION NOTE</strong><br>This starting amount comes from Rick Bayless's masa-harina method; it is not a universal final ratio. Flour brands and grinds absorb water differently. Follow the package starting ratio if substantially different, then judge the rested dough. Do not combine one brand's cup measure with another's gram weight. The user's brand and equipment have not yet been confirmed.<br><br><strong>TROUBLESHOOTING</strong><br>- Cracked pressed edges: add a little water to dough and knead it in. - Sticks badly to plastic: check for excess water or excessively thin pressing. - Scorches while still doughy: lower heat and check even thickness. - Stiff/dry tortillas: shorten cooking and wrap immediately after cooking. - No puff: check moisture, thickness and heat; avoid drying the first side too long before its first flip. Do not keep cooking only to force a puff.<br><br><strong>STORAGE AND REHEATING</strong><br>For storage, let tortillas cool before sealing; refrigerate or freeze. To reheat, lightly moisten and warm briefly on a dry skillet, then rewrap. Keep the serving stack wrapped; cool leftovers separately before packing.<br><br><strong>INGREDIENT DISTINCTIONS</strong><br>Use tortilla masa harina, not cornmeal, cornstarch, wheat flour or plain non-nixtamalized corn flour. Masa harina is already treated corn; do not add lime juice or calcium hydroxide. This is not a fresh-nixtamal recipe.<br><br><strong>RESEARCH AND STATUS</strong><br>Practical synthesis of the primary sources below, not an exact reproduction or a personally tested recipe. Salt amount, portion range, one-pan heat guidance and serving rest are working recommendations. Preserve hydration flexibility rather than labeling 270 mL as the guaranteed total water. Rick Bayless - starting flour/water amounts, rest and cooking-release cues: <a href=\"https://www.rickbayless.com/recipe/corn-tortillas/\" target=\"_blank\" rel=\"noopener noreferrer\">https://www.rickbayless.com/recipe/corn-tortillas/</a> Pati Jinich - hand-mixing, consistency corrections and shaping: <a href=\"https://patijinich.com/homemade-corn-tortillas/\" target=\"_blank\" rel=\"noopener noreferrer\">https://patijinich.com/homemade-corn-tortillas/</a> Masienda - ingredient distinction, pressing, cooking and wrapped-stack method: <a href=\"https://masienda.com/blogs/learn/guide-to-masa-harina\" target=\"_blank\" rel=\"noopener noreferrer\">https://masienda.com/blogs/learn/guide-to-masa-harina</a><br><br><strong>ALLERGENS</strong><br>Corn. Check flour packaging for cross-contact or other ingredients if needed.<br><br>Serve with <a href=\"#\" onclick=\"openRecipe('r_trial_smoky_black_bean_poblano_tomatillo_soup');return false;\">Smoky Black Bean Soup with Roasted Poblano and Tomatillo</a>."
+}
 ];;
 if (typeof RECIPES !== 'undefined') { RECIPES_BOX.forEach(function(r){ if(!RECIPES.some(function(x){return x.id===r.id;})) RECIPES.push(r); }); }
