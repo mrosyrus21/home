@@ -1,0 +1,11 @@
+const fs=require('fs'),vm=require('vm'),path=require('path'),assert=require('assert/strict');
+const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),c=vm.createContext({});
+vm.runInContext(fs.readFileSync(path.join(root,'data.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'recipes.js'),'utf8'),c);
+const all=vm.runInContext('RECIPES',c),ids=['r_trial_jalapeno_cheddar_cornbread','r_trial_buttermilk_irish_soda_bread','r_trial_mushroom_white_bean_thyme_soup'];
+const page={innerHTML:'',style:{}};Object.assign(c,{recipeServ:{},document:{getElementById:()=>page},window:{scrollTo(){}}});vm.runInContext(html.slice(html.indexOf('function baseServ('),html.indexOf('function closeRecipe(')),c);
+ids.forEach((id,i)=>{let r=all.find(x=>x.id===id);assert.equal(all.filter(x=>x.id===id).length,1);assert(r.trial&&r.fixedBatch);assert.equal(r.ingredients.length,[11,4,10][i]);assert.equal(r.steps.length,[6,7,7][i]);c.openRecipe(id);for(let text of [...r.ingredients,...r.steps,r.note])assert(page.innerHTML.includes(text));assert.match(page.innerHTML,/HAVEN'T TRIED YET/);});
+const bread=all.find(r=>r.id===ids[1]),soup=all.find(r=>r.id===ids[2]),corn=all.find(r=>r.id===ids[0]);
+assert.match(bread.ingredients.join(' '),/1 3\/4 cups buttermilk/);assert.doesNotMatch(bread.ingredients.join(' '),/sour cream|yeast|eggs/);assert.match(bread.steps[5],/425 F[\s\S]*400 F[\s\S]*200-205 F/);
+assert.match(corn.ingredients.join(' '),/6 tbsp unsalted butter[\s\S]*reserve 1 tbsp/);assert.match(corn.steps[1],/remaining 5 tbsp/);
+assert.match(soup.steps[5],/Turn heat off[\s\S]*Do not boil/);assert.match(soup.note,/sour cream, not the heavy cream[\s\S]*165 F/);assert.match(soup.steps[6],/openRecipe/);
+assert(all.some(r=>r.name==='Irish Soda Bread'),'existing soda bread must remain');console.log('Three October 29 recipes, quantities, full details and separate soda bread passed');

@@ -336,7 +336,115 @@ const RECIPES_BOX = [
     "Finish and taste. Turn off heat and stir in 1/4 cup cilantro. Taste, then adjust salt and pepper. Only add lime if needed: the tomatillos already provide acidity.",
     "Serve. Ladle into bowls and finish with crema or sour cream, extra cilantro and tortilla chips. Keep chips separate until eating so they stay crisp."
   ],
-  "note": "<strong>EQUIPMENT</strong><br>Regular 4-5-quart soup pot, rimmed metal baking sheet, foil if desired, covered bowl and optional immersion blender. No slow cooker needed.<br><br><strong>IMPORTANT DISTINCTIONS</strong><br>- These times assume canned or already-cooked beans. Do not use dry beans directly. If starting dry, cook them fully separately before adding the acidic tomatillo base, then measure about 4 1/2 cups cooked beans. - No red tomato, chipotle or meat is needed in this version. Poblano heat varies; smoked paprika provides additional smoke without extra chile heat. - Ordinary dried oregano works if Mexican oregano is unavailable. - Tomatillos should be sound; cooking is not a way to rescue spoiled produce. - Bean yield, broth need and roasting times vary. Use texture/doneness cues.<br><br><strong>STORAGE</strong><br>Divide leftovers into shallow containers and refrigerate within 2 hours. Use within 3-4 days, or freeze the soup without dairy or chips. Reheat refrigerated leftovers to 165 F throughout; add broth if thickened in storage.<br><br><strong>ALLERGENS AND DIET</strong><br>Vegetarian with vegetarian broth. Milk in crema/sour cream. For vegan bowls, use a suitable plant-based topping or omit dairy. Check broth/chip labels for other allergens and animal-derived ingredients.<br><br><strong>DEVELOPMENT NOTES</strong><br>User-selected adaptation; not yet cooked or taste-tested by the user. Combination references, not an exact reproduction of either recipe: https://www.farmfreshtoyou.com/recipes/597/black-bean--tomatillo-and-corn-soup https://www.homechef.com/meals/roasted-tomatillo-poblano-soup"
+  "note": "<strong>EQUIPMENT</strong><br>Regular 4-5-quart soup pot, rimmed metal baking sheet, foil if desired, covered bowl and optional immersion blender. No slow cooker needed.<br><br><strong>IMPORTANT DISTINCTIONS</strong><br>- These times assume canned or already-cooked beans. Do not use dry beans directly. If starting dry, cook them fully separately before adding the acidic tomatillo base, then measure about 4 1/2 cups cooked beans. - No red tomato, chipotle or meat is needed in this version. Poblano heat varies; smoked paprika provides additional smoke without extra chile heat. - Ordinary dried oregano works if Mexican oregano is unavailable. - Tomatillos should be sound; cooking is not a way to rescue spoiled produce. - Bean yield, broth need and roasting times vary. Use texture/doneness cues.<br><br><strong>STORAGE</strong><br>Divide leftovers into shallow containers and refrigerate within 2 hours. Use within 3-4 days, or freeze the soup without dairy or chips. Reheat refrigerated leftovers to 165 F throughout; add broth if thickened in storage.<br><br><strong>ALLERGENS AND DIET</strong><br>Vegetarian with vegetarian broth. Milk in crema/sour cream. For vegan bowls, use a suitable plant-based topping or omit dairy. Check broth/chip labels for other allergens and animal-derived ingredients.<br><br><strong>DEVELOPMENT NOTES</strong><br>User-selected adaptation; not yet cooked or taste-tested by the user. Combination references, not an exact reproduction of either recipe: https://www.farmfreshtoyou.com/recipes/597/black-bean--tomatillo-and-corn-soup https://www.homechef.com/meals/roasted-tomatillo-poblano-soup<br><br>Pair with <a href=\"#\" onclick=\"openRecipe('r_trial_jalapeno_cheddar_cornbread');return false;\">Jalapeño-Cheddar Cornbread</a>."
+}
+,{
+  "id": "r_trial_jalapeno_cheddar_cornbread",
+  "name": "Jalapeño-Cheddar Cornbread",
+  "emoji": "🍞",
+  "tags": [
+    "box",
+    "trial",
+    "vegetarian",
+    "baking"
+  ],
+  "trial": true,
+  "fixedBatch": true,
+  "servings": "About 8 servings",
+  "source": "Homemade / Cyrus · October 29, 2026",
+  "blurb": "8 servings. About 15 minutes prep plus 20-30 minutes baking. 8-inch square baking pan or 9-inch oven-safe skillet.",
+  "ingredients": [
+    "1 cup plain yellow cornmeal, about 120-140 g depending on grind",
+    "1 cup all-purpose flour, 120 g",
+    "1 tbsp baking powder",
+    "1/2 tsp baking soda",
+    "1/2 tsp fine salt",
+    "2 tbsp sugar",
+    "1 cup buttermilk, 240 mL",
+    "2 large eggs",
+    "6 tbsp unsalted butter, 85 g total; reserve 1 tbsp for the pan",
+    "1 cup shredded sharp cheddar, 4 oz / 113 g, preferably freshly grated",
+    "1-2 fresh jalapenos, finely diced; remove seeds and pale ribs for less heat"
+  ],
+  "steps": [
+    "Heat oven to 400 F with a rack in the middle. Grease the bottom and sides of the pan with the reserved 1 tbsp butter. No pan preheating required.",
+    "Melt the remaining 5 tbsp butter and let cool until warm, not hot.",
+    "Whisk cornmeal, flour, baking powder, baking soda, salt and sugar in a large bowl. In another bowl whisk buttermilk, eggs and melted butter.",
+    "Pour wet into dry. Fold just until no dry flour remains, then fold in cheddar and diced jalapeno. Do not beat or knead the batter.",
+    "Spread in the pan and bake immediately for 20-30 minutes, checking at 20 minutes. The top should be golden, the center set, and a toothpick should emerge without wet batter (melted cheese is fine).",
+    "Cool 10 minutes before cutting. Serve warm with the smoky black bean, roasted poblano and tomatillo soup."
+  ],
+  "note": "<strong>NOTES</strong><br>- Use plain cornmeal, not self-rising mix, cornbread mix or masa harina. - Buttermilk substitute: put 1 tbsp lemon juice or white vinegar in a liquid measuring cup and add whole milk to reach 1 cup TOTAL. Rest 5-10 minutes. - Choose cheddar made with vegetarian rennet if strict vegetarian suitability matters. Store cooled leftovers covered in the refrigerator or freeze. - Original, untested recipe; timing varies by pan and oven.<br><br><strong>ALLERGENS</strong><br>Wheat, milk, eggs.<br><br>Pair with <a href=\"#\" onclick=\"openRecipe('r_trial_smoky_black_bean_poblano_tomatillo_soup');return false;\">Smoky Black Bean Soup</a>."
+}
+,{
+  "id": "r_trial_buttermilk_irish_soda_bread",
+  "name": "Buttermilk Irish Soda Bread",
+  "emoji": "🍞",
+  "tags": [
+    "box",
+    "trial",
+    "vegetarian",
+    "baking"
+  ],
+  "trial": true,
+  "fixedBatch": true,
+  "servings": "About 8 servings",
+  "source": "Homemade / Cyrus · October 29, 2026",
+  "blurb": "One medium round loaf, about 8 wedges. About 15 minutes prep plus 35-45 minutes baking and cooling time. Baking sheet, parchment and a sharp knife. No rising time or mixer.",
+  "ingredients": [
+    "4 cups all-purpose flour, 480 g, plus a little for shaping",
+    "1 tsp baking soda",
+    "1 tsp fine salt",
+    "1 3/4 cups buttermilk, 420 mL, plus up to 1/4 cup more ONLY if needed"
+  ],
+  "steps": [
+    "Heat oven to 425 F. Line a baking sheet with parchment.",
+    "Whisk flour, baking soda and salt thoroughly in a large bowl, breaking up any lumps of baking soda. Make a well in the center.",
+    "Pour in 1 3/4 cups buttermilk and gently stir with a fork or hand until a shaggy, soft dough forms. If dry flour remains, add reserved buttermilk a tablespoon at a time only until the dough comes together. It should be slightly sticky, not a pourable batter. Flour absorption varies.",
+    "Turn onto a lightly floured surface. Gently fold together just a few times to gather loose pieces. Do NOT knead like yeast bread; prolonged handling makes it tough. Shape a round about 7 inches across and 1 1/2-2 inches tall. A flatter round cooks more evenly than a tall ball.",
+    "Place on the sheet and cut a cross about 1/2 inch deep over the top. Bake immediately; the baking soda starts reacting as soon as it is wet.",
+    "Bake 15 minutes at 425 F, then reduce to 400 F and bake another 20-30 minutes. The crust should be well browned and the base sound hollow when tapped. A center temperature around 200-205 F is another useful cue; the middle should not be wet dough. Loosely tent with foil if the top browns before the center cooks.",
+    "Cool on a rack at least 30 minutes before slicing so the crumb can set. Serve with mushroom, white bean and thyme soup. Best the day it is made; slice and freeze any extra for toast."
+  ],
+  "note": "<strong>NOTES</strong><br>- No yeast, eggs, sugar, raisins or sour cream in this version. - This is a separate recipe from the existing sour-cream Irish Soda Bread; do not overwrite that saved recipe. - Use baking SODA, not baking powder, for this formula. - Original, untested recipe; adjust to dough texture and doneness, especially with variable flour brands and high-altitude baking.<br><br><strong>ALLERGENS</strong><br>Wheat, milk.<br><br>Pair with <a href=\"#\" onclick=\"openRecipe('r_trial_mushroom_white_bean_thyme_soup');return false;\">Mushroom, White Bean and Thyme Soup</a>."
+}
+,{
+  "id": "r_trial_mushroom_white_bean_thyme_soup",
+  "name": "Mushroom, White Bean and Thyme Soup",
+  "emoji": "🥣",
+  "tags": [
+    "box",
+    "trial",
+    "vegetarian",
+    "soup"
+  ],
+  "trial": true,
+  "fixedBatch": true,
+  "servings": "About 4 servings",
+  "source": "Homemade / Cyrus · October 29, 2026",
+  "blurb": "About 4 servings; about 40-45 minutes total. Regular 4-5-quart soup pot and optional immersion blender or potato masher. Pair with Buttermilk Irish Soda Bread.",
+  "ingredients": [
+    "1 lb / 454 g cremini mushrooms, or a mushroom mix, sliced",
+    "2 cans cannellini beans, 15 oz EACH before draining, drained and rinsed",
+    "1 large yellow onion, diced",
+    "4 garlic cloves, minced",
+    "2 tbsp olive oil",
+    "1 tbsp butter, or another 1 tbsp olive oil",
+    "2 tsp fresh thyme leaves OR 3/4 tsp dried thyme",
+    "4 cups vegetable broth, preferably low sodium",
+    "1/2 cup sour cream, optional, for the creamy finish",
+    "Salt and black pepper, to taste"
+  ],
+  "steps": [
+    "Prepare the mushrooms. Wipe or briefly rinse away dirt and dry well. Slice about 1/4 inch thick. Thorough browning, rather than simply simmering them, builds the flavor.",
+    "Brown in two batches. Heat 1 tbsp olive oil in the soup pot over medium-high heat. Add half the mushrooms in a loose layer. Leave undisturbed for 3-4 minutes, then stir occasionally until released water evaporates and edges brown, another 3-5 minutes. Remove to a bowl. Repeat with remaining oil and mushrooms. Adjust heat to avoid burning the fond; reserve all browned mushrooms.",
+    "Cook the aromatics. Reduce to medium. Add butter (or the extra oil), onion and a pinch of salt. Cook 7-10 minutes until softened and lightly golden, stirring. Add a splash of the measured broth if browned bits are sticking too firmly. Add garlic and thyme and cook 30-60 seconds, without burning the garlic.",
+    "Thicken with beans. Add half the beans and about 1 cup of the measured broth. Turn off heat and puree carefully with an immersion blender, keeping its head submerged. Or mash these beans thoroughly before adding them to the pot. Do not put hot soup in a sealed personal blender. Return to medium heat.",
+    "Simmer. Add remaining beans, remaining broth and all browned mushrooms and juices. Bring to a gentle simmer and cook, partly covered, for 10-15 minutes. Keep mushroom pieces and remaining beans intact for a chunky-creamy soup.",
+    "Finish with sour cream, if using. Turn heat off and let bubbling stop. Put sour cream in a bowl; whisk in about 1/2 cup warm broth from the pot, a little at a time, then stir back into the soup. Do not boil after adding sour cream. Taste and adjust salt and black pepper. Omit sour cream for a lighter, bean-thickened broth.",
+    "Serve with slices of <a href=\"#\" onclick=\"openRecipe('r_trial_buttermilk_irish_soda_bread');return false;\">Buttermilk Irish Soda Bread</a>."
+  ],
+  "note": "<strong>NOTES</strong><br>- Canned or already-cooked beans only; dry beans need separate cooking first. - Use vegetable broth, not chicken broth. For vegan soup use oil instead of butter and omit sour cream or use a suitable plant-based alternative. - This recipe uses sour cream, not the heavy cream suggested in the initial discussion. No extra cream purchase is required for this soup. - Original, untested recipe; chunky-creamy texture is a working default, not a claim that the user selected a specific texture preference.<br><br><strong>STORAGE</strong><br>Refrigerate in shallow containers within 2 hours and use within 3-4 days. For freezing, reserve portions before adding sour cream for better texture. Reheat gently, stirring, to 165 F throughout without a prolonged boil.<br><br><strong>ALLERGENS</strong><br>Milk if butter or sour cream is used; check broth labels for other allergens."
 }
 ];;
 if (typeof RECIPES !== 'undefined') { RECIPES_BOX.forEach(function(r){ if(!RECIPES.some(function(x){return x.id===r.id;})) RECIPES.push(r); }); }

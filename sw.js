@@ -1,9 +1,9 @@
 // Fresh documents, reusable static delivery assets. Never intercept writes/Firebase.
-const CACHE = 'hg-cache-20261029103000';
+const CACHE = 'hg-cache-20261029163000';
 const PHOTO_CACHE = 'hg-plant-photos-v1';
 const STATIC_CACHE = 'hg-static-v1';
 const REFRESH_PARAM = 'hg-refresh';
-const REFRESH_STAMP = '20261029103000';
+const REFRESH_STAMP = '20261029163000';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => {

@@ -8,6 +8,12 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-29 — Three additional untried recipes
+
+- Publish complete October 29 Shareable sources from the latest Kitchen handoff: Jalapeño-Cheddar Cornbread (11 ingredients/6 steps), Buttermilk Irish Soda Bread (4/7), Mushroom White Bean and Thyme Soup (10/7). Trial status and source-sized batches retained with all notes/equipment/allergens/storage text.
+- Preserve sour-cream Irish Soda Bread separately; mushroom soup uses sour cream, not heavy cream. Link both soups to their bread pairings. No stock, shopping-list, schedule or saved-state changes.
+- Fresh origin 7dc8fc2; reviewed recipes.js, version stamps only in index.html/sw.js, this record and new regression coverage. Build 20261029163000.
+
 ### 2026-10-29 — Kitchen and Aquarium publication
 
 - Finish the pending October 28 kitchen batch below and publish the reviewed Blue Dream, Tall and Wide aquarium branches from their dedicated October 28/29 handoffs. Dated chemistry and conditional census/transfer status preserved; no new livestock completion or water-test claims.
