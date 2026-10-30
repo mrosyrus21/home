@@ -8,6 +8,12 @@ after Cyrus authorizes it, from a fresh current-origin worktree with explicitly 
 
 ## Section 10 — Staged changes (awaiting GO LIVE)
 
+### 2026-10-30 — Workout restart
+
+- Publish the Health Coach's scoped WORKOUT_RESTART_2026-10-30.patch after review against its handoff. October 30 is Day 1 / Week 1 / Strength A / one easy round / RPE 5. Monday/Wednesday/Friday strength schedule and recovery days retained.
+- Canonical configured start drives weeks, first-day detection and displayed start label. Both configured dates updated; no catch-up/completion history or readiness-check changes. Recipes, plant/aquarium records and saved state unchanged.
+- Fresh origin 7e75542; only data.js, index.html, sw.js, tests/workout-schedule.test.js and this log published. Build/cache 20261030100000. All 16 JavaScript suites, syntax and diff checks passed, including future dates and a hypothetical later restart.
+
 ### 2026-10-29 — Masa harina tortillas
 
 - Publish the complete Corn Tortillas from Masa Harina Shareable source: four ingredients, six steps, full yield/equipment, hydration caveats, troubleshooting, storage, ingredient distinctions, research/status and allergens. Untried, source-sized batch; 270 mL remains STARTING water, not guaranteed final water.

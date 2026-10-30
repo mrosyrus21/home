@@ -898,10 +898,10 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20261008193000-mobile-repair"></script>
+<script src="./data.js?v=20261030100000-workout-restart"></script>
 <script src="./today-checklist.js?v=20260923210000"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20261029180000-tortillas"></script>
+<script src="./recipes.js?v=20261030100000-workout-restart"></script>
 <script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1910,8 +1910,7 @@ function fitnessMonth1Cfg(){
   return {cfg:cfg,wo:wo,m:m};
 }
 function fitnessWeekNumber(ds){
-  const m=fitnessMonth1Cfg().m;
-  const start=fitnessDateAtNoon(m.startDate||"2026-09-07");
+  const start=fitnessDateAtNoon(fitnessRestartCfg().formalStart);
   const cur=fitnessDateAtNoon(ds);
   const days=Math.max(0,Math.floor((cur-start)/86400000));
   return Math.max(1,Math.min(4,Math.floor(days/7)+1));
@@ -1973,7 +1972,7 @@ function fitnessRestartCfg(){
     minimumDate:r.minimumDate||"2026-08-31",
     onRampStart:r.onRampStart||"2026-09-01",
     onRampEnd:r.onRampEnd||"2026-09-06",
-    formalStart:r.formalStart||m.startDate||"2026-09-07",
+    formalStart:m.startDate||r.formalStart||"2026-10-30",
     tutorialStrength:r.tutorialStrength||[]
   };
 }
@@ -2021,7 +2020,7 @@ function fitnessMonth1PlanForDate(ds){
   const c=fitnessMonth1Cfg(), wo=c.wo, m=c.m;
   const d=fitnessDateAtNoon(ds), dow=d.getDay(), week=fitnessWeekNumber(ds);
   const dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  const dayName=dayNames[dow], rpe=fitnessRpeForDate(ds,dow), firstDay=ds===(m.startDate||"2026-09-07");
+  const dayName=dayNames[dow], rpe=fitnessRpeForDate(ds,dow), firstDay=ds===fitnessRestartCfg().formalStart;
   let type="mobility", title=wo.recoveryTitle||"Light movement / mobility", key="recovery", duration="10-20 min";
   let coach="Easy movement counts. No max-effort work.";
   let list=(wo.recovery||[]).map(fitnessExerciseText);
@@ -2084,6 +2083,7 @@ function fitnessPlanAllowed(st,plan){
 function fitnessFullScheduleHtml(today){
   const c=fitnessMonth1Cfg(), m=c.m, plan=fitnessMonth1PlanForDate(today||todayKey());
   const restart=fitnessRestartCfg(), formalStarted=(today||todayKey())>=restart.formalStart;
+  const startLabel=fitnessDateAtNoon(restart.formalStart).toLocaleDateString("en-US",{month:"short",day:"numeric"});
   const week=formalStarted?plan.week:1, friday=(week%2===0)?"Strength C":"Strength A";
   const rows=[
     ["Monday","Strength A + jaw finisher"],["Tuesday","Walk + mobility"],["Wednesday","Strength B + jaw finisher"],
@@ -2103,7 +2103,7 @@ function fitnessFullScheduleHtml(today){
   const runway=!formalStarted?'<div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.28);border-left:3px solid #38BDF8;border-radius:10px;padding:10px 12px;margin-bottom:10px"><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7DD3FC;font-family:\'Lora\',serif;font-weight:700;margin-bottom:4px">New-house restart runway</div><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text)">'+almanacEsc(plan.title)+'</div><div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5;margin-top:3px">Move day Aug 30 · minimum day Aug 31 · on-ramp Sep 1-6 · formal Month 1 Sep 7.</div></div>':'';
   return '<div style="background:rgba(0,0,0,.16);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:12px;margin-top:11px">'
     +runway
-    +'<div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#34D399;font-family:\'Lora\',serif;font-weight:700;margin-bottom:5px">Formal Month 1 · starts Sep 7</div>'
+    +'<div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#34D399;font-family:\'Lora\',serif;font-weight:700;margin-bottom:5px">Formal Month 1 · starts '+almanacEsc(startLabel)+'</div>'
     +'<div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">'+(formalStarted?'Today: ':'Current runway: ')+almanacEsc(plan.dayName)+' - '+almanacEsc(plan.title)+'</div>'
     +'<div style="font-size:11.5px;color:#A7F3D0;font-family:\'Lora\',serif;font-style:italic;line-height:1.45;margin-bottom:8px">'+almanacEsc(plan.badge)+' - '+almanacEsc(plan.rpe)+' - '+almanacEsc(plan.dose)+'</div>'
     +rules
@@ -5121,7 +5121,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261029180000';
+  var HG_BUILD_STAMP='20261030100000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;
