@@ -898,10 +898,10 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20261030100000-workout-restart"></script>
-<script src="./today-checklist.js?v=20260923210000"></script>
+<script src="./data.js?v=20261106120000-morning-routine"></script>
+<script src="./today-checklist.js?v=20261106120000-morning-routine"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20261030100000-workout-restart"></script>
+<script src="./recipes.js?v=20261106120000-morning-routine"></script>
 <script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1860,10 +1860,15 @@ function healthCoachState(today,nowM,dow){
   const late=nowM>=1290;
   const rescue=(pastBed||late)&&(underfed||lowWater||missedDinner);
   const strengthDays=(cfg.workouts&&cfg.workouts.strengthDays)||[1,3,5];
-  const strengthDay=strengthDays.indexOf(dow)>=0;
+  const startDate=cfg.workouts&&cfg.workouts.month1&&cfg.workouts.month1.startDate;
+  const strengthDay=today===startDate||((!startDate||today>=startDate)&&strengthDays.indexOf(dow)>=0);
   const workoutDone=!!laundry["well-workout-"+today]||!!laundry["health-workout-"+today];
-  const workoutAllowed=!rescue&&!underfed&&!lowWater&&meals>=2&&wc>=1&&nowM<bedtime;
-  return {cfg,meals,wc,goal,missedBreakfast,missedLunch,missedDinner,underfed,lowWater,pastBed,late,rescue,strengthDay,workoutDone,workoutAllowed};
+  const morningWindow=nowM<600;
+  const morningWater=morningWindow&&!!laundry["morning-water-"+today];
+  const fueled=meals>=(morningWindow?1:2)||(morningWindow&&!!laundry["morning-snack-"+today]);
+  const hydrated=wc>=1||morningWater;
+  const workoutAllowed=!rescue&&!underfed&&!lowWater&&fueled&&hydrated&&nowM<bedtime;
+  return {cfg,meals,wc,goal,missedBreakfast,missedLunch,missedDinner,underfed,lowWater,pastBed,late,rescue,strengthDay,workoutDone,workoutAllowed,morningWindow,morningWater,fueled,hydrated};
 }
 function healthRescueCard(st){
   const meals=(st.cfg.rescueMeals||[]).slice(0,10).map(x=>'<span style="display:inline-block;margin:3px 4px 3px 0;padding:4px 8px;border-radius:999px;background:rgba(245,184,48,.10);border:1px solid rgba(245,184,48,.24);color:#FBE8C0;font-size:11px">'+x+'</span>').join('');
@@ -1972,7 +1977,7 @@ function fitnessRestartCfg(){
     minimumDate:r.minimumDate||"2026-08-31",
     onRampStart:r.onRampStart||"2026-09-01",
     onRampEnd:r.onRampEnd||"2026-09-06",
-    formalStart:m.startDate||r.formalStart||"2026-10-30",
+    formalStart:m.startDate||r.formalStart||"2026-11-06",
     tutorialStrength:r.tutorialStrength||[]
   };
 }
@@ -2024,7 +2029,7 @@ function fitnessMonth1PlanForDate(ds){
   let type="mobility", title=wo.recoveryTitle||"Light movement / mobility", key="recovery", duration="10-20 min";
   let coach="Easy movement counts. No max-effort work.";
   let list=(wo.recovery||[]).map(fitnessExerciseText);
-  if(dow===1){
+  if(firstDay||dow===1){
     type="strength"; key="strengthA"; title="Strength A"; duration=week<=1?"8-20 min":"20-35 min";
     coach=fitnessDoseForWeek(week);
     list=fitnessWorkoutList("strengthA");
@@ -2051,7 +2056,10 @@ function fitnessMonth1PlanForDate(ds){
     coach="Sunday is for recovery and setting up the next week.";
     list=["Five easy minutes of mobility.","Fill water bottle and pick Monday breakfast/lunch.","Tiny kitchen reset only if it helps food tomorrow.","No hard workout today."];
   }
-  if(firstDay) coach="First workout back: one easy round, then stop while it still feels easy.";
+  if(firstDay){
+    coach="First workout back: one easy round. Starting later today is fine.";
+    list.unshift("Optional before lifting: take baseline photos on your phone (front, side, back).");
+  }
   return {type:type,title:title,workoutKey:key,week:week,dayName:dayName,badge:(firstDay?"Day 1 · ":"")+"Week "+week,rpe:rpe,dose:fitnessDoseForWeek(week),duration:duration,coach:coach,list:list};
 }
 function fitnessGateMessage(st,plan){
@@ -2064,8 +2072,14 @@ function fitnessGateMessage(st,plan){
     return "Move day is the workout. Keep water and meals active all day.";
   }
   if(plan&&plan.type!=="strength"&&plan.type!=="move"){
-    if(st.wc<1) return "Drink water first, then easy movement is available.";
+    if(st.wc<1&&!st.morningWater) return "Drink water first, then easy movement is available.";
     return "Easy movement is available; keep it conversational.";
+  }
+  if(st.morningWindow){
+    if(!st.hydrated&&!st.fueled) return "Water + small snack first.";
+    if(!st.hydrated) return "Water first.";
+    if(!st.fueled) return "Small snack first.";
+    return "Ready when you are.";
   }
   if(st.wc<1 && st.meals<1) return "Plan visible - water + protein before starting.";
   if(st.wc<1) return "Plan visible - drink water before starting.";
@@ -2077,7 +2091,7 @@ function fitnessGateMessage(st,plan){
 function fitnessPlanAllowed(st,plan){
   if(st.rescue||st.pastBed) return false;
   if(plan&&plan.type==="move") return st.wc>=1&&st.meals>=1;
-  if(plan&&plan.type!=="strength"&&plan.type!=="move") return st.wc>=1;
+  if(plan&&plan.type!=="strength"&&plan.type!=="move") return st.wc>=1||!!st.morningWater;
   return !!st.workoutAllowed;
 }
 function fitnessFullScheduleHtml(today){
@@ -2090,6 +2104,9 @@ function fitnessFullScheduleHtml(today){
     ["Thursday","Walk + mobility"],["Friday",friday+(week===4?" easier":"")+" + jaw finisher"],
     ["Saturday","Optional longer walk"],["Sunday","Recovery + tiny reset"]
   ];
+  const start=fitnessDateAtNoon(restart.formalStart), firstSunday=new Date(start);
+  firstSunday.setDate(start.getDate()+(7-start.getDay())%7);
+  if(fitnessDateAtNoon(today)<=firstSunday) rows[(start.getDay()+6)%7][1]="Day 1: Strength A";
   const rules=(m.rules||[]).map(function(x){return '<div style="display:flex;gap:8px;padding:3px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:#F5B830">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("");
   const schedule=rows.map(function(r){
     const on=formalStarted&&r[0]===plan.dayName;
@@ -2100,7 +2117,7 @@ function fitnessFullScheduleHtml(today){
   const block=function(title,key,color){
     return '<details style="background:rgba(0,0,0,.16);border:1px solid '+color+'33;border-radius:10px;padding:10px 12px;margin-top:8px" '+(plan.workoutKey===key?'open':'')+'><summary style="cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:'+color+';font-family:\'Lora\',serif;font-weight:700">'+almanacEsc(title)+'</summary><div style="margin-top:7px">'+fitnessWorkoutList(key).map(function(x){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("")+'</div></details>';
   };
-  const runway=!formalStarted?'<div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.28);border-left:3px solid #38BDF8;border-radius:10px;padding:10px 12px;margin-bottom:10px"><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7DD3FC;font-family:\'Lora\',serif;font-weight:700;margin-bottom:4px">New-house restart runway</div><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text)">'+almanacEsc(plan.title)+'</div><div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5;margin-top:3px">Move day Aug 30 · minimum day Aug 31 · on-ramp Sep 1-6 · formal Month 1 Sep 7.</div></div>':'';
+  const runway=!formalStarted?'<div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.28);border-left:3px solid #38BDF8;border-radius:10px;padding:10px 12px;margin-bottom:10px"><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7DD3FC;font-family:\'Lora\',serif;font-weight:700;margin-bottom:4px">New-house restart runway</div><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text)">'+almanacEsc(plan.title)+'</div><div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5;margin-top:3px">Day 1: Strength A on '+almanacEsc(startLabel)+'. No catch-up workouts.</div></div>':'';
   return '<div style="background:rgba(0,0,0,.16);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:12px;margin-top:11px">'
     +runway
     +'<div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#34D399;font-family:\'Lora\',serif;font-weight:700;margin-bottom:5px">Formal Month 1 · starts '+almanacEsc(startLabel)+'</div>'
@@ -2253,7 +2270,10 @@ function almanacLogKey(id,d){
   };
   return (keys[id]||("morning-"+id+"-"))+d;
 }
-function almanacRoutineDone(id){ return !!laundry[almanacLogKey(id,todayKey())]; }
+function almanacRoutineDone(id){
+  if(id==="workout") return !!laundry["well-workout-"+todayKey()]||!!laundry["health-workout-"+todayKey()];
+  return !!laundry[almanacLogKey(id,todayKey())];
+}
 function almanacOutdoorDue(){
   return plantsDueOn(todayKey()).filter(function(p){ return p.loc==="outdoor"; });
 }
@@ -2279,11 +2299,21 @@ function almanacRoutineTasks(hc){
     return !(t.id==="work" && (dow===0 || dow===6));
   }).map(function(t){
     const x=Object.assign({},t);
+    if(t.id==="sunlight") x.detail="Open blinds; step outside when it is light.";
+    if(t.id==="water") x.detail="Drink a glass of water.";
+    if(t.id==="snack") x.detail="A little carbohydrate + protein.";
+    if(t.id==="warmup") x.detail="Easy movement for 5-10 minutes.";
+    if(t.id==="workout"){
+      const plan=fitnessMonth1PlanForDate(todayKey());
+      x.label=plan.type==="strength"?"Workout: "+plan.title:plan.title;
+      x.detail=plan.dose;
+      x.cue=(dow===0||dow===6)?"After waking":"7:00 AM";
+    }
     if(t.id==="bed") x.detail="Straighten the bed before leaving the bedroom.";
     if(t.id==="outdoor-water") x.detail=waterDetail;
     if(t.id==="health"){ x.label=healthName; x.detail=healthDetail; }
     if(t.id==="breakfast") x.detail="Make a protein breakfast and eat before moving on.";
-    if(t.id==="walk") x.detail="Take Zoey out after breakfast.";
+    if(t.id==="walk") x.detail="Take Zoey out.";
     if(t.id==="work") x.detail="At 8:00 AM, open work tools, check paid priorities, and begin paid work. Do not start early.";
     return x;
   });
@@ -2304,6 +2334,7 @@ function almanacPersist(extra){
 function almanacDone(id){
   const task=ALMANAC_MORNING.find(function(x){return x.id===id;});
   if(!task) return;
+  if(id==="workout"){ toggleWellness("workout"); return; }
   const now=new Date(), nowM=now.getHours()*60+now.getMinutes();
   if(id==="work" && nowM<480){ toast("Work preparation unlocks at 8:00 AM. No unpaid work."); return; }
   const d=todayKey(), st=almanacStepState(id), updates={};
@@ -5121,7 +5152,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261030100000';
+  var HG_BUILD_STAMP='20261106120000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;

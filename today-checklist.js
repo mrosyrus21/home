@@ -30,8 +30,14 @@ function todayChecklistAction(key, undo) {
   }
 }
 function todayChecklistItems(date, nowM, hc) {
-  const shortNames = {bed:'Make the bed', 'outdoor-water':'Check plants due today', health:'Five minutes of mobility', breakfast:'Protein breakfast', walk:'Walk Zoey', work:'Begin paid work'};
-  const morning = almanacRoutineTasks(hc).map(t => ({
+  const shortNames = {bed:'Make the bed', 'outdoor-water':'Check plants due today', health:'Five minutes of mobility', breakfast:'Protein breakfast', work:'Begin paid work'};
+  const plan = fitnessMonth1PlanForDate(date);
+  const weekend = [0,6].includes(new Date(date + 'T12:00:00').getDay());
+  const morning = almanacRoutineTasks(hc).map(t => t.id === 'workout' ? {
+    key:'movement', label:plan.type === 'strength' ? 'Workout: ' + plan.title : plan.title,
+    note:fitnessGateMessage(hc, plan), done:hc.workoutDone, morning:true,
+    time:weekend ? 'After waking' : '7 AM', plan:plan,
+  } : ({
     key:'morning:' + t.id, label:shortNames[t.id] || t.label, note:t.detail,
     done:almanacRoutineDone(t.id), morning:true,
     locked:t.id === 'work' && nowM < 480 || t.id === 'outdoor-water' && !wateringStateLoaded,
@@ -43,9 +49,8 @@ function todayChecklistItems(date, nowM, hc) {
     {key:'lunch', label:'Protein lunch', note:'Something easy counts.', time:'Noon', done:!!laundry['meal-lunch-' + date]},
     {key:'newhome', label:'Make one spot feel like home', note:'One box, shelf, or surface. Then stop.', time:'10–15 min', done:!!laundry['newhome-one-' + date]},
   ];
-  const plan = fitnessMonth1PlanForDate(date);
-  // Walk + mobility already live in the morning list. Never synthesize a workout log.
-  if (plan.type === 'strength') items.push({key:'movement', label:plan.title, note:fitnessGateMessage(hc, plan), time:plan.duration, done:hc.workoutDone, plan:plan});
+  // Keep older morning configurations working without showing a second workout.
+  if (plan.type === 'strength' && !morning.some(x => x.key === 'movement')) items.push({key:'movement', label:plan.title, note:fitnessGateMessage(hc, plan), time:'7 AM', done:hc.workoutDone, plan:plan});
   items.push(
     {key:'dinner', label:'Dinner', note:'Keep it easy. Feed yourself well.', time:'7 PM', done:!!laundry['meal-dinner-' + date]},
     {key:'winddown', label:'Phone in the other room', note:'Evening wind-down · reading, then lights out', time:'10 PM', done:windDownDone()},
@@ -81,7 +86,7 @@ function renderTodayChecklist() {
   });
   const done = all.filter(x => x.done), activeMorning = model.morning.filter(x => x.mode !== 'hidden');
   const nextMorning = model.morning.find(x => !x.done && !x.locked);
-  let next = nowM < 720 && nextMorning ? nextMorning : model.items.find(x => !x.done && x.key !== 'water' && (x.key !== 'dinner' || nowM >= 1080) && (x.key !== 'winddown' || nowM >= 1260) && (x.key !== 'movement' || nowM >= 1020));
+  let next = nowM < 720 && nextMorning ? nextMorning : model.items.find(x => !x.done && x.key !== 'water' && (x.key !== 'dinner' || nowM >= 1080) && (x.key !== 'winddown' || nowM >= 1260) && (x.key !== 'movement' || nowM >= 420));
   if (!next) next = nextMorning;
   const progress = Math.round(done.length / all.length * 100), remaining = all.length - done.length;
   const subtitle = !window.__stateHydrated ? 'Loading your saved progress…' : remaining === 0 ? 'Your list is clear. Enjoy your evening.' : done.length === 0 ? 'Start small. Every check makes room.' : done.length + ' little wins. Keep the good feeling going.';

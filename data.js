@@ -12,23 +12,23 @@
 // Drives the Today tab: meal times + the evening wind-down block.
 // Change any value and redeploy (or hand off) — nothing else needed.
 const ALMANAC_MORNING = [
-  { id:"bed",           emoji:"🛏️", label:"Make the bed",                              cue:"Start here" },
-  { id:"outdoor-water", emoji:"🌱", label:"Check outdoor plants due today; water only if needed", cue:"Outside" },
-  { id:"health",        emoji:"🧘", label:"Do the health coach activity",                 cue:"After watering" },
-  { id:"breakfast",     emoji:"🍳", label:"Make and eat breakfast",                      cue:"After movement" },
-  { id:"walk",          emoji:"🐕", label:"Walk Zoey",                                   cue:"After breakfast" },
-  { id:"work",          emoji:"💼", label:"Prepare for work and begin paid work",         cue:"8:00 AM", availableAt:480 }
+  { id:"sunlight", emoji:"☀️", label:"Sunlight",    cue:"On waking" },
+  { id:"water",    emoji:"💧", label:"Water",       cue:"First glass" },
+  { id:"snack",    emoji:"🍌", label:"Small snack", cue:"Before movement" },
+  { id:"walk",     emoji:"🐕", label:"Zoey out",    cue:"After snack" },
+  { id:"warmup",   emoji:"🧘", label:"Warm up",     cue:"Before workout" },
+  { id:"workout",  emoji:"🏋️", label:"Workout",     cue:"7:00 AM" }
 ];
 
 const RHYTHM = {
-  wake:      "8:00 AM",
-  waterWake: "8:00 AM",        // water before anything else
+  wake:      "6:30 AM",
+  waterWake: "6:30 AM",        // water on waking
   breakfast: "8:30 AM",        // protein within 60 minutes of waking
   lunch:     "12:00 PM",
   hydration: "3:30 PM",        // afternoon water / electrolyte checkpoint
   dinner:    "7:00 PM",        // aim to sit down here...
   dinnerBy:  "8:00 PM",        // ...hard rule: eaten BY this time
-  workout:   "5:30 PM",        // only if fed + hydrated
+  workout:   "7:00 AM",        // after water, snack and warm-up
   windDown:  "10:00 PM",       // phone goes to the other room, screens off
   reading:   "10:00–11:00 PM", // the reading hour fills the no-screen block
   lightsOut: "11:00 PM",
@@ -65,7 +65,7 @@ const HEALTH_COACH = {
     minimumDate: "2026-08-31",
     onRampStart: "2026-09-01",
     onRampEnd: "2026-09-06",
-    formalStart: "2026-10-30",
+    formalStart: "2026-11-06",
     anchors: ["Water on waking", "Dog/property walk", "Plant check or harvest", "Hygiene", "Protein breakfast", "Mandatory lunch", "Movement matched to readiness", "Dinner", "Evening shutdown"],
     morningMinimum: ["Water", "Brush teeth, wash face, deodorant", "Feed and briefly walk Zoey", "Protein breakfast + Litfulo", "Start work"],
     hygieneMorning: ["Brush teeth", "Wash face", "Deodorant", "Hair/scalp check", "Clean clothes", "Litfulo with breakfast"],
@@ -92,7 +92,7 @@ const HEALTH_COACH = {
       "Easy breathing, no max-effort work"
     ],
     month1: {
-      startDate: "2026-10-30",
+      startDate: "2026-11-06",
       rules: [
         "Week 1 starts with one easy round at RPE 5; stop with energy left.",
         "No failure, max reps, or soreness hunting.",

@@ -79,14 +79,14 @@ async function main(){
   const sleepHtml=context.hgSleepSectionHtml("2026-10-08");
   assert.match(sleepHtml,/id="sleep-section"/);
   assert.match(sleepHtml,/Last 14 nights/);
-  assert.match(sleepHtml,/9h planned window/,"chart reference follows the configured lights-out/wake window");
+  assert.match(sleepHtml,/7h 30m planned window/,"chart reference follows the configured lights-out/wake window");
   assert.match(sleepHtml,/value="22:45"/,"prefill can use the last saved night");
-  assert.match(sleepHtml,/wake 8:00 AM/);
+  assert.match(sleepHtml,/wake 6:30 AM/);
   assert.match(sleepHtml,/Log-last-night nudge at 08:30/);
   const empty=context.sleep;context.sleep={};
   const emptyHtml=context.hgSleepSectionHtml("2026-10-08");
   assert.match(emptyHtml,/id="hg-bed"[^>]+value="23:00"/);
-  assert.match(emptyHtml,/id="hg-wake"[^>]+value="08:00"/,"new-entry defaults follow current rhythm, not old June defaults");
+  assert.match(emptyHtml,/id="hg-wake"[^>]+value="06:30"/,"new-entry defaults follow current rhythm, not old June defaults");
   context.sleep=empty;
   for(const match of sleepHtml.matchAll(/on(?:click|change)="(hg\w+)\(/g))assert.equal(typeof context[match[1]],"function","every generated Sleep handler must exist");
   assert.equal(serialize(context.sleep),initialSleep,"rendering must not alter sleep entries or preferences");
