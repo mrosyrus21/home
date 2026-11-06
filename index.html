@@ -790,7 +790,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<link rel="stylesheet" href="./today-checklist.css?v=20260923210000">
+<link rel="stylesheet" href="./today-checklist.css?v=20261106160000">
 </head>
 <body>
 
@@ -898,10 +898,10 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20261106120000-morning-routine"></script>
-<script src="./today-checklist.js?v=20261106120000-morning-routine"></script>
+<script src="./data.js?v=20261106160000-workout-guide"></script>
+<script src="./today-checklist.js?v=20261106160000-workout-guide"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20261106120000-morning-routine"></script>
+<script src="./recipes.js?v=20261106160000-workout-guide"></script>
 <script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1970,6 +1970,31 @@ function fitnessWorkoutList(key){
   if(/^strength/.test(key)) items=items.concat(fitnessJawItems());
   return items;
 }
+function fitnessWorkoutDetailsHtml(plan){
+  const m=fitnessMonth1Cfg().m, g=m.guide, e=almanacEsc;
+  const keys=g&&g.planKeys[plan.workoutKey];
+  if(!keys) return '<ul>'+(plan.list||[]).map(x=>'<li>'+e(x)+'</li>').join('')+'</ul>';
+  const list=items=>'<ul>'+items.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul>';
+  const link=source=>/^https:\/\//.test(source[1])?'<a target="_blank" rel="noopener noreferrer" href="'+e(source[1]).replace(/"/g,'&quot;')+'">'+e(source[0])+'</a>':'';
+  const exercises=keys.map(function(key){
+    const x=g.exercises[key];
+    return '<li class="fg-exercise"><h4>'+e(x.title)+'</h4><p class="fg-dose">Per round: '+e(x.dose)+'</p>'
+      +'<p><strong>Why:</strong> '+e(x.why)+'</p><p><strong>Start with:</strong> '+e(x.load)+'</p>'
+      +'<ol>'+x.steps.map(s=>'<li>'+e(s)+'</li>').join('')+'</ol>'
+      +'<p><strong>Easier:</strong> '+e(x.easier)+'</p><p><strong>Watch for:</strong> '+e(x.watch)+'</p>'
+      +(x.alternative?'<p><strong>Alternative:</strong> '+e(x.alternative)+'</p>':'')
+      +(x.demo?'<p>'+link(x.demo)+'</p>':'')+'</li>';
+  }).join('');
+  return '<div class="fg-session">'+((plan.badge||'').indexOf('Day 1')===0?'<p>Optional before lifting: take baseline photos on your phone (front, side, back).</p>':'')
+    +'<p class="fg-dose">'+e(fitnessDoseForWeek(plan.week||1))+'</p>'
+    +'<p>'+e(g.intro)+'</p><h4>Before you start</h4>'+list(g.preparation)
+    +'<h4>Pace and rest</h4>'+list(g.pacing)
+    +'<h4>The six exercises, in order</h4><ol class="fg-exercises">'+exercises+'</ol>'
+    +'<h4>Finish</h4>'+list(g.finish)
+    +'<h4>Jaw device: separate and optional</h4>'+list(fitnessJawItems())
+    +'<details class="fg-sources"><summary>Technique references</summary><p>'+e(g.evidenceNote)+'</p>'
+    +'<ul>'+g.sources.map(s=>'<li>'+link(s)+'</li>').join('')+'</ul></details></div>';
+}
 function fitnessRestartCfg(){
   const cfg=hcCfg(), r=cfg.restart||{}, m=((cfg.workouts||{}).month1||{});
   return {
@@ -2030,17 +2055,17 @@ function fitnessMonth1PlanForDate(ds){
   let coach="Easy movement counts. No max-effort work.";
   let list=(wo.recovery||[]).map(fitnessExerciseText);
   if(firstDay||dow===1){
-    type="strength"; key="strengthA"; title="Strength A"; duration=week<=1?"8-20 min":"20-35 min";
+    type="strength"; key="strengthA"; title="Strength A"; duration=week<=1?"20-30 min incl. warm-up":"20-35 min";
     coach=fitnessDoseForWeek(week);
     list=fitnessWorkoutList("strengthA");
   } else if(dow===3){
-    type="strength"; key="strengthB"; title="Strength B"; duration=week<=1?"8-20 min":"20-35 min";
+    type="strength"; key="strengthB"; title="Strength B"; duration=week<=1?"20-30 min incl. warm-up":"20-35 min";
     coach=fitnessDoseForWeek(week);
     list=fitnessWorkoutList("strengthB");
   } else if(dow===5){
     type="strength"; key=(week%2===0)?"strengthC":"strengthA"; title=(key==="strengthC")?"Strength C":"Strength A";
     if(week===4) title+=" - easier Friday";
-    duration=week<=1?"8-20 min":"20-30 min";
+    duration=week<=1?"20-30 min incl. warm-up":"20-30 min";
     coach=week===4?"Keep Friday easier. Practice the pattern and leave extra energy.":fitnessDoseForWeek(week);
     list=fitnessWorkoutList(key);
   } else if(dow===2 || dow===4){
@@ -2100,8 +2125,8 @@ function fitnessFullScheduleHtml(today){
   const startLabel=fitnessDateAtNoon(restart.formalStart).toLocaleDateString("en-US",{month:"short",day:"numeric"});
   const week=formalStarted?plan.week:1, friday=(week%2===0)?"Strength C":"Strength A";
   const rows=[
-    ["Monday","Strength A + jaw finisher"],["Tuesday","Walk + mobility"],["Wednesday","Strength B + jaw finisher"],
-    ["Thursday","Walk + mobility"],["Friday",friday+(week===4?" easier":"")+" + jaw finisher"],
+    ["Monday","Strength A"],["Tuesday","Walk + mobility"],["Wednesday","Strength B"],
+    ["Thursday","Walk + mobility"],["Friday",friday+(week===4?" easier":"")+""],
     ["Saturday","Optional longer walk"],["Sunday","Recovery + tiny reset"]
   ];
   const start=fitnessDateAtNoon(restart.formalStart), firstSunday=new Date(start);
@@ -2115,7 +2140,7 @@ function fitnessFullScheduleHtml(today){
   const jaw=m.jaw||{};
   const jawNote=jaw.title?'<div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.28);border-left:3px solid #A78BFA;border-radius:10px;padding:10px 12px;margin-top:9px"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#A78BFA;font-family:\'Lora\',serif;font-weight:700;margin-bottom:4px">'+almanacEsc(jaw.title)+'</div><div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5">'+almanacEsc(jaw.schedule||"Strength days only")+'. '+almanacEsc(jaw.text||"Easiest level, slow controlled reps, no pain.")+'</div></div>':'';
   const block=function(title,key,color){
-    return '<details style="background:rgba(0,0,0,.16);border:1px solid '+color+'33;border-radius:10px;padding:10px 12px;margin-top:8px" '+(plan.workoutKey===key?'open':'')+'><summary style="cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:'+color+';font-family:\'Lora\',serif;font-weight:700">'+almanacEsc(title)+'</summary><div style="margin-top:7px">'+fitnessWorkoutList(key).map(function(x){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("")+'</div></details>';
+    return '<details style="background:rgba(0,0,0,.16);border:1px solid '+color+'33;border-radius:10px;padding:10px 12px;margin-top:8px" '+(plan.workoutKey===key?'open':'')+'><summary style="cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:'+color+';font-family:\'Lora\',serif;font-weight:700">'+almanacEsc(title)+'</summary><div style="margin-top:7px">'+fitnessWorkoutDetailsHtml({workoutKey:key,week:week})+'</div></details>';
   };
   const runway=!formalStarted?'<div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.28);border-left:3px solid #38BDF8;border-radius:10px;padding:10px 12px;margin-bottom:10px"><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7DD3FC;font-family:\'Lora\',serif;font-weight:700;margin-bottom:4px">New-house restart runway</div><div style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:700;color:var(--text)">'+almanacEsc(plan.title)+'</div><div style="font-size:11.5px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.5;margin-top:3px">Day 1: Strength A on '+almanacEsc(startLabel)+'. No catch-up workouts.</div></div>':'';
   return '<div style="background:rgba(0,0,0,.16);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:12px;margin-top:11px">'
@@ -3917,17 +3942,14 @@ function fitnessSectionHtml(today){
   const ready=fitnessPlanAllowed(st,plan);
   const next=plan.title;
   const color=ready?"#34D399":"#F5B830";
-  const items=(plan.list||[]).map(function(x){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;color:var(--text2);font-family:\'Lora\',serif;line-height:1.45"><span style="color:'+color+'">&bull;</span><span>'+almanacEsc(x)+'</span></div>';}).join("");
   return `<div class="section-label">Movement plan</div>
   <div class="health-card" style="background:linear-gradient(135deg,rgba(52,211,153,.11),rgba(56,189,248,.04));border:1px solid rgba(52,211,153,.3);border-radius:var(--rad);padding:15px 16px;margin-bottom:14px">
     <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:${color};font-family:'Lora',serif;margin-bottom:5px">Next action</div>
     <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);line-height:1.15">${next}</div>
     <div style="font:11.5px/1.5 'Lora',serif;color:${color};margin:4px 0 2px">${almanacEsc(fitnessGateMessage(st,plan))}</div>
     <div style="font:11.5px/1.5 'Lora',serif;color:var(--text2);margin:0 0 10px">${almanacEsc(plan.badge)} · ${almanacEsc(plan.duration)} · ${almanacEsc(plan.rpe)}. ${almanacEsc(plan.coach)}</div>
-    <div onclick="toggleWellness('workout')" style="display:flex;align-items:flex-start;gap:12px;background:rgba(0,0,0,.16);border:1px solid ${color}44;border-left:4px solid ${color};border-radius:10px;padding:12px;cursor:pointer">
-      <div style="width:28px;height:28px;border-radius:50%;border:2px solid ${done?'#10B981':color};background:${done?'#10B981':'transparent'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:12px;flex-shrink:0">${done?'✓':''}</div>
-      <div style="flex:1;min-width:0"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:${done?'var(--text3)':'var(--text)'};${done?'text-decoration:line-through':''}">${almanacEsc(plan.title)}</div>${items}</div>
-    </div>
+    <label class="fg-completion"><input type="checkbox" ${done?'checked':''} onchange="toggleWellness('workout')">Session complete</label>
+    <details class="fg-sources"><summary>Step-by-step workout</summary>${fitnessWorkoutDetailsHtml(plan)}</details>
   </div>`;
 }
 function renderWellness() {
@@ -5152,7 +5174,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261106120000';
+  var HG_BUILD_STAMP='20261106160000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;

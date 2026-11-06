@@ -65,7 +65,7 @@ function todayChecklistRow(item, next, disclosures) {
   html += '<button type="button" class="td-check" aria-label="Complete: ' + label + '" onclick="' + action + '"' + (!ready || clearing ? ' disabled' : '') + '><span>' + (clearing ? '✓' : '') + '</span></button>';
   html += '<div class="td-copy"><div class="td-label">' + label + (next ? '<span class="td-next-tag">Next</span>' : '') + '</div>';
   if (item.note && (!item.morning || next || item.locked)) html += '<div class="td-note">' + e(item.locked && item.key === 'morning:work' ? 'Available at 8 AM. Work preparation is paid time.' : item.note) + '</div>';
-  if (item.plan) html += '<details class="td-plan"' + (disclosures.workout ? ' open' : '') + ' ontoggle="todayChecklistDisclosure(\'workout\',this.open)"><summary>See workout</summary><p>' + e(item.plan.coach) + '</p><ul>' + item.plan.list.map(x => '<li>' + e(x) + '</li>').join('') + '</ul></details>';
+  if (item.plan) html += '<details class="td-plan"' + (disclosures.workout ? ' open' : '') + ' ontoggle="todayChecklistDisclosure(\'workout\',this.open)"><summary>See workout</summary><p>' + e(item.plan.coach) + '</p>' + fitnessWorkoutDetailsHtml(item.plan) + '</details>';
   html += '</div>' + (item.time ? '<span class="td-time">' + e(item.time) + '</span>' : '') + '</div>';
   return html;
 }

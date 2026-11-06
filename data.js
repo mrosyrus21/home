@@ -93,17 +93,283 @@ const HEALTH_COACH = {
     ],
     month1: {
       startDate: "2026-11-06",
+      guide: {
+        "intro": "One rep is one complete movement. One set is the listed reps of one exercise. One round is one set of each of the six exercises, in order. Both sides together count as one set.",
+        "preparation": [
+          "Have water and food first. No lifting if you are underfed, dehydrated, exhausted, ill, impaired, or past bedtime.",
+          "Use a dry, level space, secure shoes, a mat and a stable counter or non-rolling chair. Clear the walking path.",
+          "Warm up for 5-10 minutes: walk or march easily, then try 5 unweighted chair squats, 5 hip hinges and a few gentle shoulder circles. Do not force a stretch.",
+          "Start unloaded or with a lighter secure object. Your 20 lb dumbbells are available equipment, not a required starting weight."
+        ],
+        "pacing": [
+          "Rest 60-90 seconds between exercises, or longer until your breathing is comfortable. Rest about 2 minutes before another round when later weeks allow one.",
+          "Lower under control for roughly 2 seconds, then return smoothly. Breathe out through the effort; do not hold your breath.",
+          "RPE means effort out of 10. Week 1 is about 5/10: comfortable practice with several easy reps left. Stop early if you have to strain, twist, swing or hold your breath.",
+          "Stop a movement for sharp, joint or radiating pain, tingling or numbness. Do not use this plan to treat recurring arm pain. Seek clinical assessment if those symptoms return. Chest pressure, fainting or severe unexplained breathlessness need urgent help."
+        ],
+        "finish": [
+          "After the planned round, walk slowly until breathing settles. Gentle comfortable stretching is optional; no bouncing.",
+          "Eat your normal next meal with protein and carbohydrate, and keep water available. A snack before training does not replace breakfast or lunch.",
+          "Note the variation, weight, reps and how it felt. Do not increase just because the calendar advances. Repeat the easier dose until sessions are comfortable and recovery is good."
+        ],
+        "planKeys": {
+          "strengthA": [
+            "squat",
+            "push",
+            "row",
+            "hinge",
+            "carry",
+            "core"
+          ],
+          "strengthB": [
+            "chair",
+            "press",
+            "row",
+            "bridge",
+            "curl",
+            "side"
+          ],
+          "strengthC": [
+            "split",
+            "push",
+            "hinge",
+            "row",
+            "carry",
+            "bird"
+          ]
+        },
+        "exercises": {
+          "squat": {
+            "title": "Goblet squat (chair squat is the starting option)",
+            "dose": "6-8 reps",
+            "why": "Legs and hips; the sit-down and stand-up pattern.",
+            "load": "Begin with bodyweight. Hold one 20 lb dumbbell close to your chest only if the unweighted version is easy and controlled.",
+            "steps": [
+              "Stand in front of a stable chair, feet about shoulder-width apart, toes slightly out.",
+              "Bend your knees and hips together; lower toward the chair with heels down and knees following your toes.",
+              "Touch the seat lightly, or sit fully if needed, then stand by pushing through your whole feet. That is one rep."
+            ],
+            "easier": "Use a higher stable seat and no weight. A smaller comfortable depth counts.",
+            "watch": "Do not drop onto the chair, bounce, or let your knees collapse inward.",
+            "demo": [
+              "NHS sit-to-stand pictures",
+              "https://www.nhs.uk/live-well/exercise/strength-exercises/"
+            ]
+          },
+          "push": {
+            "title": "Counter pushup (floor press is an alternative)",
+            "dose": "6-8 reps; choose one version, not both",
+            "why": "Chest, shoulders and back of the arms; pushing strength.",
+            "load": "Start with a wall or sturdy fixed counter. You do not need dumbbells for this version.",
+            "steps": [
+              "Place hands a little wider than shoulders on a dry, stable counter. Step back so your body forms a straight line.",
+              "Bend your elbows diagonally back, bringing your chest toward the edge without letting your hips sag.",
+              "Push the counter away and return to the start. Keep your neck in line with your body."
+            ],
+            "easier": "Use a wall, or bring your feet closer to the counter.",
+            "watch": "Avoid flaring elbows straight sideways or pushing through wrist, shoulder or arm pain.",
+            "alternative": "Floor press: only with weights you can position and control easily. Lie on a mat, knees bent and feet flat. Start weights beside the chest, wrists over elbows, upper arms about 30-45 degrees from your sides. Press above the chest, then slowly lower until upper arms lightly touch the floor. Do not bounce or struggle with the 20s; choose counter pushups instead.",
+            "demo": [
+              "NHS wall press-up pictures",
+              "https://www.southtees.nhs.uk/resources/combined-press-ups/"
+            ]
+          },
+          "row": {
+            "title": "Supported one-arm dumbbell row",
+            "dose": "6 reps per side",
+            "why": "Upper back and arms; pulling strength to complement the pushup.",
+            "load": "Try the motion empty-handed. Use a light secure bottle if 20 lb makes you twist or jerk.",
+            "steps": [
+              "Support one hand on a stable counter. Stagger your feet, soften your knees and tip forward at the hips with your back comfortably straight.",
+              "Let the other arm hang. Pull its elbow toward your hip, bringing the weight toward the side of your lower ribs.",
+              "Lower until the arm is long again. Finish the reps, then switch hands and repeat."
+            ],
+            "easier": "Use a lighter load, a more upright torso, or fewer reps.",
+            "watch": "Keep shoulders and hips facing the floor; do not rotate, shrug, or yank the weight.",
+            "demo": [
+              "ACE single-arm row demonstration",
+              "https://www.acefitness.org/resources/everyone/exercise-library/126/single-arm-row/"
+            ]
+          },
+          "hinge": {
+            "title": "Romanian deadlift (learn the hip hinge first)",
+            "dose": "6-8 reps",
+            "why": "Buttocks and backs of the thighs; controlled bending and lifting.",
+            "load": "Start without weight. Add one dumbbell held in both hands only when the hip movement is easy.",
+            "steps": [
+              "Stand with feet hip-width apart and knees slightly bent. Keep that small knee bend.",
+              "Move your hips backward as your torso tips forward. Keep the weight, if used, close to your thighs.",
+              "Stop at a gentle hamstring stretch before your back rounds; stand tall by bringing your hips forward. You do not need to reach the floor."
+            ],
+            "easier": "Practice facing away from a wall a few inches behind you; gently reach your hips back to touch it.",
+            "watch": "This is a hip movement, not a deep squat or a rounded-back toe touch. Do not lean backward at the top.",
+            "demo": [
+              "ACE hip-hinge demonstration",
+              "https://www.acefitness.org/resources/everyone/exercise-library/33/hip-hinge/"
+            ]
+          },
+          "carry": {
+            "title": "Farmer carry",
+            "dose": "15-20 seconds once per round",
+            "why": "Grip and trunk control while carrying things.",
+            "load": "Use two manageable weights. Two 20 lb dumbbells are optional, not the starting requirement.",
+            "steps": [
+              "Stand with a weight at each side, arms long and shoulders relaxed. Pick up and set down using your hips and knees.",
+              "Walk slowly along a clear, level path while standing tall and breathing normally.",
+              "Take small steps when turning. Stop the timer early if grip or posture begins to fail, then set the weights down gently."
+            ],
+            "easier": "Use lighter bottles, or stand still for 10 seconds holding manageable weights.",
+            "watch": "Do not shrug, lean, race or continue until you drop the weights."
+          },
+          "core": {
+            "title": "Lying knee taps / dead bug: simple march first",
+            "dose": "5 slow lifts per side",
+            "why": "Abdominal control while a leg moves; no crunching required.",
+            "load": "No weight.",
+            "steps": [
+              "Lie on your back with knees bent, feet flat and arms resting beside you.",
+              "Gently tighten your middle while breathing. Lift one foot a few inches without rocking your hips or changing your back position.",
+              "Lower that foot quietly, then alternate. One lift and return is one rep on that side."
+            ],
+            "easier": "Keep both feet down and practice five slow breaths while gently holding your trunk steady.",
+            "watch": "Keep the movement small. If your back arches or the hips rock, lower the foot and reset.",
+            "alternative": "Later dead-bug option: bring knees over hips with knees bent, then lower one heel toward the floor and return while keeping the trunk steady. Start with legs only; arm movement is optional.",
+            "demo": [
+              "ACE dead-bug demonstration",
+              "https://www.acefitness.org/resources/everyone/exercise-library/147/supine-dead-bug/"
+            ]
+          },
+          "chair": {
+            "title": "Chair squat or supported reverse lunge",
+            "dose": "6-8 chair squats OR 5 reverse lunges per side",
+            "why": "Leg strength and balance.",
+            "load": "Bodyweight first. Choose the chair squat until stepping backward feels steady.",
+            "steps": [
+              "For the chair squat, sit on a stable chair with feet flat and beneath or slightly behind your knees.",
+              "Lean forward from the hips, stand tall, then sit slowly. Use light hand support if needed.",
+              "For the lunge alternative, hold a fixed counter, step one foot back, bend both knees a little, then push through the front foot to return. Finish each side."
+            ],
+            "easier": "Use the chair version, a higher stable seat, or a smaller lunge.",
+            "watch": "Keep your balance and knees aligned with your toes; depth is optional.",
+            "demo": [
+              "NHS sit-to-stand pictures",
+              "https://www.nhs.uk/live-well/exercise/strength-exercises/"
+            ]
+          },
+          "press": {
+            "title": "Standing overhead press",
+            "dose": "6-8 reps only with comfortable, pain-free movement",
+            "why": "Shoulders and arms; reaching and pushing overhead.",
+            "load": "Use no weight or light bottles first. Do not assume the 20 lb dumbbells are appropriate overhead.",
+            "steps": [
+              "Stand with feet hip-width apart, knees relaxed, hands beside your shoulders and palms mostly facing forward.",
+              "Keep your ribs above your hips and press your hands upward without leaning back.",
+              "Lower slowly to shoulder height. Use only a comfortable range."
+            ],
+            "easier": "Practice empty-handed. If the arm or shoulder is painful, skip this movement rather than force it.",
+            "watch": "No back arch, shrugging, or pushing through tingling or pain."
+          },
+          "bridge": {
+            "title": "Glute bridge",
+            "dose": "8 reps with a brief pause at the top",
+            "why": "Buttocks and hip extension.",
+            "load": "Bodyweight.",
+            "steps": [
+              "Lie on your back with knees bent, feet flat and arms by your sides.",
+              "Push through your feet and squeeze your buttocks to lift your hips.",
+              "Stop when hips line up with your trunk without arching your back. Pause briefly, then lower slowly."
+            ],
+            "easier": "Lift only a little, or practice squeezing the buttocks with hips on the floor.",
+            "watch": "Do not push up onto your neck or force extra height."
+          },
+          "curl": {
+            "title": "Dumbbell curl",
+            "dose": "6-8 reps per arm",
+            "why": "Front of the upper arm and controlled elbow bending.",
+            "load": "Choose light bottles if 20 lb cannot be lifted without swinging.",
+            "steps": [
+              "Stand tall with arms at your sides and palms facing forward.",
+              "Keeping elbows near your ribs, bend them to bring the weights toward your shoulders.",
+              "Lower slowly until your arms are long again. Both arms may move together."
+            ],
+            "easier": "Use less weight or work one arm at a time.",
+            "watch": "Keep wrists straight and your body still; no back swing."
+          },
+          "side": {
+            "title": "Side plank from bent knees",
+            "dose": "10 seconds per side, once per round",
+            "why": "Side of the trunk; resisting sideways bending.",
+            "load": "Bodyweight.",
+            "steps": [
+              "Lie on your side with knees bent and forearm on the mat; place the elbow directly below the shoulder.",
+              "Lift hips until shoulders, hips and knees form a line. Breathe normally.",
+              "Hold for up to 10 seconds, lower gently, then switch sides."
+            ],
+            "easier": "Lift only briefly. If shoulder support hurts, use the lying march from Strength A instead.",
+            "watch": "Do not collapse into the supporting shoulder or hold your breath."
+          },
+          "split": {
+            "title": "Supported split squat or goblet squat",
+            "dose": "5 reps per side OR 6-8 goblet/chair squats",
+            "why": "Legs and balance, with support.",
+            "load": "Bodyweight first; keep a hand on a fixed counter.",
+            "steps": [
+              "Stand in a staggered stance, with one foot forward and the other back. Keep feet hip-width apart rather than on one tight line.",
+              "Bend both knees a small amount to lower straight down; back heel may be raised.",
+              "Push through the front foot to rise. Keep feet planted for every rep, then switch sides."
+            ],
+            "easier": "Choose the chair squat from Strength A instead.",
+            "watch": "No wobbling or forced depth. Use support throughout."
+          },
+          "bird": {
+            "title": "Bird dog (hands-and-knees reach)",
+            "dose": "5 reps per side with a 2-second pause",
+            "why": "Trunk stability while arms or legs move.",
+            "load": "Bodyweight.",
+            "steps": [
+              "Start on hands and knees, hands below shoulders and knees below hips.",
+              "Slide one foot backward along the floor without rotating your hips. Return and switch sides.",
+              "If steady, lift the leg slightly and reach the opposite arm forward, keeping both below or in line with the trunk. Return slowly."
+            ],
+            "easier": "Move only one limb, keeping the other three in contact with the floor. Use the lying march if wrists or knees dislike this position.",
+            "watch": "Do not arch the lower back or lift your leg high.",
+            "demo": [
+              "ACE bird-dog demonstration",
+              "https://www.acefitness.org/resources/everyone/exercise-library/14/bird-dog/"
+            ]
+          }
+        },
+        "sources": [
+          [
+            "Mayo Clinic: lifting technique and rest",
+            "https://www.mayoclinic.org/healthy-lifestyle/fitness/in-depth/weight-training/art-20045842"
+          ],
+          [
+            "American Heart Association: warm-up and cool-down",
+            "https://www.heart.org/en/healthy-living/exercise-and-physical-activity/fitness-basics/warm-up-cool-down"
+          ],
+          [
+            "Mayo Clinic: exercise video collection",
+            "https://www.mayoclinic.org/healthy-lifestyle/fitness/in-depth/strength-training/art-20046031"
+          ],
+          [
+            "NIDCR: jaw joint guidance",
+            "https://www.nidcr.nih.gov/health-info/tmd"
+          ]
+        ],
+        "evidenceNote": "These sources support technique and general precautions. The short rep counts and lighter options are conservative coaching choices for your return, not a medical assessment or a research-proven exact dose."
+      },
       rules: [
         "Week 1 starts with one easy round at RPE 5; stop with energy left.",
         "No failure, max reps, or soreness hunting.",
         "Food, water, sleep, illness, injury, and rescue mode override the workout schedule.",
         "No THC before workouts while form is being rebuilt.",
-        "Jaw exerciser rides with strength days only: easiest level first, slow controlled reps, no pain."
+        "Jaw exerciser is optional and separate; no prescribed bite-repetition or resistance progression."
       ],
       jaw: {
-        title: "Jaw exerciser finisher",
-        schedule: "Strength days only (Mon / Wed / Fri)",
-        text: "Easiest level: 2 sets of 12 slow controlled bites. Rest 30-60 seconds between sets. Stay on the easiest level about 4 weeks, then move up only when it feels easy and pain-free.",
+        title: "Jaw exerciser finisher (optional, not prescribed)",
+        schedule: "Separate from lifting",
+        text: "The previous 2 x 12 bite prescription and four-week progression were not evidence-based. Ask your dentist whether this device is appropriate; skip it for now if unsure. It is not required for this workout.",
         cautions: [
           "Do it after lifting or seated during long rests; do not chew while bracing under load.",
           "Stop for clicking, jaw pain, headache, tooth pain, gum pain, or dizziness.",

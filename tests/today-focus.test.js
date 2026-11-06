@@ -26,6 +26,7 @@ function fixture(date = '2026-09-24', hour = 8) {
     waterAdd:() => {c.water++;c.renderAll();}, waterUndo:() => {c.water=Math.max(0,c.water-1);c.renderAll();},
     healthCoachState:() => ({workoutDone:!!laundry['well-workout-' + date] || !!laundry['health-workout-' + date]}),
     fitnessMonth1PlanForDate:() => ({type:[1,3,5].includes(new TestDate().getDay())?'strength':'mobility', title:'Strength B', list:['One exercise'],coach:'Easy practice.',duration:'20–30 min'}),
+    fitnessWorkoutDetailsHtml:plan => '<ul>' + plan.list.map(x => '<li>' + x + '</li>').join('') + '</ul>',
     fitnessGateMessage:() => 'Ready when you are.', windDownDone:() => !!laundry['winddown-' + date],
     toggleWellness:id => {const key='well-'+id+'-'+date;laundry[key]=!laundry[key];c.renderAll();},
     toggleMeal:id => {const key='meal-'+id+'-'+date;laundry[key]=!laundry[key];c.renderAll();},
