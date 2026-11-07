@@ -14,7 +14,7 @@ assert.deepEqual(ALMANAC_MORNING.map(x => x.id),
   ["sunlight", "water", "snack", "walk", "warmup", "workout"]);
 assert.equal(RHYTHM.workout, "7:00 AM");
 const day1 = HEALTH_COACH.workouts.month1.startDate;
-assert.equal(day1, "2026-11-06");
+assert.equal(day1, "2026-11-07");
 
 const planSource = html.slice(html.indexOf("function fitnessDateAtNoon("), html.indexOf("function fitnessGateMessage("));
 const planFor = new Function("hcCfg", planSource + ";return fitnessMonth1PlanForDate;")(() => HEALTH_COACH);
@@ -32,7 +32,8 @@ const weekday = morningFixture(day1);
 const model = weekday.c.todayChecklistItems(day1, 420, {workoutDone:false});
 assert.deepEqual(Array.from(model.morning, x => x.key),
   ["morning:sunlight", "morning:water", "morning:snack", "morning:walk", "morning:warmup", "movement"]);
-assert.equal(model.morning.at(-1).time, "7 AM");
+assert.equal(model.morning.at(-1).time, "After waking");
+assert.equal(morningFixture("2026-11-09").c.todayChecklistItems("2026-11-09", 420, {workoutDone:false}).morning.at(-1).time, "7 AM");
 assert.ok(!model.items.some(x => x.key === "movement"));
 assert.equal((weekday.view.innerHTML.match(/data-task="movement"/g) || []).length, 1);
 assert.doesNotMatch(weekday.view.innerHTML, /Begin paid work|Make the bed|Protein breakfast/);
@@ -48,8 +49,8 @@ assert.equal(weekday.laundry["well-workout-"+day1], true);
 weekday.c.todayChecklistAction("movement", true);
 assert.equal(weekday.laundry["well-workout-"+day1], false);
 
-const weekend = morningFixture("2026-11-07");
-const weekendModel = weekend.c.todayChecklistItems("2026-11-07", 540, {workoutDone:false});
+const weekend = morningFixture("2026-11-14");
+const weekendModel = weekend.c.todayChecklistItems("2026-11-14", 540, {workoutDone:false});
 assert.equal(weekendModel.morning.at(-1).time, "After waking");
 assert.equal(model.morning.at(-1).label, "Workout: Strength A");
 assert.match(weekday.view.innerHTML, /Optional before lifting: take baseline photos/);
@@ -63,7 +64,7 @@ function readiness(log, minutes, meals = 0, bottles = 0) {
   return new Function("laundry", "HEALTH_COACH", "RHYTHM", "mealCount", "bottles",
     "function mealsEaten(){return mealCount;} function waterCount(){return bottles;} function waterGoal(){return 3;}" +
     stateSource + ";return healthCoachState;"
-  )(log, HEALTH_COACH, RHYTHM, meals, bottles)(day1, minutes, 5);
+  )(log, HEALTH_COACH, RHYTHM, meals, bottles)(day1, minutes, 6);
 }
 const water = "morning-water-"+day1, snack = "morning-snack-"+day1;
 const log = {[water]:true, [snack]:true};

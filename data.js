@@ -65,7 +65,7 @@ const HEALTH_COACH = {
     minimumDate: "2026-08-31",
     onRampStart: "2026-09-01",
     onRampEnd: "2026-09-06",
-    formalStart: "2026-11-06",
+    formalStart: "2026-11-07",
     anchors: ["Water on waking", "Dog/property walk", "Plant check or harvest", "Hygiene", "Protein breakfast", "Mandatory lunch", "Movement matched to readiness", "Dinner", "Evening shutdown"],
     morningMinimum: ["Water", "Brush teeth, wash face, deodorant", "Feed and briefly walk Zoey", "Protein breakfast + Litfulo", "Start work"],
     hygieneMorning: ["Brush teeth", "Wash face", "Deodorant", "Hair/scalp check", "Clean clothes", "Litfulo with breakfast"],
@@ -92,7 +92,7 @@ const HEALTH_COACH = {
       "Easy breathing, no max-effort work"
     ],
     month1: {
-      startDate: "2026-11-06",
+      startDate: "2026-11-07",
       guide: {
         "intro": "One rep is one complete movement. One set is the listed reps of one exercise. One round is one set of each of the six exercises, in order. Both sides together count as one set.",
         "preparation": [

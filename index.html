@@ -790,7 +790,7 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<link rel="stylesheet" href="./today-checklist.css?v=20261106160000">
+<link rel="stylesheet" href="./today-checklist.css?v=20261107120000">
 </head>
 <body>
 
@@ -898,10 +898,10 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20261106160000-workout-guide"></script>
-<script src="./today-checklist.js?v=20261106160000-workout-guide"></script>
+<script src="./data.js?v=20261107120000-workout-reset"></script>
+<script src="./today-checklist.js?v=20261107120000-workout-reset"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20261106160000-workout-guide"></script>
+<script src="./recipes.js?v=20261107120000-workout-reset"></script>
 <script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -2002,7 +2002,7 @@ function fitnessRestartCfg(){
     minimumDate:r.minimumDate||"2026-08-31",
     onRampStart:r.onRampStart||"2026-09-01",
     onRampEnd:r.onRampEnd||"2026-09-06",
-    formalStart:m.startDate||r.formalStart||"2026-11-06",
+    formalStart:m.startDate||r.formalStart||"2026-11-07",
     tutorialStrength:r.tutorialStrength||[]
   };
 }
@@ -5174,7 +5174,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261106160000';
+  var HG_BUILD_STAMP='20261107120000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;
