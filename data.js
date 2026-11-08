@@ -74,6 +74,16 @@ const HEALTH_COACH = {
     readiness: ["No strength workout when underfed, dehydrated, exhausted, sick, injured, or past bedtime", "Poor sleep or low energy: reduce volume 20–30% or walk", "Joint pain: substitute or skip the loaded movement", "Work interruptions are expected; pause and resume without penalty"]
   },
   workouts: {
+    starter: {
+      startDate:"2026-11-08", recoveryDate:"2026-11-09", strengthDays:[1,4], targetSessions:4,
+      title:"Four-move starter", duration:"15–20 minutes", rest:"60–90 seconds between exercises",
+      exercises:[
+        {title:"Chair squat",dose:"6–8 reps · 1 set",load:"Bodyweight",steps:["Stand in front of a stable chair, feet about shoulder-width apart.","Bend hips and knees to sit down slowly; keep heels down and knees following toes.","Stand through your whole feet. Use a smaller comfortable depth if needed."],easier:"Use a higher stable seat and light hand support.",demo:["NHS sit-to-stand","https://www.nhs.uk/live-well/exercise/strength-exercises/"]},
+        {title:"Counter pushup",dose:"6–8 reps · 1 set",load:"Bodyweight · fixed, stable counter",steps:["Hands slightly wider than shoulders. Step back into a straight body line.","Bend elbows diagonally back; bring your chest toward the counter without sagging.","Push away smoothly. Breathe out as you push."],easier:"Use a wall or bring feet closer. Stop if wrists, shoulders or arms hurt.",demo:["NHS wall pushup","https://www.southtees.nhs.uk/resources/combined-press-ups/"]},
+        {title:"Supported one-arm row",dose:"6 reps each side · 1 set",load:"One 20 lb dumbbell ONLY if controlled; otherwise a lighter secure object",steps:["Support one hand on a fixed counter. Stagger feet and tip forward at the hips.","Pull the other elbow toward your hip; keep your torso still.","Lower slowly, finish six comfortable reps, then switch sides."],easier:"Practice empty-handed or use a light, securely held bottle. No twisting, jerking or straining.",demo:["ACE supported row","https://www.acefitness.org/resources/everyone/exercise-library/126/single-arm-row/"]},
+        {title:"Unloaded hip hinge",dose:"6–8 reps · 1 set",load:"No weight",steps:["Stand hip-width apart with knees softly bent.","Push hips backward as your torso tips forward; keep your back comfortably straight.","Stop before your back rounds, then stand tall. You do not need to reach the floor."],easier:"Stand a few inches in front of a wall and gently reach your hips back to touch it.",demo:["ACE hip hinge","https://www.acefitness.org/resources/everyone/exercise-library/33/hip-hinge/"]}
+      ]
+    },
     strengthDays: [1,3,5],
     strengthTitle: "Month 1 dumbbell strength",
     strength: [

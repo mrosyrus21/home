@@ -790,7 +790,8 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<link rel="stylesheet" href="./today-checklist.css?v=20261107120000">
+<link rel="stylesheet" href="./today-checklist.css?v=20261108120000">
+<link rel="stylesheet" href="./starter-workout.css?v=20261108120000">
 </head>
 <body>
 
@@ -898,10 +899,11 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20261107120000-workout-reset"></script>
-<script src="./today-checklist.js?v=20261107120000-workout-reset"></script>
+<script src="./data.js?v=20261108120000-starter"></script>
+<script src="./starter-workout.js?v=20261108120000"></script>
+<script src="./today-checklist.js?v=20261108120000-starter"></script>
 <script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20261107120000-workout-reset"></script>
+<script src="./recipes.js?v=20261108120000-starter"></script>
 <script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1861,7 +1863,7 @@ function healthCoachState(today,nowM,dow){
   const rescue=(pastBed||late)&&(underfed||lowWater||missedDinner);
   const strengthDays=(cfg.workouts&&cfg.workouts.strengthDays)||[1,3,5];
   const startDate=cfg.workouts&&cfg.workouts.month1&&cfg.workouts.month1.startDate;
-  const strengthDay=today===startDate||((!startDate||today>=startDate)&&strengthDays.indexOf(dow)>=0);
+  const strengthDay=typeof starterApplies==='function'&&starterApplies(today)?starterPlanForDate(today).type==='strength':today===startDate||((!startDate||today>=startDate)&&strengthDays.indexOf(dow)>=0);
   const workoutDone=!!laundry["well-workout-"+today]||!!laundry["health-workout-"+today];
   const morningWindow=nowM<600;
   const morningWater=morningWindow&&!!laundry["morning-water-"+today];
@@ -1887,6 +1889,7 @@ function hydrationCard(kind,done,label,sub,order){
   return { key:"hyd-"+kind, order:order, done:done, html:strip("💧",label,done,"#38BDF8","waterAdd()","Checkpoint","",sub) };
 }
 function workoutCard(st,today){
+  if(typeof starterApplies==='function'&&starterApplies(today))return starterSurfaceHtml(today);
   const plan=fitnessMonth1PlanForDate(today), list=plan.list||[];
   const isStrength=plan.type==="strength", icon=isStrength?"\uD83C\uDFCB\uFE0F":"\uD83D\uDEB6";
   const allowed=fitnessPlanAllowed(st,plan), status=fitnessGateMessage(st,plan), color=allowed?"#34D399":"#F5B830";
@@ -2120,6 +2123,7 @@ function fitnessPlanAllowed(st,plan){
   return !!st.workoutAllowed;
 }
 function fitnessFullScheduleHtml(today){
+  if(typeof starterApplies==='function'&&starterApplies(today||todayKey()))return starterScheduleHtml(today||todayKey());
   const c=fitnessMonth1Cfg(), m=c.m, plan=fitnessMonth1PlanForDate(today||todayKey());
   const restart=fitnessRestartCfg(), formalStarted=(today||todayKey())>=restart.formalStart;
   const startLabel=fitnessDateAtNoon(restart.formalStart).toLocaleDateString("en-US",{month:"short",day:"numeric"});
@@ -2326,10 +2330,13 @@ function almanacRoutineTasks(hc){
     const x=Object.assign({},t);
     if(t.id==="sunlight") x.detail="Open blinds; step outside when it is light.";
     if(t.id==="water") x.detail="Drink a glass of water.";
-    if(t.id==="snack") x.detail="A little carbohydrate + protein.";
+    if(t.id==="snack"){
+      x.detail="A little carbohydrate + protein.";
+      if(typeof starterApplies==='function'&&starterApplies(todayKey())){x.label="Snack or breakfast";x.detail="Breakfast counts. No extra snack needed if you have already eaten.";}
+    }
     if(t.id==="warmup") x.detail="Easy movement for 5-10 minutes.";
     if(t.id==="workout"){
-      const plan=fitnessMonth1PlanForDate(todayKey());
+      const plan=fitnessPlanForDate(todayKey());
       x.label=plan.type==="strength"?"Workout: "+plan.title:plan.title;
       x.detail=plan.dose;
       x.cue=(dow===0||dow===6)?"After waking":"7:00 AM";
@@ -3781,6 +3788,7 @@ function renderPrint() {
 
 // ── WELLNESS HELPERS ──────────────────────────────────────────────────────────
 function toggleWellness(key) {
+  if(key==='workout'&&typeof starterApplies==='function'&&starterApplies(todayKey())){starterOpen();return;}
   const k = "well-" + key + "-" + todayKey();
   laundry[k] = !laundry[k];
   saveLaundry();
@@ -3931,9 +3939,11 @@ function healthCoachSectionHtml(){
   </div>`;
 }
 function fitnessPlanForDate(ds){
+  if(typeof starterApplies==='function'&&starterApplies(ds))return starterPlanForDate(ds);
   return fitnessMonth1PlanForDate(ds);
 }
 function fitnessSectionHtml(today){
+  if(typeof starterApplies==='function'&&starterApplies(today))return starterSurfaceHtml(today);
   const dow=new Date(today+"T12:00:00").getDay();
   const nowM=new Date().getHours()*60+new Date().getMinutes();
   const st=healthCoachState(today,nowM,dow);
@@ -4562,7 +4572,8 @@ function queueRenderAll(){
 }
 function renderAll() {
   if(hgRenderFrame){ cancelAnimationFrame(hgRenderFrame); hgRenderFrame=0; }
-  return hgWithViewState(function(){
+  const starterFocus=typeof starterFocusSnapshot==='function'?starterFocusSnapshot():null;
+  const result=hgWithViewState(function(){
     updateHeader();
     if(currentTab==="today")    renderToday();
     if(currentTab==="wellness") renderWellness();
@@ -4575,6 +4586,8 @@ function renderAll() {
     if(currentTab==="print")    renderPrint();
     if(currentTab==="forecast") renderForecast();
   });
+  if(typeof starterRestoreFocus==='function')starterRestoreFocus(starterFocus);
+  return result;
 }
 
 // ── FIREBASE REAL-TIME LISTENER ──────────────────────────────────────────────
@@ -5174,7 +5187,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261107120000';
+  var HG_BUILD_STAMP='20261108120000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;

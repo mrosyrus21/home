@@ -20,6 +20,7 @@ function todayChecklistAction(key, undo) {
   if (key === 'newhome') return toggleNewHomeOneThing();
   if (key === 'winddown') return toggleWindDown();
   if (key === 'movement') {
+    if(!undo&&typeof starterApplies==='function'&&starterApplies(date)){starterOpen();return;}
     if (!undo) return toggleWellness('workout');
     // Older records can use either key; undo the completed workout explicitly.
     const updates = {};
@@ -31,7 +32,7 @@ function todayChecklistAction(key, undo) {
 }
 function todayChecklistItems(date, nowM, hc) {
   const shortNames = {bed:'Make the bed', 'outdoor-water':'Check plants due today', health:'Five minutes of mobility', breakfast:'Protein breakfast', work:'Begin paid work'};
-  const plan = fitnessMonth1PlanForDate(date);
+  const plan = typeof fitnessPlanForDate==='function'?fitnessPlanForDate(date):fitnessMonth1PlanForDate(date);
   const weekend = [0,6].includes(new Date(date + 'T12:00:00').getDay());
   const morning = almanacRoutineTasks(hc).map(t => t.id === 'workout' ? {
     key:'movement', label:plan.type === 'strength' ? 'Workout: ' + plan.title : plan.title,
@@ -58,6 +59,7 @@ function todayChecklistItems(date, nowM, hc) {
   return {morning:morning, items:items};
 }
 function todayChecklistRow(item, next, disclosures) {
+  if(item.plan&&item.plan.starter)return '<div class="td-starter" data-task="movement">'+starterSurfaceHtml(todayKey())+'</div>';
   const e = almanacEsc, ready = !!window.__stateHydrated && !item.locked;
   const clearing = item.mode === 'celebrate';
   const label = e(item.label), action = "todayChecklistAction('" + item.key + "',false)";
