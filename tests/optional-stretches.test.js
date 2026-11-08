@@ -3,7 +3,17 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {fixture}=require('./starter-workout.test.js');
 const root=path.join(__dirname,'..');
 const f=fixture(),c=f.c,before=JSON.stringify(c.laundry);
-assert.doesNotMatch(c.surface,/Optional stretch routine/,'not competing with the strength steps');
+assert.doesNotMatch(JSON.stringify(c.starterConfig()),/stable chair|non-rolling chair|Seated chest|Sit tall|sit or stand/i,'active starter and stretches must not require a chair');
+assert.equal(c.starterConfig().exercises[0].title,'Bodyweight mini-squat');
+assert.equal(c.starterConfig().stretches[3].title,'Standing chest opener');
+for(const [date,step] of [['2026-11-08',0],['2026-11-08',1],['2026-11-09',0]]){
+ const open=fixture(date);open.c.starterUi(date).step=step;open.c.meals=0;open.c.bottles=0;let scrolled=false;
+ const panel={scrollIntoView:()=>{scrolled=true;}};const visible={querySelector:()=>panel};
+ open.c.document.querySelector=()=>visible;open.c.switchTab=()=>{throw new Error('Visible guide must not switch tabs');};
+ open.c.renderAll();assert.match(open.c.surface,/Open stretches/);assert.equal(open.c.starterCanBegin(date),false);
+ open.c.starterOpenStretches();assert.equal(open.c.starterUi(date).step,step);assert.equal(open.c.starterStretchUi(date).open,true);assert.equal(scrolled,true);assert.equal(open.writes.length,0);
+}
+assert.match(c.surface,/Open stretches/);assert.match(c.surface,/Optional stretch routine/,'available even at warm-up');
 c.starterNavigate(5);assert.match(c.surface,/Optional stretch routine/);
 assert.match(c.surface,/data-starter-stretches ontoggle=/,'optional area starts collapsed');
 c.starterStretchToggle(true);assert.equal(c.starterStretchUi('2026-11-08').open,true);
