@@ -11,7 +11,7 @@ for(const [date,step] of [['2026-11-08',0],['2026-11-08',1],['2026-11-09',0]]){
  const panel={scrollIntoView:()=>{scrolled=true;}};const visible={querySelector:()=>panel};
  open.c.document.querySelector=()=>visible;open.c.switchTab=()=>{throw new Error('Visible guide must not switch tabs');};
  open.c.renderAll();assert.match(open.c.surface,/Open stretches/);assert.equal(open.c.starterCanBegin(date),false);
- open.c.starterOpenStretches();assert.equal(open.c.starterUi(date).step,step);assert.equal(open.c.starterStretchUi(date).open,true);assert.equal(scrolled,true);assert.equal(open.writes.length,0);
+ open.c.starterOpenStretches();assert.equal(open.c.starterUi(date).step,step);assert.equal(open.c.starterStretchUi(date).open,true);assert.equal(panel.open,true,'explicitly reopen after saved-view restoration');assert.equal(scrolled,true);assert.equal(open.writes.length,0);
 }
 assert.match(c.surface,/Open stretches/);assert.match(c.surface,/Optional stretch routine/,'available even at warm-up');
 c.starterNavigate(5);assert.match(c.surface,/Optional stretch routine/);
