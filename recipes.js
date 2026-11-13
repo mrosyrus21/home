@@ -480,5 +480,47 @@ const RECIPES_BOX = [
   ],
   "note": "<strong>HYDRATION NOTE</strong><br>This starting amount comes from Rick Bayless's masa-harina method; it is not a universal final ratio. Flour brands and grinds absorb water differently. Follow the package starting ratio if substantially different, then judge the rested dough. Do not combine one brand's cup measure with another's gram weight. The user's brand and equipment have not yet been confirmed.<br><br><strong>TROUBLESHOOTING</strong><br>- Cracked pressed edges: add a little water to dough and knead it in. - Sticks badly to plastic: check for excess water or excessively thin pressing. - Scorches while still doughy: lower heat and check even thickness. - Stiff/dry tortillas: shorten cooking and wrap immediately after cooking. - No puff: check moisture, thickness and heat; avoid drying the first side too long before its first flip. Do not keep cooking only to force a puff.<br><br><strong>STORAGE AND REHEATING</strong><br>For storage, let tortillas cool before sealing; refrigerate or freeze. To reheat, lightly moisten and warm briefly on a dry skillet, then rewrap. Keep the serving stack wrapped; cool leftovers separately before packing.<br><br><strong>INGREDIENT DISTINCTIONS</strong><br>Use tortilla masa harina, not cornmeal, cornstarch, wheat flour or plain non-nixtamalized corn flour. Masa harina is already treated corn; do not add lime juice or calcium hydroxide. This is not a fresh-nixtamal recipe.<br><br><strong>RESEARCH AND STATUS</strong><br>Practical synthesis of the primary sources below, not an exact reproduction or a personally tested recipe. Salt amount, portion range, one-pan heat guidance and serving rest are working recommendations. Preserve hydration flexibility rather than labeling 270 mL as the guaranteed total water. Rick Bayless - starting flour/water amounts, rest and cooking-release cues: <a href=\"https://www.rickbayless.com/recipe/corn-tortillas/\" target=\"_blank\" rel=\"noopener noreferrer\">https://www.rickbayless.com/recipe/corn-tortillas/</a> Pati Jinich - hand-mixing, consistency corrections and shaping: <a href=\"https://patijinich.com/homemade-corn-tortillas/\" target=\"_blank\" rel=\"noopener noreferrer\">https://patijinich.com/homemade-corn-tortillas/</a> Masienda - ingredient distinction, pressing, cooking and wrapped-stack method: <a href=\"https://masienda.com/blogs/learn/guide-to-masa-harina\" target=\"_blank\" rel=\"noopener noreferrer\">https://masienda.com/blogs/learn/guide-to-masa-harina</a><br><br><strong>ALLERGENS</strong><br>Corn. Check flour packaging for cross-contact or other ingredients if needed.<br><br>Serve with <a href=\"#\" onclick=\"openRecipe('r_trial_smoky_black_bean_poblano_tomatillo_soup');return false;\">Smoky Black Bean Soup with Roasted Poblano and Tomatillo</a>."
 }
+,{
+  "id": "r_trial_banana_cinnamon_protein_breakfast_cakes_v1",
+  "name": "Banana Cinnamon Protein Breakfast Cakes - Version 1",
+  "emoji": "🍌",
+  "tags": ["box", "trial", "breakfast", "vegetarian", "overnight prep", "whole-food protein", "portable"],
+  "trial": true,
+  "fixedBatch": true,
+  "servings": "1 breakfast (2 substantial handheld cakes)",
+  "time": "6-12 hr refrigerated soak · bake 28-38 min · cool about 10 min",
+  "source": "User-supplied Version 1 · November 13, 2026 · not independently tested",
+  "blurb": "Overnight Soak & Morning Bake. Two substantial handheld cakes together equal ONE complete breakfast / 1 serving. A portable breakfast intended to support muscle growth and weight gain using whole-food ingredients rather than protein powder. No successful bake or taste approval has been reported yet.",
+  "ingredientGroups": [{"start": 0, "title": "Part 1 - Night before"}, {"start": 7, "title": "Part 2 - Add in the morning"}],
+  "ingredients": [
+    "Old-fashioned rolled oats: 2/3 cup, about 53 g TOTAL; grind approximately two-thirds and leave one-third whole",
+    "Plain whole-milk Greek yogurt: 1/2 cup plus 1 tbsp, about 135 g",
+    "Whole milk: 1/4 cup, 60 mL",
+    "Very ripe banana: 1 small, about 90 g peeled",
+    "Ground flaxseed: 1 tbsp, 7 g",
+    "Whole chia seeds: 1 1/2 tsp, 6 g",
+    "Ground cinnamon: 1/2 tsp",
+    "Whole egg: 1 large",
+    "Baking powder: 1/4 tsp",
+    "Baking soda: 1/16 tsp",
+    "Raw shelled sunflower seeds: 1 tbsp, 9 g",
+    "Vanilla extract: 1/4 tsp",
+    "Salt: small pinch",
+    "Optional ground oats: 1 tbsp at a time ONLY if needed for consistency; not mandatory extra oats"
+  ],
+  "steps": [
+    "NIGHT BEFORE - Grind approximately two-thirds of the measured oats into coarse flour. Leave the remaining one-third whole for texture. These are fractions of the 53 g total, not additional cups of oats.",
+    "NIGHT BEFORE - Mash the banana thoroughly.",
+    "NIGHT BEFORE - Combine all night-before ingredients and stir until evenly incorporated.",
+    "NIGHT BEFORE - Cover and refrigerate for 6-12 hours at 40 F or below. Expect a thick, cohesive mixture as the oats, chia and flax hydrate.",
+    "MORNING - Preheat. Heat oven to 375 F. Put an oven-safe silicone mat on a solid metal baking sheet. The mat must be rated for at least this temperature.",
+    "MORNING - Finish the batter. Remove refrigerated oat mixture; no warming to room temperature needed. Add egg, baking powder, baking soda, vanilla and salt. Mix thoroughly. Fold in sunflower seeds, reserving a few for the tops.",
+    "MORNING - Check consistency. Batter should be thick enough to hold its shape on the mat. If too wet, add 1 tbsp ground oats and wait 5 minutes. Repeat only if necessary.",
+    "MORNING - Shape. Divide into two equal portions. Shape each into a thick round about 4-5 inches across and 1/2-3/4 inch thick. Sprinkle reserved seeds on top.",
+    "MORNING - Bake. Bake on the center rack at 375 F for about 28-38 minutes, checking from 25 minutes. These estimates assume refrigerator-cold batter. Look for golden surfaces, a structure that holds together and set centers without wet batter. Reach at least 160 F internally because the cakes contain egg; temperature alone does not replace the set-center texture check. Thickness, oven and moisture affect timing.",
+    "MORNING - Cool. Rest about 10 minutes so the structure firms and crumbling is reduced."
+  ],
+  "note": "<strong>YIELD AND EQUIPMENT</strong><br>2 substantial handheld cakes = ONE complete breakfast / 1 serving. Oven-safe silicone mat rated for at least 375 F on a solid metal baking sheet, mixing bowl, grinder/blender for oats, thermometer.<br><br><strong>USER-SUPPLIED NUTRITION ESTIMATE - ENTIRE TWO-CAKE BREAKFAST</strong><br>620-690 kcal; protein 31-38 g; carbohydrates 65-80 g; fat 23-30 g. Approximate, brand/portion dependent, not independently calculated or verified here. These are NOT per-cake values. Extra oats used for consistency will change these estimates.<br><br><strong>LEAVENING NOTE</strong><br>The small baking-soda amount reacts with the yogurt's acidity and can help browning; baking powder supplies additional leavening. Do not increase the soda casually or replace the specified amount with a large pinch. This is the user's Version 1 formula, not a tested promise of a particular rise.<br><br><strong>DESIRED FINISHED TEXTURE</strong><br>Golden, lightly toasted exterior with sunflower-seed crunch; moist, tender, slightly chewy interior like dense banana bread. Naturally sweet banana, cinnamon and mild yogurt tang. Firm enough to hold without utensils, not dry like a granola bar and not excessively sweet.<br><br><strong>NUTRITIONAL OBJECTIVES - SOURCE NOTES</strong><br>Adequate energy and whole-food protein for muscle/weight-gain goals, not calorie restriction. Yogurt, milk and egg supply complete protein; oats and banana supply carbohydrates; seeds and egg contribute fats. Oats, seeds and banana contribute fiber. Ingredients contribute calcium, magnesium, potassium, vitamin E, choline and plant omega-3 ALA; no amounts for these micronutrients were calculated here. No added sugar or protein powder required.<br><br><strong>STORAGE AND HANDLING</strong><br>Keep overnight mixture refrigerated. Add egg/leaveners just before baking. Cool baked cakes before packaging to limit condensation, but refrigerate promptly rather than leaving them out for extended cooling. Refrigerate leftovers and use within 3-4 days; freeze individual cakes for longer storage. Keep chilled cakes cold on extended journeys.<br><br><strong>FUTURE DEVELOPMENT - NOT ADDITIONAL SAVED RECIPES</strong><br>Evaluate actual flavor, browning, center moisture, structure and portability before revising measured quantities. Potential later flavors: blueberry-lemon, apple-cinnamon, peanut butter-banana and carrot cake. Goal: a varied rotation of one-breakfast, whole-food, high-protein options with simple morning prep, minimal mess, lightly crisp edges and moist interiors. No successful bake or taste approval has been reported yet.<br><br><strong>ALLERGENS</strong><br>Milk, egg; oats may have wheat/gluten cross-contact. Check ingredient labels for additional allergens. Contains flax, chia and sunflower seeds.<br><br><strong>SOURCE AND STATUS</strong><br>User-supplied recipe, preserved quantities; not independently tested. Version 1 - Overnight Soak & Morning Bake. Saved November 13, 2026. HAVEN'T TRIED YET; publication does not mean tested or taste-approved."
+}
 ];;
 if (typeof RECIPES !== 'undefined') { RECIPES_BOX.forEach(function(r){ if(!RECIPES.some(function(x){return x.id===r.id;})) RECIPES.push(r); }); }

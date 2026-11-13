@@ -1,0 +1,12 @@
+const fs=require('fs'),vm=require('vm'),path=require('path'),assert=require('assert/strict');
+const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),c=vm.createContext({});
+vm.runInContext(fs.readFileSync(path.join(root,'data.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'recipes.js'),'utf8'),c);
+const all=vm.runInContext('RECIPES',c),matches=all.filter(r=>/banana cinnamon protein breakfast cakes/i.test(r.name));assert.equal(matches.length,1);
+const r=matches[0];assert.equal(r.id,'r_trial_banana_cinnamon_protein_breakfast_cakes_v1');assert(r.trial&&r.fixedBatch&&r.tags.includes('breakfast'));assert.equal(r.ingredients.length,14);assert.equal(r.steps.length,10);
+assert.match(r.servings,/1 breakfast \(2/);assert.match(r.ingredients[0],/53 g TOTAL/);assert.match(r.ingredients[9],/1\/16 tsp/);assert.match(r.ingredients[13],/Optional[\s\S]*ONLY[\s\S]*not mandatory/);
+assert.match(r.steps[3],/6-12 hours at 40 F or below/);assert.match(r.steps[8],/375 F[\s\S]*28-38[\s\S]*25 minutes[\s\S]*160 F[\s\S]*set-center/);
+assert.match(r.note,/ENTIRE TWO-CAKE BREAKFAST[\s\S]*620-690[\s\S]*31-38[\s\S]*not independently calculated or verified[\s\S]*NOT per-cake/);
+assert.match(r.note,/3-4 days[\s\S]*ALLERGENS[\s\S]*Milk, egg/);
+vm.runInContext(html.slice(html.indexOf('function recipeCategory('),html.indexOf('function recipeTile(')),c);assert.equal(c.recipeCategory(r),'Breakfast');
+const page={innerHTML:'',style:{}};Object.assign(c,{recipeServ:{},document:{getElementById:()=>page},window:{scrollTo(){}}});vm.runInContext(html.slice(html.indexOf('function baseServ('),html.indexOf('function closeRecipe(')),c);c.openRecipe(r.id);for(const s of [...r.ingredients,...r.steps,r.note])assert(page.innerHTML.includes(s));assert.match(page.innerHTML,/HAVEN'T TRIED YET/);assert.match(page.innerHTML,/Part 1 - Night before[\s\S]*Part 2 - Add in the morning/);assert.doesNotMatch(page.innerHTML,/fewer servings/);
+console.log('Banana breakfast cakes: unique untried Breakfast recipe, fixed two-cake serving, full directions and supplied estimates passed');
