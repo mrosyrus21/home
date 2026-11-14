@@ -100,15 +100,15 @@ const reminderFactory = new Function("wateringPending", "wateringOnline", "photo
   wateringView.slice(reminderHelpersStart, reminderHelpersEnd) + ';return function(entry){return entry.state.key==="due"?pictureWaterCard(entry):compactWaterCard(entry);};'
 );
 function reminder(state, options = {}) {
-  const p = {id:"fixture", name:"Fixture physical pot", plantType:options.strawberry?"strawberry":"mint", emoji:"🪴", waterCue:"SHOULD_NOT_RENDER", freq:"SHOULD_NOT_RENDER"};
+  const p = {id:"fixture", name:"Fixture physical pot", plantType:options.strawberry?"strawberry":"mint", emoji:"🪴", days:7, waterCue:"SHOULD_NOT_RENDER", freq:"SHOULD_NOT_RENDER"};
   const escape = value => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const photo = "plant-photos/2026-10-06/20261006_fixture.jpg";
   const photoData = () => ({photo, fit:"contain", position:"55% 45%"});
   const photoImage = photoImageFactory(photoData, escape, photoPreview);
   const render = reminderFactory(options.pending ? {fixture:"water"} : {}, !options.offline, () => photo, escape, photoData, () => "55% 45%", photoImage, photoPreview);
-  return render({id:p.id, p, ids:[p.id], state:queue.STATE[state], days:options.unknown ? null : 1, warning:options.warning ? "Full warning must not render" : ""});
+  return render({id:p.id, p, ids:[p.id], state:queue.STATE[state], nextDue:"2026-11-21", overdue:0, days:options.unknown ? null : 1, warning:options.warning ? "Full warning must not render" : ""});
 }
-const reminderLabels = {due:"Check moisture", soon:"Check soon", good:"Good", tomorrow:"Check tomorrow", watered:"Watered today"};
+const reminderLabels = {due:"Water today", soon:"Nov 21 · every 7d", good:"Nov 21 · every 7d", tomorrow:"Nov 21 · every 7d", watered:"Watered today · next Nov 21"};
 for (const [state, label] of Object.entries(reminderLabels)) {
   const row = reminder(state);
   assert.match(row, new RegExp('data-water-card="' + (state === "due" ? "picture" : "compact") + '"'), `${state} needs the correct picture-card or compact-row layout`);
@@ -125,8 +125,8 @@ const dampMenu = dueReminder.match(/<details class="water-row-menu">[\s\S]*?<\/d
 assert.ok(dampMenu, "due reminders need a closed options menu");
 assert.doesNotMatch(dampMenu, /<details[^>]*\bopen\b/, "secondary options must start collapsed");
 assert.match(dampMenu, /<summary[^>]*>⋯<\/summary>/);
-assert.match(dampMenu, /onclick="pushWateringGroup\([\s\S]*>Still damp<\/button>/);
-assert.doesNotMatch(dueReminder.replace(dampMenu, ""), /pushWateringGroup|Still damp/, "damp deferral must not be a second visible primary action");
+assert.match(dampMenu, /onclick="pushWateringGroup\([\s\S]*>Still wet · tomorrow<\/button>/);
+assert.doesNotMatch(dueReminder.replace(dampMenu, ""), /pushWateringGroup|Still wet/, "damp deferral must not be a second visible primary action");
 assert.match(dueReminder, /class="water-card-compact-name" title="Fixture physical pot"/, "the full plant name must remain available in its title");
 assert.match(dueReminder, /class="water-card-picture-photo"/, "due photos need their own full-width header");
 assert.match(dueReminder, /class="plant-photo-button" onclick="openPlantPhoto\('fixture'\)"/, "the due picture must still open its original");
@@ -149,7 +149,7 @@ for (const state of ["due", "soon", "good", "tomorrow"]) {
   }
 }
 assert.match(reminder("due", {warning:true}), /water-card-compact-meta">Review date</);
-assert.match(reminder("due", {unknown:true}), /water-card-compact-meta">No saved date</);
+assert.match(reminder("due", {unknown:true}), /water-card-compact-meta">Water today</);
 const careView = html.slice(careViewStart, gardenViewEnd);
 assert.match(careView, /const wi=WATER_INFO\[p\.id\]/, "Care must retain the existing per-plant watering guidance");
 assert.match(careView, /<details class="plant-watering-details">[^\n]+wi\.when[^\n]+wi\.thirst[^\n]+<\/details>/, "Care must offer the full when/how and moisture guidance in a collapsed disclosure");
@@ -170,26 +170,27 @@ for (const file of ["data.js", "sw.js", "watering-queue.js"]) {
   assert.doesNotThrow(() => new Function(source), `${file} must parse`);
 }
 const dataSource = fs.readFileSync(path.join(__dirname, "..", "data.js"), "utf8");
-const plantData = new Function(dataSource + ";return {PLANTS,PLANT_INFO,WATER_INFO,FUN_FACTS,CARE_INFO,PEST_INFO,FEED_INFO,HARVEST_INFO};")();
+const plantData = new Function(dataSource + ";return {PLANTS,PLANT_ARCHIVE,PLANT_WATERING_PLAN,PLANT_INFO,WATER_INFO,FUN_FACTS,CARE_INFO,PEST_INFO,FEED_INFO,HARVEST_INFO};")();
 const plants = plantData.PLANTS;
-assert.equal(plants.length, 31, "the refreshed inventory must have one card for each confirmed physical pot");
+assert.equal(plants.length, 26, "the refreshed inventory must have one card for each confirmed physical pot");
 assert.equal(new Set(plants.map(p => p.id)).size, plants.length, "plant IDs must be unique");
 assert.equal(plants.every(p => /^fresh_/.test(p.id)), true, "fresh pots must not reuse legacy state keys");
 assert.equal(plants.every(p => Number.isInteger(p.days) && p.days > 0), true, "every plant needs a positive whole-day soil-check cadence");
-assert.equal(plants.every(p => p.checkOnly === true), true, "a due card must request a soil check, not automatic watering");
+assert.equal(plants.every(p => p.checkOnly === false), true, "due cards must show scheduled watering");
 plants.forEach(p => {
   assert.equal(typeof p.waterCue, "string", `${p.id} needs a short watering cue`);
   assert.ok(p.waterCue.trim().length > 0 && p.waterCue.length <= 130, `${p.id} watering cue must be nonempty and at most 130 characters`);
   assert.doesNotMatch(p.waterCue, /[<>\r\n]/, `${p.id} watering cue must stay a single plain-text line`);
 });
-assert.equal(plants.every(p => p.lastWatered === "2026-10-06"), true, "all 31 pots must retain the user's confirmed October 6 watering baseline");
+assert.equal(plants.every(p => p.lastWatered === "2026-10-06" || p.lastWatered === null), true, "retain historical dates without fabricating reset-day completion");
 assert.equal(plants.some(p => p.trimDays || p.trim), false, "fresh pots must not inherit dated trimming instructions");
-assert.equal(plants.filter(p => p.loc === "indoor").length, 29);
+assert.equal(plants.filter(p => p.loc === "indoor").length, 24);
 assert.deepEqual(plants.filter(p => p.loc === "outdoor").map(p => p.id).sort(),
   ["fresh_pot1000016368", "fresh_strawberry_gray_outdoor"], "only the gray strawberry and temporarily outdoor tomato belong outdoors");
 
 const mintIds = ["fresh_pot120755", "fresh_pot120830", "fresh_pot120835", "fresh_pot120837", "fresh_pot120841", "fresh_pot120843", "fresh_pot120855"];
-const mints = plants.filter(p => p.plantType === "mint");
+assert.equal(plants.some(p=>p.plantType === "mint"), false);
+const mints = plantData.PLANT_ARCHIVE;
 assert.deepEqual(mints.map(p => p.id), mintIds, "each mint number must stay attached to its own physical pot");
 mints.forEach((p, index) => assert.match(p.name, new RegExp("^Mint #" + (index + 1) + "\\b")));
 
@@ -198,7 +199,7 @@ for (const name of ["PLANT_INFO", "WATER_INFO", "FUN_FACTS", "CARE_INFO", "PEST_
   assert.deepEqual(Object.keys(plantData[name]).sort(), activeIds, `${name} must cover exactly the fresh active pots`);
 }
 const harvestIds = Object.keys(plantData.HARVEST_INFO).sort();
-assert.equal(harvestIds.length, 17, "harvest cards must stay limited to confirmed edible plants");
+assert.equal(harvestIds.length, 10, "harvest cards must stay limited to confirmed edible plants");
 assert.deepEqual(harvestIds, plants.filter(p => ["mint", "parsley", "rosemary", "strawberry", "tomato", "oregano", "spinach"].includes(p.plantType)).map(p => p.id).sort());
 
 const correctedPots = {
@@ -225,15 +226,16 @@ assert.match(plantData.CARE_INFO[cactus.id].fact, /rooting nicely/i, "the found 
 assert.doesNotMatch(plantData.WATER_INFO[cactus.id].when, /Seedling exception:|2–3 inches|15–30 minutes/, "rooting-cactus care must not append generic mature-pot soaking instructions");
 
 const photos = plants.map(p => plantData.PLANT_INFO[p.id].photo);
-assert.equal(new Set(photos).size, 31, "each pot needs a unique primary photo path");
+assert.equal(new Set(photos).size, 26, "each pot needs a unique primary photo path");
 const photoHashes = photos.map(photo => {
   const file = path.join(__dirname, "..", photo);
   assert.equal(fs.existsSync(file), true, `primary photo must exist: ${photo}`);
   return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
 });
-assert.equal(new Set(photoHashes).size, 31, "duplicate photo bytes must not become additional physical-pot cards");
+assert.equal(new Set(photoHashes).size, 26, "duplicate photo bytes must not become additional physical-pot cards");
 for (const photo of photos.concat(plants.flatMap(p => plantData.PLANT_INFO[p.id].alternatePhotos || []))) {
   const preview = photoPreview(photo);
+  if (photo.startsWith("images/")) { assert.equal(preview,photo); continue; }
   assert.match(preview, /^plant-photo-previews\/2026-10-06\/[^/]+\.webp$/, "every inventory photo needs a light card-preview path");
   const previewFile = path.join(__dirname, "..", preview);
   assert.equal(fs.existsSync(previewFile), true, `card preview must exist: ${preview}`);
@@ -249,7 +251,7 @@ const legacyBefore = JSON.stringify({ watered: legacyWatered, pushed: legacyPush
 // Exercise genuinely unknown records separately from the user-confirmed live baseline.
 const unknownPlants = plants.map(p => ({ ...p, lastWatered: null }));
 const unknown = queue.build({ dateKey: "2026-10-06", plants: unknownPlants, watered: legacyWatered, pushed: legacyPushed });
-assert.equal(unknown.length, 31);
+assert.equal(unknown.length, 26);
 assert.equal(unknown.every(entry => entry.days === null && entry.state.key === "due"), true, "legacy dates and deferrals must not initialize any fresh pot");
 assert.equal(unknown.some(entry => retiredIds.includes(entry.id)), false, "retired history must stay dormant");
 assert.equal(JSON.stringify({ watered: legacyWatered, pushed: legacyPushed }), legacyBefore, "building the active queue must retain all legacy history unchanged");
@@ -257,11 +259,59 @@ assert.equal(JSON.stringify({ watered: legacyWatered, pushed: legacyPushed }), l
 const firstId = plants[0].id;
 const oneWatered = queue.build({ dateKey: "2026-10-06", plants: unknownPlants, watered: { ...legacyWatered, [firstId]: "2026-10-06" }, pushed: legacyPushed });
 assert.equal(oneWatered.filter(entry => entry.state.key === "watered").length, 1, "logging one pot must not mark another pot watered");
-assert.equal(oneWatered.filter(entry => entry.state.key === "due").length, 30);
+assert.equal(oneWatered.filter(entry => entry.state.key === "due").length, 25);
 const oneDeferred = queue.build({ dateKey: "2026-10-06", plants: unknownPlants, watered: legacyWatered, pushed: { ...legacyPushed, [firstId]: "2026-10-07" } });
 assert.equal(oneDeferred.find(entry => entry.id === firstId).state.key, "tomorrow");
 assert.equal(oneDeferred.find(entry => entry.id === firstId).days, null, "a moisture-check snooze must not invent a watering date");
-assert.equal(oneDeferred.filter(entry => entry.state.key === "due").length, 30);
+assert.equal(oneDeferred.filter(entry => entry.state.key === "due").length, 25);
 assert.equal(queue.build({ dateKey: "2026-10-07", plants: unknownPlants, watered: legacyWatered, pushed: { [firstId]: "2026-10-07" } }).find(entry => entry.id === firstId).state.key, "due", "a snoozed soil check must return on its target date");
 
+// The reset is a plan, never an automatic completed watering event.
+const snapshot=JSON.stringify({legacyWatered,legacyPushed});
+const reset=queue.build({dateKey:"2026-11-14",plants,watered:legacyWatered,pushed:legacyPushed});
+assert.equal(reset.length,26);
+assert.equal(reset.some(e=>e.state.key==="due"||e.state.key==="watered"),false);
+assert.equal(JSON.stringify({legacyWatered,legacyPushed}),snapshot);
+for (const p of plants) {
+  const expected=queue.dateKeyPlusDays("2026-11-14",p.days);
+  assert.equal(reset.find(e=>e.id===p.id).nextDue,expected);
+  assert.equal(queue.plantDue(p,null,null,queue.dateKeyPlusDays(expected,-1)),false,p.name);
+  assert.equal(queue.plantDue(p,null,null,expected),true,p.name);
+  assert.equal(queue.plantDue(p,null,null,queue.dateKeyPlusDays(expected,1)),true,"missed watering remains overdue");
+}
+const croton=plants.find(p=>p.plantType==="croton");
+assert.equal(croton.days,7);
+assert.equal(plants.find(p=>p.plantType==="rosemary").days,10);
+assert.equal(plants.find(p=>p.plantType==="jade").days,21);
+const later=queue.build({dateKey:"2026-11-18",plants:[croton],watered:{[croton.id]:"2026-11-18"}})[0];
+assert.equal(later.nextDue,"2026-11-25");
+assert.equal(later.state.key,"watered");
+assert.equal(queue.plantDue(croton,null,"2026-12-01","2026-11-21"),true,"old deferrals cannot hide reset reminders");
+assert.equal(queue.plantDue(croton,null,"2026-11-22","2026-11-21","2026-11-14"),false);
+assert.equal(queue.plantDue(croton,null,"2026-11-22","2026-11-22","2026-11-14"),true);
+assert.equal(queue.dateKeyPlusDays("2026-10-31",2),"2026-11-02","calendar arithmetic crosses DST");
+const archive=JSON.parse(fs.readFileSync(path.join(__dirname,"..","archive/plants/mint-2026-11-08.json"),"utf8"));
+assert.equal(archive.plants.length,7);
+for(const mint of archive.plants){
+  assert.equal(mint.remindersEnabled,false);
+  assert.ok(fs.existsSync(path.join(__dirname,"..",mint.photo)));
+}
+const today=fs.readFileSync(path.join(__dirname,"..","today-checklist.js"),"utf8");
+assert.match(today,/todayPlantWateringHtml\(date\)/);
+assert.match(today,/const due = plantsDueOn\(date\)/);
+assert.match(html,/today===PLANT_WATERING_PLAN.startDate/);
+assert.match(html,/waterScheduleDeferrals\/"\+id/);
+const writes=[];
+let actionDay='2026-11-14';
+const actionSource=html.slice(html.indexOf('function waterPlantGroup('),html.indexOf('// Photo framing'));
+const actions=new Function('PLANTS','PLANT_WATERING_PLAN','wateringActionReady','validWaterPlantId','wateringPending','todayKey','writeWateringUpdates',actionSource+';return {waterPlantGroup,finishWateringResetDay};')(plants,plantData.PLANT_WATERING_PLAN,()=>true,id=>plants.some(p=>p.id===id),{},()=>actionDay,(updates,ids)=>writes.push({updates,ids}));
+actions.waterPlantGroup([mintIds[0]]);
+assert.equal(writes.length,0,'archived mint cannot receive watering writes');
+actions.finishWateringResetDay();
+assert.equal(writes.length,1);
+assert.equal(writes[0].ids.length,26);
+assert.equal(Object.keys(writes[0].updates).length,78,'reset logs only the 26 active per-pot dates and clears their two deferral paths');
+assert.equal(writes[0].updates['watered/'+plants[0].id],'2026-11-14');
+actionDay='2026-11-15';actions.finishWateringResetDay();
+assert.equal(writes.length,1,'bulk reset must not work after its one planned day');
 console.log("watering schedule regression checks passed");

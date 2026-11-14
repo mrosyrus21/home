@@ -13,7 +13,7 @@ function fixture(date = '2026-09-24', hour = 8) {
   let clock = new Date(date + 'T' + String(hour).padStart(2,'0') + ':00:00').getTime();
   class TestDate extends Date { constructor(...args) { super(...(args.length ? args : [clock])); } static now() { return clock; } }
   const c = {Date:TestDate, TODAY_CLEAR_MS:950, laundry, wateringStateLoaded:true, beautyPurchased:{}, __stateHydrated:true,
-    document:{getElementById:() => view}, todayKey:() => date,
+    document:{getElementById:() => view}, todayKey:() => date, plantsDueOn:() => c.plantsDue, plantsDue:[],
     ALMANAC_MORNING:['bed','outdoor-water','health','breakfast','walk','work'].map(id => ({id})),
     almanacEsc:s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),
     almanacLogKey:(id,d) => 'morning-' + id + '-' + d,
@@ -47,6 +47,15 @@ function fixture(date = '2026-09-24', hour = 8) {
 
 function run() {
   const f=fixture();f.c.renderAll();
+  const watering=fixture('2026-11-15');
+  watering.c.plantsDue=[{name:'Banana croton',plantType:'croton'},{name:'Sundew',plantType:'sundew_provisional'}];
+  watering.c.renderAll();
+  assert.match(watering.view.innerHTML,/Water 2 plants today/);
+  assert.match(watering.view.innerHTML,/Banana croton/);
+  assert.match(watering.view.innerHTML,/Sundew \(pure-water tray top-up\)/);
+  assert.equal(watering.writes.length,0,'showing due plants must not log watering');
+  watering.c.plantsDue=[];watering.c.renderAll();
+  assert.doesNotMatch(watering.view.innerHTML,/data-plant-watering-due/);
   assert.equal(f.writes.length,0,'rendering must never record completion');
   assert.match(f.view.innerHTML,/Morning routine/);
   assert.match(f.view.innerHTML,/Begin paid work/);

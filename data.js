@@ -4,7 +4,7 @@
 // with the inline <script> in index.html, which loads AFTER this file.
 // Objects: ROOMS, TASKS, SCHEDULE, PLANTS, PLANT_INFO, WATER_INFO,
 //          FUN_FACTS, CARE_INFO, HARVEST_INFO.
-// Plant display chips are informational. For checkOnly pots, `days` is the soil-check interval, not a watering frequency.
+// Per-pot watering intervals start November 8, 2026. Mint is archived; state history is retained.
 // Edit plant/task/room data HERE. index.html keeps CONFIG/EYEBROWS/LAST_DEPLOY.
 // ═══════════════════════════════════════════════════════════════
 
@@ -717,7 +717,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Terracotta pot with pale figurine and many clay balls; tiny fleshy rounded-leaf plant",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120734.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120734.jpg",
@@ -747,7 +747,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Taupe-gray round pot; narrow blue-green foliage and pink/magenta flowers with pale fringes",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120742.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120742.jpg",
@@ -779,7 +779,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Taupe-gray pot; dense branching narrow-leaf mound with small white flower cluster",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120748.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120748.jpg",
@@ -811,7 +811,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Taupe-gray pot on table; bushy pointed green leaves and some purplish stems",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120755.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120755.jpg",
@@ -849,7 +849,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Terracotta pot; toothed foliage, cut stems, spent pale composite flower",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120806.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120806.jpg",
@@ -881,7 +881,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Terracotta pot with rear black-bordered flower tag; smaller red/bronze branching cluster and yellow-green older leaves",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120810.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120810.jpg",
@@ -914,7 +914,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Separate terracotta pot and saucer with pale front flower tag; fuller broad green/red-veined foliage and pink buds",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120815.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120815.jpg",
@@ -947,7 +947,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Tan/fibrous-looking round pot with bright curly parsley foliage",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120821.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120821.jpg",
@@ -979,7 +979,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Terracotta pot; small central multi-shoot cluster and two visible clay balls toward foreground",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120830.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120830.jpg",
@@ -1009,7 +1009,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Blue-gray pot on sill; dense broader rounded foliage, conspicuous cut stem, wet leaves",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120835.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120835.jpg",
@@ -1045,7 +1045,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Terracotta pot with pale rim wear; three small separate shoot clusters and no figurine visible",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120837.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120837.jpg",
@@ -1075,7 +1075,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Gray plastic-looking pot; sparse shoot groups, pale/white stone and large bark pieces",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120841.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120841.jpg",
@@ -1105,7 +1105,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Smaller terracotta near window; low branching leafy cluster, no figurine visible",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120843.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120843.jpg",
@@ -1135,7 +1135,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Small terracotta pot; pale standing figurine and small smooth-leaved seedling",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120848.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120848.jpg",
@@ -1165,7 +1165,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Small terracotta pot; fuzzy oval leaves, pale round figurine near rim",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120851.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120851.jpg",
@@ -1195,7 +1195,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Terracotta pot; upright pale figurine and three sparse shoot clusters",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120855.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120855.jpg",
@@ -1225,7 +1225,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Terracotta pot; narrow green leaves with yellow stripe/patches; two pale figurines",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120904.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120904.jpg",
@@ -1255,7 +1255,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Tall terracotta strawberry jar with side pockets, multiple crowns and berries",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120909.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120909.jpg",
@@ -1287,7 +1287,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Gray pot; three pale figurine pieces and tiny narrow-leaved green growth",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120913.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120913.jpg",
@@ -1317,7 +1317,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Terracotta pot; tall red stems, support stake and hanging red flower/seed tassel",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120917.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120917.jpg",
@@ -1347,7 +1347,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Large teal hanging basket with a small broad glossy-leaf vine and pale figurine",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_120923.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_120923.jpg",
@@ -1379,7 +1379,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Teal/green glazed pot; thick glossy oval leaves on upright fleshy stem",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_121000.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_121000.jpg",
@@ -1409,7 +1409,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Red-rimmed glazed pot; many clay balls and small ribbed green cactus with long golden spines",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_121003.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_121003.jpg",
@@ -1439,7 +1439,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Dark plastic-looking pot with three larger pale onion-like bases; left of geode strawberry, beside jade",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_121010.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_121010.jpg",
@@ -1469,7 +1469,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Wide terracotta pot with geode, stained pale card and small leafy strawberry crown",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_121016.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_121016.jpg",
@@ -1499,7 +1499,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Dark plastic-looking pot with larger base, smaller base and thin shoot/dead stalk; wall side, right of geode strawberry",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_121022.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_121022.jpg",
@@ -1529,7 +1529,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Tall terracotta with matching saucer, large flat pale stone and woody upright rosemary",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_121422.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_121422.jpg",
@@ -1559,7 +1559,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Deeper tapered terracotta with matching saucer; long red leaf stems",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_121426.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_121426.jpg",
@@ -1589,7 +1589,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "outdoor",
     "pot": {
       "description": "Large shallow round gray pot; green strawberry foliage, white flowers and red fruit",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/20261006_121504.jpg",
     "originalPhoto": "plant-photos/2026-10-06/20261006_121504.jpg",
@@ -1619,7 +1619,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "outdoor",
     "pot": {
       "description": "Large dark round pot with stakes and surrounding wire cages; tall tomato plant with green fruit",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/1000016368.jpg",
     "originalPhoto": "plant-photos/2026-10-06/1000016368.jpg",
@@ -1657,7 +1657,7 @@ const PLANT_INVENTORY_20261006 = [
     "location": "indoor",
     "pot": {
       "description": "Glossy black round pot with pink-and-green netted leaves on several low stems",
-      "drainage": "well_drained_user_confirmed"
+      "drainage": "well_drained_user_confirmed_2026-11-08"
     },
     "photo": "plant-photos/2026-10-06/1000016367.jpg",
     "originalPhoto": "plant-photos/2026-10-06/1000016367.jpg",
@@ -1670,6 +1670,88 @@ const PLANT_INVENTORY_20261006 = [
     "identityNote": null,
     "lastWatered": null,
     "cardsStatus": "draft",
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot1000016627",
+    "reviewId": "pot1000016627",
+    "name": "Sundew — nursery pot in clear cup",
+    "emoji": "🌱",
+    "plantType": "sundew_provisional",
+    "careTemplateKey": "sundew_provisional",
+    "identification": {
+      "confidence": "high_broad_id_species_provisional",
+      "basis": "New, distinct nursery pot. Sticky-trap leaf form supports sundew (Drosera), possibly Cape sundew; exact species is provisional. Background onions already have records and do not create another card.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Small brown nursery pot inside a clear cup; green rosette of narrow leaves with glandular hairs; pictured within a larger onion pot",
+      "drainage": "well_drained_user_confirmed_2026-11-08"
+    },
+    "photo": "images/sundew_20261031.jpg",
+    "originalPhoto": "images/sundew_20261031.jpg",
+    "photoPosition": "50% 44%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "1000016627.jpg",
+    "sourcePhotoFilename": "1000016627.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationReportedDate": "2026-10-31",
+    "receivedDate": "2026-10-31",
+    "waterNote": "Keep this nursery pot's mineral-poor water separate from fertilized plants and onion-pot runoff. Check that nursery drainage holes let its shallow tray wet its own mix; the photo does not establish water depth or drainage.",
+    "waterNoteBasis": "Application of sundew water-quality guidance to the photographed nested nursery pot and clear outer cup.",
+    "observations": [
+      {
+        "date": "2026-10-31",
+        "source": "user",
+        "detail": "Some fruit flies were placed on the sundew last night (October 30); it does not seem very sticky. Cause not established."
+      }
+    ],
+    "alternatePhotos": []
+  },
+  {
+    "id": "fresh_pot1000016653",
+    "reviewId": "pot1000016653",
+    "name": "Thyme — hanging pot with wooden supports",
+    "emoji": "🌱",
+    "plantType": "thyme",
+    "careTemplateKey": "thyme",
+    "identification": {
+      "confidence": "user_confirmed_broad_id",
+      "basis": "Owner identifies a new thyme plant. One parent pot; the removed cuttings are not separately photographed or counted as established plants. Exact thyme species/cultivar unknown.",
+      "cultivar": null
+    },
+    "location": "indoor",
+    "pot": {
+      "description": "Reddish-brown round pot in a cream macrame hanger; woody thyme stems loosely supported on upright rods",
+      "drainage": "well_drained_user_confirmed_2026-11-08"
+    },
+    "photo": "images/thyme_20261031.jpg",
+    "originalPhoto": "images/thyme_20261031.jpg",
+    "photoPosition": "50% 61%",
+    "photoFit": "cover",
+    "primaryOriginalFilename": "1000016653.jpg",
+    "sourcePhotoFilename": "1000016653.jpg",
+    "alternateOriginalFilenames": [],
+    "duplicateEarlierFilename": null,
+    "identityNote": null,
+    "lastWatered": null,
+    "cardsStatus": "draft",
+    "locationReportedDate": "2026-10-31",
+    "receivedDate": "2026-10-31",
+    "waterNote": "Parent plant: check moisture before watering after its heavy trim. Water needs differ from unrooted cuttings. Check that runoff can drain out of the hanging pot.",
+    "waterNoteBasis": "Application of thyme drainage guidance to the recently trimmed hanging parent plant.",
+    "observations": [
+      {
+        "date": "2026-10-31",
+        "source": "user",
+        "detail": "New thyme, very woody stems. Owner removed a lot of growth, placed cuttings in seaweed-extract water, and threaded parent stems through the hanger and up support rods to open the plant. Product/dilution and cutting maturity unknown; rooting not confirmed."
+      }
+    ],
     "alternatePhotos": []
   }
 ];
@@ -2138,11 +2220,20 @@ const PLANT_CARE_TEMPLATES = {
       "trouble": "Heat, long days and drought can encourage bolting. Inspect leaf tunnels, holes or mildew before choosing treatment."
     },
     "sources": [
-      {"title": "Growing Spinach — University of Maryland Extension", "url": "https://extension.umd.edu/resource/growing-spinach-home-garden"},
-      {"title": "Growing Spinach and Swiss Chard — University of Minnesota Extension", "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-spinach-and-swiss-chard"}
+      {
+        "title": "Growing Spinach — University of Maryland Extension",
+        "url": "https://extension.umd.edu/resource/growing-spinach-home-garden"
+      },
+      {
+        "title": "Growing Spinach and Swiss Chard — University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-spinach-and-swiss-chard"
+      }
     ],
     "application_note": "Even moisture and gentle seedling handling adapt the guidance to a container. No watering interval, harvest date or current readiness is inferred from the photo.",
-    "deferred": ["light_placement", "overwinter_planning"]
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
   },
   "oregano": {
     "name": "Greek oregano",
@@ -2171,7 +2262,10 @@ const PLANT_CARE_TEMPLATES = {
       }
     ],
     "application_note": "Surface drying and conservative seedling handling adapt oregano guidance to a container; no watering interval or present harvest readiness is inferred from its photo.",
-    "deferred": ["light_placement", "overwinter_planning"]
+    "deferred": [
+      "light_placement",
+      "overwinter_planning"
+    ]
   },
   "seedling_unknown": {
     "name": "Small seedling — identification pending",
@@ -2436,6 +2530,103 @@ const PLANT_CARE_TEMPLATES = {
       "light_placement",
       "overwinter_planning"
     ]
+  },
+  "sundew_provisional": {
+    "name": "Sundew — possibly Cape sundew",
+    "status": "draft",
+    "identification": "Drosera with narrow, glandular leaves; Cape sundew (D. capensis) is plausible, but species remains provisional.",
+    "watering": {
+      "when": "Check the tray and substrate often. While leafy and actively growing, keep the carnivorous mix consistently moist; do not wait for the root ball to dry between waterings.",
+      "method": "Use a dedicated shallow tray of distilled, unremineralized reverse-osmosis, or clean rainwater. About 1 cm is a provisional starting depth, well below the crown; top up before the substrate dries.",
+      "seasonal": "Tray depth and any rest-period changes depend on species. Do not assume permanent year-round tray water or impose dormancy before identifying the species.",
+      "notes": "This is an exception to the shared timed-soak, lift-and-drain routine. Keep its water separate from fertilized pots; ordinary tap, mineral water, and fertilizer runoff are unsuitable."
+    },
+    "care": {
+      "soil": "Specialist low-nutrient sundew/carnivorous-plant mix without added fertilizer. Ordinary potting compost and garden soil are unsuitable; confirm the existing medium before repotting.",
+      "feed": "Fruit flies are suitable small prey, but pause supplemental feeding until leaves have visible sticky droplets. Do not apply ordinary fertilizer. Let it catch small insects naturally once it is dewy; avoid repeatedly handling the traps.",
+      "pruning": "Trim only fully dead leaves or spent flower stems with clean scissors; retain green traps and the growing centre.",
+      "trouble": "Reduced dew can follow insufficient light, excessive heat, mineral buildup or recent root disturbance. The reported low stickiness does not establish a cause. Check water quality and light, then watch new leaves for healthy growth and sticky droplets over the coming weeks.",
+      "light": "For this Cape-like sundew, provide strong light at an unobstructed sunny window or under an adequate grow light. Increase sunlight gradually after a move; avoid overheating it inside a closed clear cover or exposing it to constant heater/fan drafts."
+    },
+    "sources": [
+      {
+        "title": "Drosera (Sundew) — NC State Extension Plant Toolbox",
+        "url": "https://plants.ces.ncsu.edu/plants/drosera/"
+      },
+      {
+        "title": "How to grow carnivorous plants — RHS",
+        "url": "https://www.rhs.org.uk/plants/types/carnivorous/growing-guide"
+      },
+      {
+        "title": "Creating an Indoor Carnivorous Wetland Terrarium — Clemson Extension",
+        "url": "https://hgic.clemson.edu/factsheet/creating-an-indoor-carnivorous-wetland-terrarium-a-step-by-step-guide/"
+      },
+      {
+        "title": "Drosera capensis fact sheet — International Carnivorous Plant Society",
+        "url": "https://www.carnivorousplants.org/sites/default/files/files/TeacherResources/ICPS_IG_Drosera_capensis.pdf"
+      },
+      {
+        "title": "Growing Subtropical Drosera — International Carnivorous Plant Society",
+        "url": "https://www.carnivorousplants.org/grow/guides/SubtropicalDrosera"
+      },
+      {
+        "title": "Cape Sundew Isn't Producing Dew — Sarracenia Northwest",
+        "url": "https://www.growcarnivorousplants.com/growers-q-a/qa-165-cape-sundew-isnt-producing-dew/"
+      },
+      {
+        "title": "Got Gnats? Sundews to the Rescue! — Holden Forests & Gardens",
+        "url": "https://www.holdenfg.org/blog/got-gnats-sundews-to-the-rescue/"
+      }
+    ],
+    "application_note": "Added from the October 31 photo. The shallow tray depth is a cautious starting adaptation for the Cape-like, actively leafy plant, not a genus-wide permanent rule. This template supersedes shared ordinary-water, soak/drain, fertilizer, and generic salt-flush advice; any rinse must use the same mineral-poor water.",
+    "deferred": [
+      "overwinter_planning"
+    ],
+    "sharedGuidanceApplies": false,
+    "sharedGuidanceNotice": "Sundew exception: use distilled, unremineralized reverse-osmosis, or clean rainwater and keep its carnivorous mix moist. Follow this card's shallow-tray method; skip ordinary fertilizer and the shared timed soak, lift/drain and salt-flush routine."
+  },
+  "thyme": {
+    "name": "Thyme — species/cultivar unspecified",
+    "status": "draft",
+    "identification": "Owner-confirmed thyme; exact species/cultivar unknown.",
+    "watering": {
+      "when": "Parent plant: let the upper mix dry somewhat between waterings. Check below the surface; wait if the root zone remains wet. Do not keep continuously saturated.",
+      "method": "Water thoroughly when needed, then allow free drainage. Bottom watering is suitable if moisture reaches the root ball; empty retained runoff.",
+      "seasonal": "Adjust to actual drying and active growth. A recently reduced leaf canopy may use less water.",
+      "notes": "These instructions are for the rooted parent, not its unrooted cuttings."
+    },
+    "care": {
+      "light": "Give the rooted parent strong light at a sunny indoor window; supplemental light may be needed if window light is insufficient. Keep unrooted cuttings in bright indirect light.",
+      "soil": "Use a freely draining container mix and a pot with drainage holes. Avoid retained water in the hanging holder.",
+      "feed": "Feed sparingly during active growth, accounting for fertilizer already in the mix. Do not use an unknown-strength seaweed solution as a standing feed for unrooted cuttings.",
+      "pruning": "Pause further harvesting after the reported heavy trim. Keep supports loose, avoid sharp bends in stiff woody branches, and allow remaining leafy shoots to recover.",
+      "trouble": "Watch for persistent wet mix, soft dark stem bases, or progressive dieback. Woody stems alone do not establish a problem; new leafy growth is a useful recovery sign."
+    },
+    "propagation": [
+      "Use healthy, non-flowering pieces already removed, ideally flexible leafy tips about 3–4 inches long. Firm but bendable young stems can also root; old hard wood is less reliable.",
+      "Remove lower leaves. For a water trial, keep the lower bare stem in clean water and the remaining leaves above it; refresh the water every day or two. Use plain water until the seaweed product and dilution are checked.",
+      "For a medium-based backup, insert prepared cuttings into moist, low-fertility propagation mix with good aeration, such as a perlite-containing mix. Keep it moist without saturation, in bright indirect light.",
+      "Expect several weeks. Semi-ripe thyme cuttings commonly take around 4–6 weeks under suitable conditions; rooting is not guaranteed.",
+      "Seaweed extract was reported by the owner, but brand and dilution are unknown. Do not infer that it is a rooting hormone, that the dose is safe, or that roots have already formed."
+    ],
+    "sources": [
+      {
+        "title": "How to grow thyme — RHS",
+        "url": "https://www.rhs.org.uk/herbs/thyme/grow-your-own"
+      },
+      {
+        "title": "Herb Gardening Basics — UC Master Gardeners",
+        "url": "https://ucanr.edu/site/uc-master-gardeners-santa-clara-county/herb-gardening-basics"
+      },
+      {
+        "title": "How to take herb cuttings — Herb Society of America",
+        "url": "https://www.herbsociety.org/explore/hsa-cultivation/hsa-how-to-take-herb-cuttings.html"
+      },
+      {
+        "title": "Growing thyme in water — Thrive activity guide",
+        "url": "https://www.ageuk.org.uk/bp-assets/globalassets/berkshire/new-activities-and-events/thrive-activity-guides-for-aukb-v3.pdf"
+      }
+    ]
   }
 };
 // Brief reminders summarize the existing moisture guidance; they are not fixed watering intervals.
@@ -2550,22 +2741,69 @@ function plantNote(p){
   return [...new Set([p.placementNote, p.identityNote, p.waterNote, plantCareTemplate(p).watering.notes, plantIdentityWarning(p)].filter(Boolean))].join(' ');
 }
 
-const PLANTS = PLANT_INVENTORY_20261006.map(p => {
+const PLANT_WATERING_PLAN = {
+  "startDate": "2026-11-14",
+  "baselineKind": "owner_planned_full_watering",
+  "intervals": {
+    "jade": 21,
+    "dianthus": 7,
+    "candytuft": 7,
+    "daisy_provisional": 7,
+    "impatiens": 4,
+    "parsley": 4,
+    "spinach": 4,
+    "oregano": 7,
+    "croton": 7,
+    "strawberry": 4,
+    "seedling_unknown": 4,
+    "amaranth": 5,
+    "philodendron_provisional": 10,
+    "cactus_provisional": 21,
+    "allium_provisional": 5,
+    "rosemary": 10,
+    "tomato": 4,
+    "fittonia": 3,
+    "thyme": 10,
+    "sundew_provisional": 1
+  },
+  "perPot": {
+    "fresh_strawberry_gray_outdoor": 7
+  },
+  "sources": [
+    {
+      "title": "Croton moisture and winter watering — Wisconsin Extension",
+      "url": "https://hort.extension.wisc.edu/articles/croton-codiaeum-variegatum/"
+    },
+    {
+      "title": "Rosemary growing guide — RHS",
+      "url": "https://www.rhs.org.uk/herbs/rosemary/grow-your-own"
+    },
+    {
+      "title": "Watering indoor plants — Maryland Extension",
+      "url": "https://extension.umd.edu/resource/watering-indoor-plants"
+    }
+  ],
+  "basis": "Starting repeat intervals for these pots, not universal botanical guarantees. A due-day wet-pot deferral does not log watering. No daily generic soil-check reminders."
+};
+const PLANT_ARCHIVE = PLANT_INVENTORY_20261006.filter(p => p.plantType === 'mint').map(p => ({...p, archivedOn:'2026-11-08', remindersEnabled:false}));
+
+const PLANTS = PLANT_INVENTORY_20261006.filter(p => p.plantType !== 'mint').map(p => {
   const t = plantCareTemplate(p), h = PLANT_HARVEST_TEMPLATES[p.plantType];
   return {
     ...p,
     sourceCardsStatus: p.cardsStatus,
     cardsStatus: 'active_current_inventory',
     loc: p.location,
-    days: 1,
-    checkOnly: true,
-    lastWatered: '2026-10-06',
+    days: PLANT_WATERING_PLAN.perPot[p.id] || PLANT_WATERING_PLAN.intervals[p.careTemplateKey],
+    scheduleStart: PLANT_WATERING_PLAN.startDate,
+    checkOnly: false,
+    lastWatered: p.receivedDate === '2026-10-31' ? null : '2026-10-06',
     preferredWateringMethod: 'bottom_watering',
     provisionalIdentity: plantProvisionalIdentity(p),
     identityWarning: plantIdentityWarning(p),
     light: '☀️ Light assessment deferred',
-    waterChip: '👀 Daily soil check · water only when needed',
-    waterCue: PLANT_WATER_CUES[p.careTemplateKey],
+    waterChip: p.careTemplateKey === 'sundew_provisional' ? '💧 Top up tray daily' : '💧 Every ' + (PLANT_WATERING_PLAN.perPot[p.id] || PLANT_WATERING_PLAN.intervals[p.careTemplateKey]) + ' days',
+    waterCue: PLANT_WATER_CUES[p.careTemplateKey] || t.watering.when.slice(0,130),
     harvestChip: h ? h.badge + ' · no calendar harvest' : (plantProvisionalIdentity(p) ? '🔎 Identity or edible use unconfirmed · do not harvest' : '🪴 Foliage / flowers · no edible harvest advice'),
     freq: t.watering.when,
     note: plantNote(p)
@@ -2592,11 +2830,11 @@ const WATER_INFO = Object.fromEntries(PLANTS.map(p => {
   const smallRoot = ['seedling_unknown','pepper_provisional'].includes(p.careTemplateKey);
   const sources = [...plantCareSources(p), ...plantSharedSources(bottom), ...plantSharedSources(flush)];
   const smallRootNote = smallRoot ? '<br><b>Seedling exception:</b> Use gentle shallow bottom contact rather than the ordinary pot depth/timer below; stop once the mix absorbs moisture, then drain. The drying threshold remains provisional.' : '';
-  const ordinarySoak = p.careTemplateKey === 'cactus_provisional' ? '' : '<br><b>'+plantText(bottom.label)+':</b><ol>' + bottom.steps.map(step => '<li>'+plantText(step)+'</li>').join('') + '</ol>';
+  const ordinarySoak = ['cactus_provisional','sundew_provisional'].includes(p.careTemplateKey) ? '' : '<br><b>'+plantText(bottom.label)+':</b><ol>' + bottom.steps.map(step => '<li>'+plantText(step)+'</li>').join('') + '</ol>';
   return [p.id, {
-    when: '<b>Daily reminder = soil check, not watering.</b> ' + plantText(t.watering.when) + '<br><b>This pot:</b> ' + plantText([t.watering.notes,p.waterNote].filter(Boolean).join(' ') || 'Check and log this physical pot separately.') + '<br><b>Method:</b> ' + plantText(t.watering.method) + smallRootNote + ordinarySoak + '<br>' + plantText(bottom.endpoint) + '<br>' + plantText(bottom.exceptions) + ' ' + plantText(bottom.water) + '<br><b>'+plantText(flush.label)+':</b> ' + plantText(flush.text) + '<br>' + plantText(t.watering.seasonal) + '<br>' + plantSourceLinks(sources),
+    when: '<b>Scheduled every '+p.days+' day'+(p.days===1?'':'s')+'.</b> ' + plantText(t.watering.when) + '<br><b>This pot:</b> ' + plantText([t.watering.notes,p.waterNote].filter(Boolean).join(' ') || 'Check and log this physical pot separately.') + '<br><b>Method:</b> ' + plantText(t.watering.method) + smallRootNote + ordinarySoak + (p.careTemplateKey==='sundew_provisional' ? '<br><b>Sundew exception:</b> Keep its own shallow tray of distilled, rain or unremineralized RO water; no ordinary fertilizer.' : '<br>' + plantText(bottom.endpoint) + '<br>' + plantText(bottom.exceptions) + ' ' + plantText(bottom.water) + '<br><b>'+plantText(flush.label)+':</b> ' + plantText(flush.text)) + '<br>' + plantText(t.watering.seasonal) + '<br>' + plantSourceLinks(sources),
     thirst: plantText(PLANT_CARE_SHARED.trouble_baseline.text),
-    checkOnly: true,
+    checkOnly: false,
     potNote: p.waterNote || '',
     potNoteBasis: p.waterNoteBasis || '',
     sources
@@ -2610,7 +2848,7 @@ const FUN_FACTS = Object.fromEntries(PLANTS.map(p => {
 const CARE_INFO = Object.fromEntries(PLANTS.map(p => {
   const t = plantCareTemplate(p);
   return [p.id, {
-    fact: '<b>Soil / drainage:</b> ' + plantText(t.care.soil) + ' All pots are well drained, confirmed by the user.<br><b>Pruning / handling:</b> ' + plantText(t.care.pruning) + (p.note ? '<br><b>Current notes:</b> '+plantText(p.note) : '') + (t.application_note ? '<br><b>How this guidance applies:</b> '+plantText(t.application_note) : '') + '<br>Light placement and overwinter planning remain deferred.<br>' + plantSourceLinks(plantCareSources(p)),
+    fact: '<b>Soil / drainage:</b> ' + plantText(t.care.soil) + ' All pots are well drained, confirmed by the user.<br><b>Pruning / handling:</b> ' + plantText(t.care.pruning) + (p.note ? '<br><b>Current notes:</b> '+plantText(p.note) : '') + (t.application_note ? '<br><b>How this guidance applies:</b> '+plantText(t.application_note) : '') + (t.propagation ? '<br><b>Cuttings:</b><ul>'+t.propagation.map(s=>'<li>'+plantText(s)+'</li>').join('')+'</ul>' : '') + (t.care.light ? '<br><b>Light:</b> '+plantText(t.care.light)+'<br>' : '<br>Light placement and overwinter planning remain deferred.<br>') + plantSourceLinks(plantCareSources(p)),
     sources: plantCareSources(p)
   }];
 }));
@@ -2621,7 +2859,7 @@ const PEST_INFO = Object.fromEntries(PLANTS.map(p => [p.id, {
 }]));
 const FEED_INFO = Object.fromEntries(PLANTS.map(p => [p.id, {
   what: plantText(plantCareTemplate(p).care.feed),
-  how: plantText(PLANT_CARE_SHARED.feeding_baseline.text) + ' ' + plantText('Check potting-mix fertilizer and recent feeding before adding another fertilizer.') + '<br>' + plantSourceLinks([...plantCareSources(p), ...plantSharedSources(PLANT_CARE_SHARED.feeding_baseline)]),
+  how: (p.careTemplateKey==='sundew_provisional' ? 'No ordinary fertilizer.' : plantText(PLANT_CARE_SHARED.feeding_baseline.text)) + ' ' + plantText('Check potting-mix fertilizer and recent feeding before adding another fertilizer.') + '<br>' + plantSourceLinks([...plantCareSources(p), ...plantSharedSources(PLANT_CARE_SHARED.feeding_baseline)]),
   sources: plantCareSources(p)
 }]));
 

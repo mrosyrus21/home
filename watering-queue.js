@@ -6,10 +6,10 @@
   "use strict";
 
   const STATE = Object.freeze({
-    due:      Object.freeze({ key: "due",      rank: 0, compact: false, label: "Check soil",      color: "#22D3EE" }),
-    soon:     Object.freeze({ key: "soon",     rank: 1, compact: true,  label: "Check soon",      color: "#FBBF24" }),
-    good:     Object.freeze({ key: "good",     rank: 2, compact: true,  label: "Good",            color: "#4ADE80" }),
-    tomorrow: Object.freeze({ key: "tomorrow", rank: 3, compact: true,  label: "Check tomorrow",  color: "#A5F3FC" }),
+    due:      Object.freeze({ key: "due",      rank: 0, compact: false, label: "Water due",       color: "#22D3EE" }),
+    soon:     Object.freeze({ key: "soon",     rank: 1, compact: true,  label: "Due tomorrow",    color: "#FBBF24" }),
+    good:     Object.freeze({ key: "good",     rank: 2, compact: true,  label: "Scheduled",       color: "#4ADE80" }),
+    tomorrow: Object.freeze({ key: "tomorrow", rank: 3, compact: true,  label: "Deferred",        color: "#A5F3FC" }),
     watered:  Object.freeze({ key: "watered",  rank: 4, compact: true,  label: "Watered today",   color: "#4AD490" })
   });
 
@@ -48,11 +48,29 @@
     return !!plant && Number.isInteger(plant.days) && plant.days > 0;
   }
 
-  function plantDue(plant, lastWatered, pushedUntil, dateKey) {
+  function scheduleAnchor(plant, lastWatered, dateKey) {
+    const start = dateKeyDay(plant && plant.scheduleStart), now = dateKeyDay(dateKey);
+    if (start === null || now === null || now < start) return lastWatered;
+    const logged = dateKeyDay(lastWatered);
+    return logged !== null && logged >= start && logged <= now ? lastWatered : plant.scheduleStart;
+  }
+
+  function effectiveDeferral(plant, pushedUntil, dateKey, version) {
+    const start = dateKeyDay(plant && plant.scheduleStart), now = dateKeyDay(dateKey);
+    // Only deferrals made for this reset may suppress its new schedule.
+    return start !== null && now !== null && now >= start && version !== plant.scheduleStart ? null : pushedUntil;
+  }
+
+  function dateKeyPlusDays(key, days) {
+    const day = dateKeyDay(key);
+    return day === null || !Number.isInteger(days) ? null : new Date((day + days) * 86400000).toISOString().slice(0,10);
+  }
+
+  function plantDue(plant, lastWatered, pushedUntil, dateKey, version) {
     if (dateKeyDay(dateKey) === null) return false;
-    if (isFutureDateKey(pushedUntil, dateKey)) return false;
+    if (isFutureDateKey(effectiveDeferral(plant,pushedUntil,dateKey,version), dateKey)) return false;
     if (!validCadence(plant)) return true;
-    const age = calendarDaysSince(lastWatered, dateKey);
+    const age = calendarDaysSince(scheduleAnchor(plant,lastWatered,dateKey), dateKey);
     return age === null || age >= plant.days;
   }
 
@@ -79,7 +97,7 @@
   }
 
   function build(input) {
-    const x = input || {}, plants = x.plants || [], watered = x.watered || {}, pushed = x.pushed || {};
+    const x = input || {}, plants = x.plants || [], watered = x.watered || {}, pushed = x.pushed || {}, deferrals = x.deferrals || {};
     const dateKey = x.dateKey;
     if (dateKeyDay(dateKey) === null) return [];
     const groups = (x.groups || []).map(group => {
@@ -89,12 +107,16 @@
     const groupedIds = new Set(groups.flatMap(group => group.ids));
 
     function plantEntry(plant, order) {
-      const age = calendarDaysSince(watered[plant.id], dateKey), cadenceOk = validCadence(plant);
-      const due = plantDue(plant, watered[plant.id], pushed[plant.id], dateKey);
+      const anchor = scheduleAnchor(plant,watered[plant.id],dateKey);
+      const age = calendarDaysSince(anchor, dateKey), cadenceOk = validCadence(plant);
+      const defer = effectiveDeferral(plant,pushed[plant.id],dateKey,(deferrals[plant.id]||{}).version);
+      const due = plantDue(plant, watered[plant.id], pushed[plant.id], dateKey,(deferrals[plant.id]||{}).version);
+      const calculatedDue = cadenceOk ? dateKeyPlusDays(anchor,plant.days) : null;
+      const nextDue = isFutureDateKey(defer,calculatedDue) ? defer : calculatedDue;
       const state = classify({
         wateredToday: watered[plant.id] === dateKey,
         due: due,
-        pushed: isFutureDateKey(pushed[plant.id], dateKey),
+        pushed: isFutureDateKey(defer, dateKey),
         soon: age !== null && cadenceOk && age >= plant.days - 1
       });
       return {
@@ -102,6 +124,9 @@
         p: plant,
         ids: [plant.id],
         days: age,
+        nextDue: nextDue,
+        baselineUsed: anchor === plant.scheduleStart && watered[plant.id] !== anchor,
+        lastWatered: watered[plant.id] || null,
         state: state,
         warning: !cadenceOk ? "watering frequency needs review" : (age === null && watered[plant.id] ? "watering date needs review" : ""),
         overdue: age === null || !cadenceOk ? Number.POSITIVE_INFINITY : age - plant.days,
@@ -146,6 +171,9 @@
     validCadence: validCadence,
     dateKeyDay: dateKeyDay,
     calendarDaysSince: calendarDaysSince,
-    isFutureDateKey: isFutureDateKey
+    isFutureDateKey: isFutureDateKey,
+    scheduleAnchor: scheduleAnchor,
+    dateKeyPlusDays: dateKeyPlusDays,
+    effectiveDeferral: effectiveDeferral
   });
 });

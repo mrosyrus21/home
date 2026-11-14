@@ -1,0 +1,243 @@
+{
+  "reason": "Owner manages mint daily without reminders",
+  "plants": [
+    {
+      "id": "fresh_pot120755",
+      "reviewId": "pot120755",
+      "name": "Mint #1 · bushy taupe-gray pot",
+      "emoji": "🌿",
+      "plantType": "mint",
+      "careTemplateKey": "mint",
+      "identification": {
+        "confidence": "high_broad_id",
+        "basis": "User confirmed Mint #1 (120755) and Mint #3 (120835) are two different pots. Keep both records and their existing mint numbers. Mint variety remains unconfirmed.",
+        "cultivar": null
+      },
+      "location": "indoor",
+      "pot": {
+        "description": "Taupe-gray pot on table; bushy pointed green leaves and some purplish stems",
+        "drainage": "well_drained_user_confirmed_2026-11-08"
+      },
+      "photo": "plant-photos/2026-10-06/20261006_120755.jpg",
+      "originalPhoto": "plant-photos/2026-10-06/20261006_120755.jpg",
+      "photoPosition": "50% 52%",
+      "photoFit": "cover",
+      "primaryOriginalFilename": "20261006_120755.jpg",
+      "sourcePhotoFilename": "20261006_120755.jpg",
+      "alternateOriginalFilenames": [],
+      "duplicateEarlierFilename": null,
+      "identityNote": null,
+      "lastWatered": null,
+      "cardsStatus": "draft",
+      "locationIsTemporary": true,
+      "placementNote": "Temporary indoor spot by the door while a permanent place is arranged.",
+      "physicalPotIdentity": {
+        "status": "confirmed_distinct",
+        "source": "user",
+        "confirmedDate": "2026-10-06",
+        "otherReviewId": "pot120835"
+      },
+      "alternatePhotos": [],
+      "archivedOn": "2026-11-08",
+      "remindersEnabled": false
+    },
+    {
+      "id": "fresh_pot120830",
+      "reviewId": "pot120830",
+      "name": "Mint #2 · terracotta with clay balls",
+      "emoji": "🌿",
+      "plantType": "mint",
+      "careTemplateKey": "mint",
+      "identification": {
+        "confidence": "high",
+        "basis": "Distinct growth and pot markers from the other mint pots. Mint species/cultivar unconfirmed.",
+        "cultivar": null
+      },
+      "location": "indoor",
+      "pot": {
+        "description": "Terracotta pot; small central multi-shoot cluster and two visible clay balls toward foreground",
+        "drainage": "well_drained_user_confirmed_2026-11-08"
+      },
+      "photo": "plant-photos/2026-10-06/20261006_120830.jpg",
+      "originalPhoto": "plant-photos/2026-10-06/20261006_120830.jpg",
+      "photoPosition": "50% 47%",
+      "photoFit": "cover",
+      "primaryOriginalFilename": "20261006_120830.jpg",
+      "sourcePhotoFilename": "20261006_120830.jpg",
+      "alternateOriginalFilenames": [],
+      "duplicateEarlierFilename": null,
+      "identityNote": null,
+      "lastWatered": null,
+      "cardsStatus": "draft",
+      "alternatePhotos": [],
+      "archivedOn": "2026-11-08",
+      "remindersEnabled": false
+    },
+    {
+      "id": "fresh_pot120835",
+      "reviewId": "pot120835",
+      "name": "Mint #3 · bushy blue-gray pot",
+      "emoji": "🌿",
+      "plantType": "mint",
+      "careTemplateKey": "mint",
+      "identification": {
+        "confidence": "high_broad_id",
+        "basis": "User confirmed Mint #1 (120755) and Mint #3 (120835) are two different pots. Keep both records and their existing mint numbers. Mint variety remains unconfirmed.",
+        "cultivar": null
+      },
+      "location": "indoor",
+      "pot": {
+        "description": "Blue-gray pot on sill; dense broader rounded foliage, conspicuous cut stem, wet leaves",
+        "drainage": "well_drained_user_confirmed_2026-11-08"
+      },
+      "photo": "plant-photos/2026-10-06/20261006_120835.jpg",
+      "originalPhoto": "plant-photos/2026-10-06/20261006_120835.jpg",
+      "photoPosition": "50% 53%",
+      "photoFit": "cover",
+      "primaryOriginalFilename": "20261006_120835.jpg",
+      "sourcePhotoFilename": "20261006_120835.jpg",
+      "alternateOriginalFilenames": [],
+      "duplicateEarlierFilename": null,
+      "identityNote": null,
+      "lastWatered": null,
+      "cardsStatus": "draft",
+      "physicalPotIdentity": {
+        "status": "confirmed_distinct",
+        "source": "user",
+        "confirmedDate": "2026-10-06",
+        "otherReviewId": "pot120755"
+      },
+      "alternatePhotos": [],
+      "archivedOn": "2026-11-08",
+      "remindersEnabled": false
+    },
+    {
+      "id": "fresh_pot120837",
+      "reviewId": "pot120837",
+      "name": "Mint #4 · three shoots, worn terracotta",
+      "emoji": "🌿",
+      "plantType": "mint",
+      "careTemplateKey": "mint",
+      "identification": {
+        "confidence": "high",
+        "basis": "Distinct from 120855 by figurine absence, shoot positions and pot surface. Species/cultivar unconfirmed.",
+        "cultivar": null
+      },
+      "location": "indoor",
+      "pot": {
+        "description": "Terracotta pot with pale rim wear; three small separate shoot clusters and no figurine visible",
+        "drainage": "well_drained_user_confirmed_2026-11-08"
+      },
+      "photo": "plant-photos/2026-10-06/20261006_120837.jpg",
+      "originalPhoto": "plant-photos/2026-10-06/20261006_120837.jpg",
+      "photoPosition": "50% 55%",
+      "photoFit": "cover",
+      "primaryOriginalFilename": "20261006_120837.jpg",
+      "sourcePhotoFilename": "20261006_120837.jpg",
+      "alternateOriginalFilenames": [],
+      "duplicateEarlierFilename": null,
+      "identityNote": null,
+      "lastWatered": null,
+      "cardsStatus": "draft",
+      "alternatePhotos": [],
+      "archivedOn": "2026-11-08",
+      "remindersEnabled": false
+    },
+    {
+      "id": "fresh_pot120841",
+      "reviewId": "pot120841",
+      "name": "Mint #5 · gray pot with white stone",
+      "emoji": "🌿",
+      "plantType": "mint",
+      "careTemplateKey": "mint",
+      "identification": {
+        "confidence": "high",
+        "basis": "Distinct gray sparse-mint pot with stone markers. Species/cultivar unconfirmed.",
+        "cultivar": null
+      },
+      "location": "indoor",
+      "pot": {
+        "description": "Gray plastic-looking pot; sparse shoot groups, pale/white stone and large bark pieces",
+        "drainage": "well_drained_user_confirmed_2026-11-08"
+      },
+      "photo": "plant-photos/2026-10-06/20261006_120841.jpg",
+      "originalPhoto": "plant-photos/2026-10-06/20261006_120841.jpg",
+      "photoPosition": "50% 52%",
+      "photoFit": "cover",
+      "primaryOriginalFilename": "20261006_120841.jpg",
+      "sourcePhotoFilename": "20261006_120841.jpg",
+      "alternateOriginalFilenames": [],
+      "duplicateEarlierFilename": null,
+      "identityNote": null,
+      "lastWatered": null,
+      "cardsStatus": "draft",
+      "alternatePhotos": [],
+      "archivedOn": "2026-11-08",
+      "remindersEnabled": false
+    },
+    {
+      "id": "fresh_pot120843",
+      "reviewId": "pot120843",
+      "name": "Mint #6 · small terracotta cluster",
+      "emoji": "🌿",
+      "plantType": "mint",
+      "careTemplateKey": "mint",
+      "identification": {
+        "confidence": "high",
+        "basis": "Distinct from 120830 by plant branching, pot and scene context. Species/cultivar unconfirmed.",
+        "cultivar": null
+      },
+      "location": "indoor",
+      "pot": {
+        "description": "Smaller terracotta near window; low branching leafy cluster, no figurine visible",
+        "drainage": "well_drained_user_confirmed_2026-11-08"
+      },
+      "photo": "plant-photos/2026-10-06/20261006_120843.jpg",
+      "originalPhoto": "plant-photos/2026-10-06/20261006_120843.jpg",
+      "photoPosition": "50% 49%",
+      "photoFit": "cover",
+      "primaryOriginalFilename": "20261006_120843.jpg",
+      "sourcePhotoFilename": "20261006_120843.jpg",
+      "alternateOriginalFilenames": [],
+      "duplicateEarlierFilename": null,
+      "identityNote": null,
+      "lastWatered": null,
+      "cardsStatus": "draft",
+      "alternatePhotos": [],
+      "archivedOn": "2026-11-08",
+      "remindersEnabled": false
+    },
+    {
+      "id": "fresh_pot120855",
+      "reviewId": "pot120855",
+      "name": "Mint #7 · terracotta with standing figurine",
+      "emoji": "🌿",
+      "plantType": "mint",
+      "careTemplateKey": "mint",
+      "identification": {
+        "confidence": "high",
+        "basis": "Distinct from 120837 and other mints by figurine and growth pattern. Species/cultivar unconfirmed.",
+        "cultivar": null
+      },
+      "location": "indoor",
+      "pot": {
+        "description": "Terracotta pot; upright pale figurine and three sparse shoot clusters",
+        "drainage": "well_drained_user_confirmed_2026-11-08"
+      },
+      "photo": "plant-photos/2026-10-06/20261006_120855.jpg",
+      "originalPhoto": "plant-photos/2026-10-06/20261006_120855.jpg",
+      "photoPosition": "50% 53%",
+      "photoFit": "cover",
+      "primaryOriginalFilename": "20261006_120855.jpg",
+      "sourcePhotoFilename": "20261006_120855.jpg",
+      "alternateOriginalFilenames": [],
+      "duplicateEarlierFilename": null,
+      "identityNote": null,
+      "lastWatered": null,
+      "cardsStatus": "draft",
+      "alternatePhotos": [],
+      "archivedOn": "2026-11-08",
+      "remindersEnabled": false
+    }
+  ]
+}

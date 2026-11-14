@@ -76,6 +76,12 @@ function todayChecklistWater(item) {
   const pct = Math.min(100, Math.round(count / goal * 100)), disabled = !window.__stateHydrated || clearing;
   return '<div class="td-water' + (clearing ? ' td-clearing' : '') + '" data-task="water"><div class="td-water-top"><span class="td-water-icon">💧</span><div class="td-copy"><div class="td-label">' + (clearing ? 'Water goal reached' : 'Water') + '</div><div class="td-note">' + count + ' / ' + goal + ' bottles · 32 oz each</div></div><button class="td-water-add" type="button" onclick="todayChecklistAction(\'water\',false)"' + (disabled ? ' disabled' : '') + '>+' + step + ' bottle' + (step === 1 ? '' : 's') + '</button></div><div class="td-water-track" role="progressbar" aria-label="Daily water goal" aria-valuemin="0" aria-valuemax="' + goal + '" aria-valuenow="' + Math.min(count,goal) + '"><span style="width:' + pct + '%"></span></div><div class="td-water-tools"><button type="button" onclick="todayChecklistAction(\'water\',true)"' + (count <= 0 || disabled ? ' disabled' : '') + '>Undo ' + Math.min(step,count) + '</button><button type="button" onclick="waterSetGoal()">Goal: ' + goal + '</button><button type="button" onclick="waterSetServing()">Per tap: ' + step + '</button></div></div>';
 }
+function todayPlantWateringHtml(date) {
+  if (!wateringStateLoaded) return '';
+  const due = plantsDueOn(date);
+  if (!due.length) return '';
+  return '<aside class="td-shopping" data-plant-watering-due><div class="td-label">💧 Water ' + due.length + ' plant' + (due.length===1?'':'s') + ' today</div><p class="td-note">' + due.map(p=>almanacEsc(p.name)+(p.plantType==='sundew_provisional'?' (pure-water tray top-up)':'')).join(' · ') + '</p><button type="button" class="water-btn" onclick="switchTab(\'garden\');switchGardenSub(\'watering\')">Open watering reminders</button></aside>';
+}
 function renderTodayChecklist() {
   const el = document.getElementById('view-today'); if (!el) return;
   const date = todayKey(), now = new Date(), nowM = now.getHours()*60 + now.getMinutes(), day = new Date(date + 'T12:00:00');
@@ -99,7 +105,7 @@ function renderTodayChecklist() {
   }
   model.items.filter(x => x.mode !== 'hidden').forEach(item => { html += item.water ? todayChecklistWater(item) : todayChecklistRow(item, next === item, disclosures); });
   if (!remaining && !all.some(x => x.mode === 'celebrate')) html += '<div class="td-clear"><span>✓</span><strong>Look at that breathing room.</strong><p>You showed up for yourself today.</p></div>';
-  html += '</section>';
+  html += '</section>' + todayPlantWateringHtml(date);
   if(typeof starterApplies==='function'&&typeof starterDone==='function'&&starterApplies(date)&&starterDone(date)&&!all.some(x=>x.key==='movement'&&x.mode!=='hidden')) html+='<div class="td-starter td-current-full-plan">'+starterSurfaceHtml(date)+'</div>';
   const cleared = done.filter(x => x.mode === 'hidden');
   if (cleared.length) html += '<details class="td-done"' + (disclosures.done ? ' open' : '') + ' ontoggle="todayChecklistDisclosure(\'done\',this.open)"><summary><span>✓ Done today</span><span>' + cleared.length + ' <span class="td-chevron">⌄</span></span></summary>' + cleared.map(x => '<div class="td-done-row"><span>✓</span><span>' + almanacEsc(x.label) + '</span><button type="button" onclick="todayChecklistAction(\'' + x.key + '\',true)">Undo</button>' + (x.key==='movement'&&typeof starterApplies==='function'&&starterApplies(date)?'<button class="sg-stretch-link" type="button" onclick="starterOpenStretches()">Stretches</button>'+(typeof starterOpenArms==='function'?'<button class="sg-stretch-link" type="button" onclick="starterOpenArms()">Full workout</button>':''):'') + (x.water ? '<button type="button" onclick="todayChecklistAction(\'water\',false)">+' + waterServing() + '</button>' : '') + '</div>').join('') + '</details>';

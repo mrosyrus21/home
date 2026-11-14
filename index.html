@@ -899,12 +899,12 @@ body.v2-nav-ready .navbar{ background:transparent; border-bottom:none; box-shado
   <div id="view-forecast" style="display:none"></div>
 </div>
 
-<script src="./data.js?v=20261114220000"></script>
+<script src="./data.js?v=20261114230000"></script>
 <script src="./starter-workout.js?v=20261114220000"></script>
 <script src="./starter-arms.js?v=20261114220000"></script>
-<script src="./today-checklist.js?v=20261114220000"></script>
-<script src="./watering-queue.js?v=20260727093000"></script>
-<script src="./recipes.js?v=20261114220000"></script>
+<script src="./today-checklist.js?v=20261114230000"></script>
+<script src="./watering-queue.js?v=20261114230000"></script>
+<script src="./recipes.js?v=20261114230000"></script>
 <script src="./sleep-finance.js?v=20261008193000"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -952,6 +952,7 @@ let watered  = {};
 let gnat     = {};
 let pushed   = {};
 let waterPushed = {};
+let waterScheduleDeferrals = {};
 let wateringStateLoaded = false;
 let wateringStateError = "";
 let wateringOnline = false;
@@ -1314,7 +1315,7 @@ function pushWateringGroup(ids){
   const d=new Date(todayKey()+"T12:00:00"); d.setDate(d.getDate()+1);
   const next=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   const updates={};
-  clean.forEach(function(id){ updates["waterPushed/"+id]=next; });
+  clean.forEach(function(id){ updates["waterPushed/"+id]=next; updates["waterScheduleDeferrals/"+id]={version:PLANT_WATERING_PLAN.startDate,until:next}; });
   writeWateringUpdates(updates,clean,"push");
 }
 // Max tasks allowed per day
@@ -1474,7 +1475,7 @@ function updateHeader() {
   if(wt && !wateringStateLoaded) wt.textContent="💧 loading — do not use yet";
   else if(wt){
     const queue=buildWateringQueue(today), due=queue.filter(function(x){return x.state.key==="due";}).length, done=queue.filter(function(x){return x.state.key==="watered";}).length;
-    wt.textContent = PLANTS.every(p=>p.checkOnly) ? ("💧 "+done+" watered today") : (due||done ? ("💧 "+due+" checks · "+done+" watered") : "💧 ✓ no checks");
+    wt.textContent = "💧 "+due+" water due · "+done+" watered";
   }
   const tDoneToday=PLANTS.filter(p=>p.trimDays&&trimmed[p.id]===today);
   const tIds=new Set([...plantsTrimDueOn(today).map(p=>p.id), ...tDoneToday.map(p=>p.id)]);
@@ -2638,12 +2639,12 @@ function renderRooms() {
 
 function plantsDueOn(dateStr) {
   if(!wateringStateLoaded || WateringQueue.dateKeyDay(dateStr)===null) return [];
-  return PLANTS.filter(function(p){ return WateringQueue.plantDue(p,watered[p.id],waterPushed[p.id],dateStr); });
+  return PLANTS.filter(function(p){ return WateringQueue.plantDue(p,watered[p.id],waterPushed[p.id],dateStr,(waterScheduleDeferrals[p.id]||{}).version); });
 }
 function buildWateringQueue(dateStr){
   if(!wateringStateLoaded) return [];
   return WateringQueue.build({
-    dateKey:dateStr,plants:PLANTS,watered:watered,pushed:waterPushed
+    dateKey:dateStr,plants:PLANTS,watered:watered,pushed:waterPushed,deferrals:waterScheduleDeferrals
   });
 }
 
@@ -2658,8 +2659,13 @@ function waterPlantGroup(ids) {
   if(!clean.length) return;
   if(clean.some(function(id){return !!wateringPending[id];})){ try{ toast("That watering update is still saving."); }catch(_){ } return; }
   const today=todayKey(), updates={};
-  clean.forEach(function(id){ updates["watered/"+id]=today; updates["waterPushed/"+id]=null; });
+  clean.forEach(function(id){ updates["watered/"+id]=today; updates["waterPushed/"+id]=null; updates["waterScheduleDeferrals/"+id]=null; });
   writeWateringUpdates(updates,clean,"water");
+}
+
+function finishWateringResetDay(){
+  if(todayKey()!==PLANT_WATERING_PLAN.startDate) return;
+  waterPlantGroup(PLANTS.map(function(p){return p.id;}));
 }
 
 // Photo framing and list filters are presentation-only; they never write plant history.
@@ -2673,9 +2679,9 @@ function plantPhotoData(p){
 function plantPhotoPreview(photo){
   return /^plant-photos\/\d{4}-\d{2}-\d{2}\/[^/]+\.(?:jpe?g|png)$/i.test(photo||"") ? photo.replace(/^plant-photos\//,"plant-photo-previews/").replace(/\.(?:jpe?g|png)$/i,".webp") : photo;
 }
-function gardenPlantMatches(p){ return gardenPlantFilter==="all" || (gardenPlantFilter==="mint"?p.plantType==="mint":p.loc===gardenPlantFilter); }
+function gardenPlantMatches(p){ return gardenPlantFilter==="all" || p.loc===gardenPlantFilter; }
 function setGardenPlantFilter(value){
-  if(!["all","mint","indoor","outdoor"].includes(value)) return;
+  if(!["all","indoor","outdoor"].includes(value)) return;
   gardenPlantFilter=value;
   renderGarden();
 }
@@ -2735,11 +2741,11 @@ function renderGarden() {
   const d = new Date();
   let html = `<div class="today-date">${d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</div>`;
   const visiblePlants=PLANTS.filter(gardenPlantMatches);
-  html+='<div class="plant-filter-controls" aria-label="Filter photographed pots">'+[["all","All"],["mint","Mint"],["indoor","Indoor"],["outdoor","Outdoor"]].map(function(filter){
+  html+='<div class="plant-filter-controls" aria-label="Filter photographed pots">'+[["all","All"],["indoor","Indoor"],["outdoor","Outdoor"]].map(function(filter){
     const count=PLANTS.filter(function(p){return filter[0]==="all"||(filter[0]==="mint"?p.plantType==="mint":p.loc===filter[0]);}).length;
     return '<button type="button" aria-pressed="'+(gardenPlantFilter===filter[0])+'" onclick="setGardenPlantFilter(\''+filter[0]+'\')">'+filter[1]+' · '+count+'</button>';
   }).join('')+'</div>';
-  if(gardenSub!=="watering" && PLANTS.every(p=>p.checkOnly)) html+='<div class="plant-pot-note" style="padding:0 10px">'+visiblePlants.length+' of '+PLANTS.length+' photographed pots</div>';
+  html+='<div style="font-size:12px;margin:6px 0 12px"><a href="archive/plants/mint-2026-11-08.html" style="color:var(--text2)">Mint photo archive · '+PLANT_ARCHIVE.length+' pots</a></div>';
   const photo_ = id => plantPhotoData(PLANTS.find(p=>p.id===id)||{id:id}).photo;
   const photoPos_ = id => plantPhotoData(PLANTS.find(p=>p.id===id)||{id:id}).position;
   const photoCredit_ = id => (PLANT_INFO[id]||{}).photoCredit || "";
@@ -2809,7 +2815,9 @@ function renderGarden() {
     }
     const queue=buildWateringQueue(today).filter(function(entry){return gardenPlantMatches(entry.p);});
     const doneCount=queue.filter(function(x){return x.state.key==="watered";}).length;
-    html += `<div class="section-label">💧 Watering · ${doneCount} watered today</div>`;
+    html += `<div class="section-label">💧 Watering · ${queue.filter(x=>x.state.key==="due").length} due · ${doneCount} watered today</div>`;
+    html += '<div style="font-size:12px;line-height:1.6;padding:10px 12px;margin-bottom:12px;border:1px solid var(--border);border-radius:10px;color:var(--text2)">November 14 is the planned schedule start, not a completed watering log. Nothing is marked watered until you log it. Mint is managed manually. If a pot is still wet on its watering day, use Still wet to defer; log Watered only after watering.</div>';
+    if(today===PLANT_WATERING_PLAN.startDate && PLANTS.some(p=>watered[p.id]!==today) && wateringOnline) html+='<button class="water-btn" style="width:100%;margin-bottom:12px" onclick="finishWateringResetDay()">I’ve finished watering all '+PLANTS.length+' active pots today</button>';
     if(!wateringOnline) html += `<div style="background:rgba(251,191,36,.09);border:1px solid rgba(251,191,36,.35);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#FCD34D;font-family:'Lora',serif;line-height:1.5"><b>Offline:</b> the list is read-only. Reconnect before logging watering or moving a check.</div>`;
 
     function entryPending(entry){ return entry.ids.some(function(id){return !!wateringPending[id];}); }
@@ -2817,7 +2825,12 @@ function renderGarden() {
       return fn+'([\''+entry.ids.join("','")+'\'])';
     }
     function entryLabel(entry){
-      return entryPending(entry)?"Saving…":entry.warning?"Review date":entry.days===null&&entry.state.key==="due"?"No saved date":entry.state.key==="due"?"Check moisture":entry.state.label;
+      if(entryPending(entry)) return "Saving…";
+      if(entry.warning) return "Review date";
+      const next=entry.nextDue ? new Date(entry.nextDue+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}) : "date unavailable";
+      if(entry.state.key==="watered") return "Watered today · next "+next;
+      if(entry.state.key==="due") return (entry.p.plantType==="sundew_provisional"?"Top up tray":"Water")+(entry.overdue>0?" · "+entry.overdue+"d overdue":" today");
+      return next+" · every "+entry.p.days+"d";
     }
     function entryActions(entry){
       const p=entry.p, pending=entryPending(entry);
@@ -2825,8 +2838,8 @@ function renderGarden() {
       if(pending) action='<button class="water-btn water-card-compact-action soon" disabled>Saving…</button>';
       else if(entry.state.key==="watered") action='<div class="water-card-compact-check" aria-label="Watered today">✓</div>';
       else if(!wateringOnline) action='<button class="water-btn water-card-compact-action" disabled>Offline</button>';
-      else action='<button class="water-btn water-card-compact-action ok" onclick="'+entryCall(entry,"waterPlantGroup")+'">Watered</button>';
-      if(entry.state.key==="due" && !pending && wateringOnline) action+='<details class="water-row-menu"><summary aria-label="'+plantHtml('Options for '+p.name)+'">⋯</summary><div><button class="water-btn water-card-compact-action damp" onclick="'+entryCall(entry,"pushWateringGroup")+'">Still damp</button></div></details>';
+      else action='<button class="water-btn water-card-compact-action ok" onclick="'+entryCall(entry,"waterPlantGroup")+'">'+(p.plantType==="sundew_provisional"?'Topped up':'Watered')+'</button>';
+      if(entry.state.key==="due" && !pending && wateringOnline) action+='<details class="water-row-menu"><summary aria-label="'+plantHtml('Options for '+p.name)+'">⋯</summary><div><button class="water-btn water-card-compact-action damp" onclick="'+entryCall(entry,"pushWateringGroup")+'">Still wet · tomorrow</button></div></details>';
       return action;
     }
     function entryFooter(entry){
@@ -4638,6 +4651,7 @@ ST.on('value', snap => {
   gnat        = d.gnat        || {};
   pushed      = d.pushed      || {};
   waterPushed = d.waterPushed || {};
+  waterScheduleDeferrals = d.waterScheduleDeferrals || {};
   expanded    = d.expanded    || {};
   trimmed     = d.trimmed     || {};
   harvested   = d.harvested   || {};
@@ -5188,7 +5202,7 @@ setInterval(updateClock,30000);
 curtainInit();
 </script>
 <script>if('serviceWorker' in navigator && !(/claude\.ai|anthropic|usercontent|localhost/i.test(location.hostname) || location.hostname==='')){
-  var HG_BUILD_STAMP='20261114220000';
+  var HG_BUILD_STAMP='20261114230000';
   var __hgReloaded=false;
   var __hgBuildProbeBusy=false;
   var __hgBuildRetryTimer=0;
