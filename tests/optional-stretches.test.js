@@ -4,7 +4,7 @@ const {fixture}=require('./starter-workout.test.js');
 const root=path.join(__dirname,'..');
 const f=fixture(),c=f.c,before=JSON.stringify(c.laundry);
 assert.doesNotMatch(JSON.stringify(c.starterConfig()),/stable chair|non-rolling chair|Seated chest|Sit tall|sit or stand/i,'active starter and stretches must not require a chair');
-assert.equal(c.starterConfig().exercises[0].title,'Counter pushup');
+assert.equal(c.starterSteps('2026-11-14')[0].title,'Bodyweight mini-squat');
 assert.equal(c.starterConfig().stretches[3].title,'Standing chest opener');
 for(const [date,step] of [['2026-11-14',0],['2026-11-14',1],['2026-11-15',0]]){
  const open=fixture(date);open.c.starterUi(date).step=step;open.c.meals=0;open.c.bottles=0;let scrolled=false;
@@ -23,7 +23,7 @@ const reopened=fixture('2026-11-14',8,f.storage);assert.equal(reopened.c.starter
 for(let i=0;i<7;i++)c.starterStretchNavigate(1);assert.equal(c.starterStretchUi('2026-11-14').step,4);
 assert.equal(c.starterCompletedDates('2026-11-14').length,0);assert.equal(f.writes.length,0);assert.equal(JSON.stringify(c.laundry),before);
 assert.doesNotMatch(c.starterStretchHtml('2026-11-14'),/checkbox|starterFinish\(/);
-c.starterNavigate(-5);c.starterSafety(true);c.starterBegin();c.starterNavigate(4);c.starterFinish();
+c.starterNavigate(-5);c.starterSafety(true);c.starterBegin();c.starterNavigate(99);c.starterFinish();
 assert.equal(f.writes.length,1);assert.match(c.surface,/Session logged/);assert.match(c.surface,/Optional stretch routine/);
 const recovery=fixture('2026-11-15');assert.match(recovery.c.surface,/Optional stretch routine/);assert.equal(recovery.writes.length,0);
 let tab='';recovery.c.switchTab=x=>{tab=x;recovery.c.renderAll();};recovery.c.starterOpenStretches();assert.equal(tab,'wellness');assert.equal(recovery.c.starterStretchUi('2026-11-15').open,true);assert.equal(recovery.writes.length,0);
